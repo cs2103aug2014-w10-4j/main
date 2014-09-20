@@ -1,5 +1,4 @@
 <h2>ChirpTask</h2>
-=========
 ChirpTask is a fast, non-disruptive and seamless software for managing your daily tasks.
 
 
@@ -10,11 +9,9 @@ ChirpTask is a fast, non-disruptive and seamless software for managing your dail
 </UL>
 
 <h2>Usage</h2>
-========
 Not ready to be used yet.
 
 <h2>Team</h2>
-========
 Pang Yong He<br/>
 Yeo Quan Yang<br/>
 Ang Ming Yi<br/>
