@@ -2,11 +2,11 @@ package chirptask.storage;
 
 public interface Storage {
 
-	boolean addTask(Task T);
+	boolean storeNewTask(Task T);
 
-	Task deleteTask(Task T);
+	Task removeTask(Task T);
 
-	boolean updateTask(Task T);
+	boolean modifyTask(Task T);
 	
 	Task getTask(int taskId);
 	
