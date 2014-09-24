@@ -1,5 +1,7 @@
 package chirptask.storage;
 
+import java.util.ArrayList;
+
 public interface Storage {
 
 	boolean storeNewTask(Task T);
@@ -11,6 +13,6 @@ public interface Storage {
 	Task getTask(int taskId);
 	
 	// Task array or other data structure(?)
-	Task[] getAllTasks();
+	ArrayList<Task> getAllTasks();
 
 }
