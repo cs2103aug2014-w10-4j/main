@@ -36,8 +36,8 @@ public class Logic {
 	public void updateTaskView(){
 		Storage s = new localStorage();
 		//Should change .getAllTasks() to arraylist?
-		Task[] alltasks = s.getAllTasks();
-		ArrayList<Task> sortedTasks = Collections.sort(alltasks);
+		ArrayList<Task> allTasks = s.getAllTasks();
+ 		Collections.sort(allTasks);
 		
 	}
 	
