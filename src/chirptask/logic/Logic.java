@@ -1,5 +1,6 @@
 package chirptask.logic;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -8,131 +9,162 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-
-
-
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
+import chirptask.ui.*;
 
-enum COMMAND_TYPE{
-	ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, LOGIN, INVALID, EXIT	
+enum CommandType {
+	ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, LOGIN, INVALID, EXIT
+}
+
+enum StatusType {
+	ERROR, MESSAGE
 }
 
 public class Logic {
 	private Action _lastAction;
 	private InputParser _parser;
-	private StorageHandler storageHandler;
-	
-	public Logic(){
-		storageHandler = new StorageHandler();
-		//lastAction = new Action();
+	private StorageHandler _storageHandler;
+	private GUI _gui;
+
+	public Logic() {
+		_storageHandler = new StorageHandler();
+		_gui = new GUI();
+		// lastAction = new Action();
 		_parser = new InputParser();
 	}
-	
-	private COMMAND_TYPE determineCommandType(String commandTypeString){
+
+	private CommandType determineCommandType(String commandTypeString) {
 		if (commandTypeString.equalsIgnoreCase("add")) {
-			return COMMAND_TYPE.ADD;
+			return CommandType.ADD;
 		} else if (commandTypeString.equalsIgnoreCase("display")) {
-			return COMMAND_TYPE.DISPLAY;
+			return CommandType.DISPLAY;
 		} else if (commandTypeString.equalsIgnoreCase("delete")) {
-		 	return COMMAND_TYPE.DELETE;
+			return CommandType.DELETE;
 		} else if (commandTypeString.equalsIgnoreCase("edit")) {
-		 	return COMMAND_TYPE.EDIT;
+			return CommandType.EDIT;
 		} else if (commandTypeString.equalsIgnoreCase("undo")) {
-		 	return COMMAND_TYPE.UNDO;
+			return CommandType.UNDO;
 		} else if (commandTypeString.equalsIgnoreCase("done")) {
-		 	return COMMAND_TYPE.DONE;
+			return CommandType.DONE;
 		} else if (commandTypeString.equalsIgnoreCase("login")) {
-		 	return COMMAND_TYPE.LOGIN;
+			return CommandType.LOGIN;
 		} else if (commandTypeString.equalsIgnoreCase("exit")) {
-			return COMMAND_TYPE.EXIT;
+			return CommandType.EXIT;
 		} else {
-			return COMMAND_TYPE.INVALID;
-		} 
-	}
-	//Will take in Action object
-	public void executeAction(Action command){
-		String action = command.getCommandType();
-		COMMAND_TYPE actionType = determineCommandType(action);
-		Task task = command.getTask();
-		switch (actionType){ 
-			case ADD:
-				storageHandler.addTask(task);
-				this.setLastAction(command);
-				break;
-			case DELETE:
-				storageHandler.deleteTask(task);
-				this.setLastAction(command);
-				break;
-			case DISPLAY:
-				updateTaskView();
-				break;
-			case EDIT:
-				this.setLastAction(command);
-				break;
-			case UNDO:
-				//negate action and run excecuteAction again
-				executeAction(command.undo(this.getLastAction()));
-				break;
-			case DONE:
-				this.setLastAction(command);
-				break;
-			case LOGIN:
-				break;
-			case EXIT:
-				System.exit(0);
-				break;
-			case INVALID:
-				//call print some invalid message
-				break;
-			default:
-				//throw error
+			return CommandType.INVALID;
 		}
 	}
-	
-	//Filtering according to the UI tag
-	public void filter(String tag){
-		
+
+	// Will take in Action object
+	public void executeAction(Action command) {
+		String action = command.getCommandType();
+		CommandType actionType = determineCommandType(action);
+		Task task = command.getTask();
+		switch (actionType) {
+		case ADD:
+			_storageHandler.addTask(task);
+			this.setLastAction(command);
+			break;
+		case DELETE:
+			_storageHandler.deleteTask(task);
+			this.setLastAction(command);
+			break;
+		case DISPLAY:
+			updateTaskView(filterParser(task));
+			break;
+		case EDIT:
+			this.setLastAction(command);
+			break;
+		case UNDO:
+			// negate action and run excecuteAction again
+			executeAction(command.undo(this.getLastAction()));
+			break;
+		case DONE:
+			this.setLastAction(command);
+			break;
+		case LOGIN:
+			break;
+		case EXIT:
+			System.exit(0);
+			break;
+		case INVALID:
+			// call print some invalid message
+			break;
+		default:
+			// throw error
+		}
 	}
-	
+
+	private List<Task> filterParser(Task task) {
+		// process the task into type of filter then filter accordingly
+		return null;
+	}
+
+	// Filtering according to the UI tag
+	public void filter(String tag) {
+		// get storage
+
+		// filter storage
+		// updateTaskview
+	}
+
+	public void filter(Date date) {
+
+	}
+
+	public void filter(Date fromDate, Date toDate) {
+
+	}
+
+	public void filter(Time time) {
+
+	}
+
+	public void filter(Time fromTime, Time toTime) {
+
+	}
+
 	/**
-	 * This will update the taskview
-	 * Retrieve alltasks, sort to date/time, 
-	 * store into Arraylist of dates of arraylist of tasks
-	 * */	
-	public TaskView updateTaskView(){
-		
-		//Should change .getAllTasks() to arraylist?
-		List<Task> allTasks = storageHandler.getAllTasks();
- 		Collections.sort(allTasks);
- 		TreeMap<Date, TasksByDate> map = new TreeMap<Date, TasksByDate>();
- 		
-		for (Task task : allTasks) {
+	 * This will update the taskview Retrieve alltasks, sort to date/time, store
+	 * into Arraylist of dates of arraylist of tasks
+	 * */
+	public TaskView updateTaskView(List<Task> tasks) {
+
+		// Should change .getAllTasks() to arraylist?
+		// List<Task> allTasks = _storageHandler.getAllTasks();
+		Collections.sort(tasks);
+		TreeMap<Date, TasksByDate> map = new TreeMap<Date, TasksByDate>();
+
+		for (Task task : tasks) {
 			Date currDate = task.getDate();
 			if (map.containsKey(currDate)) {
-					map.get(currDate).addToTaskList(task);
-			}
-			else{
+				map.get(currDate).addToTaskList(task);
+			} else {
 				TasksByDate dateTask = new TasksByDate();
 				dateTask.setTaskDate(currDate);
 				dateTask.addToTaskList(task);
 				map.put(dateTask.getTaskDate(), dateTask);
 			}
 		}
-		
+
 		Iterator<Map.Entry<Date, TasksByDate>> it = map.entrySet().iterator();
 		TaskView view = new TaskView();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			view.addToTaskView(it.next().getValue());
 		}
 		return view;
-		
+
 	}
-	
-	//Take in type, action
-	public void showStatusToUser(Type type, Action action ){
-		
+
+	// Take in type, action
+	public void showStatusToUser(StatusType type, Action action) {
+		if (type == StatusType.ERROR) {
+			// message processing and call GUI api
+		} else {
+			// message processing and call GUI api
+		}
 	}
 
 	public Action getLastAction() {
