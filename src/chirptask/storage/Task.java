@@ -23,7 +23,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	/*
-	 * Compare first by Date then time then description
+	 * Compare first by Date object then description
 	 */
 	public int compareTo(Task b) {
 		boolean isSameDateAndTime = this.getDate().compareTo(b.getDate()) == 0;
@@ -34,6 +34,20 @@ public class Task implements Comparable<Task> {
 		} else {
 			return this.getDate().compareTo(b.getDate());
 		}
+	}
+
+	public boolean equals(Object o) {
+		if (o instanceof Task) {
+			Task b = (Task) o;
+			if (this.getTaskId() == b.getTaskId()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public int getTaskId() {
+		return _taskId;
 	}
 
 	public String getDescription() {
