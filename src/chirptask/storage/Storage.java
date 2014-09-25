@@ -15,4 +15,6 @@ public interface Storage {
 	// Task array or other data structure(?)
 	ArrayList<Task> getAllTasks();
 
+	void close();
+
 }
