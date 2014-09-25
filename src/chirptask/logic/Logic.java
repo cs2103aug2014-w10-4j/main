@@ -20,14 +20,14 @@ enum COMMAND_TYPE{
 }
 
 public class Logic {
-	private Action lastAction;
-	private InputParser parser;
+	private Action _lastAction;
+	private InputParser _parser;
 	private StorageHandler storageHandler;
 	
 	public Logic(){
 		storageHandler = new StorageHandler();
 		//lastAction = new Action();
-		parser = new InputParser();
+		_parser = new InputParser();
 	}
 	
 	private COMMAND_TYPE determineCommandType(String commandTypeString){
@@ -136,11 +136,11 @@ public class Logic {
 	}
 
 	public Action getLastAction() {
-		return lastAction;
+		return _lastAction;
 	}
 
 	public void setLastAction(Action lastAction) {
-		this.lastAction = lastAction;
+		this._lastAction = lastAction;
 	}
 
 }
