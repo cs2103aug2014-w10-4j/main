@@ -14,6 +14,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class LocalStorage implements Storage {
 	File local;
@@ -101,9 +102,8 @@ public class LocalStorage implements Storage {
 		return node;
 	}
 
-	@Override
-	public Task removeTask(Task T) {
-		// TODO Auto-generated method stub
+	public Task removeTask(Task task) {
+		
 		return null;
 	}
 
@@ -121,7 +121,38 @@ public class LocalStorage implements Storage {
 
 	public ArrayList<Task> getAllTasks() {
 		ArrayList<Task> tasks = new ArrayList<Task>();
+		DocumentBuilder docBuilder;
+		Document parser;
+		
+		try {
+			docBuilder = docBuilderFact.newDocumentBuilder();
+			parser = docBuilder.parse(local);
+			parser.getDocumentElement().normalize();
+			NodeList taskNodes = parser.getElementsByTagName("task"); 
+			for (int i = 0; i < taskNodes.getLength(); i++) {
+				tasks.add(getTaskFromFile(taskNodes.item(i)));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		return tasks;
+	}
+
+	private Task getTaskFromFile(Node item) {
+		Task task = new Task();
+		if (item.getNodeType() == Node.ELEMENT_NODE) {
+			Element attribute = (Element) item;
+			task.setTaskId(Integer.parseInt(getValue("TaskId", attribute)));
+			task.setDescription(getValue("description", attribute));
+		}
+		return task;
+	}
+
+	private static String getValue(String tag, Element attribute) {
+		NodeList nodes = attribute.getElementsByTagName(tag);
+		Node node = (Node) nodes.item(0);
+		return node.getTextContent();
 	}
 
 	public void close() {

@@ -20,8 +20,16 @@ public class TimedTask extends Task {
 		return _startTime;
 	}
 	
+	public void setDate(Date startTime) {
+		_startTime = startTime;
+	}
+	
 	public Date getEndTime() {
 		return _endTime;
+	}
+	
+	public void setEndTime(Date endTime) {
+		_endTime = endTime;
 	}
 
 }

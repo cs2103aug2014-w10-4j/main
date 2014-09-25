@@ -17,5 +17,9 @@ public class DeadlineTask extends Task {
 	public Date getDate(){
 		return _deadline;
 	}
+	
+	public void setDate(Date deadline) {
+		_deadline = deadline;
+	}
 
 }

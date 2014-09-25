@@ -50,9 +50,17 @@ public class Task implements Comparable<Task> {
 	public int getTaskId() {
 		return _taskId;
 	}
+	
+	public void setTaskId(int taskId) {
+		_taskId = taskId;
+	}
 
 	public String getDescription() {
 		return _description;
+	}
+	
+	public void setDescription (String description) {
+		_description = description;
 	}
 
 	public Date getDate() {
