@@ -17,7 +17,7 @@ public class EventLogger implements Storage {
 	public EventLogger() {
 		try {
 			fileWriter = new PrintWriter(new BufferedWriter(new FileWriter(
-					new File(Settings.eventLogFileName))));
+					new File(Settings.eventLogFileName),true)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -30,7 +30,7 @@ public class EventLogger implements Storage {
 
 	@Override
 	public boolean storeNewTask(Task T) {
-		fileWriter.println(String.format(Messages.MESSAGE_ADD_TASK_TO_LOG,new Date(),T.getTaskId()+": "+T.getDescription()));
+		fileWriter.println(String.format(Messages.MESSAGE_ADD_TASK_TO_LOG,new Date(),T.getTaskId(),T.getDate(),T.getDescription()));
 		fileWriter.flush();
 		return true;
 	}
