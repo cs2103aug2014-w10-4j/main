@@ -3,9 +3,9 @@ package chirptask.storage;
 import java.util.ArrayList;
 import java.util.Date;
 
-//Abstract class for the various tasks: Timed Task and Deadline Task.
+//Super class for the various tasks: Timed Task and Deadline Task.
 
-public abstract class Task {
+public class Task implements Comparable<Task> {
 	private ArrayList<String> _contexts;
 	private ArrayList<String> _categories;
 	private int _taskId;
@@ -22,13 +22,26 @@ public abstract class Task {
 		_description = description;
 	}
 
+	/*
+	 * Compare first by Date then time then description
+	 */
 	public int compareTo(Task b) {
+		boolean isSameDateAndTime = this.getDate().compareTo(b.getDate()) == 0;
 
-		return 0;
+		if (isSameDateAndTime) {
+			// compare description
+			return this.getDescription().compareTo(b.getDescription());
+		} else {
+			return this.getDate().compareTo(b.getDate());
+		}
+	}
+
+	public String getDescription() {
+		return _description;
 	}
 
 	public Date getDate() {
-		// TODO Auto-generated method stub
-		return null;
+		Date today = new Date();
+		return today;
 	}
 }

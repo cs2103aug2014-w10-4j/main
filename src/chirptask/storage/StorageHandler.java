@@ -3,19 +3,20 @@ package chirptask.storage;
 import java.util.List;
 
 public class StorageHandler {
-	private List<Task> allTasks;
+	private List<Storage> _listOfStorages;
+	private List<Task> _allTasks;
 
 	public List<Task> getAllTasks() {
-		return this.allTasks;
+		return this._allTasks;
 	}
 
 	public void addTask(Task addedTask) {
-		allTasks.add(addedTask);
+		_allTasks.add(addedTask);
 		// add in code to do communicate with storage
 	}
 
 	public void deleteTask(Task deletedTask) {
-		allTasks.remove(deletedTask);
+		_allTasks.remove(deletedTask);
 		// add in code to do communication with storage
 	}
 }
