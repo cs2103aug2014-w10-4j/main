@@ -142,6 +142,5 @@ public class Logic {
 	public void setLastAction(Action lastAction) {
 		this.lastAction = lastAction;
 	}
-	
-	
+
 }

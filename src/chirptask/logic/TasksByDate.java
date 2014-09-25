@@ -9,24 +9,24 @@ import java.util.List;
 public class TasksByDate {
 	private Date taskDate;
 	private List<Task> taskList;
-	
-	public TasksByDate(){
+
+	public TasksByDate() {
 		taskList = new ArrayList<Task>();
 	}
-	
-	public Date getTaskDate(){
+
+	public Date getTaskDate() {
 		return taskDate;
 	}
-	
-	public List<Task> getTaskList(){
+
+	public List<Task> getTaskList() {
 		return taskList;
 	}
-	
-	public void setTaskDate(Date taskDate){
+
+	public void setTaskDate(Date taskDate) {
 		this.taskDate = taskDate;
 	}
-	
-	public void addToTaskList(Task T){
+
+	public void addToTaskList(Task T) {
 		taskList.add(T);
 	}
 }

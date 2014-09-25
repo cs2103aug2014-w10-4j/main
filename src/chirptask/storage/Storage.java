@@ -9,9 +9,9 @@ public interface Storage {
 	Task removeTask(Task T);
 
 	boolean modifyTask(Task T);
-	
+
 	Task getTask(int taskId);
-	
+
 	// Task array or other data structure(?)
 	ArrayList<Task> getAllTasks();
 

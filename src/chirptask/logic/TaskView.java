@@ -5,18 +5,18 @@ import java.util.List;
 
 //Contains list of TaskByDates Objects.
 public class TaskView {
-	
+
 	private List<TasksByDate> listByDate;
-	
-	public TaskView(){
+
+	public TaskView() {
 		listByDate = new ArrayList<TasksByDate>();
 	}
-	
-	public List<TasksByDate> getListByDates(){
+
+	public List<TasksByDate> getListByDates() {
 		return listByDate;
 	}
-	
-	public void addToTaskView(TasksByDate task){
+
+	public void addToTaskView(TasksByDate task) {
 		listByDate.add(task);
 	}
 }

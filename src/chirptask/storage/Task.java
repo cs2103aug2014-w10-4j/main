@@ -1,8 +1,9 @@
 package chirptask.storage;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-//General Interface for the various tasks: Timed Task, Floating Task and Deadline Task.
+//Abstract class for the various tasks: Timed Task and Deadline Task.
 
 public abstract class Task {
 	private ArrayList<String> _contexts;
@@ -20,11 +21,14 @@ public abstract class Task {
 		_taskId = taskId;
 		_description = description;
 	}
-	
-	
 
 	public int compareTo(Task b) {
 
 		return 0;
+	}
+
+	public Date getDate() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
