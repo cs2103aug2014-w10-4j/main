@@ -73,7 +73,21 @@ public class GoogleController {
 
     // test if the service is available and connected
     public static void main(String[] args) {
-        
+        try {
+            GoogleController _gController = new GoogleController();
+            _gController.showCalendars();
+            _gController.showTasks();
+        } catch (IOException ioE) {
+            
+        }
+    }
+    
+    private void showCalendars() throws IOException {
+        calendarController.showCalendars();
+    }
+    
+    private void showTasks() throws IOException {
+        tasksController.showTasks();
     }
 
 }
