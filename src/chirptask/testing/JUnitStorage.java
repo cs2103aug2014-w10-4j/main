@@ -34,6 +34,7 @@ public class JUnitStorage {
 		assertTrue(local.storeNewTask(task3));
 		assertEquals(tasks, local.getAllTasks());
 		
+		assertEquals(null, local.getTask(4));
 		assertEquals(task2, local.getTask(2));
 
 	}

@@ -12,6 +12,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -125,11 +128,21 @@ public class LocalStorage implements Storage {
 		try {
 			docBuilder = docBuilderFact.newDocumentBuilder();
 			parser = docBuilder.parse(local);
+			parser.getDocumentElement().normalize();
 			
-			Element taskNode = parser.getElementById(String.valueOf(taskId)); 
+			XPathFactory xPathfactory = XPathFactory.newInstance();
+			XPath xpath = xPathfactory.newXPath();
+			String general = "//task[@TaskId = '%1$s']";
+			String expression = String.format(general, String.valueOf(taskId));
+			System.out.println(expression);
+			Node taskNode = (Node) xpath.compile(expression).evaluate(parser, XPathConstants.NODE);
 			System.out.println(taskNode);
-			//task = getTaskFromFile(taskNode);
-			
+			if (taskNode == null) {
+				return null;
+			}
+			else {
+				task = getTaskFromFile(taskNode);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
