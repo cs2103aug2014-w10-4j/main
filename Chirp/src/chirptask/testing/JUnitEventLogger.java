@@ -15,8 +15,15 @@ public class JUnitEventLogger {
 	public void test() throws ParseException {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 		EventLogger logger = new EventLogger();
-		
-		logger.storeNewTask(new DeadlineTask(1, "C", df.parse("9/25/14 1:00pm")));
-	}
+		DeadlineTask dt = new DeadlineTask(1, "C", df.parse("9/25/14 1:00pm"));
 
+		assertEquals(true, logger.storeNewTask(dt));
+		assertEquals(dt, logger.removeTask(dt));
+		assertEquals(true, logger.modifyTask(dt));
+		assertEquals(null, logger.getTask(999));
+		assertEquals(null, logger.getAllTasks());
+
+		logger.close();
+
+	}
 }
