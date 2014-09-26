@@ -99,15 +99,28 @@ public class Logic {
 
 	private List<Task> filterParser(Task task) {
 		// process the task into type of filter then filter accordingly
+		task.getDescription();
+		List<Task> allTask = this._storageHandler.getAllTasks();
 		return null;
 	}
 
 	// Filtering according to the UI tag
-	public void filter(String tag) {
+	public List<Task> filter(String tag, List<Task> taskList) {
+		List<Task> filteredTask = new ArrayList<Task>();
 		// get storage
-
 		// filter storage
-		// updateTaskview
+		// Use iterator
+		for (Task task : taskList) {
+			if (task.getDescription().equalsIgnoreCase(tag)) {
+				filteredTask.add(task);
+			}
+		}
+		return filteredTask;
+	}
+
+	public void filter(Task T) {
+		List<Task> filteredTask = new ArrayList<Task>();
+
 	}
 
 	public void filter(Date date) {
