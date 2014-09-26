@@ -32,6 +32,7 @@ public class InputParser {
 			break;
 		case "delete":
 			_action.setTask(new Task(getId(getParameter()), ""));
+		case "done":
 			
 		default:
 			

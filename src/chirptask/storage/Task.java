@@ -11,6 +11,7 @@ public class Task implements Comparable<Task> {
 	private ArrayList<String> _categories;
 	private int _taskId;
 	private String _description;
+	private boolean _status = false;
 	private Date _date;
 
 	public Task() {
@@ -47,7 +48,15 @@ public class Task implements Comparable<Task> {
 		}
 		return false;
 	}
-
+	
+	public boolean getStatus(){
+		return _status;
+	}
+	
+	public void markDone() {
+		_status = true;
+	}
+	
 	public int getTaskId() {
 		return _taskId;
 	}
