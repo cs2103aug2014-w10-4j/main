@@ -144,16 +144,21 @@ public class TasksController {
         TasksViewer.display(_result);
     }
     
-    public void addTask(String _taskTitle) throws IOException {
+    public Task addTask(String _taskTitle) throws IOException {
         Task _newTask = TasksHandler.createTask(_taskTitle);
-        Task _result = insertTask(_newTask);
+        Task _addedTask = insertTask(_newTask);
         //Store result.getId() to host storage...
         //Possibly in XML local storage
+        return _addedTask;
     }
     
     private Task insertTask(Task _task) throws IOException {
         Task _result = TasksHandler.insertTaskToList(_taskListId, _task);
         return _result;
+    }
+    
+    public void deleteTask(String _taskId) throws IOException {
+        TasksHandler.deleteTaskWithId(_taskListId, _taskId);
     }
     
     public void showTasks() throws IOException {

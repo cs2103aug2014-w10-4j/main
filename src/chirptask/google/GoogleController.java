@@ -57,11 +57,11 @@ public class GoogleController {
             // initialize the credential component
             credential = GoogleAuthorizer.authorize();
             // initialize the Calendar Controller
-            calendarController = new CalendarController(
-                    httpTransport, JSON_FACTORY, credential, APPLICATION_NAME);
+            calendarController = new CalendarController(httpTransport,
+                    JSON_FACTORY, credential, APPLICATION_NAME);
             // initialize the Tasks Controller
-            tasksController = new TasksController(
-                    httpTransport, JSON_FACTORY, credential, APPLICATION_NAME);
+            tasksController = new TasksController(httpTransport, JSON_FACTORY,
+                    credential, APPLICATION_NAME);
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -73,38 +73,52 @@ public class GoogleController {
 
     // test if the service is available and connected
     public static void main(String[] args) {
+        GoogleController _gController = new GoogleController();
         try {
-            GoogleController _gController = new GoogleController();
             /**
              * Google Tasks
              */
-            //_gController.addTask("Hello World!");
+            Task tempTask = _gController.addTask("Hello World!");
+            _gController.showTask(tempTask.getId());
+            _gController.deleteTask(tempTask.getId());
             _gController.showTasks();
-            //_gController.showTask("MDAyMjI2NjE3NTcxMjkxMDA0ODY6MTkxMTc4NDkzMjoyNTYzNjk0MDk");
-            
+
             /**
              * Google Calendar
              */
             //_gController.showCalendars();
         } catch (IOException ioE) {
-            
+
         }
     }
-    
+
     private void showCalendars() throws IOException {
         calendarController.showCalendars();
     }
     
-    private void showTask(String _taskId) throws IOException {
-        tasksController.showTask(_taskId);
+    private void deleteTask(String _taskId) {
+        try {
+            tasksController.deleteTask(_taskId);
+        } catch (IOException e) {
+            
+        }
     }
-    
+
+    private void showTask(String _taskId) {
+        try {
+            tasksController.showTask(_taskId);
+        } catch (IOException e) {
+
+        }
+    }
+
     private void showTasks() throws IOException {
         tasksController.showTasks();
     }
-    
-    private void addTask(String taskTitle) throws IOException {
-        tasksController.addTask(taskTitle);
+
+    private Task addTask(String taskTitle) throws IOException {
+        Task _addedTask = tasksController.addTask(taskTitle);
+        return _addedTask;
     }
 
 }

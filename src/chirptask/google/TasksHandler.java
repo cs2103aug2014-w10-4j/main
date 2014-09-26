@@ -27,6 +27,12 @@ class TasksHandler {
         return _newTaskList;
     }
     
+    static void deleteTaskWithId(String _taskListId, String _taskId)
+            throws IOException {
+        TasksController.tasksClient.tasks()
+        .delete(_taskListId, _taskId).execute();
+    }
+    
     static Task getTaskFromId(String _taskListId, String _id) throws IOException {
         Task _retrieveTask = 
                 TasksController.tasksClient.tasks()
