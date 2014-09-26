@@ -25,6 +25,8 @@ public class JUnitStorage {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 		Task task3 = new TimedTask(3, "task3", df.parse("9/26/14 11:00"), df.parse("9/26/14 12:00"));
 		Task task4 = new Task(4, "task 4");
+		Task task5 = new Task(3, "task 5");
+		
 		ArrayList<Task> tasks = new ArrayList<Task>();
 		tasks.add(task1);
 		tasks.add(task2);
@@ -40,6 +42,8 @@ public class JUnitStorage {
 		
 		assertEquals(null, local.removeTask(task4));
 		assertEquals(task2, local.removeTask(task2));
+		
+		assertTrue(local.modifyTask(task5));
 
 	}
 

@@ -151,8 +151,10 @@ public class LocalStorage implements Storage {
 
 	@Override
 	public boolean modifyTask(Task T) {
-		// TODO Auto-generated method stub
-		return false;
+		Task toDelete = getTask(T.getTaskId());
+		removeTask(toDelete);
+		storeNewTask(T);
+		return true;
 	}
 	
 	/**
