@@ -1,5 +1,6 @@
 package chirptask.google;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.tasks.model.Task;
 import com.google.api.services.tasks.model.TaskList;
 import com.google.api.services.tasks.model.Tasks;
@@ -46,6 +47,26 @@ public class TasksViewer {
         if (entry.getNotes() != null) {
             System.out.println("Notes: " + entry.getNotes());
         }
+    }
+    
+    static void displayTitle(TaskList taskList) {
+        System.out.println("Task Title: " + taskList.getTitle());
+    }
+    
+
+    static String retrieveTaskListId(TaskList taskList) {
+        String _taskId = taskList.getId();
+        return _taskId;
+    }
+
+    static String retrieveTaskListTitle(TaskList taskList) {
+        String _taskTitle = taskList.getTitle();
+        return _taskTitle;
+    }
+
+    static DateTime retrieveLastModifiedTime(TaskList taskList) {
+        DateTime _lastModifiedTimestamp = taskList.getUpdated();
+        return _lastModifiedTimestamp;
     }
 
 }

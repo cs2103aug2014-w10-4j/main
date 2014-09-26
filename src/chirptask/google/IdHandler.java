@@ -8,7 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class IdHandler {
+class IdHandler {
 
     static String getIdFromFile(File _idFile) {
         String _id = null;

@@ -78,8 +78,9 @@ public class GoogleController {
             /**
              * Google Tasks
              */
-            _gController.showTasks();
             //_gController.addTask("Hello World!");
+            _gController.showTasks();
+            //_gController.showTask("MDAyMjI2NjE3NTcxMjkxMDA0ODY6MTkxMTc4NDkzMjoyNTYzNjk0MDk");
             
             /**
              * Google Calendar
@@ -92,6 +93,10 @@ public class GoogleController {
     
     private void showCalendars() throws IOException {
         calendarController.showCalendars();
+    }
+    
+    private void showTask(String _taskId) throws IOException {
+        tasksController.showTask(_taskId);
     }
     
     private void showTasks() throws IOException {
