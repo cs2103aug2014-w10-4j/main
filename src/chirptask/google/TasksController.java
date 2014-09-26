@@ -1,5 +1,6 @@
 package chirptask.google;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,11 @@ public class TasksController {
     /** Constant name of the task list. */
     private final String DEFAULT_TASKLIST = "ChirpTaskv0.1";
     
-    private final String TASKLIST_ID = "MDAyMjI2NjE3NTcxMjkxMDA0ODY6MTQ0NDgxNjA6MA";
+    /** Global instance of the TasksId file. */
+    private static final File TASKSID_STORE_FILE = new File(
+            "credentials/googletasks/tasklistid.txt");
+    
+    private String _taskListId;
     
     /** Global instance of the Google Tasks Service Client. */
     private static com.google.api.services.tasks.Tasks tasksClient;
@@ -28,10 +33,20 @@ public class TasksController {
     /** Constructor */
     TasksController(HttpTransport httpTransport, JsonFactory jsonFactory,
             Credential credential, String applicationName) {
+        initializeHostFiles();
         initializeTasksController(httpTransport, jsonFactory, credential,
                 applicationName);
         initializeWorkingTaskList();
         showTaskListTitle();
+    }
+    
+    private void initializeHostFiles() {
+        try {
+            TASKSID_STORE_FILE.getParentFile().mkdirs();
+            TASKSID_STORE_FILE.createNewFile();
+        } catch (IOException e) {
+
+        }
     }
 
     private void initializeTasksController(HttpTransport httpTransport,
@@ -49,9 +64,20 @@ public class TasksController {
     }
     
     private String retrieveId() {
-        String workingListId = TASKLIST_ID; // Should be getting this ID from the host.
+        String workingListId = retrieveIdFromFile();
         return workingListId;
     }
+    
+    private String getTaskListId() {
+        return _taskListId;
+    }
+    
+    private String retrieveIdFromFile() {
+        String _retrievedId = IdHandler.getIdFromFile(TASKSID_STORE_FILE);
+        return _retrievedId;
+    }
+    
+    
     
     private TaskList retrieveTaskList(String taskListId) {
         if (taskListId == null) {   // If null ID, assume fresh install of ChirpTask
@@ -82,10 +108,8 @@ public class TasksController {
     
     private TaskList createTaskList() throws IOException {
         TaskList _newTaskList = newTaskList(DEFAULT_TASKLIST);
-        /** 
-         * Future implementation to store this TaskList ID on host.
-         * storeTaskListIdToHost(_newTaskList.getId());
-         */
+        String _id = _newTaskList.getId();
+        IdHandler.saveIdToFile(TASKSID_STORE_FILE, _id);
         return _newTaskList;
     }
     
