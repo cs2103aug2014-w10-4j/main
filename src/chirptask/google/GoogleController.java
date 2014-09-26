@@ -75,8 +75,10 @@ public class GoogleController {
     public static void main(String[] args) {
         try {
             GoogleController _gController = new GoogleController();
-            _gController.showCalendars();
+          //  _gController.showCalendars();
+         //   _gController.addTask("Hello World!");
             _gController.showTasks();
+            
         } catch (IOException ioE) {
             
         }
@@ -88,6 +90,10 @@ public class GoogleController {
     
     private void showTasks() throws IOException {
         tasksController.showTasks();
+    }
+    
+    private void addTask(String taskTitle) throws IOException {
+        tasksController.addTask(taskTitle);
     }
 
 }
