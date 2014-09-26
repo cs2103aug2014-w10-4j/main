@@ -111,20 +111,10 @@ public class LocalStorage implements Storage {
 	}
 
 	public Task removeTask(Task task) {
-		
-		return null;
-	}
-
-	@Override
-	public boolean modifyTask(Task T) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public Task getTask(int taskId) {
 		DocumentBuilder docBuilder;
 		Document parser;
-		Task task = new Task();
+		Node taskNode;
+
 		try {
 			docBuilder = docBuilderFact.newDocumentBuilder();
 			parser = docBuilder.parse(local);
@@ -132,22 +122,85 @@ public class LocalStorage implements Storage {
 			
 			XPathFactory xPathfactory = XPathFactory.newInstance();
 			XPath xpath = xPathfactory.newXPath();
+			
 			String general = "//task[@TaskId = '%1$s']";
-			String expression = String.format(general, String.valueOf(taskId));
-			System.out.println(expression);
-			Node taskNode = (Node) xpath.compile(expression).evaluate(parser, XPathConstants.NODE);
-			System.out.println(taskNode);
+			String expression = String.format(general, String.valueOf(task.getTaskId()));
+
+			taskNode = (Node) xpath.compile(expression).evaluate(parser, XPathConstants.NODE);
 			if (taskNode == null) {
 				return null;
 			}
 			else {
-				task = getTaskFromFile(taskNode);
-			}
+				Transformer trans = transFact.newTransformer();
+				trans.setOutputProperty(OutputKeys.INDENT, "yes");
+	
+				taskNode.getParentNode().removeChild(taskNode);
+				parser.normalize();
+				
+				DOMSource source = new DOMSource(parser);
+				StreamResult file = new StreamResult(local);
+				trans.transform(source, file);
+			}	
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 		return task;
+		
+	}
+
+	@Override
+	public boolean modifyTask(Task T) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	/**
+	 * This method takes in a number (taskId) and return the task corresponded 
+	 * with taskId
+	 * @param taskId (assume taskId to be unique
+	 * @return task
+	 */
+	public Task getTask(int taskId) {
+		Node taskNode = getTaskNode(taskId);
+		if (taskNode == null) {
+			return null;
+		}
+		else {
+			try {
+				return getTaskFromFile(taskNode);
+			} catch (ParseException e) {
+				return null;
+			}
+		}
+			
+	}
+
+	private Node getTaskNode(int taskId) {
+		DocumentBuilder docBuilder;
+		Document parser;
+		Node taskNode;
+		try {
+			docBuilder = docBuilderFact.newDocumentBuilder();
+			parser = docBuilder.parse(local);
+			parser.getDocumentElement().normalize();
+			
+			XPathFactory xPathfactory = XPathFactory.newInstance();
+			XPath xpath = xPathfactory.newXPath();
+			
+			String general = "//task[@TaskId = '%1$s']";
+			String expression = String.format(general, String.valueOf(taskId));
+
+			taskNode = (Node) xpath.compile(expression).evaluate(parser, XPathConstants.NODE);
+
+			if (taskNode == null) {
+				return null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return taskNode;
 	}
 
 	public ArrayList<Task> getAllTasks() {

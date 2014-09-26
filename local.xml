@@ -2,14 +2,9 @@
 <Tasks>
 <task TaskId="1" event="no">
 <description>task 1</description>
-<date>Fri Sep 26 13:35:07 SGT 2014</date>
+<date>Fri Sep 26 15:41:05 SGT 2014</date>
 </task>
-<task TaskId="2" event="no">
-<description>task 2</description>
-<contexts>context1</contexts>
-<contexts>context2</contexts>
-<date>Fri Sep 26 13:35:07 SGT 2014</date>
-</task>
+
 <task TaskId="3" event="yes">
 <description>task3</description>
 <date>Fri Sep 26 00:00:00 SGT 2014</date>
