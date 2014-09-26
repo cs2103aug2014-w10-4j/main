@@ -139,18 +139,30 @@ public class LocalStorage implements Storage {
 		return tasks;
 	}
 
-	private Task getTaskFromFile(Node item) {
+	private Task getTaskFromFile(Node node) {
 		Task task = new Task();
-		if (item.getNodeType() == Node.ELEMENT_NODE) {
-			Element attribute = (Element) item;
-			task.setTaskId(Integer.parseInt(getValue("TaskId", attribute)));
-			task.setDescription(getValue("description", attribute));
+		if (node.getNodeType() == Node.ELEMENT_NODE) {
+			Element item = (Element) node;
+			task.setTaskId(Integer.parseInt(getValue("TaskId", item)));
+			task.setDescription(getValue("description", item));
+			task.setContexts(getValues("contexts", item));
+			task.setCategories(getValues("categories", item));
 		}
 		return task;
 	}
 
-	private static String getValue(String tag, Element attribute) {
-		NodeList nodes = attribute.getElementsByTagName(tag);
+	private static ArrayList<String> getValues(String tag, Element item) {
+		ArrayList<String> contents = new ArrayList<String>();
+		NodeList nodes = item.getElementsByTagName(tag);
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = (Node) nodes.item(i);
+			contents.add(node.getTextContent());
+		}
+		return contents;
+	}
+
+	private static String getValue(String tag, Element item) {
+		NodeList nodes = item.getElementsByTagName(tag);
 		Node node = (Node) nodes.item(0);
 		return node.getTextContent();
 	}
