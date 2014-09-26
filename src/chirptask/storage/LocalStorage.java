@@ -1,6 +1,8 @@
 package chirptask.storage;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -68,8 +70,10 @@ public class LocalStorage implements Storage {
 
 	private static Node getTaskNode(Document doc, Task taskToAdd) {
 		Element task = doc.createElement("task");
+		task.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
+		task.setIdAttribute("TaskId", true);
+		task.setAttribute("event", "no");
 		
-		task.appendChild(getElement(doc, "TaskId", String.valueOf(taskToAdd.getTaskId())));
 		task.appendChild(getElement(doc, "description", taskToAdd.getDescription()));
 		
 		ArrayList<String> contexts = taskToAdd.getContexts();
@@ -82,13 +86,14 @@ public class LocalStorage implements Storage {
 		ArrayList<String> categories = taskToAdd.getCategories();
 		if (categories != null && !categories.isEmpty()) {
 			for (String s: categories) {
-				task.appendChild(getElement(doc, "contexts", s));
+				task.appendChild(getElement(doc, "categories", s));
 			}
 		}
 		
 		task.appendChild(getElement(doc, "date", taskToAdd.getDate().toString()));
 		
 		if (taskToAdd instanceof TimedTask) {
+			task.setAttribute("event", "yes");
 			TimedTask timedTask = (TimedTask) taskToAdd;
 			task.appendChild(getElement(doc, "end", timedTask.getEndTime().toString()));
 		}
@@ -113,10 +118,23 @@ public class LocalStorage implements Storage {
 		return false;
 	}
 
-	@Override
 	public Task getTask(int taskId) {
-		// TODO Auto-generated method stub
-		return null;
+		DocumentBuilder docBuilder;
+		Document parser;
+		Task task = new Task();
+		try {
+			docBuilder = docBuilderFact.newDocumentBuilder();
+			parser = docBuilder.parse(local);
+			
+			Element taskNode = parser.getElementById(String.valueOf(taskId)); 
+			System.out.println(taskNode);
+			//task = getTaskFromFile(taskNode);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return task;
 	}
 
 	public ArrayList<Task> getAllTasks() {
@@ -139,14 +157,22 @@ public class LocalStorage implements Storage {
 		return tasks;
 	}
 
-	private Task getTaskFromFile(Node node) {
+	private Task getTaskFromFile(Node node) throws ParseException {
 		Task task = new Task();
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element item = (Element) node;
-			task.setTaskId(Integer.parseInt(getValue("TaskId", item)));
+
+			task.setTaskId(Integer.parseInt(item.getAttribute("TaskId")));
 			task.setDescription(getValue("description", item));
 			task.setContexts(getValues("contexts", item));
 			task.setCategories(getValues("categories", item));
+			task.setDate(new SimpleDateFormat("EEE MMM dd HH:mm:SS z yyyy").
+					parse(getValue("date", item)));
+			
+			if (item.getAttribute("event") == "yes") {
+				((TimedTask) task).setEndTime(new SimpleDateFormat("EEE MMM dd HH:mm:SS z yyyy").
+						parse(getValue("date", item)));
+			}
 		}
 		return task;
 	}
@@ -163,8 +189,8 @@ public class LocalStorage implements Storage {
 
 	private static String getValue(String tag, Element item) {
 		NodeList nodes = item.getElementsByTagName(tag);
-		Node node = (Node) nodes.item(0);
-		return node.getTextContent();
+			Node node = (Node) nodes.item(0);
+			return node.getTextContent();
 	}
 
 	public void close() {

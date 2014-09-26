@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Tasks>
-<task>
-<TaskId>1</TaskId>
+<task TaskId="1" event="no">
 <description>task 1</description>
-<date>Fri Sep 26 09:06:58 SGT 2014</date>
+<date>Fri Sep 26 11:05:10 SGT 2014</date>
 </task>
-<task>
-<TaskId>2</TaskId>
+<task TaskId="2" event="no">
 <description>task 2</description>
 <contexts>context1</contexts>
 <contexts>context2</contexts>
-<date>Fri Sep 26 09:06:58 SGT 2014</date>
+<date>Fri Sep 26 11:05:10 SGT 2014</date>
 </task>
-<task>
-<TaskId>3</TaskId>
+<task TaskId="3" event="yes">
 <description>task3</description>
 <date>Fri Sep 26 00:00:00 SGT 2014</date>
 <end>Fri Sep 26 00:00:00 SGT 2014</end>

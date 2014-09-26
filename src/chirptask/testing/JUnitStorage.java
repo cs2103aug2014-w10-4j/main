@@ -33,6 +33,8 @@ public class JUnitStorage {
 		assertTrue(local.storeNewTask(task2));
 		assertTrue(local.storeNewTask(task3));
 		assertEquals(tasks, local.getAllTasks());
+		
+		assertEquals(task2, local.getTask(2));
 
 	}
 

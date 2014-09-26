@@ -11,6 +11,7 @@ public class Task implements Comparable<Task> {
 	private ArrayList<String> _categories;
 	private int _taskId;
 	private String _description;
+	private Date _date;
 
 	public Task() {
 		setContexts(new ArrayList<String>());
@@ -66,6 +67,10 @@ public class Task implements Comparable<Task> {
 	public Date getDate() {
 		Date today = new Date();
 		return today;
+	}
+	
+	public void setDate(Date date) {
+		_date = date;
 	}
 
 	public ArrayList<String> getContexts() {
