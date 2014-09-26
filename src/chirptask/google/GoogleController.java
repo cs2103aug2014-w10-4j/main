@@ -75,10 +75,16 @@ public class GoogleController {
     public static void main(String[] args) {
         try {
             GoogleController _gController = new GoogleController();
-          //  _gController.showCalendars();
-         //   _gController.addTask("Hello World!");
+            /**
+             * Google Tasks
+             */
             _gController.showTasks();
+            //_gController.addTask("Hello World!");
             
+            /**
+             * Google Calendar
+             */
+            //_gController.showCalendars();
         } catch (IOException ioE) {
             
         }
