@@ -11,6 +11,8 @@ import com.google.api.services.calendar.model.CalendarList;
 public class CalendarController {
     /** Global instance of the Google Calendar Service Client. */
     private static com.google.api.services.calendar.Calendar calendarClient;
+    
+    private final String DEFAULT_CALENDAR = "@ChirpyChirpy";
 
     // Constructor
     CalendarController(HttpTransport httpTransport, JsonFactory jsonFactory,
