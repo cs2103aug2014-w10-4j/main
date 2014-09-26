@@ -9,7 +9,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -23,9 +22,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * This class handles the tasks list in XML format.
+ * The XML file it manages contains tasks id, description,
+ * contexts, categories and deadline/start time - end time 
+ */
 public class LocalStorage implements Storage {
 	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
 	private static final String XPATH_EXPRESSION = "//task[@TaskId = '%1$s']";
+	
 	File local;
 	DocumentBuilder docBuilder;
 	Transformer trans;
@@ -38,7 +43,7 @@ public class LocalStorage implements Storage {
 	}
 
 	/**
-	 * 
+	 * Initialize all components of LocalStorage
 	 */
 	private void localStorageInit() {
 		try {
@@ -54,7 +59,7 @@ public class LocalStorage implements Storage {
 	}
 
 	/**
-	 * 
+	 * Add the first element in XML file (<Tasks>)
 	 */
 	private void addRoot() {
 		Element rootElement = localStorage.createElement("Tasks");
@@ -62,7 +67,7 @@ public class LocalStorage implements Storage {
 	}
 
 	/**
-	 * @throws TransformerException
+	 * Write from DOMSource to text file
 	 */
 	private void writeToFile() {
 		try {
@@ -74,14 +79,15 @@ public class LocalStorage implements Storage {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * This methods writes new task to XML file
+	 */
 	public boolean storeNewTask(Task task) {
 		Element root = getRoot();
 
 		if (root == null) {
 			return false;
 		}
-
 		root.appendChild(getTaskNode(localStorage, task));
 		writeToFile();
 		return true;
@@ -101,7 +107,12 @@ public class LocalStorage implements Storage {
 			return null;
 		}
 	}
-
+	/**
+	 * This method add a task to the XML file, one attribute at a time
+	 * @param doc
+	 * @param taskToAdd
+	 * @return the corresponding node
+	 */
 	private static Node getTaskNode(Document doc, Task taskToAdd) {
 		Element node = doc.createElement("task");
 		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
@@ -135,13 +146,22 @@ public class LocalStorage implements Storage {
 
 		return node;
 	}
-
+	
+	/**
+	 * This method writes an attribute of task between its enclosing tags
+	 * @param doc
+	 * @param tag
+	 * @param value
+	 * @return the corresponding node
+	 */
 	private static Node getElement(Document doc, String tag, String value) {
 		Element node = doc.createElement(tag);
 		node.appendChild(doc.createTextNode(value));
 		return node;
 	}
-
+	/**
+	 * This method deletes a task from XML file 
+	 */
 	public Task removeTask(Task task) {
 		Node taskNode = getTaskNode(task.getTaskId());
 		Task taskToReturn;
@@ -155,7 +175,10 @@ public class LocalStorage implements Storage {
 		}
 		return taskToReturn;
 	}
-
+	/**
+	 * This methods deletes a task in XML file and write its 
+	 * updated version back.
+	 */
 	public boolean modifyTask(Task T) {
 		Task toDelete = getTask(T.getTaskId());
 		removeTask(toDelete);
@@ -165,9 +188,7 @@ public class LocalStorage implements Storage {
 
 	/**
 	 * This method takes in a number (taskId) and return the corresponding task
-	 * 
-	 * @param taskId
-	 *            (assume taskId to be unique)
+	 * @param taskId (assume taskId to be unique)
 	 * @return task
 	 */
 	public Task getTask(int taskId) {
@@ -179,7 +200,12 @@ public class LocalStorage implements Storage {
 		}
 
 	}
-
+	
+	/**
+	 * This method takes in taskId and returns the corresponding node
+	 * @param taskId
+	 * @return node
+	 */
 	private Node getTaskNode(int taskId) {
 		Node taskNode;
 		try {
@@ -204,13 +230,15 @@ public class LocalStorage implements Storage {
 		return taskNode;
 	}
 
+	/**
+	 * This method returns a list of tasks stored in XML file
+	 */
 	public ArrayList<Task> getAllTasks() {
 		ArrayList<Task> tasks = new ArrayList<Task>();
-
 		try {
-
 			localStorage = docBuilder.parse(local);
 			localStorage.getDocumentElement().normalize();
+			
 			NodeList taskNodes = localStorage.getElementsByTagName("task");
 			for (int i = 0; i < taskNodes.getLength(); i++) {
 				tasks.add(getTaskFromFile(taskNodes.item(i)));
@@ -221,7 +249,12 @@ public class LocalStorage implements Storage {
 		}
 		return tasks;
 	}
-
+	
+	/**
+	 * This method takes in a node and return the corresponding task
+	 * @param node
+	 * @return task
+	 */
 	private Task getTaskFromFile(Node node) {
 		Task task = new Task();
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -246,7 +279,14 @@ public class LocalStorage implements Storage {
 		}
 		return task;
 	}
-
+	
+	/**
+	 * This method helps reconstruct Task object by returning an ArrayList of
+	 * values in tags
+	 * @param tag
+	 * @param item
+	 * @return ArrayList<String>
+	 */
 	private static ArrayList<String> getValues(String tag, Element item) {
 		ArrayList<String> contents = new ArrayList<String>();
 		NodeList nodes = item.getElementsByTagName(tag);
