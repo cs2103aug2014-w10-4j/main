@@ -17,7 +17,7 @@ public class Task implements Comparable<Task> {
 		_contexts = new ArrayList<String>();
 		_categories = new ArrayList<String>();
 	}
-
+	
 	public Task(int taskId, String description) {
 		super();
 		_taskId = taskId;

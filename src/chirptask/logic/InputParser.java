@@ -17,28 +17,52 @@ public class InputParser {
 	}
 	
 	private void setAction() {
+		String command = getCommandTypeString();
 		_action = new Action();
-		_action.setCommandType(getCommandTypeString());
+		_action.setCommandType(command);
 		
-		Task taskToDo = null;
-		
-		if (!getParameter().equals("")) {
-			taskToDo = new Task();
+		switch (command) {
+		case "add":
+			_action.setTask(new Task(_idGenerator, getParameter()));
 			_idGenerator++;
-			taskToDo.setTaskId(_idGenerator);
-			taskToDo.setDescription(getParameter());
+			break;
+		case "edit":
+			int taskId = getId(getParameter());
+			_action.setTask(new Task(taskId, getTaskDescription(getParameter())));
+			break;
+		case "delete":
+			_action.setTask(new Task(getId(getParameter()), ""));
+			
+		default:
+			
 		}
-		_action.setTask(taskToDo);
+		
+		
+		
 		
 		undoler();
 	}
+
+	private String getTaskDescription(String parameter) {
+		String description = parameter.replace(parameter.trim().split("\\s+")[0], "").trim();
+		return description;
+	}
+
+	private int getId(String parameter) {
+		String id = parameter.trim().split("\\s+")[0];
+		return Integer.parseInt(id);
+	}
+
+	/**
+	 * 
+	 */
 	
 	public Action getAction() {
 		return _action;
 	}
 
 	private String getCommandTypeString() {
-		return _userInput.trim().split("\\s+")[0];
+		return _userInput.trim().split("\\s+")[0].toLowerCase();
 	}
 	
 	private String getParameter() {
@@ -52,8 +76,10 @@ public class InputParser {
 			_action.setUndo(new Action("delete", _action.getTask()));
 			break;
 		case "delete":
-			_action.setUndo(new Action("add", _action.getTask()));
+			_action.setUndo(new Action("add", new Task(getId(getParameter()), "")));
 			break;
+		case "edit":
+			_action.setUndo(new Action("edit", new Task(getId(getParameter()), "")));
 		default:
 			_action.setUndo(null);
 		}

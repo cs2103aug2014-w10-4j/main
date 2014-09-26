@@ -43,4 +43,5 @@ public class StorageHandler {
 			individualStorage.removeTask(deletedTask);
 		}
 	}
+
 }
