@@ -24,11 +24,5 @@ public class JUnitEventLogger {
 		assertEquals(null, logger.getAllTasks());
 
 		logger.close();
-<<<<<<< HEAD
 	}
-=======
-
-	}
-		
->>>>>>> cfa2222b637e86ad64af931e1b8956801851b96b
 }
