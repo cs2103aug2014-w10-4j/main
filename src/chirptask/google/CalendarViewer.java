@@ -19,7 +19,7 @@ public class CalendarViewer {
             for (CalendarListEntry entry : feed.getItems()) {
                 System.out.println();
                 System.out
-                        .println("-----------------------------------------------");
+                        .println("------------------------------------------");
                 display(entry);
             }
         }
@@ -30,7 +30,7 @@ public class CalendarViewer {
             for (Event entry : feed.getItems()) {
                 System.out.println();
                 System.out
-                        .println("-----------------------------------------------");
+                        .println("------------------------------------------");
                 display(entry);
             }
         }
