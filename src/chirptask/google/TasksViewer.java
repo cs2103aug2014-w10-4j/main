@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import com.google.api.client.util.DateTime;
@@ -6,6 +7,13 @@ import com.google.api.services.tasks.model.TaskList;
 import com.google.api.services.tasks.model.Tasks;
 import com.google.api.services.tasks.model.TaskLists;
 
+/**
+ * TasksViewer provides static methods to separate methods, that perform
+ * format/display/retrieve functions, from the TasksController class.
+ * 
+ * This allows a global instance of the mentioned functions as well as provide 
+ * easier maintenance of the TasksController class.
+ */
 public class TasksViewer {
 
 	static void header(String name) {

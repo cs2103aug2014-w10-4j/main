@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import java.text.ParseException;
@@ -7,6 +8,11 @@ import java.util.TimeZone;
 
 import com.google.api.client.util.DateTime;
 
+/**
+ * DateTimeHandler is a class that contains static methods to help
+ * parse dates from input (assumed to be formatted before reaching here)
+ * into a Google DateTime object used by the relevant Google API.
+ */
 public class DateTimeHandler {
 	static final String DATE_FORMAT = "yyyy-MM-dd";
 	static final String DEFAULT_DATE = "2015-12-31";

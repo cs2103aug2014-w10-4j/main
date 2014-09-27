@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import java.io.IOException;
@@ -7,6 +8,13 @@ import com.google.api.services.tasks.model.Task;
 import com.google.api.services.tasks.model.TaskList;
 import com.google.api.services.tasks.model.Tasks;
 
+/**
+ * TasksHandler provides static methods to separate methods, that perform
+ * GoogleTasks operations, from the TasksController class.
+ * 
+ * This allows a global instance of the mentioned functions as well as provide 
+ * easier maintenance of the TasksController class.
+ */
 class TasksHandler {
 	static boolean isNull(TaskList _taskList) {
 		if (_taskList == null) {
@@ -15,6 +23,14 @@ class TasksHandler {
 			return false;
 		}
 	}
+	
+	static boolean isNull(Task _task) {
+        if (_task == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 	static Task createTask(String _floatingTask) {
 		Task _newTask = new Task();

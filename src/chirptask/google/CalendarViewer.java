@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import com.google.api.services.calendar.model.Calendar;
@@ -5,6 +6,14 @@ import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
+
+/**
+ * CalendarViewer provides static methods to separate methods, that perform
+ * format/display/retrieve functions, from the CalendarController class.
+ * 
+ * This allows a global instance of the mentioned functions as well as provide 
+ * easier maintenance of the CalendarController class.
+ */
 
 public class CalendarViewer {
 
