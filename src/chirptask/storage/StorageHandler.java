@@ -30,7 +30,6 @@ public class StorageHandler {
 
 	public void addTask(Task addedTask) {
 		_allTasks.add(addedTask);
-		// add in code to do communicate with storage
 		for (Storage individualStorage : _listOfStorages) {
 			individualStorage.storeNewTask(addedTask);
 		}
@@ -38,7 +37,6 @@ public class StorageHandler {
 
 	public void deleteTask(Task deletedTask) {
 		_allTasks.remove(deletedTask);
-		// add in code to do communication with storage
 		for (Storage individualStorage : _listOfStorages) {
 			individualStorage.removeTask(deletedTask);
 		}
