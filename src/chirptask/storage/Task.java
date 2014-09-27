@@ -75,13 +75,6 @@ public class Task implements Comparable<Task> {
 		Date today = new Date();
 		return today;
 	}
-<<<<<<< HEAD
-=======
-
-	public void setDate(Date date) {
-		_date = date;
-	}
->>>>>>> f4749dd30c9c333ef1d244783da8e907f78af1d8
 
 	public ArrayList<String> getContexts() {
 		return _contexts;

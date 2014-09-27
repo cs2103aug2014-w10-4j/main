@@ -9,5 +9,6 @@
 <task TaskId="3" done="false">
 <description>task 5</description>
 <type>Floating Task</type>
+<googleId>6</googleId>
 </task>
 </Tasks>

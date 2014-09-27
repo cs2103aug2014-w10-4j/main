@@ -321,6 +321,12 @@ public class LocalStorage implements Storage {
 		}
 		return contents;
 	}
+	
+	public void addGoogleId(int taskId, String googleId) {
+		Node node = getTaskNode(taskId);
+		node.appendChild(getElement(localStorage, "googleId", googleId));
+		writeToFile();
+	}
 
 	public void close() {
 
