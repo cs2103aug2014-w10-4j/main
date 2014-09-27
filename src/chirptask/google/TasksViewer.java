@@ -47,6 +47,10 @@ public class TasksViewer {
         if (entry.getNotes() != null) {
             System.out.println("Notes: " + entry.getNotes());
         }
+        System.out.println("Status: " + entry.getStatus());
+        if (entry.getCompleted() != null) {
+            System.out.println("Completed: " + entry.getCompleted());
+        }
     }
     
     static void displayTitle(TaskList taskList) {

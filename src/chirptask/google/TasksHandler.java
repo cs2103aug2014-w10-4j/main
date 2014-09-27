@@ -2,6 +2,7 @@ package chirptask.google;
 
 import java.io.IOException;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.tasks.model.Task;
 import com.google.api.services.tasks.model.TaskList;
 import com.google.api.services.tasks.model.Tasks;
@@ -15,10 +16,31 @@ class TasksHandler {
         }
     }
 
-    static Task createTask(String floatingTask) {
+    static Task createTask(String _floatingTask) {
         Task _newTask = new Task();
-        _newTask.setTitle(floatingTask);
+        _newTask.setTitle(_floatingTask);
         return _newTask;
+    }
+    
+    static Task addNotes(Task _taskToEdit, String _notes) {
+        Task _editedTask = _taskToEdit.setNotes(_notes);
+        return _editedTask;
+    }
+    
+    static Task addDueDate(Task _taskToEdit, DateTime _dueDate) {
+        Task _editedTask = _taskToEdit.setDue(_dueDate);
+        return _editedTask;
+    }
+    
+    static Task setCompleted(Task _taskToEdit) {
+        Task _editedTask = _taskToEdit.setStatus("completed");
+        return _editedTask;
+    }
+    
+    static Task setNotCompleted(Task _taskToEdit) {
+        Task _editedTask = _taskToEdit.setStatus("needsAction");
+        _editedTask = _editedTask.setCompleted(null);
+        return _editedTask;
     }
     
     static TaskList createTaskList(String listName) {
@@ -66,5 +88,12 @@ class TasksHandler {
                 TasksController.tasksClient.tasks()
                 .insert(_taskListId, _taskToInsert).execute();
         return _insertTask;
+    }
+    
+    static Task updateTask(String _taskListId, String _taskId, Task _updatedTask) throws IOException {
+        _updatedTask = 
+                TasksController.tasksClient.tasks()
+                .update(_taskListId, _taskId, _updatedTask).execute();
+        return _updatedTask;
     }
 }

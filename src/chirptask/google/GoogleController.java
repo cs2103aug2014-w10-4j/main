@@ -80,8 +80,12 @@ public class GoogleController {
              */
             Task tempTask = _gController.addTask("Hello World!");
             _gController.showTask(tempTask.getId());
+            tempTask = TasksHandler.setCompleted(tempTask);
+            tempTask = tasksController.updateTask(tempTask);
+            
+            _gController.showTask(tempTask.getId());
             _gController.deleteTask(tempTask.getId());
-            _gController.showTasks();
+            //_gController.showTasks();
 
             /**
              * Google Calendar

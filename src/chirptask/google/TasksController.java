@@ -152,6 +152,34 @@ public class TasksController {
         return _addedTask;
     }
     
+    public Task addTask(String _taskTitle, DateTime _dueDate) throws IOException {
+        Task _newTask = TasksHandler.createTask(_taskTitle);
+        _newTask = TasksHandler.addDueDate(_newTask, _dueDate);
+        Task _addedTask = insertTask(_newTask);
+        //Store result.getId() to host storage...
+        //Possibly in XML local storage
+        return _addedTask;
+    }
+    
+    public Task addTask(String _taskTitle, String _notes) throws IOException {
+        Task _newTask = TasksHandler.createTask(_taskTitle);
+        _newTask = TasksHandler.addNotes(_newTask, _notes);
+        Task _addedTask = insertTask(_newTask);
+        //Store result.getId() to host storage...
+        //Possibly in XML local storage
+        return _addedTask;
+    }
+
+    public Task addTask(String _taskTitle, String _notes, DateTime _dueDate) throws IOException {
+        Task _newTask = TasksHandler.createTask(_taskTitle);
+        _newTask = TasksHandler.addNotes(_newTask, _notes);
+        _newTask = TasksHandler.addDueDate(_newTask, _dueDate);
+        Task _addedTask = insertTask(_newTask);
+        //Store result.getId() to host storage...
+        //Possibly in XML local storage
+        return _addedTask;
+    }
+    
     private Task insertTask(Task _task) throws IOException {
         Task _result = TasksHandler.insertTaskToList(_taskListId, _task);
         return _result;
@@ -167,6 +195,10 @@ public class TasksController {
         TasksViewer.display(tasks);
     }
 
+    public Task updateTask(Task _updatedTask) throws IOException {
+        _updatedTask = TasksHandler.updateTask(_taskListId, _updatedTask.getId(), _updatedTask);
+        return _updatedTask;
+    }
 
 
 }
