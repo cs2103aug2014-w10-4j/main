@@ -1,52 +1,166 @@
 package chirptask.logic;
 
+import java.util.ArrayList;
+
 import chirptask.storage.Task;
 
 public class InputParser {
 	private String _userInput;
-	private Action _action;
+	private GroupAction _actions;
 	private static int _idGenerator = 0;
 	
 	public InputParser() {
-		
 	}
 	
 	public InputParser(String userInput) {
 		_userInput = userInput;
-		setAction();
+		_actions = processCommand();
 	}
 	
-	private void setAction() {
-		String command = getCommandTypeString();
-		_action = new Action();
-		_action.setCommandType(command);
-		
-		switch (command) {
-		case "add":
-			_action.setTask(new Task(_idGenerator, getParameter()));
-			_idGenerator++;
-			break;
+	private GroupAction processCommand() {
+		String commandType = getCommandTypeString();
+		String parameter = getParameter();
+		switch (commandType) {
+		case "add": 
+			return processForAdd(parameter);
 		case "edit":
-			int taskId = getId(getParameter());
-			_action.setTask(new Task(taskId, getTaskDescription(getParameter())));
-			break;
+			return processForEdit(parameter);
 		case "delete":
-			_action.setTask(new Task(getId(getParameter()), ""));
+			return processForDelete(parameter);
 		case "done":
-			
+			return processForDone(parameter);
+		case "undo": case "display":
+			return processNoTask(commandType);
 		default:
-			
+			return null;
 		}
-		
-		
-		
-		
-		undoler();
+	}
+	
+	private GroupAction processForDone(String parameter) {
+		GroupAction actions = null;
+		ArrayList<Integer> list = getTaskIdFromString(parameter);
+		if (list != null) {
+			actions = new GroupAction();
+			for (Integer i: list) {
+				Action action = new Action();
+				action.setCommandType("done");
+				Task task = new Task();
+				task.setTaskId(i);
+				action.setTask(task);
+				
+				Action negate = new Action();
+				negate.setCommandType("undone");
+				negate.setTask(task);
+				
+				action.setUndo(negate);
+				actions.addAction(action);
+			}
+		}
+		return actions;
 	}
 
-	private String getTaskDescription(String parameter) {
-		String description = parameter.replace(parameter.trim().split("\\s+")[0], "").trim();
-		return description;
+	private GroupAction processNoTask(String command) {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		action.setCommandType(command);
+		actions.addAction(action);
+		return actions;
+	}
+
+	private GroupAction processForDelete(String parameter) {
+		GroupAction actions = null;
+		ArrayList<Integer> list = getTaskIdFromString(parameter);
+		if (list != null) {
+			actions = new GroupAction();
+			for (Integer i: list) {
+				Action action = new Action();
+				action.setCommandType("delete");
+				Task task = new Task();
+				task.setTaskId(i);
+				task.setDescription("");
+				action.setTask(task);
+				
+				Action negate = new Action();
+				negate.setCommandType("add");
+				negate.setTask(task);
+				
+				action.setUndo(negate);
+				actions.addAction(action);
+			}
+		}
+		return actions;
+	}
+
+	private ArrayList<Integer> getTaskIdFromString(String parameter) {
+		ArrayList<Integer> taskIds = new ArrayList<Integer>(); 
+		String[] split = parameter.trim().split("\\s+|,");
+		for (int i = 0; i < split.length; i++) {
+			if (!split[i].equals("") && split[i].contains("-")) {
+				String[] sequence = split[i].split("-");
+				int start = Integer.parseInt(sequence[0]);
+				int end = Integer.parseInt(sequence[1]);
+				for (int j = start; j <= end; j++) {
+					taskIds.add(j);
+				}
+			}
+			else if (!split[i].equals("")) {
+				taskIds.add(Integer.parseInt(split[i]));
+			}
+		}
+		System.out.println(taskIds.toString());
+		return taskIds;
+	}
+
+	private GroupAction processForEdit(String parameter) {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		Action negate = new Action();
+		Task toDo = new Task();
+		
+		int taskId = getId(parameter);
+		parameter = parameter.trim().split("\\s+", 2)[1];
+		toDo = getTaskFromString(parameter);
+		toDo.setTaskId(taskId);
+		
+		action.setCommandType("edit");
+		action.setTask(toDo);
+		negate.setCommandType("edit");
+		negate.setTask(new Task(taskId, ""));
+		action.setUndo(negate);
+		
+		actions.addAction(action);
+		return actions;
+	}
+
+	private GroupAction processForAdd(String parameter) {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		Action negate = new Action();
+		Task toDo = new Task();
+		
+		toDo = getTaskFromString(parameter);
+		toDo.setTaskId(_idGenerator++);
+		
+		action.setCommandType("add");
+		action.setTask(toDo);
+		negate.setCommandType("delete");
+		negate.setTask(toDo);
+		action.setUndo(negate);
+		
+		actions.addAction(action);
+		return actions;
+	}
+
+	private Task getTaskFromString(String parameter) {
+		Task task = new Task();
+		parameter = parameter.trim();
+		String[] taskDesc = parameter.split("@|#", 2);
+		task.setDescription(taskDesc[0]);
+		
+		if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
+			
+		}
+		return task;
 	}
 
 	private int getId(String parameter) {
@@ -54,35 +168,27 @@ public class InputParser {
 		return Integer.parseInt(id);
 	}
 
-	/**
-	 * 
-	 */
 	
-	public Action getAction() {
-		return _action;
-	}
 
 	private String getCommandTypeString() {
 		return _userInput.trim().split("\\s+")[0].toLowerCase();
 	}
 	
 	private String getParameter() {
-		return _userInput.replace(getCommandTypeString(), "").trim();
+		String[] commands = _userInput.trim().split("\\s+", 2);
+		if (commands.length == 2) {
+			return commands[1];
+		} else {
+			return null;
+		}
 	}
 	
 	
-	public void undoler() {
-		switch (_action.getCommandType()) {
-		case "add":
-			_action.setUndo(new Action("delete", _action.getTask()));
-			break;
-		case "delete":
-			_action.setUndo(new Action("add", new Task(getId(getParameter()), "")));
-			break;
-		case "edit":
-			_action.setUndo(new Action("edit", new Task(getId(getParameter()), "")));
-		default:
-			_action.setUndo(null);
-		}
+	public GroupAction getActions() {
+		return _actions;
+	}
+
+	public void setActions(GroupAction actions) {
+		_actions = actions;
 	}
 }

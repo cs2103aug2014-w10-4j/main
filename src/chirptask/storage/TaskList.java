@@ -1,21 +1,26 @@
 package chirptask.storage;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class TaskList {
 	
-	ArrayList<Task> taskList;
+	ArrayList<Task> _taskList;
 	
 	public TaskList() {
-		taskList = new ArrayList<Task>();
+		_taskList = new ArrayList<Task>();
+	}
+	
+	public TaskList(ArrayList<Task> list){
+		_taskList = list;
 	}
 	
 	public ArrayList<Task> getTaskList() {	
-		return taskList;
+		return _taskList;
 	}
 
 	public void setTaskList(ArrayList<Task> list) {
-		taskList = list;
+		_taskList = list;
 	}
 
 }
