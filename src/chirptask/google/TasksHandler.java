@@ -43,6 +43,11 @@ class TasksHandler {
         return _editedTask;
     }
     
+    static void clearCompletedTasks(String _taskListId) 
+            throws IOException {
+        TasksController.tasksClient.tasks().clear(_taskListId).execute();
+    }
+    
     static TaskList createTaskList(String listName) {
         TaskList _newTaskList = new TaskList();
         _newTaskList.setTitle(listName);
@@ -55,7 +60,8 @@ class TasksHandler {
         .delete(_taskListId, _taskId).execute();
     }
     
-    static Task getTaskFromId(String _taskListId, String _id) throws IOException {
+    static Task getTaskFromId(String _taskListId, String _id) 
+            throws IOException {
         Task _retrieveTask = 
                 TasksController.tasksClient.tasks()
                 .get(_taskListId, _id).execute();
@@ -73,6 +79,13 @@ class TasksHandler {
         TaskList _retrieveTaskList = 
                 TasksController.tasksClient.tasklists()
                 .get(_taskListId).execute();
+        return _retrieveTaskList;
+    }
+    
+    static TaskList getTaskListFromId(String _taskListId, boolean _isHidden) throws IOException {
+        TaskList _retrieveTaskList = 
+                TasksController.tasksClient.tasklists()
+                .get(_taskListId).set("showHidden", true).execute();
         return _retrieveTaskList;
     }
     
