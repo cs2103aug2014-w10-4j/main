@@ -52,7 +52,7 @@ public class TasksViewer {
         }
         System.out.println("Status: " + entry.getStatus());
         if (entry.getCompleted() != null) {
-            System.out.println("Completed: " + entry.getCompleted());
+            System.out.println("Completed Time: " + entry.getCompleted());
         }
     }
     

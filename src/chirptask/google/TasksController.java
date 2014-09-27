@@ -194,6 +194,18 @@ public class TasksController {
         TasksViewer.header("Show All Tasks");
         TasksViewer.display(tasks);
     }
+    
+    public void showHiddenTasks() throws IOException {
+        Tasks tasks = TasksHandler.getHiddenTasks(_taskListId);
+        TasksViewer.header("Show All Tasks");
+        TasksViewer.display(tasks);
+    }
+    
+    public void showUndoneTasks() throws IOException {
+        Tasks tasks = TasksHandler.getUndoneTasks(_taskListId);
+        TasksViewer.header("Show All Tasks");
+        TasksViewer.display(tasks);
+    }
 
     public Task updateTask(Task _updatedTask) throws IOException {
         _updatedTask = TasksHandler.updateTask(_taskListId, _updatedTask.getId(), _updatedTask);

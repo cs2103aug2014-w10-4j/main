@@ -69,10 +69,26 @@ class TasksHandler {
     }
     
     static Tasks getTasksFromId(String _taskListId) throws IOException {
-        Tasks _retrieveTask = 
+        Tasks _retrieveTasks = 
                 TasksController.tasksClient.tasks()
                 .list(_taskListId).execute();
-        return _retrieveTask;
+        return _retrieveTasks;
+    }
+    
+    static Tasks getHiddenTasks(String _taskListId) 
+            throws IOException {
+        Tasks _retrieveTasks = 
+                TasksController.tasksClient.tasks()
+                .list(_taskListId).set("showHidden", true).execute();
+        return _retrieveTasks;
+    }
+    
+    static Tasks getUndoneTasks(String _taskListId) 
+            throws IOException {
+        Tasks _retrieveTasks = 
+                TasksController.tasksClient.tasks()
+                .list(_taskListId).set("showCompleted", false).execute();
+        return _retrieveTasks;
     }
     
     static TaskList getTaskListFromId(String _taskListId) throws IOException {
@@ -82,12 +98,6 @@ class TasksHandler {
         return _retrieveTaskList;
     }
     
-    static TaskList getTaskListFromId(String _taskListId, boolean _isHidden) throws IOException {
-        TaskList _retrieveTaskList = 
-                TasksController.tasksClient.tasklists()
-                .get(_taskListId).set("showHidden", true).execute();
-        return _retrieveTaskList;
-    }
     
     static TaskList insertTaskList(TaskList _newTaskList) throws IOException {
         TaskList _insertList = 

@@ -98,6 +98,12 @@ public class GoogleController {
             //Show all tasks in list
             //_gController.showTasks();
             
+            //Show all hidden tasks in list
+            //_gController.showHiddenTasks();
+            
+            //Show all undone tasks in list
+            _gController.showUndoneTasks();
+            
             //Clean up
             _gController.deleteTask(tempTask.getId());
             
@@ -129,9 +135,17 @@ public class GoogleController {
 
         }
     }
-
+    
     private void showTasks() throws IOException {
         tasksController.showTasks();
+    }
+
+    private void showHiddenTasks() throws IOException {
+        tasksController.showHiddenTasks();
+    }
+    
+    private void showUndoneTasks() throws IOException {
+        tasksController.showUndoneTasks();
     }
 
     private Task addTask(String taskTitle) throws IOException {
