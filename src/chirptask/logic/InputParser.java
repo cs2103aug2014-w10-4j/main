@@ -139,10 +139,10 @@ public class InputParser {
 		Action action = new Action();
 		Action negate = new Action();
 		Task toDo = new Task();
-
+		
 		int taskId = getId(parameter);
 		parameter = parameter.trim().split("\\s+", 2)[1];
-		toDo = getTaskFromString(parameter);
+		getTaskFromString(parameter, toDo);
 		toDo.setTaskId(taskId);
 
 		action.setCommandType("edit");
@@ -160,10 +160,9 @@ public class InputParser {
 		Action action = new Action();
 		Action negate = new Action();
 		Task toDo = new Task();
-
-		toDo = getTaskFromString(parameter);
+		
+		getTaskFromString(parameter, toDo);
 		toDo.setTaskId(_idGenerator++);
-
 		action.setCommandType("add");
 		action.setTask(toDo);
 		negate.setCommandType("delete");
@@ -174,16 +173,26 @@ public class InputParser {
 		return actions;
 	}
 
-	private Task getTaskFromString(String parameter) {
-		Task task = new Task();
+	private void getTaskFromString(String parameter, Task task) {
 		parameter = parameter.trim();
 		String[] taskDesc = parameter.split("@|#", 2);
 		task.setDescription(taskDesc[0]);
-
+		
 		if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
-
+			String[] conCat = parameter.split("(?=@|#)");
+			ArrayList<String> contexts = new ArrayList<String>();
+			ArrayList<String> categories = new ArrayList<String>();
+			for (int i = 1; i < conCat.length; i++) {
+				if (conCat[i].contains("@") && conCat[i].length() > 1) {
+					contexts.add(conCat[i].substring(1));
+				}
+				if (conCat[i].contains("#") && conCat[i].length() > 1) {
+					categories.add(conCat[i].substring(1));
+				}				
+			}
+			task.setCategories(categories);
+			task.setContexts(contexts);
 		}
-		return task;
 	}
 
 	private int getId(String parameter) {
