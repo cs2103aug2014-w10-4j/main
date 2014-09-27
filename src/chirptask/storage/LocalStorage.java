@@ -23,9 +23,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * This class handles the tasks list in XML format. The XML file it manages
- * contains tasks id, description, contexts, categories and deadline/start time
- * - end time
+ * This class handles the tasks list in XML format.
+ * The XML file it manages contains tasks id, description,
+ * contexts, categories and deadline/start time - end time
  */
 public class LocalStorage implements Storage {
 	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
@@ -119,6 +119,7 @@ public class LocalStorage implements Storage {
 	private static Node getTaskNode(Document doc, Task taskToAdd) {
 		Element node = doc.createElement("task");
 		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
+		node.setAttribute("event", "no");
 		node.setAttribute("done", String.valueOf(taskToAdd.getStatus()));
 
 		node.appendChild(getElement(doc, "description",
@@ -138,19 +139,13 @@ public class LocalStorage implements Storage {
 			}
 		}
 
+		node.appendChild(getElement(doc, "date", taskToAdd.getDate().toString()));
+
 		if (taskToAdd instanceof TimedTask) {
+			node.setAttribute("event", "yes");
 			TimedTask timedTask = (TimedTask) taskToAdd;
-			node.appendChild(getElement(doc, "type", "Timed Task"));
-			node.appendChild(getElement(doc, "start", taskToAdd.getDate()
-					.toString()));
 			node.appendChild(getElement(doc, "end", timedTask.getEndTime()
 					.toString()));
-		} else if (taskToAdd instanceof DeadlineTask) {
-			node.appendChild(getElement(doc, "deadline", taskToAdd.getDate()
-					.toString()));
-			node.appendChild(getElement(doc, "type", "Deadline Task"));
-		} else {
-			node.appendChild(getElement(doc, "type", "Floating Task"));
 		}
 
 		return node;
@@ -188,8 +183,8 @@ public class LocalStorage implements Storage {
 	}
 
 	/**
-	 * This methods deletes a task in XML file and write its updated version
-	 * back.
+	 * This methods deletes a task in XML file and write its
+	 * updated version back.
 	 */
 	public boolean modifyTask(Task T) {
 		Task toDelete = getTask(T.getTaskId());
@@ -272,32 +267,24 @@ public class LocalStorage implements Storage {
 	 * @return task
 	 */
 	private Task getTaskFromFile(Node node) {
-		Task task = null;
+		Task task = new Task();
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element item = (Element) node;
+
+			task.setTaskId(Integer.parseInt(item.getAttribute("TaskId")));
+			task.setDescription(getValues("description", item).get(0));
+			task.setContexts(getValues("contexts", item));
+			task.setCategories(getValues("categories", item));
+
 			try {
-				String typeTask = getValues("type", item).get(0);
-				if (typeTask.equalsIgnoreCase("Deadline Task")) {
-					task = new DeadlineTask();
-					((DeadlineTask) task).setDate(new SimpleDateFormat(
-							DATE_FORMAT).parse(getValues("deadline", item).get(
-							0)));
-				} else if (typeTask.equalsIgnoreCase("Timed Task")) {
-					task = new TimedTask();
-					((TimedTask) task).setDate(new SimpleDateFormat(DATE_FORMAT)
-									.parse(getValues("start", item).get(0)));
+				task.setDate(new SimpleDateFormat(DATE_FORMAT).parse(getValues(
+						"date", item).get(0)));
+
+				if (item.getAttribute("event") == "yes") {
 					((TimedTask) task).setEndTime(new SimpleDateFormat(
-							DATE_FORMAT).parse(getValues("end", item).get(0)));
-				} else {
-					task = new Task();
+							DATE_FORMAT).parse(getValues("date", item).get(0)));
 				}
-			
-				task.setTaskId(Integer.parseInt(item.getAttribute("TaskId")));
-				task.setDescription(getValues("description", item).get(0));
-				task.setContexts(getValues("contexts", item));
-				task.setCategories(getValues("categories", item));
 			} catch (Exception e) {
-				e.printStackTrace();
 				return null;
 			}
 		}
@@ -320,12 +307,6 @@ public class LocalStorage implements Storage {
 			contents.add(node.getTextContent());
 		}
 		return contents;
-	}
-	
-	public void addGoogleId(int taskId, String googleId) {
-		Node node = getTaskNode(taskId);
-		node.appendChild(getElement(localStorage, "googleId", googleId));
-		writeToFile();
 	}
 
 	public void close() {
