@@ -47,6 +47,9 @@ public class TasksViewer {
         if (entry.getNotes() != null) {
             System.out.println("Notes: " + entry.getNotes());
         }
+        if (entry.getDue() != null) {
+            System.out.println("Due Date: " + entry.getDue());
+        }
         System.out.println("Status: " + entry.getStatus());
         if (entry.getCompleted() != null) {
             System.out.println("Completed: " + entry.getCompleted());

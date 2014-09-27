@@ -11,6 +11,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.Lists;
 import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
@@ -18,7 +19,8 @@ import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.tasks.model.Task;
 
 public class GoogleController {
-    private static final String APPLICATION_NAME = "ChirpTask-GoogleIntegration/0.1";
+    private static final String APPLICATION_NAME = 
+            "ChirpTask-GoogleIntegration/0.1";
 
     private static final File DATA_STORE_DIR = new File(
             "credentials/google_oauth_credential");
@@ -78,15 +80,27 @@ public class GoogleController {
             /**
              * Google Tasks
              */
+            //Test creation of task
             Task tempTask = _gController.addTask("Hello World!");
             _gController.showTask(tempTask.getId());
+            
+            //Test adding due date
+            DateTime _dueDate = DateTimeHandler.getDateTime("2014-09-29");
+            tempTask = TasksHandler.addDueDate(tempTask, _dueDate);
+            tempTask = tasksController.updateTask(tempTask);
+            _gController.showTask(tempTask.getId());
+            
+            //Test setting complete
             tempTask = TasksHandler.setCompleted(tempTask);
             tempTask = tasksController.updateTask(tempTask);
-            
             _gController.showTask(tempTask.getId());
-            _gController.deleteTask(tempTask.getId());
-            //_gController.showTasks();
 
+            //Show all tasks in list
+            //_gController.showTasks();
+            
+            //Clean up
+            _gController.deleteTask(tempTask.getId());
+            
             /**
              * Google Calendar
              */

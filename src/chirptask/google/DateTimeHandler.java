@@ -27,11 +27,18 @@ public class DateTimeHandler {
         return _newDate;
     }
     
+    static DateTime getDateTime() {
+        Date _currentDate = getDateFromToday();
+        TimeZone _hostTimeZone = getTimeZoneFromHost();
+        DateTime _newDateTime = newDateTime(_currentDate, _hostTimeZone);
+        return _newDateTime;
+    }
+
     static Date getDateFromToday() {
         Date _newDate = new Date();
         return _newDate;
     }
-    
+
     static TimeZone getTimeZoneFromHost() {
         TimeZone _hostTimeZone = TimeZone.getDefault();
         return _hostTimeZone;
@@ -39,13 +46,6 @@ public class DateTimeHandler {
     
     static DateTime newDateTime(Date _date, TimeZone _timeZone) {
         DateTime _newDateTime = new DateTime(_date, _timeZone);
-        return _newDateTime;
-    }
-    
-    static DateTime getDateTime() {
-        Date _currentDate = getDateFromToday();
-        TimeZone _hostTimeZone = getTimeZoneFromHost();
-        DateTime _newDateTime = newDateTime(_currentDate, _hostTimeZone);
         return _newDateTime;
     }
     
