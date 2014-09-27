@@ -21,6 +21,7 @@ public class InputParser {
 		String commandType = getCommandTypeString();
 		String parameter = getParameter();
 		switch (commandType) {
+<<<<<<< HEAD
 		case "add":
 			return processForAdd(parameter);
 		case "edit":
@@ -58,6 +59,24 @@ public class InputParser {
 		return actions;
 	}
 
+=======
+			case "add" :
+				return processForAdd(parameter);
+			case "edit" :
+				return processForEdit(parameter);
+			case "delete" :
+				return processForDelete(parameter);
+			case "done" :
+				return processForDone(parameter);
+			case "undo" :
+			case "display" :
+				return processNoTask(commandType);
+			default:
+				return null;
+		}
+	}
+
+>>>>>>> f4749dd30c9c333ef1d244783da8e907f78af1d8
 	private GroupAction processForDone(String parameter) {
 		GroupAction actions = null;
 		ArrayList<Integer> list = getTaskIdFromString(parameter);

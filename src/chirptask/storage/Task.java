@@ -5,7 +5,6 @@ import java.util.Date;
 
 //Super class for the various tasks: Timed Task and Deadline Task.
 
-
 public class Task implements Comparable<Task> {
 	private ArrayList<String> _contexts;
 	private ArrayList<String> _categories;
@@ -17,7 +16,7 @@ public class Task implements Comparable<Task> {
 		_contexts = new ArrayList<String>();
 		_categories = new ArrayList<String>();
 	}
-	
+
 	public Task(int taskId, String description) {
 		super();
 		_taskId = taskId;
@@ -47,15 +46,15 @@ public class Task implements Comparable<Task> {
 		}
 		return false;
 	}
-	
-	public boolean getStatus(){
+
+	public boolean getStatus() {
 		return _status;
 	}
-	
+
 	public void markDone() {
 		_status = true;
 	}
-	
+
 	public int getTaskId() {
 		return _taskId;
 	}
@@ -67,8 +66,8 @@ public class Task implements Comparable<Task> {
 	public String getDescription() {
 		return _description;
 	}
-	
-	public void setDescription (String description) {
+
+	public void setDescription(String description) {
 		_description = description;
 	}
 
@@ -76,6 +75,13 @@ public class Task implements Comparable<Task> {
 		Date today = new Date();
 		return today;
 	}
+<<<<<<< HEAD
+=======
+
+	public void setDate(Date date) {
+		_date = date;
+	}
+>>>>>>> f4749dd30c9c333ef1d244783da8e907f78af1d8
 
 	public ArrayList<String> getContexts() {
 		return _contexts;

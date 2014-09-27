@@ -10,31 +10,30 @@ import java.io.IOException;
 
 class IdHandler {
 
-    static String getIdFromFile(File _idFile) {
-        String _id = null;
+	static String getIdFromFile(File _idFile) {
+		String _id = null;
 
-        try (BufferedReader idFileReader = new BufferedReader(new FileReader(
-                _idFile))) {
-            _id = idFileReader.readLine();
-        } catch (FileNotFoundException fileNotFoundError) {
+		try (BufferedReader idFileReader = new BufferedReader(new FileReader(
+				_idFile))) {
+			_id = idFileReader.readLine();
+		} catch (FileNotFoundException fileNotFoundError) {
 
-        } catch (IOException accessFileError) {
+		} catch (IOException accessFileError) {
 
-        }
+		}
 
-        return _id;
-    }
+		return _id;
+	}
 
-    static void saveIdToFile(File _idFile, String _id) {
-        try (BufferedWriter idFileWriter = 
-                new BufferedWriter(new FileWriter(_idFile))) {
-                idFileWriter.write(_id);
-        } catch (FileNotFoundException fileNotFoundError) {
-            
-        } catch (IOException accessFileError) {
-            
-        }
-    }
-    
+	static void saveIdToFile(File _idFile, String _id) {
+		try (BufferedWriter idFileWriter = new BufferedWriter(new FileWriter(
+				_idFile))) {
+			idFileWriter.write(_id);
+		} catch (FileNotFoundException fileNotFoundError) {
+
+		} catch (IOException accessFileError) {
+
+		}
+	}
 
 }

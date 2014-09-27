@@ -17,51 +17,46 @@ import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.tasks.TasksScopes;
 
 public class GoogleAuthorizer {
-    
-    /** Authorizes the installed application to access user's protected data. */
-    static Credential authorize() throws Exception {
-        List<String> _googleScopes = new ArrayList<String>();
-        
-        String _chirpUser = "ChirpUser";
-        
-        FileDataStoreFactory _dataStoreFactory = GoogleController.dataStoreFactory;
-        HttpTransport _httpTransport = GoogleController.httpTransport;
-        JsonFactory _jsonFactory = GoogleController.JSON_FACTORY;
-        
-        // set up FileInputStream for GoogleClientSecrets.load(.., ..) method
-        FileInputStream _inputStream = new FileInputStream(
-                "resources/client_secrets.json");
-        
-        // load client secrets
-        GoogleClientSecrets _clientSecrets = GoogleClientSecrets.load(
-                _jsonFactory,
-                new InputStreamReader(_inputStream));
-        
-        // exit if client secrets is default / error
-        if (_clientSecrets.getDetails().getClientId().startsWith("Enter")
-                || _clientSecrets.getDetails().getClientSecret()
-                        .startsWith("Enter ")) {
-            System.out.println(
-                    "Enter Client ID and Secret from "
-                    + "https://code.google.com/apis/console/?api=calendar "
-                    + "into "
-                    + "resources/client_secrets.json");
-            System.exit(1);
-        }
-        
-        // set up scopes for Google Calendar and Google Tasks
-        _googleScopes.add(CalendarScopes.CALENDAR);
-        _googleScopes.add(TasksScopes.TASKS);
-        
-        // set up authorization code flow
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow
-                .Builder(
-                _httpTransport, _jsonFactory, _clientSecrets, _googleScopes)
-                .setDataStoreFactory(_dataStoreFactory)
-                .build();
-        
-        // authorize
-        return new AuthorizationCodeInstalledApp(flow,
-                new LocalServerReceiver()).authorize(_chirpUser);
-    }
+
+	/** Authorizes the installed application to access user's protected data. */
+	static Credential authorize() throws Exception {
+		List<String> _googleScopes = new ArrayList<String>();
+
+		String _chirpUser = "ChirpUser";
+
+		FileDataStoreFactory _dataStoreFactory = GoogleController.dataStoreFactory;
+		HttpTransport _httpTransport = GoogleController.httpTransport;
+		JsonFactory _jsonFactory = GoogleController.JSON_FACTORY;
+
+		// set up FileInputStream for GoogleClientSecrets.load(.., ..) method
+		FileInputStream _inputStream = new FileInputStream(
+				"resources/client_secrets.json");
+
+		// load client secrets
+		GoogleClientSecrets _clientSecrets = GoogleClientSecrets.load(
+				_jsonFactory, new InputStreamReader(_inputStream));
+
+		// exit if client secrets is default / error
+		if (_clientSecrets.getDetails().getClientId().startsWith("Enter")
+				|| _clientSecrets.getDetails().getClientSecret()
+						.startsWith("Enter ")) {
+			System.out.println("Enter Client ID and Secret from "
+					+ "https://code.google.com/apis/console/?api=calendar "
+					+ "into " + "resources/client_secrets.json");
+			System.exit(1);
+		}
+
+		// set up scopes for Google Calendar and Google Tasks
+		_googleScopes.add(CalendarScopes.CALENDAR);
+		_googleScopes.add(TasksScopes.TASKS);
+
+		// set up authorization code flow
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+				_httpTransport, _jsonFactory, _clientSecrets, _googleScopes)
+				.setDataStoreFactory(_dataStoreFactory).build();
+
+		// authorize
+		return new AuthorizationCodeInstalledApp(flow,
+				new LocalServerReceiver()).authorize(_chirpUser);
+	}
 }

@@ -63,37 +63,37 @@ public class Logic {
 		CommandType actionType = determineCommandType(action);
 		Task task = command.getTask();
 		switch (actionType) {
-		case ADD:
-			_storageHandler.addTask(task);
-			this.setLastAction(command);
-			break;
-		case DELETE:
-			_storageHandler.deleteTask(task);
-			this.setLastAction(command);
-			break;
-		case DISPLAY:
-			updateTaskView(filterParser(task));
-			break;
-		case EDIT:
-			this.setLastAction(command);
-			break;
-		case UNDO:
-			// negate action and run excecuteAction again
-			executeAction(command.undo(this.getLastAction()));
-			break;
-		case DONE:
-			this.setLastAction(command);
-			break;
-		case LOGIN:
-			break;
-		case EXIT:
-			System.exit(0);
-			break;
-		case INVALID:
-			// call print some invalid message
-			break;
-		default:
-			// throw error
+			case ADD :
+				_storageHandler.addTask(task);
+				this.setLastAction(command);
+				break;
+			case DELETE :
+				_storageHandler.deleteTask(task);
+				this.setLastAction(command);
+				break;
+			case DISPLAY :
+				updateTaskView(filterParser(task));
+				break;
+			case EDIT :
+				this.setLastAction(command);
+				break;
+			case UNDO :
+				// negate action and run excecuteAction again
+				executeAction(command.undo(this.getLastAction()));
+				break;
+			case DONE :
+				this.setLastAction(command);
+				break;
+			case LOGIN :
+				break;
+			case EXIT :
+				System.exit(0);
+				break;
+			case INVALID :
+				// call print some invalid message
+				break;
+			default:
+				// throw error
 		}
 	}
 

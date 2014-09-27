@@ -13,11 +13,11 @@ public class DeadlineTask extends Task {
 		super(taskId, description);
 		_deadline = deadline;
 	}
-	
-	public Date getDate(){
+
+	public Date getDate() {
 		return _deadline;
 	}
-	
+
 	public void setDate(Date deadline) {
 		_deadline = deadline;
 	}
