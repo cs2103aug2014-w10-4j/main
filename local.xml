@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Tasks>
-<task TaskId="1" done="false" event="no">
+<task TaskId="1" done="false">
 <description>task 1</description>
-<date>Fri Sep 26 22:31:33 SGT 2014</date>
+<type>Floating Task</type>
 </task>
 
 
-<task TaskId="3" done="false" event="no">
+<task TaskId="3" done="false">
 <description>task 5</description>
-<date>Fri Sep 26 22:31:34 SGT 2014</date>
+<type>Floating Task</type>
 </task>
 </Tasks>

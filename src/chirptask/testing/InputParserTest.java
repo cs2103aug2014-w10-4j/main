@@ -13,9 +13,10 @@ public class InputParserTest {
 
 	@Test
 	public void test() {
-		InputParser parser1 = new InputParser("display");
+		InputParser parser1 = new InputParser("display -done -float");
 		GroupAction action1 = new GroupAction();
-		action1.addAction(new Action("display"));
+		action1.addAction(new Action("display", new Task(-1, "done"), null));
+		action1.addAction(new Action("display", new Task(-1, "float"), null));
 		assertEquals(action1, parser1.getActions());
 		
 		InputParser parser4 = new InputParser("delete 0-1, 2");

@@ -23,14 +23,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * This class handles the tasks list in XML format.
- * The XML file it manages contains tasks id, description,
- * contexts, categories and deadline/start time - end time 
+ * This class handles the tasks list in XML format. The XML file it manages
+ * contains tasks id, description, contexts, categories and deadline/start time
+ * - end time
  */
 public class LocalStorage implements Storage {
 	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
 	private static final String XPATH_EXPRESSION = "//task[@TaskId = '%1$s']";
-	
+
 	File local;
 	DocumentBuilder docBuilder;
 	Transformer trans;
@@ -79,6 +79,7 @@ public class LocalStorage implements Storage {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * This methods writes new task to XML file
 	 */
@@ -107,8 +108,10 @@ public class LocalStorage implements Storage {
 			return null;
 		}
 	}
+
 	/**
 	 * This method add a task to the XML file, one attribute at a time
+	 * 
 	 * @param doc
 	 * @param taskToAdd
 	 * @return the corresponding node
@@ -116,9 +119,8 @@ public class LocalStorage implements Storage {
 	private static Node getTaskNode(Document doc, Task taskToAdd) {
 		Element node = doc.createElement("task");
 		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
-		node.setAttribute("event", "no");
 		node.setAttribute("done", String.valueOf(taskToAdd.getStatus()));
-		
+
 		node.appendChild(getElement(doc, "description",
 				taskToAdd.getDescription()));
 
@@ -136,20 +138,27 @@ public class LocalStorage implements Storage {
 			}
 		}
 
-		node.appendChild(getElement(doc, "date", taskToAdd.getDate().toString()));
-
 		if (taskToAdd instanceof TimedTask) {
-			node.setAttribute("event", "yes");
 			TimedTask timedTask = (TimedTask) taskToAdd;
+			node.appendChild(getElement(doc, "type", "Timed Task"));
+			node.appendChild(getElement(doc, "start", taskToAdd.getDate()
+					.toString()));
 			node.appendChild(getElement(doc, "end", timedTask.getEndTime()
 					.toString()));
+		} else if (taskToAdd instanceof DeadlineTask) {
+			node.appendChild(getElement(doc, "deadline", taskToAdd.getDate()
+					.toString()));
+			node.appendChild(getElement(doc, "type", "Deadline Task"));
+		} else {
+			node.appendChild(getElement(doc, "type", "Floating Task"));
 		}
 
 		return node;
 	}
-	
+
 	/**
 	 * This method writes an attribute of task between its enclosing tags
+	 * 
 	 * @param doc
 	 * @param tag
 	 * @param value
@@ -160,13 +169,14 @@ public class LocalStorage implements Storage {
 		node.appendChild(doc.createTextNode(value));
 		return node;
 	}
+
 	/**
-	 * This method deletes a task from XML file 
+	 * This method deletes a task from XML file
 	 */
 	public Task removeTask(Task task) {
 		Node taskNode = getTaskNode(task.getTaskId());
 		Task taskToReturn;
-		
+
 		if (taskNode == null) {
 			return null;
 		} else {
@@ -176,9 +186,10 @@ public class LocalStorage implements Storage {
 		}
 		return taskToReturn;
 	}
+
 	/**
-	 * This methods deletes a task in XML file and write its 
-	 * updated version back.
+	 * This methods deletes a task in XML file and write its updated version
+	 * back.
 	 */
 	public boolean modifyTask(Task T) {
 		Task toDelete = getTask(T.getTaskId());
@@ -189,7 +200,9 @@ public class LocalStorage implements Storage {
 
 	/**
 	 * This method takes in a number (taskId) and return the corresponding task
-	 * @param taskId (assume taskId to be unique)
+	 * 
+	 * @param taskId
+	 *            (assume taskId to be unique)
 	 * @return task
 	 */
 	public Task getTask(int taskId) {
@@ -201,9 +214,10 @@ public class LocalStorage implements Storage {
 		}
 
 	}
-	
+
 	/**
 	 * This method takes in taskId and returns the corresponding node
+	 * 
 	 * @param taskId
 	 * @return node
 	 */
@@ -239,7 +253,7 @@ public class LocalStorage implements Storage {
 		try {
 			localStorage = docBuilder.parse(local);
 			localStorage.getDocumentElement().normalize();
-			
+
 			NodeList taskNodes = localStorage.getElementsByTagName("task");
 			for (int i = 0; i < taskNodes.getLength(); i++) {
 				tasks.add(getTaskFromFile(taskNodes.item(i)));
@@ -250,40 +264,50 @@ public class LocalStorage implements Storage {
 		}
 		return tasks;
 	}
-	
+
 	/**
 	 * This method takes in a node and return the corresponding task
+	 * 
 	 * @param node
 	 * @return task
 	 */
 	private Task getTaskFromFile(Node node) {
-		Task task = new Task();
+		Task task = null;
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element item = (Element) node;
-
-			task.setTaskId(Integer.parseInt(item.getAttribute("TaskId")));
-			task.setDescription(getValues("description", item).get(0));
-			task.setContexts(getValues("contexts", item));
-			task.setCategories(getValues("categories", item));
-
 			try {
-				task.setDate(new SimpleDateFormat(DATE_FORMAT).parse(getValues(
-						"date", item).get(0)));
-
-				if (item.getAttribute("event") == "yes") {
+				String typeTask = getValues("type", item).get(0);
+				if (typeTask.equalsIgnoreCase("Deadline Task")) {
+					task = new DeadlineTask();
+					((DeadlineTask) task).setDate(new SimpleDateFormat(
+							DATE_FORMAT).parse(getValues("deadline", item).get(
+							0)));
+				} else if (typeTask.equalsIgnoreCase("Timed Task")) {
+					task = new TimedTask();
+					((TimedTask) task).setDate(new SimpleDateFormat(DATE_FORMAT)
+									.parse(getValues("start", item).get(0)));
 					((TimedTask) task).setEndTime(new SimpleDateFormat(
-							DATE_FORMAT).parse(getValues("date", item).get(0)));
+							DATE_FORMAT).parse(getValues("end", item).get(0)));
+				} else {
+					task = new Task();
 				}
+			
+				task.setTaskId(Integer.parseInt(item.getAttribute("TaskId")));
+				task.setDescription(getValues("description", item).get(0));
+				task.setContexts(getValues("contexts", item));
+				task.setCategories(getValues("categories", item));
 			} catch (Exception e) {
+				e.printStackTrace();
 				return null;
 			}
 		}
 		return task;
 	}
-	
+
 	/**
 	 * This method helps reconstruct Task object by returning an ArrayList of
 	 * values in tags
+	 * 
 	 * @param tag
 	 * @param item
 	 * @return ArrayList<String>
