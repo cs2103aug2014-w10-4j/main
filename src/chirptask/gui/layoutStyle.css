@@ -1,0 +1,109 @@
+.root{
+    -fx-font-family: "Lucida Grande";
+    -fx-font-size:11.0px;
+}
+
+.header-title {
+    -fx-font-size:20.0px;
+}
+
+.status-bar, .header-bar {
+    -fx-background-color: gainsboro;
+}
+
+.status-message {
+	
+}
+
+.error-message {
+	-fx-text-fill:red;
+}
+
+.text-field {
+    -fx-background-radius: 0.0;    
+}
+
+.text-field:focused {
+    -fx-background-color:-fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-radius: 0.0;
+    -fx-background-insets: -1.4, 0.0, 1.0;
+}
+
+
+.trending-list {
+    -fx-border-width: 0.0px 0.0px 0.0px 1.0px;
+    -fx-border-style: solid;
+    -fx-border-color: transparent transparent transparent #ddd;
+}
+
+.category-text {
+	-fx-fill:#09f;
+}
+
+.context-scroll {
+    -fx-border-width: 0.0px 0.0px 1.0px 0.0px;
+    -fx-border-style: solid;
+    -fx-border-color: transparent transparent #ddd transparent;
+}
+
+.context-text {
+	-fx-fill:#f33;
+}
+
+.context-text:hover, .category-text:hover {
+	-fx-cursor:hand;
+	-fx-underline:true;
+}
+
+.task-time {
+	-fx-fill:#999;
+}
+
+.taskView-header {
+	-fx-border-width: 0.0px 0.0px 3.0px 0.0px;
+	-fx-border-style: solid;
+	-fx-border-color: transparent transparent #ddd transparent;
+}
+
+.task-pane {
+	-fx-border-width: 0.0px 0.0px 1.0px 0.0px;
+	-fx-border-style: dashed;
+	-fx-border-color: transparent transparent #ccc transparent;
+}
+
+.address {
+    -fx-background-color:white;
+}
+
+.address .scroll-pane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.address .scroll-bar .increment-button {
+    -fx-opacity: 0.0;
+}
+
+.address .scroll-bar .decrement-button {
+    -fx-opacity: 0.0;
+}
+
+.address .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.address .scroll-bar:vertical .track-background {
+    -fx-opacity: 0.0;
+}
+
+.address .scroll-bar:vertical .track {
+    -fx-opacity: 0.0;
+}
+.address .scroll-bar:vertical .thumb {
+    -fx-background-color: #999;
+    -fx-opacity: 1.0;
+}
+
+.address .hide-thumb .scroll-bar:vertical .thumb {
+    -fx-background-color: transparent;
+}
