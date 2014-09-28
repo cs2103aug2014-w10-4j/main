@@ -1,4 +1,5 @@
 /bin/
 /credentials/google_oauth_credential/*
 /credentials/googletasks/*
+/credentials/googlecalendar/*
 eventlogs.txt
