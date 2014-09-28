@@ -61,5 +61,11 @@ public class DateTimeHandler {
 		DateTime _newDateTime = newDateTime(_dateFromInput, _hostTimeZone);
 		return _newDateTime;
 	}
+	
+	static DateTime getDateTime(Date _inputDate) {
+        TimeZone _hostTimeZone = getTimeZoneFromHost();
+        DateTime _newDateTime = newDateTime(_inputDate, _hostTimeZone);
+        return _newDateTime;
+    }
 
 }

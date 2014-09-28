@@ -4,6 +4,7 @@ package chirptask.google;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -159,38 +160,25 @@ public class TasksController {
     public Task addTask(String _taskTitle) throws IOException {
         Task _newTask = TasksHandler.createTask(_taskTitle);
         Task _addedTask = insertTask(_newTask);
-        // Store result.getId() to host storage...
-        // Possibly in XML local storage
         return _addedTask;
     }
 
-    public Task addTask(String _taskTitle, DateTime _dueDate)
+    public Task addTask(String _taskTitle, Date _dueDate)
             throws IOException {
         Task _newTask = TasksHandler.createTask(_taskTitle);
-        _newTask = TasksHandler.addDueDate(_newTask, _dueDate);
+        DateTime _dueDateTime = DateTimeHandler.getDateTime(_dueDate);
+        _newTask = TasksHandler.addDueDate(_newTask, _dueDateTime);
         Task _addedTask = insertTask(_newTask);
-        // Store result.getId() to host storage...
-        // Possibly in XML local storage
         return _addedTask;
     }
 
-    public Task addTask(String _taskTitle, String _notes) throws IOException {
-        Task _newTask = TasksHandler.createTask(_taskTitle);
-        _newTask = TasksHandler.addNotes(_newTask, _notes);
-        Task _addedTask = insertTask(_newTask);
-        // Store result.getId() to host storage...
-        // Possibly in XML local storage
-        return _addedTask;
-    }
-
-    public Task addTask(String _taskTitle, String _notes, DateTime _dueDate)
+    public Task addTask(String _taskTitle, String _notes, Date _dueDate)
             throws IOException {
         Task _newTask = TasksHandler.createTask(_taskTitle);
         _newTask = TasksHandler.addNotes(_newTask, _notes);
-        _newTask = TasksHandler.addDueDate(_newTask, _dueDate);
+        DateTime _dueDateTime = DateTimeHandler.getDateTime(_dueDate);
+        _newTask = TasksHandler.addDueDate(_newTask, _dueDateTime);
         Task _addedTask = insertTask(_newTask);
-        // Store result.getId() to host storage...
-        // Possibly in XML local storage
         return _addedTask;
     }
 

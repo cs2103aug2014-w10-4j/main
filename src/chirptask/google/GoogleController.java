@@ -4,6 +4,7 @@ package chirptask.google;
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Date;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -99,7 +100,7 @@ public class GoogleController {
              * Google Tasks
              */
             // Test creation of task
-            Task tempTask = _gController.addTask("Hello World!");
+            Task tempTask = _gController.addFloatingTask("Hello World!");
             _gController.showTask(tempTask.getId());
 
             // Test adding due date
@@ -209,14 +210,63 @@ public class GoogleController {
     /**
      * adds a floating task with the specified task title.
      * 
-     * @param taskTitle
+     * @param _taskTitle
      *            is the floating task
      * @return the reference to the created Task object
      * @throws IOException
      */
-    private Task addTask(String taskTitle) throws IOException {
-        Task _addedTask = tasksController.addTask(taskTitle);
+    private Task addFloatingTask(String _taskTitle) throws IOException {
+        Task _addedTask = tasksController.addTask(_taskTitle);
         return _addedTask;
+    }
+    
+    private Task addDeadlineTask(String _taskTitle, Date _date) 
+            throws IOException {
+        Task _addedTask = tasksController.addTask(_taskTitle, _date);
+        return _addedTask;
+    }
+    
+    //Task type will be changed to an enum, eg. TaskType.FLOATING
+    //From the storage.Task object, we can retrieve the task,
+    //due date, time range, etc. (if exists)
+    /**
+     * add(Task) will perform the relevant addTask method depending on the 
+     * content of the chirptask.storage.Task object passed in.
+     * After the task has been added to the relevant Google Service, it will
+     * return the Google ID of the newly created task to update the entry 
+     * in the local storage (xml file).
+     * @param _taskToAdd
+     * @return
+     * @throws IOException
+     */
+    private String add(chirptask.storage.Task _taskToAdd)
+            throws IOException {
+        //String _type = _taskToAdd.getDescription(); //Should have _taskToAdd.getType();
+        String _type = "floating";
+        String _task = _taskToAdd.getDescription();
+        Date _date = null;
+        if (_taskToAdd.getDate() != null) {
+            _date = _taskToAdd.getDate();
+        }
+        Task _addedTask = null;
+        String _googleId = null;
+        
+        switch (_type) {
+        case "floating" :
+            _addedTask = addFloatingTask(_taskToAdd.getDescription());
+            _googleId = _addedTask.getId();
+            break;
+        case "deadline" :
+            _addedTask = addDeadlineTask(_taskToAdd.getDescription(), _taskToAdd.getDate());
+            _googleId = _addedTask.getId();
+            break;
+        case "timed" :
+            break;
+        default :
+            break;
+        }
+        
+        return _googleId;
     }
 
 }
