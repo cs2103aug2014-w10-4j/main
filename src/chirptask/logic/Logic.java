@@ -175,8 +175,15 @@ public class Logic {
 	public void showStatusToUser(StatusType type, Action action) {
 		if (type == StatusType.ERROR) {
 			// message processing and call GUI api
+			action.getCommandType();
+			action.getTask().getDescription();
+			action.getTask().getDate().toString();
+			
 		} else {
 			// message processing and call GUI api
+			action.getCommandType();
+			action.getTask().getDescription();
+			action.getTask().getDate().toString();
 		}
 	}
 
