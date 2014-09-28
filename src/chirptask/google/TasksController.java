@@ -32,7 +32,7 @@ public class TasksController {
     private final String DEFAULT_TASKLIST = "ChirpTaskv0.1";
 
     /** Global instance of the TasksId file. */
-    private static final File TASKSID_STORE_FILE = new File(
+    private static final File TASKS_ID_STORE_FILE = new File(
             "credentials/googletasks/tasklistid.txt");
 
     /**
@@ -51,7 +51,7 @@ public class TasksController {
     TasksController(HttpTransport httpTransport, JsonFactory jsonFactory,
             Credential credential, String applicationName) {
         initializeHostFiles();
-        initializeTasksController(httpTransport, jsonFactory, credential,
+        initializeTasksClient(httpTransport, jsonFactory, credential,
                 applicationName);
         initializeWorkingTaskList();
         TasksViewer.displayTitle(_workingTaskList); // For testing
@@ -59,14 +59,14 @@ public class TasksController {
 
     private void initializeHostFiles() {
         try {
-            TASKSID_STORE_FILE.getParentFile().mkdirs();
-            TASKSID_STORE_FILE.createNewFile();
+            TASKS_ID_STORE_FILE.getParentFile().mkdirs();
+            TASKS_ID_STORE_FILE.createNewFile();
         } catch (IOException e) {
 
         }
     }
 
-    private void initializeTasksController(HttpTransport httpTransport,
+    private void initializeTasksClient(HttpTransport httpTransport,
             JsonFactory jsonFactory, Credential credential,
             String applicationName) {
         _tasksClient = new com.google.api.services.tasks.Tasks.Builder(
@@ -91,7 +91,7 @@ public class TasksController {
     }
 
     private String retrieveIdFromFile() {
-        String retrievedId = IdHandler.getIdFromFile(TASKSID_STORE_FILE);
+        String retrievedId = IdHandler.getIdFromFile(TASKS_ID_STORE_FILE);
         return retrievedId;
     }
 
@@ -130,7 +130,7 @@ public class TasksController {
         TaskList newTaskList = newTaskList(DEFAULT_TASKLIST);
         String id = newTaskList.getId();
         setTaskListId(id);
-        IdHandler.saveIdToFile(TASKSID_STORE_FILE, id);
+        IdHandler.saveIdToFile(TASKS_ID_STORE_FILE, id);
         return newTaskList;
     }
 

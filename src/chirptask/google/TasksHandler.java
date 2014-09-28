@@ -16,26 +16,26 @@ import com.google.api.services.tasks.model.Tasks;
  * easier maintenance of the TasksController class.
  */
 class TasksHandler {
-	static boolean isNull(TaskList _taskList) {
-		if (_taskList == null) {
+	static boolean isNull(TaskList taskList) {
+		if (taskList == null) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	static boolean isNull(Task _task) {
-        if (_task == null) {
+	static boolean isNull(Task task) {
+        if (task == null) {
             return true;
         } else {
             return false;
         }
     }
 
-	static Task createTask(String _floatingTask) {
-		Task _newTask = new Task();
-		_newTask.setTitle(_floatingTask);
-		return _newTask;
+	static Task createTask(String floatingTask) {
+		Task newTask = new Task();
+		newTask.setTitle(floatingTask);
+		return newTask;
 	}
 
 	static Task addNotes(Task _taskToEdit, String _notes) {

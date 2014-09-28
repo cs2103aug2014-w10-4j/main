@@ -130,7 +130,7 @@ public class GoogleController {
             /**
              * Google Calendar
              */
-            // gController.showCalendars();
+            gController.showCalendars();
         } catch (IOException ioE) {
 
         }
