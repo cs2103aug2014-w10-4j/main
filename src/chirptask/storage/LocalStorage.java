@@ -119,7 +119,7 @@ public class LocalStorage implements Storage {
 	private static Node getTaskNode(Document doc, Task taskToAdd) {
 		Element node = doc.createElement("task");
 		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
-		node.setAttribute("done", String.valueOf(taskToAdd.getStatus()));
+		node.setAttribute("done", String.valueOf(taskToAdd.isDone()));
 
 		node.appendChild(getElement(doc, "description",
 				taskToAdd.getDescription()));
