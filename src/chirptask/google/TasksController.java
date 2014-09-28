@@ -39,10 +39,10 @@ public class TasksController {
      * Global instance of the Google Tasks Service Client. 
      * Tasks tasksClient; is the main object connected to the Google Tasks API.
      */
-    static com.google.api.services.tasks.Tasks tasksClient;
+    static com.google.api.services.tasks.Tasks _tasksClient;
 
     /** Global instance of the working Google TaskList */
-    private static TaskList workingTaskList;
+    private static TaskList _workingTaskList;
 
     /** Global instance of the working Google TaskList ID */
     private static String _taskListId;
@@ -54,7 +54,7 @@ public class TasksController {
         initializeTasksController(httpTransport, jsonFactory, credential,
                 applicationName);
         initializeWorkingTaskList();
-        TasksViewer.displayTitle(workingTaskList); // For testing
+        TasksViewer.displayTitle(_workingTaskList); // For testing
     }
 
     private void initializeHostFiles() {
@@ -69,21 +69,21 @@ public class TasksController {
     private void initializeTasksController(HttpTransport httpTransport,
             JsonFactory jsonFactory, Credential credential,
             String applicationName) {
-        tasksClient = new com.google.api.services.tasks.Tasks.Builder(
+        _tasksClient = new com.google.api.services.tasks.Tasks.Builder(
                 httpTransport, jsonFactory, credential).setApplicationName(
                 applicationName).build();
     }
 
     private void initializeWorkingTaskList() {
-        String _taskListId = retrieveId();
-        TaskList _currentTaskList = retrieveTaskList(_taskListId);
-        setWorkingTaskList(_currentTaskList);
+        String taskListId = retrieveId();
+        TaskList currentTaskList = retrieveTaskList(taskListId);
+        setWorkingTaskList(currentTaskList);
     }
 
     private String retrieveId() {
-        String _workingListId = retrieveIdFromFile();
-        setTaskListId(_workingListId);
-        return _workingListId;
+        String workingListId = retrieveIdFromFile();
+        setTaskListId(workingListId);
+        return workingListId;
     }
 
     String getTaskListId() {
@@ -91,30 +91,30 @@ public class TasksController {
     }
 
     private String retrieveIdFromFile() {
-        String _retrievedId = IdHandler.getIdFromFile(TASKSID_STORE_FILE);
-        return _retrievedId;
+        String retrievedId = IdHandler.getIdFromFile(TASKSID_STORE_FILE);
+        return retrievedId;
     }
 
-    private void setTaskListId(String _newId) {
-        _taskListId = _newId;
+    private void setTaskListId(String newId) {
+        _taskListId = newId;
     }
 
-    private TaskList retrieveTaskList(String _taskListId) {
-        if (_taskListId == null) { // If null ID, assume fresh install/run
-            TaskList _newTaskList = null;
+    private TaskList retrieveTaskList(String taskListId) {
+        if (taskListId == null) { // If null ID, assume fresh install/run
+            TaskList newTaskList = null;
             try {
-                _newTaskList = createTaskList();
+                newTaskList = createTaskList();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return _newTaskList;
+            return newTaskList;
         } else {
             try {
-                TaskList _foundTaskList = getTaskListById(_taskListId);
-                if (TasksHandler.isNull(_foundTaskList)) { // TaskList not found
-                    _foundTaskList = createTaskList();
+                TaskList foundTaskList = getTaskListById(taskListId);
+                if (TasksHandler.isNull(foundTaskList)) { // TaskList not found
+                    foundTaskList = createTaskList();
                 }
-                return _foundTaskList;
+                return foundTaskList;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -122,73 +122,73 @@ public class TasksController {
         return null;
     }
 
-    private void setWorkingTaskList(TaskList _taskList) {
-        workingTaskList = _taskList;
+    private void setWorkingTaskList(TaskList taskList) {
+        _workingTaskList = taskList;
     }
 
     private TaskList createTaskList() throws IOException {
-        TaskList _newTaskList = newTaskList(DEFAULT_TASKLIST);
-        String _id = _newTaskList.getId();
-        setTaskListId(_id);
-        IdHandler.saveIdToFile(TASKSID_STORE_FILE, _id);
-        return _newTaskList;
+        TaskList newTaskList = newTaskList(DEFAULT_TASKLIST);
+        String id = newTaskList.getId();
+        setTaskListId(id);
+        IdHandler.saveIdToFile(TASKSID_STORE_FILE, id);
+        return newTaskList;
     }
 
-    private TaskList newTaskList(String _listName) throws IOException {
-        TaskList _newTaskList = TasksHandler.createTaskList(_listName);
-        TaskList _insertList = TasksHandler.insertTaskList(_newTaskList);
-        return _insertList;
+    private TaskList newTaskList(String listName) throws IOException {
+        TaskList newTaskList = TasksHandler.createTaskList(listName);
+        TaskList insertList = TasksHandler.insertTaskList(newTaskList);
+        return insertList;
     }
 
-    private TaskList getTaskListById(String _taskListId) throws IOException {
-        TaskList _foundTaskList = null;
+    private TaskList getTaskListById(String taskListId) throws IOException {
+        TaskList foundTaskList = null;
 
         try {
-            _foundTaskList = TasksHandler.getTaskListFromId(_taskListId);
+            foundTaskList = TasksHandler.getTaskListFromId(taskListId);
         } catch (GoogleJsonResponseException e) {
-            _foundTaskList = createTaskList();
+            foundTaskList = createTaskList();
         }
 
-        return _foundTaskList;
+        return foundTaskList;
     }
 
-    void showTask(String _id) throws IOException {
-        Task _result = TasksHandler.getTaskFromId(_taskListId, _id);
-        TasksViewer.display(_result);
+    void showTask(String id) throws IOException {
+        Task result = TasksHandler.getTaskFromId(_taskListId, id);
+        TasksViewer.display(result);
     }
 
-    public Task addTask(String _taskTitle) throws IOException {
-        Task _newTask = TasksHandler.createTask(_taskTitle);
-        Task _addedTask = insertTask(_newTask);
-        return _addedTask;
+    public Task addTask(String taskTitle) throws IOException {
+        Task newTask = TasksHandler.createTask(taskTitle);
+        Task addedTask = insertTask(newTask);
+        return addedTask;
     }
 
-    public Task addTask(String _taskTitle, Date _dueDate)
+    public Task addTask(String taskTitle, Date dueDate)
             throws IOException {
-        Task _newTask = TasksHandler.createTask(_taskTitle);
-        DateTime _dueDateTime = DateTimeHandler.getDateTime(_dueDate);
-        _newTask = TasksHandler.addDueDate(_newTask, _dueDateTime);
-        Task _addedTask = insertTask(_newTask);
-        return _addedTask;
+        Task newTask = TasksHandler.createTask(taskTitle);
+        DateTime dueDateTime = DateTimeHandler.getDateTime(dueDate);
+        newTask = TasksHandler.addDueDate(newTask, dueDateTime);
+        Task addedTask = insertTask(newTask);
+        return addedTask;
     }
 
-    public Task addTask(String _taskTitle, String _notes, Date _dueDate)
+    public Task addTask(String taskTitle, String notes, Date dueDate)
             throws IOException {
-        Task _newTask = TasksHandler.createTask(_taskTitle);
-        _newTask = TasksHandler.addNotes(_newTask, _notes);
-        DateTime _dueDateTime = DateTimeHandler.getDateTime(_dueDate);
-        _newTask = TasksHandler.addDueDate(_newTask, _dueDateTime);
-        Task _addedTask = insertTask(_newTask);
-        return _addedTask;
+        Task newTask = TasksHandler.createTask(taskTitle);
+        newTask = TasksHandler.addNotes(newTask, notes);
+        DateTime dueDateTime = DateTimeHandler.getDateTime(dueDate);
+        newTask = TasksHandler.addDueDate(newTask, dueDateTime);
+        Task addedTask = insertTask(newTask);
+        return addedTask;
     }
 
-    private Task insertTask(Task _task) throws IOException {
-        Task _result = TasksHandler.insertTaskToList(_taskListId, _task);
-        return _result;
+    private Task insertTask(Task task) throws IOException {
+        Task result = TasksHandler.insertTaskToList(_taskListId, task);
+        return result;
     }
 
-    public void deleteTask(String _taskId) throws IOException {
-        TasksHandler.deleteTaskWithId(_taskListId, _taskId);
+    public void deleteTask(String taskId) throws IOException {
+        TasksHandler.deleteTaskWithId(_taskListId, taskId);
     }
 
     public void showTasks() throws IOException {
@@ -209,10 +209,10 @@ public class TasksController {
         TasksViewer.display(tasks);
     }
 
-    public Task updateTask(Task _updatedTask) throws IOException {
-        _updatedTask = TasksHandler.updateTask(_taskListId,
-                _updatedTask.getId(), _updatedTask);
-        return _updatedTask;
+    public Task updateTask(Task updatedTask) throws IOException {
+        updatedTask = TasksHandler.updateTask(_taskListId,
+                updatedTask.getId(), updatedTask);
+        return updatedTask;
     }
 
 }

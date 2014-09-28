@@ -20,25 +20,25 @@ import java.io.IOException;
  */
 class IdHandler {
 
-	static String getIdFromFile(File _idFile) {
-		String _id = null;
+	static String getIdFromFile(File idFile) {
+		String id = null;
 
 		try (BufferedReader idFileReader = new BufferedReader(new FileReader(
-				_idFile))) {
-			_id = idFileReader.readLine();
+				idFile))) {
+			id = idFileReader.readLine();
 		} catch (FileNotFoundException fileNotFoundError) {
 
 		} catch (IOException accessFileError) {
 
 		}
 
-		return _id;
+		return id;
 	}
 
-	static void saveIdToFile(File _idFile, String _id) {
+	static void saveIdToFile(File idFile, String id) {
 		try (BufferedWriter idFileWriter = new BufferedWriter(new FileWriter(
-				_idFile))) {
-			idFileWriter.write(_id);
+				idFile))) {
+			idFileWriter.write(id);
 		} catch (FileNotFoundException fileNotFoundError) {
 
 		} catch (IOException accessFileError) {

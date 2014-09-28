@@ -31,25 +31,25 @@ public class GoogleAuthorizer {
 
     /** Authorizes the installed application to access user's protected data. */
     static Credential authorize() throws Exception {
-        List<String> _googleScopes = new ArrayList<String>();
+        List<String> googleScopes = new ArrayList<String>();
 
-        String _chirpUser = "ChirpUser";
+        String chirpUser = "ChirpUser";
 
-        FileDataStoreFactory _dataStoreFactory = GoogleController.dataStoreFactory;
-        HttpTransport _httpTransport = GoogleController.httpTransport;
-        JsonFactory _jsonFactory = GoogleController.JSON_FACTORY;
+        FileDataStoreFactory dataStoreFactory = GoogleController._dataStoreFactory;
+        HttpTransport httpTransport = GoogleController._httpTransport;
+        JsonFactory jsonFactory = GoogleController.JSON_FACTORY;
 
         // set up FileInputStream for GoogleClientSecrets.load(.., ..) method
-        FileInputStream _inputStream = new FileInputStream(
+        FileInputStream inputStream = new FileInputStream(
                 "resources/client_secrets.json");
 
         // load client secrets
-        GoogleClientSecrets _clientSecrets = GoogleClientSecrets.load(
-                _jsonFactory, new InputStreamReader(_inputStream));
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
+                jsonFactory, new InputStreamReader(inputStream));
 
         // exit if client secrets is default / error
-        if (_clientSecrets.getDetails().getClientId().startsWith("Enter")
-                || _clientSecrets.getDetails().getClientSecret()
+        if (clientSecrets.getDetails().getClientId().startsWith("Enter")
+                || clientSecrets.getDetails().getClientSecret()
                         .startsWith("Enter ")) {
             System.out.println("Enter Client ID and Secret from "
                     + "https://code.google.com/apis/console/?api=calendar "
@@ -58,16 +58,16 @@ public class GoogleAuthorizer {
         }
 
         // set up scopes for Google Calendar and Google Tasks
-        _googleScopes.add(CalendarScopes.CALENDAR);
-        _googleScopes.add(TasksScopes.TASKS);
+        googleScopes.add(CalendarScopes.CALENDAR);
+        googleScopes.add(TasksScopes.TASKS);
 
         // set up authorization code flow
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                _httpTransport, _jsonFactory, _clientSecrets, _googleScopes)
-                .setDataStoreFactory(_dataStoreFactory).build();
+                httpTransport, jsonFactory, clientSecrets, googleScopes)
+                .setDataStoreFactory(dataStoreFactory).build();
 
         // authorize
         return new AuthorizationCodeInstalledApp(flow,
-                new LocalServerReceiver()).authorize(_chirpUser);
+                new LocalServerReceiver()).authorize(chirpUser);
     }
 }

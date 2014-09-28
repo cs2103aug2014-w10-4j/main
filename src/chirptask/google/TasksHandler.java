@@ -60,7 +60,7 @@ class TasksHandler {
 	}
 
 	static void clearCompletedTasks(String _taskListId) throws IOException {
-		TasksController.tasksClient.tasks().clear(_taskListId).execute();
+		TasksController._tasksClient.tasks().clear(_taskListId).execute();
 	}
 
 	static TaskList createTaskList(String listName) {
@@ -71,57 +71,57 @@ class TasksHandler {
 
 	static void deleteTaskWithId(String _taskListId, String _taskId)
 			throws IOException {
-		TasksController.tasksClient.tasks().delete(_taskListId, _taskId)
+		TasksController._tasksClient.tasks().delete(_taskListId, _taskId)
 				.execute();
 	}
 
 	static Task getTaskFromId(String _taskListId, String _id)
 			throws IOException {
-		Task _retrieveTask = TasksController.tasksClient.tasks()
+		Task _retrieveTask = TasksController._tasksClient.tasks()
 				.get(_taskListId, _id).execute();
 		return _retrieveTask;
 	}
 
 	static Tasks getTasksFromId(String _taskListId) throws IOException {
-		Tasks _retrieveTasks = TasksController.tasksClient.tasks()
+		Tasks _retrieveTasks = TasksController._tasksClient.tasks()
 				.list(_taskListId).execute();
 		return _retrieveTasks;
 	}
 
 	static Tasks getHiddenTasks(String _taskListId) throws IOException {
-		Tasks _retrieveTasks = TasksController.tasksClient.tasks()
+		Tasks _retrieveTasks = TasksController._tasksClient.tasks()
 				.list(_taskListId).set("showHidden", true).execute();
 		return _retrieveTasks;
 	}
 
 	static Tasks getUndoneTasks(String _taskListId) throws IOException {
-		Tasks _retrieveTasks = TasksController.tasksClient.tasks()
+		Tasks _retrieveTasks = TasksController._tasksClient.tasks()
 				.list(_taskListId).set("showCompleted", false).execute();
 		return _retrieveTasks;
 	}
 
 	static TaskList getTaskListFromId(String _taskListId) throws IOException {
-		TaskList _retrieveTaskList = TasksController.tasksClient.tasklists()
+		TaskList _retrieveTaskList = TasksController._tasksClient.tasklists()
 				.get(_taskListId).execute();
 		return _retrieveTaskList;
 	}
 
 	static TaskList insertTaskList(TaskList _newTaskList) throws IOException {
-		TaskList _insertList = TasksController.tasksClient.tasklists()
+		TaskList _insertList = TasksController._tasksClient.tasklists()
 				.insert(_newTaskList).execute();
 		return _insertList;
 	}
 
 	static Task insertTaskToList(String _taskListId, Task _taskToInsert)
 			throws IOException {
-		Task _insertTask = TasksController.tasksClient.tasks()
+		Task _insertTask = TasksController._tasksClient.tasks()
 				.insert(_taskListId, _taskToInsert).execute();
 		return _insertTask;
 	}
 
 	static Task updateTask(String _taskListId, String _taskId, Task _updatedTask)
 			throws IOException {
-		_updatedTask = TasksController.tasksClient.tasks()
+		_updatedTask = TasksController._tasksClient.tasks()
 				.update(_taskListId, _taskId, _updatedTask).execute();
 		return _updatedTask;
 	}

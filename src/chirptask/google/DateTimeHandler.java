@@ -20,52 +20,52 @@ public class DateTimeHandler {
 	static final SimpleDateFormat FORMAT_DATE = new SimpleDateFormat(
 			DATE_FORMAT);
 
-	static Date getDateFromInput(String _input) {
-		Date _newDate = null;
-		if (_input == null) {
-			_input = DEFAULT_DATE;
+	static Date getDateFromInput(String input) {
+		Date newDate = null;
+		if (input == null) {
+			input = DEFAULT_DATE;
 		}
 		try {
-			_newDate = FORMAT_DATE.parse(_input);
+			newDate = FORMAT_DATE.parse(input);
 		} catch (ParseException parseError) {
-			_newDate = getDateFromToday();
+			newDate = getDateFromToday();
 		}
-		return _newDate;
+		return newDate;
 	}
 
 	static DateTime getDateTime() {
-		Date _currentDate = getDateFromToday();
-		TimeZone _hostTimeZone = getTimeZoneFromHost();
-		DateTime _newDateTime = newDateTime(_currentDate, _hostTimeZone);
-		return _newDateTime;
+		Date currentDate = getDateFromToday();
+		TimeZone hostTimeZone = getTimeZoneFromHost();
+		DateTime newDateTime = newDateTime(currentDate, hostTimeZone);
+		return newDateTime;
 	}
 
 	static Date getDateFromToday() {
-		Date _newDate = new Date();
-		return _newDate;
+		Date newDate = new Date();
+		return newDate;
 	}
 
 	static TimeZone getTimeZoneFromHost() {
-		TimeZone _hostTimeZone = TimeZone.getDefault();
-		return _hostTimeZone;
+		TimeZone hostTimeZone = TimeZone.getDefault();
+		return hostTimeZone;
 	}
 
-	static DateTime newDateTime(Date _date, TimeZone _timeZone) {
-		DateTime _newDateTime = new DateTime(_date, _timeZone);
-		return _newDateTime;
+	static DateTime newDateTime(Date date, TimeZone timeZone) {
+		DateTime newDateTime = new DateTime(date, timeZone);
+		return newDateTime;
 	}
 
-	static DateTime getDateTime(String _inputDate) {
-		Date _dateFromInput = getDateFromInput(_inputDate);
-		TimeZone _hostTimeZone = getTimeZoneFromHost();
-		DateTime _newDateTime = newDateTime(_dateFromInput, _hostTimeZone);
-		return _newDateTime;
+	static DateTime getDateTime(String inputDate) {
+		Date dateFromInput = getDateFromInput(inputDate);
+		TimeZone hostTimeZone = getTimeZoneFromHost();
+		DateTime newDateTime = newDateTime(dateFromInput, hostTimeZone);
+		return newDateTime;
 	}
 	
-	static DateTime getDateTime(Date _inputDate) {
-        TimeZone _hostTimeZone = getTimeZoneFromHost();
-        DateTime _newDateTime = newDateTime(_inputDate, _hostTimeZone);
-        return _newDateTime;
+	static DateTime getDateTime(Date inputDate) {
+        TimeZone hostTimeZone = getTimeZoneFromHost();
+        DateTime newDateTime = newDateTime(inputDate, hostTimeZone);
+        return newDateTime;
     }
 
 }

@@ -69,18 +69,18 @@ public class TasksViewer {
 	}
 
 	static String retrieveTaskListId(TaskList taskList) {
-		String _taskId = taskList.getId();
-		return _taskId;
+		String taskId = taskList.getId();
+		return taskId;
 	}
 
 	static String retrieveTaskListTitle(TaskList taskList) {
-		String _taskTitle = taskList.getTitle();
-		return _taskTitle;
+		String taskTitle = taskList.getTitle();
+		return taskTitle;
 	}
 
 	static DateTime retrieveLastModifiedTime(TaskList taskList) {
-		DateTime _lastModifiedTimestamp = taskList.getUpdated();
-		return _lastModifiedTimestamp;
+		DateTime lastModifiedTimestamp = taskList.getUpdated();
+		return lastModifiedTimestamp;
 	}
 
 }
