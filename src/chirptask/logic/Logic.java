@@ -12,7 +12,7 @@ import java.util.TreeMap;
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
-import chirptask.ui.*;
+import chirptask.gui.*;
 
 enum CommandType {
 	ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, LOGIN, INVALID, EXIT
@@ -26,11 +26,11 @@ public class Logic {
 	private Action _lastAction;
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
-	private GUI _gui;
+	private MainGui _gui;
 
 	public Logic() {
 		_storageHandler = new StorageHandler();
-		_gui = new GUI();
+		_gui = new MainGui();
 		// lastAction = new Action();
 		_parser = new InputParser();
 	}
