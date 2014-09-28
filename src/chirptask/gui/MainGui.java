@@ -40,7 +40,9 @@ import javafx.util.Duration;
  *
  * @author Yeo Quan Yang
  * @MatricNo A0111889W
+ * 
  */
+
 public class MainGui extends Application {
 
 	private static final String STATUS_DEFAULT = "Nothing is happening.";

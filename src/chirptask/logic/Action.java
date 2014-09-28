@@ -75,9 +75,9 @@ public class Action {
 		if (o instanceof Action) {
 			Action a = (Action) o;
 			return this.getCommandType().equals(a.getCommandType())
-					&& this.getTask() == null && a.getTask() == null || (this
-							.getTask() != null
-							&& a.getTask() != null
+					&& this.getTask() == null
+					&& a.getTask() == null
+					|| (this.getTask() != null && a.getTask() != null
 							&& this.getTask().equals(a.getTask()) && this
 							.getTask().getDescription()
 							.equals(a.getTask().getDescription()));

@@ -11,6 +11,13 @@ import java.util.Date;
 import chirptask.settings.Settings;
 import chirptask.settings.Messages;
 
+/**
+ *
+ * @author Yeo Quan Yang
+ * @MatricNo A0111889W
+ * 
+ */
+
 public class EventLogger implements Storage {
 	PrintWriter fileWriter;
 

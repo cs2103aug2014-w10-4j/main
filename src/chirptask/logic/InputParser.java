@@ -22,20 +22,20 @@ public class InputParser {
 		String parameter = getParameter();
 		switch (commandType) {
 
-		case "add":
-			return processForAdd(parameter);
-		case "edit":
-			return processForEdit(parameter);
-		case "delete":
-			return processForDelete(parameter);
-		case "done":
-			return processForDone(parameter);
-		case "undo":
-			return processNoTask(commandType);
-		case "display":
-			return processDisplay(parameter);
-		default:
-			return null;
+			case "add" :
+				return processForAdd(parameter);
+			case "edit" :
+				return processForEdit(parameter);
+			case "delete" :
+				return processForDelete(parameter);
+			case "done" :
+				return processForDone(parameter);
+			case "undo" :
+				return processNoTask(commandType);
+			case "display" :
+				return processDisplay(parameter);
+			default:
+				return null;
 		}
 	}
 
@@ -58,7 +58,6 @@ public class InputParser {
 		}
 		return actions;
 	}
-
 
 	private GroupAction processForDone(String parameter) {
 		GroupAction actions = null;
@@ -139,7 +138,7 @@ public class InputParser {
 		Action action = new Action();
 		Action negate = new Action();
 		Task toDo = new Task();
-		
+
 		int taskId = getId(parameter);
 		parameter = parameter.trim().split("\\s+", 2)[1];
 		getTaskFromString(parameter, toDo);
@@ -160,7 +159,7 @@ public class InputParser {
 		Action action = new Action();
 		Action negate = new Action();
 		Task toDo = new Task();
-		
+
 		getTaskFromString(parameter, toDo);
 		toDo.setTaskId(_idGenerator++);
 		action.setCommandType("add");
@@ -177,7 +176,7 @@ public class InputParser {
 		parameter = parameter.trim();
 		String[] taskDesc = parameter.split("@|#", 2);
 		task.setDescription(taskDesc[0]);
-		
+
 		if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
 			String[] conCat = parameter.split("(?=@|#)");
 			ArrayList<String> contexts = new ArrayList<String>();
@@ -188,7 +187,7 @@ public class InputParser {
 				}
 				if (conCat[i].contains("#") && conCat[i].length() > 1) {
 					categories.add(conCat[i].substring(1));
-				}				
+				}
 			}
 			task.setCategories(categories);
 			task.setContexts(contexts);

@@ -1,5 +1,12 @@
 package chirptask.settings;
 
+/**
+ *
+ * @author Yeo Quan Yang
+ * @MatricNo A0111889W
+ * 
+ */
+
 public class Messages {
 	public static final String LOG_MESSAGE_ADD_TASK = "%1$s: \nAdded new task on date: %2$s\nId: %3$s \t Description: %4$s.\n";
 	public static final String LOG_MESSAGE_REMOVE_TASK = "%1$s: \nRemoved task on date: %2$s\nId: %3$s \t Description: %4$s.\n";

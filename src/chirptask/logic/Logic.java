@@ -140,7 +140,8 @@ public class Logic {
 	}
 
 	/**
-	 * This will take in a filtered list and update the taskview, sort to date/time, store
+	 * This will take in a filtered list and update the taskview, sort to
+	 * date/time, store
 	 * into Arraylist of TasksByDates of arraylist of tasks
 	 * */
 	public TaskView updateTaskView(List<Task> tasks) {
@@ -170,11 +171,11 @@ public class Logic {
 		return view;
 
 	}
-	
+
 	public TaskView updateTaskView() {
 
 		// Should change .getAllTasks() to arraylist?
-	    List<Task> allTasks = _storageHandler.getAllTasks();
+		List<Task> allTasks = _storageHandler.getAllTasks();
 		Collections.sort(allTasks);
 		TreeMap<Date, TasksByDate> map = new TreeMap<Date, TasksByDate>();
 
@@ -206,7 +207,7 @@ public class Logic {
 			action.getCommandType();
 			action.getTask().getDescription();
 			action.getTask().getDate().toString();
-			
+
 		} else {
 			// message processing and call GUI api
 			action.getCommandType();

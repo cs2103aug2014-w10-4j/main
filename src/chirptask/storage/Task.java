@@ -3,7 +3,13 @@ package chirptask.storage;
 import java.util.ArrayList;
 import java.util.Date;
 
-//Super class for the various tasks: Timed Task and Deadline Task.
+/**
+ * Super class for the various tasks: Timed Task and Deadline Task.
+ * 
+ * @author Yeo Quan Yang
+ * @MatricNo A0111889W
+ * 
+ */
 
 public class Task implements Comparable<Task> {
 	private ArrayList<String> _contexts;

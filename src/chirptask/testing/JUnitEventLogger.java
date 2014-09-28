@@ -9,6 +9,13 @@ import org.junit.Test;
 
 import chirptask.storage.*;
 
+/**
+ *
+ * @author Yeo Quan Yang
+ * @MatricNo A0111889W
+ * 
+ */
+
 public class JUnitEventLogger {
 
 	@Test

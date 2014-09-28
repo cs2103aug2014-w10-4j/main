@@ -284,14 +284,15 @@ public class LocalStorage implements Storage {
 							0)));
 				} else if (typeTask.equalsIgnoreCase("Timed Task")) {
 					task = new TimedTask();
-					((TimedTask) task).setDate(new SimpleDateFormat(DATE_FORMAT)
+					((TimedTask) task)
+							.setDate(new SimpleDateFormat(DATE_FORMAT)
 									.parse(getValues("start", item).get(0)));
 					((TimedTask) task).setEndTime(new SimpleDateFormat(
 							DATE_FORMAT).parse(getValues("end", item).get(0)));
 				} else {
 					task = new Task();
 				}
-			
+
 				task.setTaskId(Integer.parseInt(item.getAttribute("TaskId")));
 				task.setDescription(getValues("description", item).get(0));
 				task.setContexts(getValues("contexts", item));
@@ -321,7 +322,7 @@ public class LocalStorage implements Storage {
 		}
 		return contents;
 	}
-	
+
 	public void addGoogleId(int taskId, String googleId) {
 		Node node = getTaskNode(taskId);
 		node.appendChild(getElement(localStorage, "googleId", googleId));

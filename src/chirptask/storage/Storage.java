@@ -2,6 +2,13 @@ package chirptask.storage;
 
 import java.util.ArrayList;
 
+/**
+ *
+ * @author Yeo Quan Yang
+ * @MatricNo A0111889W
+ * 
+ */
+
 public interface Storage {
 
 	boolean storeNewTask(Task T);
