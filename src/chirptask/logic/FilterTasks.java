@@ -11,7 +11,7 @@ import chirptask.storage.Task;
 public class FilterTasks {
 	private StorageHandler _storageHandler;
 	private static List<Task> filteredTask;
-	private static String currentFilter;
+	private static String currentFilter = "";
 
 	static void filter(Task T) {
 		filteredTask = new ArrayList<Task>();
@@ -29,7 +29,7 @@ public class FilterTasks {
 	// Add in filter time, date, task, done, undone
 	// add in checkTaskType
 	static void filter() {
-		if (currentFilter.isEmpty() || currentFilter == "") {
+		if (currentFilter.isEmpty()) {
 			filteredTask = StorageHandler.getAllTasks();
 		} else {
 			filteredTask = new ArrayList<Task>();
