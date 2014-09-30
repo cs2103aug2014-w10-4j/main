@@ -69,7 +69,6 @@ public class Logic {
 		}
 	}
 
-	
 	// Will take in Action object
 	public void executeAction(Action command) {
 		String action = command.getCommandType();
@@ -85,30 +84,31 @@ public class Logic {
 		case DELETE:
 			_storageHandler.deleteTask(task);
 			this.setLastAction(command);
-            FilterTasks.filter();
+			FilterTasks.filter();
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case DISPLAY:
+			// now can only filter string
 			FilterTasks.filter(task);
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case EDIT:
 			_storageHandler.modifyTask(task);
 			this.setLastAction(command);
-            FilterTasks.filter();
+			FilterTasks.filter();
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case UNDO:
 			// negate action and run excecuteAction again
 			executeAction(command.undo(this.getLastAction()));
-            FilterTasks.filter();
+			FilterTasks.filter();
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case DONE:
 			task.setDone(true);
 			_storageHandler.modifyTask(task);
 			this.setLastAction(command);
-            FilterTasks.filter();
+			FilterTasks.filter();
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case LOGIN:
@@ -131,6 +131,10 @@ public class Logic {
 
 	public void setLastAction(Action lastAction) {
 		this._lastAction = lastAction;
+	}
+
+	public static void main(String[] args) {
+		Logic test = new Logic();
 	}
 
 }

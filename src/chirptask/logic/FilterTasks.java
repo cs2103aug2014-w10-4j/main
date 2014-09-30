@@ -25,8 +25,8 @@ public class FilterTasks {
 		}
 		
 	}
-	//Add in filter time, date
-	
+	//Add in filter time, date, task, done, undone
+	//add in checkTaskType
 	static void filter() {
 	    filteredTask = new ArrayList<Task>();
         List<Task> allTask = StorageHandler.getAllTasks();
