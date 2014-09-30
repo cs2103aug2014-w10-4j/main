@@ -82,15 +82,16 @@ public class Logic {
 			case ADD :
 				_storageHandler.addTask(task);
 				this.setLastAction(command);
-				this.updateTaskView();
+				this.updateTaskView(FilterTasks.getFilteredList());
 				break;
 			case DELETE :
 				_storageHandler.deleteTask(task);
 				this.setLastAction(command);
-				this.updateTaskView();
+				this.updateTaskView(FilterTasks.getFilteredList());
 				break;
 			case DISPLAY :
-				updateTaskView(filterParser(task));
+				FilterTasks.filter(task);
+				this.updateTaskView(FilterTasks.getFilteredList());
 				break;
 			case EDIT :
 				_storageHandler.modifyTask(task);
@@ -117,47 +118,7 @@ public class Logic {
 		}
 	}
 
-	private List<Task> filterParser(Task task) {
-		// process the task into type of filter then filter accordingly
-		task.getDescription();
-		List<Task> allTask = this._storageHandler.getAllTasks();
-		return null;
-	}
-
-	// Filtering according to the UI tag
-	public List<Task> filter(String tag, List<Task> taskList) {
-		List<Task> filteredTask = new ArrayList<Task>();
-		// get storage
-		// filter storage
-		// Use iterator
-		for (Task task : taskList) {
-			if (task.getDescription().equalsIgnoreCase(tag)) {
-				filteredTask.add(task);
-			}
-		}
-		return filteredTask;
-	}
-
-	public void filter(Task T) {
-		List<Task> filteredTask = new ArrayList<Task>();
-
-	}
-
-	public void filter(Date date) {
-
-	}
-
-	public void filter(Date fromDate, Date toDate) {
-
-	}
-
-	public void filter(Time time) {
-
-	}
-
-	public void filter(Time fromTime, Time toTime) {
-
-	}
+	
 
 	/**
 	 * This will take in a filtered list and update the taskview, sort to
@@ -195,7 +156,7 @@ public class Logic {
 	public TaskView updateTaskView() {
 
 		// Should change .getAllTasks() to arraylist?
-		List<Task> allTasks = _storageHandler.getAllTasks();
+		List<Task> allTasks = StorageHandler.getAllTasks();
 		Collections.sort(allTasks);
 		//call filter
 		return updateTaskView(allTasks);
