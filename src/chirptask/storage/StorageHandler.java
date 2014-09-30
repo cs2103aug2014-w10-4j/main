@@ -2,12 +2,18 @@ package chirptask.storage;
 
 import java.util.List;
 
+import chirptask.google.GoogleController;
+
 public class StorageHandler {
 	private List<Storage> _listOfStorages;
 	private List<Task> _allTasks;
-
+	private GoogleController _googleController;
 	public List<Task> getAllTasks() {
 		return this._allTasks;
+	}
+	
+	public void initCloudStorage(){
+		this._googleController = new GoogleController();
 	}
 
 	public void closeStorages() {

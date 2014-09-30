@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
+import chirptask.google.GoogleController;
 import chirptask.gui.*;
 
 enum CommandType {
@@ -27,12 +29,23 @@ public class Logic {
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private MainGui _gui;
-
+	
+	
 	public Logic() {
 		_storageHandler = new StorageHandler();
 		_gui = new MainGui();
 		// lastAction = new Action();
-		_parser = new InputParser();
+		
+	}
+	
+	public void retrieveInputFromUI(String input){
+		_parser = new InputParser(input);
+		processGroupAction(_parser.getActions().getActionList());
+	}
+	public void processGroupAction(List<Action> list){
+		for(Action a : list){
+			executeAction(a);
+		}
 	}
 
 	private CommandType determineCommandType(String commandTypeString) {
@@ -56,7 +69,10 @@ public class Logic {
 			return CommandType.INVALID;
 		}
 	}
-
+	public void modifyTask(){
+		
+	}
+	
 	// Will take in Action object
 	public void executeAction(Action command) {
 		String action = command.getCommandType();
@@ -66,15 +82,18 @@ public class Logic {
 			case ADD :
 				_storageHandler.addTask(task);
 				this.setLastAction(command);
+				this.updateTaskView();
 				break;
 			case DELETE :
 				_storageHandler.deleteTask(task);
 				this.setLastAction(command);
+				this.updateTaskView();
 				break;
 			case DISPLAY :
 				updateTaskView(filterParser(task));
 				break;
 			case EDIT :
+				_storageHandler.modifyTask(task);
 				this.setLastAction(command);
 				break;
 			case UNDO :
@@ -85,6 +104,7 @@ public class Logic {
 				this.setLastAction(command);
 				break;
 			case LOGIN :
+				_storageHandler.initCloudStorage();
 				break;
 			case EXIT :
 				System.exit(0);
@@ -177,26 +197,8 @@ public class Logic {
 		// Should change .getAllTasks() to arraylist?
 		List<Task> allTasks = _storageHandler.getAllTasks();
 		Collections.sort(allTasks);
-		TreeMap<Date, TasksByDate> map = new TreeMap<Date, TasksByDate>();
-
-		for (Task task : allTasks) {
-			Date currDate = task.getDate();
-			if (map.containsKey(currDate)) {
-				map.get(currDate).addToTaskList(task);
-			} else {
-				TasksByDate dateTask = new TasksByDate();
-				dateTask.setTaskDate(currDate);
-				dateTask.addToTaskList(task);
-				map.put(dateTask.getTaskDate(), dateTask);
-			}
-		}
-
-		Iterator<Map.Entry<Date, TasksByDate>> it = map.entrySet().iterator();
-		TaskView view = new TaskView();
-		while (it.hasNext()) {
-			view.addToTaskView(it.next().getValue());
-		}
-		return view;
+		//call filter
+		return updateTaskView(allTasks);
 
 	}
 
