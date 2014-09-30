@@ -64,7 +64,7 @@ public class InputParser {
 
 	private GroupAction processForDone(String parameter) {
 		GroupAction actions = null;
-		ArrayList<Integer> list = getTaskIdFromString(parameter);
+		List<Integer> list = getTaskIdFromString(parameter);
 		if (list != null) {
 			actions = new GroupAction();
 			for (Integer i : list) {
@@ -95,7 +95,7 @@ public class InputParser {
 
 	private GroupAction processForDelete(String parameter) {
 		GroupAction actions = null;
-		ArrayList<Integer> list = getTaskIdFromString(parameter);
+		List<Integer> list = getTaskIdFromString(parameter);
 		if (list != null) {
 			actions = new GroupAction();
 			for (Integer i : list) {
@@ -117,8 +117,8 @@ public class InputParser {
 		return actions;
 	}
 
-	private ArrayList<Integer> getTaskIdFromString(String parameter) {
-		ArrayList<Integer> taskIds = new ArrayList<Integer>();
+	private List<Integer> getTaskIdFromString(String parameter) {
+		List<Integer> taskIds = new ArrayList<Integer>();
 		String[] split = parameter.trim().split("\\s+|,");
 		for (int i = 0; i < split.length; i++) {
 			if (!split[i].equals("") && split[i].contains("-")) {

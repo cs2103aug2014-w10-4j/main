@@ -82,11 +82,13 @@ public class Logic {
 		case ADD:
 			_storageHandler.addTask(task);
 			this.setLastAction(command);
+			FilterTasks.filter();
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case DELETE:
 			_storageHandler.deleteTask(task);
 			this.setLastAction(command);
+            FilterTasks.filter();
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case DISPLAY:
@@ -96,15 +98,18 @@ public class Logic {
 		case EDIT:
 			_storageHandler.modifyTask(task);
 			this.setLastAction(command);
+            FilterTasks.filter();
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case UNDO:
 			// negate action and run excecuteAction again
 			executeAction(command.undo(this.getLastAction()));
+            FilterTasks.filter();
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case DONE:
 			this.setLastAction(command);
+            FilterTasks.filter();
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case LOGIN:

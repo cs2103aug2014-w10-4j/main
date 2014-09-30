@@ -11,17 +11,30 @@ import chirptask.storage.Task;
 public class FilterTasks {
 	private StorageHandler _storageHandler;
 	private static List<Task> filteredTask;
+	private static String currentFilter;
 	
 	static void filter(Task T) {
 		filteredTask = new ArrayList<Task>();
+		currentFilter = T.getDescription();
 		List<Task> allTask = StorageHandler.getAllTasks();
 		
 		for(Task a : allTask){
-			if (a.getDescription().equalsIgnoreCase(T.getDescription())){
+			if (a.getDescription().equalsIgnoreCase(currentFilter)){
 				filteredTask.add(a);
 			}
 		}
 		
+	}
+	
+	static void filter() {
+	    filteredTask = new ArrayList<Task>();
+        List<Task> allTask = StorageHandler.getAllTasks();
+        
+        for(Task a : allTask){
+            if (a.getDescription().equalsIgnoreCase(currentFilter)){
+                filteredTask.add(a);
+            }
+        }
 	}
 
 	static List<Task> getFilteredList(){
