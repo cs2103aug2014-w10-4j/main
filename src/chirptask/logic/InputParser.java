@@ -1,13 +1,16 @@
 package chirptask.logic;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import chirptask.storage.Task;
 
 public class InputParser {
+    private static final int USER_INPUT_TO_ARRAYLIST = 1;
+    
+    private static int _idGenerator = 0;
 	private String _userInput;
 	private GroupAction _actions;
-	private static int _idGenerator = 0;
 
 	public InputParser() {
 	}
@@ -196,8 +199,23 @@ public class InputParser {
 
 	private int getId(String parameter) {
 		String id = parameter.trim().split("\\s+")[0];
-		return Integer.parseInt(id);
+		int listId = Integer.parseInt(id);
+		int taskId = getIdFromList(listId);
+		return taskId;
 	}
+	
+	private int getIdFromList(int id) {
+	    List<Task> taskList = FilterTasks.getFilteredList();
+	    Task task = taskList.get(normalizeId(id));
+	    int taskId = task.getTaskId();
+	    return taskId;
+	}
+	
+	private int normalizeId(int id) {
+	    int normalizedId = id - USER_INPUT_TO_ARRAYLIST;
+	    return normalizedId;
+	}
+	
 
 	private String getCommandTypeString() {
 		return _userInput.trim().split("\\s+")[0].toLowerCase();
