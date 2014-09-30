@@ -25,6 +25,7 @@ public class FilterTasks {
 		}
 		
 	}
+	//Add in filter time, date
 	
 	static void filter() {
 	    filteredTask = new ArrayList<Task>();

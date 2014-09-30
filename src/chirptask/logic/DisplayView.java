@@ -43,10 +43,9 @@ public class DisplayView {
 		return view;
 
 	}
-
+	//Call this at init to show all tasks.
 	static TaskView updateTaskView() {
 
-		// Should change .getAllTasks() to arraylist?
 		List<Task> allTasks = StorageHandler.getAllTasks();
 		Collections.sort(allTasks);
 		//call filter
