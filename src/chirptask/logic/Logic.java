@@ -69,10 +69,7 @@ public class Logic {
 		}
 	}
 
-	public void modifyTask(Task T) {
-		
-	}
-
+	
 	// Will take in Action object
 	public void executeAction(Action command) {
 		String action = command.getCommandType();
@@ -104,6 +101,8 @@ public class Logic {
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
 		case DONE:
+			task.setDone(true);
+			_storageHandler.modifyTask(task);
 			this.setLastAction(command);
 			DisplayView.updateTaskView(FilterTasks.getFilteredList());
 			break;
