@@ -5,11 +5,14 @@ import java.util.List;
 import chirptask.google.GoogleController;
 
 public class StorageHandler {
+    /** Global instance of ChirpTask's local copy. */
+    private static List<Task> _allTasks;
+    
 	private List<Storage> _listOfStorages;
-	private List<Task> _allTasks;
 	private GoogleController _googleController;
-	public List<Task> getAllTasks() {
-		return this._allTasks;
+	
+	public static List<Task> getAllTasks() {
+		return _allTasks;
 	}
 	
 	public void initCloudStorage(){
