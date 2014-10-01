@@ -11,9 +11,6 @@ public class InputParser {
     private static int _idGenerator = 0;
 	private String _userInput;
 	private GroupAction _actions;
-
-	public InputParser() {
-	}
 	
 	public void receiveInput(String userInput) {
         _userInput = userInput;
