@@ -87,8 +87,7 @@ public class GoogleController {
         } catch (GeneralSecurityException generalSecurityError) {
             // This error is thrown by GoogleNetHttpTransport.newTrustedTransport();
         } catch (IOException ioError) {
-           // _calendarController = null;
-           // _tasksController = null;
+            // This error can be thrown by 
         } catch (Exception anyOtherErrors) {
             anyOtherErrors.printStackTrace();
         }
@@ -247,7 +246,8 @@ public class GoogleController {
      * @return
      * @throws IOException
      */
-    private String add(chirptask.storage.Task taskToAdd) throws IOException {
+     public String add(chirptask.storage.Task taskToAdd) 
+             throws IOException, UnknownHostException {
         // String type = _taskToAdd.getDescription(); //Should have
         // taskToAdd.getType();
         String type = "floating";
