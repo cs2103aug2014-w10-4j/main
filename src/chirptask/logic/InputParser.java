@@ -14,17 +14,16 @@ public class InputParser {
 
 	public InputParser() {
 	}
-
-	public InputParser(String userInput) {
-		_userInput = userInput;
-		_actions = processCommand();
+	
+	public void receiveInput(String userInput) {
+        _userInput = userInput;
+        _actions = processCommand();
 	}
 
 	private GroupAction processCommand() {
 		String commandType = getCommandTypeString();
 		String parameter = getParameter();
 		switch (commandType) {
-
 			case "add" :
 				return processForAdd(parameter);
 			case "edit" :
@@ -37,10 +36,13 @@ public class InputParser {
 				return processNoTask(commandType);
 			case "display" :
 				return processDisplay(parameter);
+			case "login" :
+			    return processLogin();
 			default:
 				return null;
 		}
 	}
+	
 
 	private GroupAction processDisplay(String parameter) {
 		GroupAction actions = new GroupAction();
@@ -229,6 +231,16 @@ public class InputParser {
 			return null;
 		}
 	}
+	
+    private GroupAction processLogin() {
+        GroupAction actions = new GroupAction();
+        Action action = new Action();
+        action.setCommandType("login");
+        action.setTask(null);
+        action.setUndo(null);
+        actions.addAction(action);
+        return actions;
+    }
 
 	public GroupAction getActions() {
 		return _actions;

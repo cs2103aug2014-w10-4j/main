@@ -20,6 +20,7 @@ public class StorageHandler {
 	
 	private void initStorages() {
 	    createStoragesList();
+	    addLocalList();
 	    addLocalStorage();
 	    addEventStorage();
 	}
@@ -32,6 +33,9 @@ public class StorageHandler {
         _listOfStorages = new ArrayList<Storage>();
 	}
 	
+	private void addLocalList() {
+	    _allTasks = new ArrayList<Task>();
+	}
 	private void addLocalStorage() {
         localStorage = new LocalStorage();
         _listOfStorages.add(localStorage);

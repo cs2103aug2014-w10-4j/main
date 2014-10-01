@@ -1,5 +1,8 @@
 package chirptask.logic;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +11,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+
+
+
+
 
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
@@ -24,20 +32,71 @@ enum StatusType {
 }
 
 public class Logic {
+    private static final String MESSAGE_NEW_COMMAND = "command: ";
+    private static final int ERROR_OPENING_STREAM = 57;
+    
 	private Action _lastAction;
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private MainGui _gui;
 
+	//For working ChirpTask 
+    private BufferedReader commandBufferReader = new BufferedReader(
+            new InputStreamReader(System.in));
+    
 	public Logic() {
 		_storageHandler = new StorageHandler();
-		_gui = new MainGui();
+		_parser = new InputParser();
+		runUntilExitCommand(); //Temporary CLI code before full integration with GUI
+		//_gui = new MainGui();
 		// lastAction = new Action();
 
 	}
+	
+	/** 
+	 * Temporary CLI code before full integration with GUI
+	 */
+	private void runUntilExitCommand() {
+        while (true) {
+            issueNewCommandStatement();
+            String userInput = waitForUserCommand();
+            retrieveInputFromUI(userInput);
+        }
+    }
+
+    private void issueNewCommandStatement() {
+        displayToUser(MESSAGE_NEW_COMMAND);
+    }
+
+    private String waitForUserCommand() {
+        String userCommand = getUserCommand();
+        return userCommand;
+    }
+
+    private void displayToUser(String messageToDisplay) {
+        System.out.print(messageToDisplay);
+    }
+
+    private String getUserCommand() {
+        try {
+            String userInputCommand = commandBufferReader.readLine();
+            return userInputCommand;
+        } catch (IOException ioAccessError) {
+            exitChirpTask(ERROR_OPENING_STREAM);
+        }
+        return "INVALID";
+    }
+    /** 
+     * End temporary code
+     */
+    
+    private void exitChirpTask(int typeOfExit) {
+        System.exit(typeOfExit);
+    }
+
 
 	public void retrieveInputFromUI(String input) {
-		_parser = new InputParser(input);
+	    _parser.receiveInput(input);
 		processGroupAction(_parser.getActions().getActionList());
 	}
 
