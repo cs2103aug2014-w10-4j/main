@@ -47,7 +47,7 @@ public class Logic {
 	public Logic() {
 		_storageHandler = new StorageHandler();
 		_parser = new InputParser();
-		runUntilExitCommand(); //Temporary CLI code before full integration with GUI
+		//runUntilExitCommand(); //Temporary CLI code before full integration with GUI
 		//_gui = new MainGui();
 		// lastAction = new Action();
 

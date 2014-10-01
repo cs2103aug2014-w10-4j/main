@@ -6,13 +6,10 @@ import java.util.List;
 
 /**
  * Super class for the various tasks: Timed Task and Deadline Task.
- * 
- * @author Yeo Quan Yang
- * @MatricNo A0111889W
- * 
  */
 
 public class Task implements Comparable<Task> {
+    //@author A0111889W
 	private List<String> _contexts;
 	private List<String> _categories;
 	private int _taskId;

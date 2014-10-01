@@ -54,13 +54,13 @@ public class StorageHandler {
 	public static List<Task> getAllTasks() {
 		return _allTasks;
 	}
-
+	//@author A0111889W
 	public void closeStorages() {
 		for (Storage individualStorage : _listOfStorages) {
 			individualStorage.close();
 		}
 	}
-
+	//@author A0111889W
 	public void modifyTask(Task modifiedTask) {
 		if (_allTasks.contains(modifiedTask)) {
 			int indexOfTask = _allTasks.indexOf(modifiedTask);
@@ -72,14 +72,14 @@ public class StorageHandler {
 			individualStorage.modifyTask(modifiedTask);
 		}
 	}
-
+	//@author A0111889W
 	public void addTask(Task addedTask) {
 		_allTasks.add(addedTask);
 		for (Storage individualStorage : _listOfStorages) {
 			individualStorage.storeNewTask(addedTask);
 		}
 	}
-
+	//@author A0111889W
 	public void deleteTask(Task deletedTask) {
 		_allTasks.remove(deletedTask);
 		for (Storage individualStorage : _listOfStorages) {
