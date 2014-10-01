@@ -14,7 +14,10 @@ public class InputParser {
 
 	public InputParser() {
 	}
-	
+	public InputParser(String userInput) {
+		_userInput = userInput;
+		_actions = processCommand();
+	}
 	public void receiveInput(String userInput) {
         _userInput = userInput;
         _actions = processCommand();
