@@ -1,14 +1,7 @@
 package chirptask.storage;
 
 import java.util.ArrayList;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> FETCH_HEAD
 import java.util.List;
-import java.util.Iterator;
->>>>>>> FETCH_HEAD
 
 public class TaskList {
 
