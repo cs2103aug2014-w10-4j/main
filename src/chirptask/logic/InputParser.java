@@ -14,12 +14,18 @@ public class InputParser {
 
 	public InputParser() {
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> FETCH_HEAD
 	public InputParser(String userInput) {
 		_userInput = userInput;
 		_actions = processCommand();
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> FETCH_HEAD
 	public void receiveInput(String userInput) {
 		_userInput = userInput;
 		_actions = processCommand();
