@@ -3,3 +3,4 @@
 /credentials/googletasks/*
 /credentials/googlecalendar/*
 eventlogs.txt
+local.xml
