@@ -28,6 +28,7 @@ import com.google.api.services.tasks.TasksScopes;
  * The current scopes to be granted are: 1) Google Calendar 2) Google Tasks
  */
 public class GoogleAuthorizer {
+    private static final int EXIT_ERROR = 1;
 
     /** Authorizes the installed application to access user's protected data. */
     static Credential authorize() throws Exception {
@@ -54,7 +55,7 @@ public class GoogleAuthorizer {
             System.out.println("Enter Client ID and Secret from "
                     + "https://code.google.com/apis/console/?api=calendar "
                     + "into " + "resources/client_secrets.json");
-            System.exit(1);
+            System.exit(EXIT_ERROR);
         }
 
         // set up scopes for Google Calendar and Google Tasks
@@ -66,6 +67,8 @@ public class GoogleAuthorizer {
                 httpTransport, jsonFactory, clientSecrets, googleScopes)
                 .setDataStoreFactory(dataStoreFactory).build();
 
+        inputStream.close();
+        
         // authorize
         return new AuthorizationCodeInstalledApp(flow,
                 new LocalServerReceiver()).authorize(chirpUser);

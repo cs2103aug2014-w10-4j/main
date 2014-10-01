@@ -1,6 +1,6 @@
 package chirptask.storage;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -20,7 +20,7 @@ public interface Storage {
 	Task getTask(int taskId);
 
 	// Task array or other data structure(?)
-	ArrayList<Task> getAllTasks();
+	List<Task> getAllTasks();
 
 	void close();
 

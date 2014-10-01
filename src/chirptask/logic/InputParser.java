@@ -1,13 +1,16 @@
 package chirptask.logic;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import chirptask.storage.Task;
 
 public class InputParser {
+    private static final int USER_INPUT_TO_ARRAYLIST = 1;
+    
+    private static int _idGenerator = 0;
 	private String _userInput;
 	private GroupAction _actions;
-	private static int _idGenerator = 0;
 
 	public InputParser() {
 	}
@@ -61,7 +64,7 @@ public class InputParser {
 
 	private GroupAction processForDone(String parameter) {
 		GroupAction actions = null;
-		ArrayList<Integer> list = getTaskIdFromString(parameter);
+		List<Integer> list = getTaskIdFromString(parameter);
 		if (list != null) {
 			actions = new GroupAction();
 			for (Integer i : list) {
@@ -92,7 +95,7 @@ public class InputParser {
 
 	private GroupAction processForDelete(String parameter) {
 		GroupAction actions = null;
-		ArrayList<Integer> list = getTaskIdFromString(parameter);
+		List<Integer> list = getTaskIdFromString(parameter);
 		if (list != null) {
 			actions = new GroupAction();
 			for (Integer i : list) {
@@ -114,8 +117,8 @@ public class InputParser {
 		return actions;
 	}
 
-	private ArrayList<Integer> getTaskIdFromString(String parameter) {
-		ArrayList<Integer> taskIds = new ArrayList<Integer>();
+	private List<Integer> getTaskIdFromString(String parameter) {
+		List<Integer> taskIds = new ArrayList<Integer>();
 		String[] split = parameter.trim().split("\\s+|,");
 		for (int i = 0; i < split.length; i++) {
 			if (!split[i].equals("") && split[i].contains("-")) {
@@ -196,8 +199,23 @@ public class InputParser {
 
 	private int getId(String parameter) {
 		String id = parameter.trim().split("\\s+")[0];
-		return Integer.parseInt(id);
+		int listId = Integer.parseInt(id);
+		int taskId = getIdFromList(listId);
+		return taskId;
 	}
+	
+	private int getIdFromList(int id) {
+	    List<Task> taskList = FilterTasks.getFilteredList();
+	    Task task = taskList.get(normalizeId(id));
+	    int taskId = task.getTaskId();
+	    return taskId;
+	}
+	
+	private int normalizeId(int id) {
+	    int normalizedId = id - USER_INPUT_TO_ARRAYLIST;
+	    return normalizedId;
+	}
+	
 
 	private String getCommandTypeString() {
 		return _userInput.trim().split("\\s+")[0].toLowerCase();

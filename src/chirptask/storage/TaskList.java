@@ -1,25 +1,29 @@
 package chirptask.storage;
 
 import java.util.ArrayList;
+<<<<<<< HEAD
+=======
+import java.util.List;
 import java.util.Iterator;
+>>>>>>> FETCH_HEAD
 
 public class TaskList {
 
-	ArrayList<Task> _taskList;
+	List<Task> _taskList;
 
 	public TaskList() {
 		_taskList = new ArrayList<Task>();
 	}
 
-	public TaskList(ArrayList<Task> list) {
+	public TaskList(List<Task> list) {
 		_taskList = list;
 	}
 
-	public ArrayList<Task> getTaskList() {
+	public List<Task> getTaskList() {
 		return _taskList;
 	}
 
-	public void setTaskList(ArrayList<Task> list) {
+	public void setTaskList(List<Task> list) {
 		_taskList = list;
 	}
 

@@ -2,6 +2,7 @@ package chirptask.storage;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Super class for the various tasks: Timed Task and Deadline Task.
@@ -12,8 +13,8 @@ import java.util.Date;
  */
 
 public class Task implements Comparable<Task> {
-	private ArrayList<String> _contexts;
-	private ArrayList<String> _categories;
+	private List<String> _contexts;
+	private List<String> _categories;
 	private int _taskId;
 	private String _description;
 	private boolean _isDone = false;
@@ -82,7 +83,7 @@ public class Task implements Comparable<Task> {
 		return today;
 	}
 
-	public ArrayList<String> getContexts() {
+	public List<String> getContexts() {
 		return _contexts;
 	}
 
@@ -90,7 +91,7 @@ public class Task implements Comparable<Task> {
 		this._contexts = _contexts;
 	}
 
-	public ArrayList<String> getCategories() {
+	public List<String> getCategories() {
 		return _categories;
 	}
 

@@ -12,6 +12,7 @@ import java.util.TreeMap;
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
+import chirptask.google.GoogleController;
 import chirptask.gui.*;
 
 enum CommandType {
@@ -32,7 +33,18 @@ public class Logic {
 		_storageHandler = new StorageHandler();
 		_gui = new MainGui();
 		// lastAction = new Action();
-		_parser = new InputParser();
+
+	}
+
+	public void retrieveInputFromUI(String input) {
+		_parser = new InputParser(input);
+		processGroupAction(_parser.getActions().getActionList());
+	}
+
+	public void processGroupAction(List<Action> list) {
+		for (Action a : list) {
+			executeAction(a);
+		}
 	}
 
 	private CommandType determineCommandType(String commandTypeString) {
@@ -63,156 +75,53 @@ public class Logic {
 		CommandType actionType = determineCommandType(action);
 		Task task = command.getTask();
 		switch (actionType) {
-			case ADD :
-				_storageHandler.addTask(task);
-				this.setLastAction(command);
-				break;
-			case DELETE :
-				_storageHandler.deleteTask(task);
-				this.setLastAction(command);
-				break;
-			case DISPLAY :
-				updateTaskView(filterParser(task));
-				break;
-			case EDIT :
-				this.setLastAction(command);
-				break;
-			case UNDO :
-				// negate action and run excecuteAction again
-				executeAction(command.undo(this.getLastAction()));
-				break;
-			case DONE :
-				this.setLastAction(command);
-				break;
-			case LOGIN :
-				break;
-			case EXIT :
-				System.exit(0);
-				break;
-			case INVALID :
-				// call print some invalid message
-				break;
-			default:
-				// throw error
-		}
-	}
-
-	private List<Task> filterParser(Task task) {
-		// process the task into type of filter then filter accordingly
-		task.getDescription();
-		List<Task> allTask = this._storageHandler.getAllTasks();
-		return null;
-	}
-
-	// Filtering according to the UI tag
-	public List<Task> filter(String tag, List<Task> taskList) {
-		List<Task> filteredTask = new ArrayList<Task>();
-		// get storage
-		// filter storage
-		// Use iterator
-		for (Task task : taskList) {
-			if (task.getDescription().equalsIgnoreCase(tag)) {
-				filteredTask.add(task);
-			}
-		}
-		return filteredTask;
-	}
-
-	public void filter(Task T) {
-		List<Task> filteredTask = new ArrayList<Task>();
-
-	}
-
-	public void filter(Date date) {
-
-	}
-
-	public void filter(Date fromDate, Date toDate) {
-
-	}
-
-	public void filter(Time time) {
-
-	}
-
-	public void filter(Time fromTime, Time toTime) {
-
-	}
-
-	/**
-	 * This will take in a filtered list and update the taskview, sort to
-	 * date/time, store
-	 * into Arraylist of TasksByDates of arraylist of tasks
-	 * */
-	public TaskView updateTaskView(List<Task> tasks) {
-
-		// Should change .getAllTasks() to arraylist?
-		// List<Task> allTasks = _storageHandler.getAllTasks();
-		Collections.sort(tasks);
-		TreeMap<Date, TasksByDate> map = new TreeMap<Date, TasksByDate>();
-
-		for (Task task : tasks) {
-			Date currDate = task.getDate();
-			if (map.containsKey(currDate)) {
-				map.get(currDate).addToTaskList(task);
-			} else {
-				TasksByDate dateTask = new TasksByDate();
-				dateTask.setTaskDate(currDate);
-				dateTask.addToTaskList(task);
-				map.put(dateTask.getTaskDate(), dateTask);
-			}
-		}
-
-		Iterator<Map.Entry<Date, TasksByDate>> it = map.entrySet().iterator();
-		TaskView view = new TaskView();
-		while (it.hasNext()) {
-			view.addToTaskView(it.next().getValue());
-		}
-		return view;
-
-	}
-
-	public TaskView updateTaskView() {
-
-		// Should change .getAllTasks() to arraylist?
-		List<Task> allTasks = _storageHandler.getAllTasks();
-		Collections.sort(allTasks);
-		TreeMap<Date, TasksByDate> map = new TreeMap<Date, TasksByDate>();
-
-		for (Task task : allTasks) {
-			Date currDate = task.getDate();
-			if (map.containsKey(currDate)) {
-				map.get(currDate).addToTaskList(task);
-			} else {
-				TasksByDate dateTask = new TasksByDate();
-				dateTask.setTaskDate(currDate);
-				dateTask.addToTaskList(task);
-				map.put(dateTask.getTaskDate(), dateTask);
-			}
-		}
-
-		Iterator<Map.Entry<Date, TasksByDate>> it = map.entrySet().iterator();
-		TaskView view = new TaskView();
-		while (it.hasNext()) {
-			view.addToTaskView(it.next().getValue());
-		}
-		return view;
-
-	}
-
-	// Take in type, action
-	public void showStatusToUser(StatusType type, Action action) {
-		if (type == StatusType.ERROR) {
-			// message processing and call GUI api
-			action.getCommandType();
-			action.getTask().getDescription();
-			action.getTask().getDate().toString();
-
-		} else {
-			// message processing and call GUI api
-			action.getCommandType();
-			action.getTask().getDescription();
-			action.getTask().getDate().toString();
+		case ADD:
+			_storageHandler.addTask(task);
+			this.setLastAction(command);
+			FilterTasks.filter();
+			DisplayView.updateTaskView(FilterTasks.getFilteredList());
+			break;
+		case DELETE:
+			_storageHandler.deleteTask(task);
+			this.setLastAction(command);
+			FilterTasks.filter();
+			DisplayView.updateTaskView(FilterTasks.getFilteredList());
+			break;
+		case DISPLAY:
+			// now can only filter string
+			FilterTasks.filter(task);
+			DisplayView.updateTaskView(FilterTasks.getFilteredList());
+			break;
+		case EDIT:
+			_storageHandler.modifyTask(task);
+			this.setLastAction(command);
+			FilterTasks.filter();
+			DisplayView.updateTaskView(FilterTasks.getFilteredList());
+			break;
+		case UNDO:
+			// negate action and run excecuteAction again
+			executeAction(command.undo(this.getLastAction()));
+			FilterTasks.filter();
+			DisplayView.updateTaskView(FilterTasks.getFilteredList());
+			break;
+		case DONE:
+			task.setDone(true);
+			_storageHandler.modifyTask(task);
+			this.setLastAction(command);
+			FilterTasks.filter();
+			DisplayView.updateTaskView(FilterTasks.getFilteredList());
+			break;
+		case LOGIN:
+			_storageHandler.initCloudStorage();
+			break;
+		case EXIT:
+			System.exit(0);
+			break;
+		case INVALID:
+			// call print some invalid message
+			break;
+		default:
+			// throw error
 		}
 	}
 
@@ -222,6 +131,10 @@ public class Logic {
 
 	public void setLastAction(Action lastAction) {
 		this._lastAction = lastAction;
+	}
+
+	public static void main(String[] args) {
+		Logic test = new Logic();
 	}
 
 }

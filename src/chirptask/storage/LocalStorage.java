@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -124,14 +125,14 @@ public class LocalStorage implements Storage {
 		node.appendChild(getElement(doc, "description",
 				taskToAdd.getDescription()));
 
-		ArrayList<String> contexts = taskToAdd.getContexts();
+		List<String> contexts = taskToAdd.getContexts();
 		if (contexts != null && !contexts.isEmpty()) {
 			for (String s : contexts) {
 				node.appendChild(getElement(doc, "contexts", s));
 			}
 		}
 
-		ArrayList<String> categories = taskToAdd.getCategories();
+		List<String> categories = taskToAdd.getCategories();
 		if (categories != null && !categories.isEmpty()) {
 			for (String s : categories) {
 				node.appendChild(getElement(doc, "categories", s));

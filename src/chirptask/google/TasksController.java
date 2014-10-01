@@ -3,6 +3,7 @@ package chirptask.google;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +55,6 @@ public class TasksController {
         initializeTasksClient(httpTransport, jsonFactory, credential,
                 applicationName);
         initializeWorkingTaskList();
-        TasksViewer.displayTitle(_workingTaskList); // For testing
     }
 
     private void initializeHostFiles() {
@@ -115,6 +115,9 @@ public class TasksController {
                     foundTaskList = createTaskList();
                 }
                 return foundTaskList;
+            } catch (UnknownHostException unknownHost) {
+                // No internet
+                return null;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -122,8 +125,17 @@ public class TasksController {
         return null;
     }
 
+    /**
+     * To avoid null pointers, if a null taskList is given, 
+     * set working TaskList to be null.
+     * @param taskList
+     */
     private void setWorkingTaskList(TaskList taskList) {
-        _workingTaskList = taskList;
+        if (taskList == null) {
+            _workingTaskList = null;
+        } else {
+            _workingTaskList = taskList;
+        }
     }
 
     private TaskList createTaskList() throws IOException {
@@ -134,7 +146,8 @@ public class TasksController {
         return newTaskList;
     }
 
-    private TaskList newTaskList(String listName) throws IOException {
+    private TaskList newTaskList(String listName) 
+            throws IOException, UnknownHostException {
         TaskList newTaskList = TasksHandler.createTaskList(listName);
         TaskList insertList = TasksHandler.insertTaskList(newTaskList);
         return insertList;
@@ -145,8 +158,10 @@ public class TasksController {
 
         try {
             foundTaskList = TasksHandler.getTaskListFromId(taskListId);
-        } catch (GoogleJsonResponseException e) {
+        } catch (GoogleJsonResponseException gJsonResponseError) {
             foundTaskList = createTaskList();
+        } catch (UnknownHostException unknownHost) {
+            foundTaskList = null;
         }
 
         return foundTaskList;
@@ -157,7 +172,7 @@ public class TasksController {
         TasksViewer.display(result);
     }
 
-    public Task addTask(String taskTitle) throws IOException {
+    public Task addTask(String taskTitle) throws IOException, UnknownHostException {
         Task newTask = TasksHandler.createTask(taskTitle);
         Task addedTask = insertTask(newTask);
         return addedTask;
@@ -182,7 +197,8 @@ public class TasksController {
         return addedTask;
     }
 
-    private Task insertTask(Task task) throws IOException {
+    private Task insertTask(Task task) 
+            throws IOException, UnknownHostException {
         Task result = TasksHandler.insertTaskToList(_taskListId, task);
         return result;
     }
