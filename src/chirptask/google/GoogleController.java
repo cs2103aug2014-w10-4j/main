@@ -3,6 +3,7 @@ package chirptask.google;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.Date;
 
@@ -39,7 +40,7 @@ public class GoogleController {
 
     private static final File DATA_STORE_DIR = new File(
             "credentials/google_oauth_credential");
-    
+
     /** Global instance of the JSON factory. */
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -51,7 +52,6 @@ public class GoogleController {
 
     /** Global instance of the HTTP transport. */
     static HttpTransport _httpTransport;
-
 
     /** Global instance of the Credential. */
     private static Credential _credential;
@@ -82,56 +82,61 @@ public class GoogleController {
             _calendarController = new CalendarController(_httpTransport,
                     JSON_FACTORY, _credential, APPLICATION_NAME);
             // initialize the Tasks Controller
-            _tasksController = new TasksController(_httpTransport, JSON_FACTORY,
-                    _credential, APPLICATION_NAME);
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            _tasksController = new TasksController(_httpTransport,
+                    JSON_FACTORY, _credential, APPLICATION_NAME);
+        } catch (GeneralSecurityException generalSecurityError) {
+            // This error is thrown by GoogleNetHttpTransport.newTrustedTransport();
+        } catch (IOException ioError) {
+           // _calendarController = null;
+           // _tasksController = null;
+        } catch (Exception anyOtherErrors) {
+            anyOtherErrors.printStackTrace();
         }
     }
 
     // test if the service is available and connected
     public static void main(String[] args) {
         GoogleController gController = new GoogleController();
-        try {
-            /**
-             * Google Tasks
-             */
-            // Test creation of task
-            Task tempTask = gController.addFloatingTask("Hello World!");
-            gController.showTask(tempTask.getId());
+        if (gController.isGoogleLoaded()) {
+            try {
+                /**
+                 * Google Tasks
+                 */
+                // Test creation of task
+                Task tempTask = gController.addFloatingTask("Hello World!");
+                gController.showTask(tempTask.getId());
 
-            // Test adding due date
-            DateTime dueDate = DateTimeHandler.getDateTime("2014-09-29");
-            tempTask = TasksHandler.addDueDate(tempTask, dueDate);
-            tempTask = _tasksController.updateTask(tempTask);
-            gController.showTask(tempTask.getId());
+                // Test adding due date
+                DateTime dueDate = DateTimeHandler.getDateTime("2014-09-29");
+                tempTask = TasksHandler.addDueDate(tempTask, dueDate);
+                tempTask = _tasksController.updateTask(tempTask);
+                gController.showTask(tempTask.getId());
 
-            // Test setting complete
-            tempTask = TasksHandler.setCompleted(tempTask);
-            tempTask = _tasksController.updateTask(tempTask);
-            gController.showTask(tempTask.getId());
+                // Test setting complete
+                tempTask = TasksHandler.setCompleted(tempTask);
+                tempTask = _tasksController.updateTask(tempTask);
+                gController.showTask(tempTask.getId());
 
-            // Show all tasks in list
-            // gController.showTasks();
+                // Show all tasks in list
+                // gController.showTasks();
 
-            // Show all hidden tasks in list
-            // gController.showHiddenTasks();
+                // Show all hidden tasks in list
+                // gController.showHiddenTasks();
 
-            // Show all undone tasks in list
-            gController.showUndoneTasks();
+                // Show all undone tasks in list
+                gController.showUndoneTasks();
 
-            // Clean up
-            gController.deleteTask(tempTask.getId());
+                // Clean up
+                gController.deleteTask(tempTask.getId());
 
-            /**
-             * Google Calendar
-             */
-            gController.showCalendars();
-        } catch (IOException ioE) {
+                /**
+                 * Google Calendar
+                 */
+                gController.showCalendars();
+            } catch (IOException ioError) {
+
+            }
+        } else { // TODO for Google not loaded
 
         }
     }
@@ -159,7 +164,7 @@ public class GoogleController {
     private void deleteTask(String taskId) {
         try {
             _tasksController.deleteTask(taskId);
-        } catch (IOException e) {
+        } catch (IOException ioError) {
 
         }
     }
@@ -173,7 +178,7 @@ public class GoogleController {
     private void showTask(String taskId) {
         try {
             _tasksController.showTask(taskId);
-        } catch (IOException e) {
+        } catch (IOException ioError) {
 
         }
     }
@@ -216,33 +221,35 @@ public class GoogleController {
      * @return the reference to the created Task object
      * @throws IOException
      */
-    private Task addFloatingTask(String taskTitle) throws IOException {
+    private Task addFloatingTask(String taskTitle) throws IOException,
+            UnknownHostException {
         Task addedTask = _tasksController.addTask(taskTitle);
         return addedTask;
     }
-    
-    private Task addDeadlineTask(String taskTitle, Date date) 
+
+    private Task addDeadlineTask(String taskTitle, Date date)
             throws IOException {
         Task addedTask = _tasksController.addTask(taskTitle, date);
         return addedTask;
     }
-    
-    //Task type will be changed to an enum, eg. TaskType.FLOATING
-    //From the storage.Task object, we can retrieve the task,
-    //due date, time range, etc. (if exists)
+
+    // Task type will be changed to an enum, eg. TaskType.FLOATING
+    // From the storage.Task object, we can retrieve the task,
+    // due date, time range, etc. (if exists)
     /**
-     * add(Task) will perform the relevant addTask method depending on the 
-     * content of the chirptask.storage.Task object passed in.
-     * After the task has been added to the relevant Google Service, it will
-     * return the Google ID of the newly created task to update the entry 
-     * in the local storage (xml file).
+     * add(Task) will perform the relevant addTask method depending on the
+     * content of the chirptask.storage.Task object passed in. After the task
+     * has been added to the relevant Google Service, it will return the Google
+     * ID of the newly created task to update the entry in the local storage
+     * (xml file).
+     * 
      * @param taskToAdd
      * @return
      * @throws IOException
      */
-    private String add(chirptask.storage.Task taskToAdd)
-            throws IOException {
-        //String type = _taskToAdd.getDescription(); //Should have taskToAdd.getType();
+    private String add(chirptask.storage.Task taskToAdd) throws IOException {
+        // String type = _taskToAdd.getDescription(); //Should have
+        // taskToAdd.getType();
         String type = "floating";
         String task = taskToAdd.getDescription();
         Date date = null;
@@ -251,23 +258,75 @@ public class GoogleController {
         }
         Task addedTask = null;
         String googleId = null;
-        
+
         switch (type) {
-        case "floating" :
+        case "floating":
             addedTask = addFloatingTask(taskToAdd.getDescription());
             googleId = addedTask.getId();
             break;
-        case "deadline" :
-            addedTask = addDeadlineTask(taskToAdd.getDescription(), taskToAdd.getDate());
+        case "deadline":
+            addedTask = addDeadlineTask(taskToAdd.getDescription(),
+                    taskToAdd.getDate());
             googleId = addedTask.getId();
             break;
-        case "timed" :
+        case "timed":
             break;
-        default :
+        default:
             break;
         }
-        
+
         return googleId;
+    }
+
+    private boolean isGoogleLoaded() {
+        boolean isLoaded = true;
+        isLoaded = isLoaded && isHttpTransportLoaded();
+        isLoaded = isLoaded && isDataStoreFactoryLoaded();
+        isLoaded = isLoaded && isCredentialLoaded();
+        isLoaded = isLoaded && isHttpTransportLoaded();
+        isLoaded = isLoaded && isCalendarLoaded();
+        isLoaded = isLoaded && isTasksLoaded();
+        return isLoaded;
+    }
+
+    private boolean isHttpTransportLoaded() {
+        if (_httpTransport != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isDataStoreFactoryLoaded() {
+        if (_dataStoreFactory != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isCredentialLoaded() {
+        if (_credential != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isCalendarLoaded() {
+        if (_calendarController != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isTasksLoaded() {
+        if (_tasksController != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

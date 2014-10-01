@@ -3,6 +3,7 @@ package chirptask.google;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
@@ -52,7 +53,7 @@ public class CalendarController {
         try {
             TIMEDTASK_CALENDAR_ID_STORE_FILE.getParentFile().mkdirs();
             TIMEDTASK_CALENDAR_ID_STORE_FILE.createNewFile();
-        } catch (IOException e) {
+        } catch (IOException ioError) {
 
         }
     }
@@ -103,9 +104,12 @@ public class CalendarController {
                     foundCalendar = createCalendar();
                 }
                 return foundCalendar;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (UnknownHostException unknownHost) {
+                // No internet
+                return null;
+            } catch (IOException ioError) {
+                ioError.printStackTrace();
+            } 
         }
         return null;
     }
