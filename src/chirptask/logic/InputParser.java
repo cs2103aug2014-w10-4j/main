@@ -246,6 +246,7 @@ public class InputParser {
         return actions;
     }
 
+
 	public GroupAction getActions() {
 		return _actions;
 	}
