@@ -90,18 +90,18 @@ public class MainGui extends Application {
         prepareScene(primaryStage, border, mainDisplay, trendingList);
         primaryStage.show();
 
-        // addCategoryIntoList("123");
-        // addContextIntoList("TEST");
-        //
-        // addNewTaskViewDate(new Date());
-        // addNewTaskViewToDate(new Date(), 0, "#123 @123 TEST", "all-day",
-        // true);
-        // addNewTaskViewToDate(new Date(), 4, "#TEST @123", "all-day", true);
-        // addNewTaskViewToDate(new Date(), 1, "TEST @123 #123",
-        // "8:00 to 10:00",
-        // true);
-        // addNewTaskViewToDate(new Date(), 2, "#TEST", "noon to 16:00", true);
-        // addNewTaskViewToDate(new Date(), 3, "@TEST", "due by 16:00", true);
+         addCategoryIntoList("123");
+         addContextIntoList("TEST");
+        
+         addNewTaskViewDate(new Date());
+         addNewTaskViewToDate(new Date(), 0, "#123 @123 TEST", "all-day",
+         true);
+         addNewTaskViewToDate(new Date(), 4, "#TEST @123", "all-day", true);
+         addNewTaskViewToDate(new Date(), 1, "TEST @123 #123",
+         "8:00 to 10:00",
+         true);
+         addNewTaskViewToDate(new Date(), 2, "#TEST", "noon to 16:00", true);
+         addNewTaskViewToDate(new Date(), 3, "@TEST", "due by 16:00", true);
 
     }
 
@@ -295,6 +295,7 @@ public class MainGui extends Application {
 
     private ScrollPane generateTaskView() {
         ScrollPane taskViewScrollPane = new ScrollPane();
+        taskViewScrollPane.setPadding(new Insets(10));
         taskViewScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         taskViewScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
@@ -353,6 +354,8 @@ public class MainGui extends Application {
         taskViewHeader.setPadding(new Insets(5, 5, 3, 5));
         taskViewHeader.setLeft(dayLabel);
         taskViewHeader.setRight(dateLabel);
+        
+        
         boolean isToday = convertDateToString(date).equals(
                 convertDateToString(new Date()));
         if (isToday) {
