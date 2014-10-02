@@ -2,26 +2,19 @@ package chirptask.storage;
 
 import java.util.List;
 
-/**
- *
- * @author Yeo Quan Yang
- * @MatricNo A0111889W
- * 
- */
-
 public interface Storage {
+    //@author A0111889W
+    boolean storeNewTask(Task T);
+    
+    Task removeTask(Task T);
 
-	boolean storeNewTask(Task T);
+    boolean modifyTask(Task T);
 
-	Task removeTask(Task T);
+    Task getTask(int taskId);
 
-	boolean modifyTask(Task T);
+    // Task array or other data structure(?)
+    List<Task> getAllTasks();
 
-	Task getTask(int taskId);
-
-	// Task array or other data structure(?)
-	List<Task> getAllTasks();
-
-	void close();
+    void close();
 
 }

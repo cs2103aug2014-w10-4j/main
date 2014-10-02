@@ -4,3 +4,4 @@
 /credentials/googlecalendar/*
 eventlogs.txt
 local.xml
+resources/client_secrets.json

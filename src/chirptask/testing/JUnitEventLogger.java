@@ -9,15 +9,8 @@ import org.junit.Test;
 
 import chirptask.storage.*;
 
-/**
- *
- * @author Yeo Quan Yang
- * @MatricNo A0111889W
- * 
- */
-
 public class JUnitEventLogger {
-
+	// @author A0111889W
 	@Test
 	public void test() throws ParseException {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);

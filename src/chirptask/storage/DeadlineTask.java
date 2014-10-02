@@ -2,14 +2,8 @@ package chirptask.storage;
 
 import java.util.Date;
 
-/**
- *
- * @author Yeo Quan Yang
- * @MatricNo A0111889W
- * 
- */
-
 public class DeadlineTask extends Task {
+    //@author A0111889W
 	Date _deadline;
 
 	public DeadlineTask() {

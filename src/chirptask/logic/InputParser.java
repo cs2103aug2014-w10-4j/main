@@ -6,15 +6,24 @@ import java.util.List;
 import chirptask.storage.Task;
 
 public class InputParser {
-    private static final int USER_INPUT_TO_ARRAYLIST = 1;
-    
-    private static int _idGenerator = 0;
+	private static final int USER_INPUT_TO_ARRAYLIST = 1;
+	private static final String COMMAND_LOGIN = "login";
+
+	private static int _idGenerator = 0;
 	private String _userInput;
 	private GroupAction _actions;
-	
+
+	public InputParser() {
+	}
+
+	public InputParser(String userInput) {
+		_userInput = userInput;
+		_actions = processCommand();
+	}
+
 	public void receiveInput(String userInput) {
-        _userInput = userInput;
-        _actions = processCommand();
+		_userInput = userInput;
+		_actions = processCommand();
 	}
 
 	private GroupAction processCommand() {
@@ -34,12 +43,11 @@ public class InputParser {
 			case "display" :
 				return processDisplay(parameter);
 			case "login" :
-			    return processLogin();
+				return processLogin();
 			default:
 				return null;
 		}
 	}
-	
 
 	private GroupAction processDisplay(String parameter) {
 		GroupAction actions = new GroupAction();
@@ -202,19 +210,18 @@ public class InputParser {
 		int taskId = getIdFromList(listId);
 		return taskId;
 	}
-	
+
 	private int getIdFromList(int id) {
-	    List<Task> taskList = FilterTasks.getFilteredList();
-	    Task task = taskList.get(normalizeId(id));
-	    int taskId = task.getTaskId();
-	    return taskId;
+		List<Task> taskList = FilterTasks.getFilteredList();
+		Task task = taskList.get(normalizeId(id));
+		int taskId = task.getTaskId();
+		return taskId;
 	}
-	
+
 	private int normalizeId(int id) {
-	    int normalizedId = id - USER_INPUT_TO_ARRAYLIST;
-	    return normalizedId;
+		int normalizedId = id - USER_INPUT_TO_ARRAYLIST;
+		return normalizedId;
 	}
-	
 
 	private String getCommandTypeString() {
 		return _userInput.trim().split("\\s+")[0].toLowerCase();
@@ -232,7 +239,7 @@ public class InputParser {
     private GroupAction processLogin() {
         GroupAction actions = new GroupAction();
         Action action = new Action();
-        action.setCommandType("login");
+        action.setCommandType(COMMAND_LOGIN);
         action.setTask(null);
         action.setUndo(null);
         actions.addAction(action);
