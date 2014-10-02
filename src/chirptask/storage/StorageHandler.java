@@ -3,8 +3,6 @@ package chirptask.storage;
 import java.util.ArrayList;
 import java.util.List;
 
-import chirptask.google.GoogleController;
-
 public class StorageHandler {
     /** Global instance of ChirpTask's local copy. */
     private static List<Task> _allTasks;

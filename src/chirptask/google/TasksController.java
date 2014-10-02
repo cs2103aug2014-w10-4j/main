@@ -4,18 +4,17 @@ package chirptask.google;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.model.CalendarList;
-import com.google.api.services.tasks.Tasks.Tasklists;
-import com.google.api.services.tasks.model.*;
+import com.google.api.services.tasks.model.Task;
+import com.google.api.services.tasks.model.Tasks;
+import com.google.api.services.tasks.model.TaskList;
+
 
 /**
  * TasksController is the main controller that interacts with Google Tasks. It

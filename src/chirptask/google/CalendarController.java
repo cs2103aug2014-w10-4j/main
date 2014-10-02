@@ -10,7 +10,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
-import com.google.api.services.tasks.model.TaskList;
 
 /**
  * CalendarController is the main controller that interacts with Google 
