@@ -45,7 +45,7 @@ public class InputParser {
 			case "login" :
 				return processLogin();
 			default:
-				return null;
+				return new GroupAction();
 		}
 	}
 
@@ -185,8 +185,9 @@ public class InputParser {
 	private void getTaskFromString(String parameter, Task task) {
 		parameter = parameter.trim();
 		String[] taskDesc = parameter.split("@|#", 2);
-		task.setDescription(taskDesc[0]);
-
+		//task.setDescription(taskDesc[0]);
+		task.setDescription(parameter);
+		
 		if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
 			String[] conCat = parameter.split("(?=@|#)");
 			ArrayList<String> contexts = new ArrayList<String>();

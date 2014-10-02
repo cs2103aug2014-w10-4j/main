@@ -7,66 +7,79 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import chirptask.gui.MainGui;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 
 public class DisplayView {
-	/**
-	 * This will take in a filtered list and update the taskview, sort to
-	 * date/time, store
-	 * into Arraylist of TasksByDates of arraylist of tasks
-	 * */
-	static TaskView updateTaskView(List<Task> tasks) {
+    /**
+     * This will take in a filtered list and update the taskview, sort to
+     * date/time, store
+     * into Arraylist of TasksByDates of arraylist of tasks
+     * 
+     * @param _gui
+     * */
+    public static void updateTaskView(List<Task> tasks, MainGui _gui) {
+        // Should change .getAllTasks() to arraylist?
+        // List<Task> allTasks = _storageHandler.getAllTasks();
+        Collections.sort(tasks);
+        TreeMap<String, TasksByDate> map = new TreeMap<String, TasksByDate>();
 
-		// Should change .getAllTasks() to arraylist?
-		// List<Task> allTasks = _storageHandler.getAllTasks();
-		Collections.sort(tasks);
-		TreeMap<Date, TasksByDate> map = new TreeMap<Date, TasksByDate>();
+        for (Task task : tasks) {
+            String currDate = MainGui.convertDateToString(task.getDate());
 
-		for (Task task : tasks) {
-			Date currDate = task.getDate();
-			if (map.containsKey(currDate)) {
-				map.get(currDate).addToTaskList(task);
-			} else {
-				TasksByDate dateTask = new TasksByDate();
-				dateTask.setTaskDate(currDate);
-				dateTask.addToTaskList(task);
-				map.put(dateTask.getTaskDate(), dateTask);
-			}
-		}
+            if (map.containsKey(currDate)) {
+                map.get(currDate).addToTaskList(task);
+            } else {
+                TasksByDate dateTask = new TasksByDate();
+                dateTask.setTaskDate(task.getDate());
+                dateTask.addToTaskList(task);
+                _gui.addNewTaskViewDate(task.getDate());
+                map.put(currDate, dateTask);
+            }
+            _gui.addNewTaskViewToDate(new Date(), task.getTaskId(),
+                    task.getDescription(), task.getDate().toString(),
+                    task.isDone());
 
-		Iterator<Map.Entry<Date, TasksByDate>> it = map.entrySet().iterator();
-		TaskView view = new TaskView();
-		while (it.hasNext()) {
-			view.addToTaskView(it.next().getValue());
-		}
-		return view;
+        }
 
-	}
-	//Call this at init to show all tasks.
-	static TaskView updateTaskView() {
+        // Iterator<Map.Entry<Date, TasksByDate>> it =
+        // map.entrySet().iterator();
+        // TaskView view = new TaskView();
+        // while (it.hasNext()) {
+        // view.addToTaskView(it.next().getValue());
+        // }
 
-		List<Task> allTasks = StorageHandler.getAllTasks();
-		Collections.sort(allTasks);
-		//call filter
-		return updateTaskView(allTasks);
+    }
 
-	}
+    // Call this at init to show all tasks.
+    public static void updateTaskView(MainGui gui) {
 
-	// Take in type, action
-	static void showStatusToUser(StatusType type, Action action) {
-		if (type == StatusType.ERROR) {
-			// message processing and call GUI api
-			action.getCommandType();
-			action.getTask().getDescription();
-			action.getTask().getDate().toString();
+        List<Task> allTasks = StorageHandler.getAllTasks();
+        if (allTasks != null) {
+            //allTasks is emptyt
+            Collections.sort(allTasks);
+            System.out.println(allTasks);
+            // call filter
+            updateTaskView(allTasks, gui);
+        }
 
-		} else {
-			// message processing and call GUI api
-			action.getCommandType();
-			action.getTask().getDescription();
-			action.getTask().getDate().toString();
-		}
-	}
-	//Add in checkTaskType
+    }
+
+    // Take in type, action
+    public static void showStatusToUser(StatusType type, Action action) {
+        if (type == StatusType.ERROR) {
+            // message processing and call GUI api
+            action.getCommandType();
+            action.getTask().getDescription();
+            action.getTask().getDate().toString();
+
+        } else {
+            // message processing and call GUI api
+            action.getCommandType();
+            action.getTask().getDescription();
+            action.getTask().getDate().toString();
+        }
+    }
+    // Add in checkTaskType
 }

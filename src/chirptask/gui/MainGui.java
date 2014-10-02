@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import chirptask.logic.DisplayView;
 import chirptask.logic.Logic;
 import chirptask.settings.Messages;
 import chirptask.settings.Settings;
@@ -66,7 +67,7 @@ public class MainGui extends Application {
     private final SortedMap<String, VBox> _taskViewDateMap = new TreeMap<>();
     private final ArrayList<Integer> _taskIndexToId = new ArrayList<>();
 
-    private final Logic logic = new Logic();
+    private Logic _logic = new Logic(this);
 
     /*
      * (non-Javadoc)
@@ -89,16 +90,18 @@ public class MainGui extends Application {
         prepareScene(primaryStage, border, mainDisplay, trendingList);
         primaryStage.show();
 
-        addCategoryIntoList("123");
-        addContextIntoList("TEST");
-
-        addNewTaskViewDate(new Date());
-        addNewTaskViewToDate(new Date(), 0, "#123 @123 TEST", "all-day", true);
-        addNewTaskViewToDate(new Date(), 4, "#TEST @123", "all-day", true);
-        addNewTaskViewToDate(new Date(), 1, "TEST @123 #123", "8:00 to 10:00",
-                true);
-        addNewTaskViewToDate(new Date(), 2, "#TEST", "noon to 16:00", true);
-        addNewTaskViewToDate(new Date(), 3, "@TEST", "due by 16:00", true);
+        // addCategoryIntoList("123");
+        // addContextIntoList("TEST");
+        //
+        // addNewTaskViewDate(new Date());
+        // addNewTaskViewToDate(new Date(), 0, "#123 @123 TEST", "all-day",
+        // true);
+        // addNewTaskViewToDate(new Date(), 4, "#TEST @123", "all-day", true);
+        // addNewTaskViewToDate(new Date(), 1, "TEST @123 #123",
+        // "8:00 to 10:00",
+        // true);
+        // addNewTaskViewToDate(new Date(), 2, "#TEST", "noon to 16:00", true);
+        // addNewTaskViewToDate(new Date(), 3, "@TEST", "due by 16:00", true);
 
     }
 
@@ -283,7 +286,7 @@ public class MainGui extends Application {
             public void handle(KeyEvent event) {
                 KeyCode keyPressed = ((KeyEvent) event).getCode();
                 if (keyPressed == KeyCode.ENTER) {
-                    logic.retrieveInputFromUI(_commandLineInterface.getText());
+                    _logic.retrieveInputFromUI(_commandLineInterface.getText());
                     _commandLineInterface.setText("");
                 }
             }
@@ -480,7 +483,7 @@ public class MainGui extends Application {
     /*
      * Move this to logic (?)
      */
-    public String convertDateToString(Date date) {
+    public static String convertDateToString(Date date) {
         String parseDateToString = date.getDate() + "/" + date.getMonth() + "/"
                 + (1900 + date.getYear());
 
@@ -490,7 +493,8 @@ public class MainGui extends Application {
     /*
      * Move to logic(?)
      */
-    public TextFlow parseDescriptionToTextFlow(String description, boolean done) {
+    public TextFlow parseDescriptionToTextFlow(String description,
+            boolean done) {
         TextFlow parsedDesc = new TextFlow();
         StringBuilder descSb = new StringBuilder(description);
         Text bufferText = new Text();
