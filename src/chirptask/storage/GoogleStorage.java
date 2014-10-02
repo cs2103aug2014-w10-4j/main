@@ -13,6 +13,8 @@ public class GoogleStorage implements Storage {
 
     public GoogleStorage() {
         _gController = new GoogleController();
+        Thread initializeGoogleController = new Thread(_gController);
+        initializeGoogleController.start();
     }
     
     @Override
@@ -55,6 +57,10 @@ public class GoogleStorage implements Storage {
     @Override
     public void close() {
 
+    }
+    
+    public static void hasBeenInitialized() {
+        StorageHandler.addGoogleStorageUponReady();
     }
 
 }

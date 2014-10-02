@@ -7,6 +7,8 @@ import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.Date;
 
+import chirptask.storage.GoogleStorage;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
@@ -35,7 +37,7 @@ import com.google.api.services.tasks.model.Task;
  * Credential.
  */
 
-public class GoogleController {
+public class GoogleController implements Runnable {
     private static final String APPLICATION_NAME = "ChirpTask-GoogleIntegration/0.1";
 
     private static final File DATA_STORE_DIR = new File(
@@ -63,7 +65,7 @@ public class GoogleController {
     private static TasksController _tasksController;
 
     public GoogleController() {
-        initializeComponents();
+        
     }
 
     /**
@@ -96,6 +98,7 @@ public class GoogleController {
     // test if the service is available and connected
     public static void main(String[] args) {
         GoogleController gController = new GoogleController();
+        new Thread(gController).start();
         if (gController.isGoogleLoaded()) {
             try {
                 /**
@@ -329,4 +332,12 @@ public class GoogleController {
         }
     }
 
+    public void run() {
+        initializeComponents();
+        if (isGoogleLoaded()) {
+            GoogleStorage.hasBeenInitialized();
+        }
+        
+    }
+    
 }

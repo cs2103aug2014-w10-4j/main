@@ -48,6 +48,9 @@ public class StorageHandler {
 	
 	private void addGoogleStorage() {
         googleStorage = new GoogleStorage();
+	}
+	
+	static void addGoogleStorageUponReady() {
         _listOfStorages.add(googleStorage);
 	}
 	
