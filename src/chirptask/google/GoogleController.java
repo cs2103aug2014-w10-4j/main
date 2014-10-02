@@ -15,8 +15,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.Lists;
-import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.tasks.model.Task;
@@ -65,7 +63,7 @@ public class GoogleController implements Runnable {
     private static TasksController _tasksController;
 
     public GoogleController() {
-        
+
     }
 
     /**
@@ -87,9 +85,10 @@ public class GoogleController implements Runnable {
             _tasksController = new TasksController(_httpTransport,
                     JSON_FACTORY, _credential, APPLICATION_NAME);
         } catch (GeneralSecurityException generalSecurityError) {
-            // This error is thrown by GoogleNetHttpTransport.newTrustedTransport();
+            // This error is thrown by
+            // GoogleNetHttpTransport.newTrustedTransport();
         } catch (IOException ioError) {
-            // This error can be thrown by 
+            // This error can be thrown by
         } catch (Exception anyOtherErrors) {
             anyOtherErrors.printStackTrace();
         }
@@ -154,7 +153,9 @@ public class GoogleController implements Runnable {
      * @throws IOException
      */
     private void showCalendars() throws IOException {
-        _calendarController.showCalendars();
+        if (isGoogleLoaded()) {
+            _calendarController.showCalendars();
+        }
     }
 
     /**
@@ -164,10 +165,12 @@ public class GoogleController implements Runnable {
      *            to be passed in, should read in from localStorage
      */
     private void deleteTask(String taskId) {
-        try {
-            _tasksController.deleteTask(taskId);
-        } catch (IOException ioError) {
+        if (isGoogleLoaded()) {
+            try {
+                _tasksController.deleteTask(taskId);
+            } catch (IOException ioError) {
 
+            }
         }
     }
 
@@ -178,10 +181,12 @@ public class GoogleController implements Runnable {
      *            to be passed in, should read in from localStorage
      */
     private void showTask(String taskId) {
-        try {
-            _tasksController.showTask(taskId);
-        } catch (IOException ioError) {
+        if (isGoogleLoaded()) {
+            try {
+                _tasksController.showTask(taskId);
+            } catch (IOException ioError) {
 
+            }
         }
     }
 
@@ -192,7 +197,9 @@ public class GoogleController implements Runnable {
      * @throws IOException
      */
     private void showTasks() throws IOException {
-        _tasksController.showTasks();
+        if (isGoogleLoaded()) {
+            _tasksController.showTasks();
+        }
     }
 
     /**
@@ -202,7 +209,9 @@ public class GoogleController implements Runnable {
      * @throws IOException
      */
     private void showHiddenTasks() throws IOException {
-        _tasksController.showHiddenTasks();
+        if (isGoogleLoaded()) {
+            _tasksController.showHiddenTasks();
+        }
     }
 
     /**
@@ -212,7 +221,9 @@ public class GoogleController implements Runnable {
      * @throws IOException
      */
     private void showUndoneTasks() throws IOException {
-        _tasksController.showUndoneTasks();
+        if (isGoogleLoaded()) {
+            _tasksController.showUndoneTasks();
+        }
     }
 
     /**
@@ -249,8 +260,8 @@ public class GoogleController implements Runnable {
      * @return
      * @throws IOException
      */
-     public String add(chirptask.storage.Task taskToAdd) 
-             throws IOException, UnknownHostException {
+    public String add(chirptask.storage.Task taskToAdd) throws IOException,
+            UnknownHostException {
         // String type = _taskToAdd.getDescription(); //Should have
         // taskToAdd.getType();
         String type = "floating";
@@ -262,22 +273,22 @@ public class GoogleController implements Runnable {
         Task addedTask = null;
         String googleId = null;
 
-        switch (type) {
-        case "floating":
-            addedTask = addFloatingTask(taskToAdd.getDescription());
-            googleId = addedTask.getId();
-            break;
-        case "deadline":
-            addedTask = addDeadlineTask(taskToAdd.getDescription(),
-                    taskToAdd.getDate());
-            googleId = addedTask.getId();
-            break;
-        case "timed":
-            break;
-        default:
-            break;
+        if (isGoogleLoaded()) {
+            switch (type) {
+            case "floating":
+                addedTask = addFloatingTask(task);
+                googleId = addedTask.getId();
+                break;
+            case "deadline":
+                addedTask = addDeadlineTask(task, date);
+                googleId = addedTask.getId();
+                break;
+            case "timed":
+                break;
+            default:
+                break;
+            }
         }
-
         return googleId;
     }
 
@@ -337,7 +348,7 @@ public class GoogleController implements Runnable {
         if (isGoogleLoaded()) {
             GoogleStorage.hasBeenInitialized();
         }
-        
+
     }
-    
+
 }
