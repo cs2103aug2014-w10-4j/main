@@ -14,6 +14,7 @@ public class Task implements Comparable<Task> {
 	private List<String> _categories;
 	private int _taskId;
 	private String _description;
+	private String _type;
 	private boolean _isDone = false;
 
 	public Task() {
@@ -73,6 +74,14 @@ public class Task implements Comparable<Task> {
 
 	public void setDescription(String description) {
 		_description = description;
+	}
+	
+	public String getType() {
+	    return _type;
+	}
+	
+	public void setType(String type) {
+	    _type = type;
 	}
 
 	public Date getDate() {
