@@ -33,7 +33,7 @@ public class TasksController {
 
     /** Global instance of the TasksId file. */
     private static final File TASKS_ID_STORE_FILE = new File(
-            "credentials/googletasks/tasklistid.txt");
+            "credentials/googletasks/TaskListID.txt");
 
     /**
      * Global instance of the Google Tasks Service Client. 

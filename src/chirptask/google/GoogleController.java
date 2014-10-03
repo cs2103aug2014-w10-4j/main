@@ -273,7 +273,7 @@ public class GoogleController implements Runnable {
         }
     }
 
-    protected static boolean isGoogleLoaded() {
+    public static boolean isGoogleLoaded() {
         boolean isLoaded = true;
         isLoaded = isLoaded && isHttpTransportLoaded();
         isLoaded = isLoaded && isDataStoreFactoryLoaded();

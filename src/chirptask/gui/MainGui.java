@@ -90,7 +90,7 @@ public class MainGui extends Application {
         prepareScene(primaryStage, border, mainDisplay, trendingList);
         primaryStage.show();
 
-         addCategoryIntoList("123");
+        /* addCategoryIntoList("123");
          addContextIntoList("TEST");
         
          addNewTaskViewDate(new Date());
@@ -101,7 +101,7 @@ public class MainGui extends Application {
          "8:00 to 10:00",
          true);
          addNewTaskViewToDate(new Date(), 2, "#TEST", "noon to 16:00", true);
-         addNewTaskViewToDate(new Date(), 3, "@TEST", "due by 16:00", true);
+         addNewTaskViewToDate(new Date(), 3, "@TEST", "due by 16:00", true);*/
 
     }
 

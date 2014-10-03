@@ -171,7 +171,8 @@ public class InputParser {
 		Task toDo = new Task();
 
 		getTaskFromString(parameter, toDo);
-		toDo.setTaskId(_idGenerator++);
+		toDo.setType("floating"); //Needs attention. Input Parser please handle
+		toDo.setTaskId(_idGenerator++); //Needs attention.
 		action.setCommandType("add");
 		action.setTask(toDo);
 		negate.setCommandType("delete");
