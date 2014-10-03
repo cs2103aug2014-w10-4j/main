@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.Date;
+import java.util.concurrent.Callable;
 
 import chirptask.storage.GoogleStorage;
 
@@ -40,6 +41,8 @@ public class GoogleController implements Runnable {
 
     private static final File DATA_STORE_DIR = new File(
             "credentials/google_oauth_credential");
+    
+    private static final ConcurrentController CONCURRENT = new ConcurrentController();
 
     /** Global instance of the JSON factory. */
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -98,13 +101,13 @@ public class GoogleController implements Runnable {
     public static void main(String[] args) {
         GoogleController gController = new GoogleController();
         new Thread(gController).start();
-        if (gController.isGoogleLoaded()) {
+        if (isGoogleLoaded()) {
             try {
                 /**
                  * Google Tasks
                  */
                 // Test creation of task
-                Task tempTask = gController.addFloatingTask("Hello World!");
+                Task tempTask = addFloatingTask("Hello World!");
                 gController.showTask(tempTask.getId());
 
                 // Test adding due date
@@ -234,13 +237,13 @@ public class GoogleController implements Runnable {
      * @return the reference to the created Task object
      * @throws IOException
      */
-    private Task addFloatingTask(String taskTitle) throws IOException,
+    protected static Task addFloatingTask(String taskTitle) throws IOException,
             UnknownHostException {
         Task addedTask = _tasksController.addTask(taskTitle);
         return addedTask;
     }
 
-    private Task addDeadlineTask(String taskTitle, Date date)
+    protected static Task addDeadlineTask(String taskTitle, Date date)
             throws IOException {
         Task addedTask = _tasksController.addTask(taskTitle, date);
         return addedTask;
@@ -260,39 +263,17 @@ public class GoogleController implements Runnable {
      * @return
      * @throws IOException
      */
-    public String add(chirptask.storage.Task taskToAdd) throws IOException,
+    public void add(chirptask.storage.Task taskToAdd) throws IOException,
             UnknownHostException {
-        // String type = _taskToAdd.getDescription(); //Should have
-        // taskToAdd.getType();
-        String type = "floating";
-        String task = taskToAdd.getDescription();
-        Date date = null;
-        if (taskToAdd.getDate() != null) {
-            date = taskToAdd.getDate();
-        }
-        Task addedTask = null;
-        String googleId = null;
-
         if (isGoogleLoaded()) {
-            switch (type) {
-            case "floating":
-                addedTask = addFloatingTask(task);
-                googleId = addedTask.getId();
-                break;
-            case "deadline":
-                addedTask = addDeadlineTask(task, date);
-                googleId = addedTask.getId();
-                break;
-            case "timed":
-                break;
-            default:
-                break;
-            }
+            ConcurrentAdd addedTask = new ConcurrentAdd(taskToAdd);
+            CONCURRENT.addToExecutor(addedTask);
+            
+            CONCURRENT.close(); //Should be called when application exits to prevent leakage
         }
-        return googleId;
     }
 
-    private boolean isGoogleLoaded() {
+    protected static boolean isGoogleLoaded() {
         boolean isLoaded = true;
         isLoaded = isLoaded && isHttpTransportLoaded();
         isLoaded = isLoaded && isDataStoreFactoryLoaded();
@@ -303,7 +284,7 @@ public class GoogleController implements Runnable {
         return isLoaded;
     }
 
-    private boolean isHttpTransportLoaded() {
+    private static boolean isHttpTransportLoaded() {
         if (_httpTransport != null) {
             return true;
         } else {
@@ -311,7 +292,7 @@ public class GoogleController implements Runnable {
         }
     }
 
-    private boolean isDataStoreFactoryLoaded() {
+    private static boolean isDataStoreFactoryLoaded() {
         if (_dataStoreFactory != null) {
             return true;
         } else {
@@ -319,7 +300,7 @@ public class GoogleController implements Runnable {
         }
     }
 
-    private boolean isCredentialLoaded() {
+    private static boolean isCredentialLoaded() {
         if (_credential != null) {
             return true;
         } else {
@@ -327,7 +308,7 @@ public class GoogleController implements Runnable {
         }
     }
 
-    private boolean isCalendarLoaded() {
+    private static boolean isCalendarLoaded() {
         if (_calendarController != null) {
             return true;
         } else {
@@ -335,7 +316,7 @@ public class GoogleController implements Runnable {
         }
     }
 
-    private boolean isTasksLoaded() {
+    private static boolean isTasksLoaded() {
         if (_tasksController != null) {
             return true;
         } else {
@@ -348,7 +329,7 @@ public class GoogleController implements Runnable {
         if (isGoogleLoaded()) {
             GoogleStorage.hasBeenInitialized();
         }
-
     }
 
 }
+

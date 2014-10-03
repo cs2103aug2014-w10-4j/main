@@ -3,6 +3,7 @@ package chirptask.storage;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import chirptask.google.GoogleController;
 
@@ -14,6 +15,7 @@ public class GoogleStorage implements Storage {
     public GoogleStorage() {
         _gController = new GoogleController();
         Thread initializeGoogleController = new Thread(_gController);
+        initializeGoogleController.setDaemon(true);
         initializeGoogleController.start();
     }
     
@@ -21,11 +23,8 @@ public class GoogleStorage implements Storage {
     public boolean storeNewTask(Task newTask) {
         boolean isAdded = false;
         try {
-            String googleId = null;
-            googleId = _gController.add(newTask);
+            _gController.add(newTask);
             isAdded = true;
-            //Talk to storage handler to call add google id
-            StorageHandler.updateGoogleId(newTask);
         } catch (UnknownHostException unknownHost) {
             //TODO for no access to Google services
         } catch (IOException ioError) {
@@ -61,6 +60,11 @@ public class GoogleStorage implements Storage {
     
     public static void hasBeenInitialized() {
         StorageHandler.addGoogleStorageUponReady();
+    }
+    
+    public static void addGoogleIdToStorage(Task newTask) {
+        //Talk to storage handler to call add google id
+        StorageHandler.updateGoogleId(newTask);
     }
 
 }

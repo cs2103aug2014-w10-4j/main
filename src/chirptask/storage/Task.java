@@ -14,12 +14,14 @@ public class Task implements Comparable<Task> {
 	private List<String> _categories;
 	private int _taskId;
 	private String _description;
+    private String _googleId;
 	private String _type;
 	private boolean _isDone = false;
 
 	public Task() {
 		_contexts = new ArrayList<String>();
 		_categories = new ArrayList<String>();
+		_googleId = "";
 	}
 
 	public Task(int taskId, String description) {
@@ -74,6 +76,14 @@ public class Task implements Comparable<Task> {
 
 	public void setDescription(String description) {
 		_description = description;
+	}
+	
+	public String getGoogleId() {
+	    return _googleId;
+	}
+	
+	public void setGoogleId(String googleId) {
+	    _googleId = googleId;
 	}
 	
 	public String getType() {
