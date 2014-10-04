@@ -37,12 +37,14 @@ import com.google.api.services.tasks.model.Task;
  */
 
 public class GoogleController implements Runnable {
-    private static final String APPLICATION_NAME = "ChirpTask-GoogleIntegration/0.1";
+    private static final String APPLICATION_NAME = 
+                                             "ChirpTask-GoogleIntegration/0.1";
 
     private static final File DATA_STORE_DIR = new File(
-            "credentials/google_oauth_credential");
+                                        "credentials/google_oauth_credential");
     
-    private static final ConcurrentController CONCURRENT = new ConcurrentController();
+    private static final ConcurrentController CONCURRENT = 
+                                                    new ConcurrentController();
 
     /** Global instance of the JSON factory. */
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -94,54 +96,6 @@ public class GoogleController implements Runnable {
             // This error can be thrown by
         } catch (Exception anyOtherErrors) {
             anyOtherErrors.printStackTrace();
-        }
-    }
-
-    // test if the service is available and connected
-    public static void main(String[] args) {
-        GoogleController gController = new GoogleController();
-        new Thread(gController).start();
-        if (isGoogleLoaded()) {
-            try {
-                /**
-                 * Google Tasks
-                 */
-                // Test creation of task
-                Task tempTask = addFloatingTask("Hello World!");
-                gController.showTask(tempTask.getId());
-
-                // Test adding due date
-                DateTime dueDate = DateTimeHandler.getDateTime("2014-09-29");
-                tempTask = TasksHandler.addDueDate(tempTask, dueDate);
-                tempTask = _tasksController.updateTask(tempTask);
-                gController.showTask(tempTask.getId());
-
-                // Test setting complete
-                tempTask = TasksHandler.setCompleted(tempTask);
-                tempTask = _tasksController.updateTask(tempTask);
-                gController.showTask(tempTask.getId());
-
-                // Show all tasks in list
-                // gController.showTasks();
-
-                // Show all hidden tasks in list
-                // gController.showHiddenTasks();
-
-                // Show all undone tasks in list
-                gController.showUndoneTasks();
-
-                // Clean up
-                gController.deleteTask(tempTask.getId());
-
-                /**
-                 * Google Calendar
-                 */
-                gController.showCalendars();
-            } catch (IOException ioError) {
-
-            }
-        } else { // TODO for Google not loaded
-
         }
     }
 
@@ -237,21 +191,38 @@ public class GoogleController implements Runnable {
      * @return the reference to the created Task object
      * @throws IOException
      */
-    protected static Task addFloatingTask(String taskTitle) throws IOException,
-            UnknownHostException {
+    protected static Task addFloatingTask(String taskTitle) throws 
+                                                        UnknownHostException, 
+                                                        IOException {
         Task addedTask = _tasksController.addTask(taskTitle);
         return addedTask;
     }
 
     protected static Task addDeadlineTask(String taskTitle, Date date)
-            throws IOException {
+                                    throws UnknownHostException, IOException {
         Task addedTask = _tasksController.addTask(taskTitle, date);
         return addedTask;
     }
+    
+    protected static Task toggleFloatingDone(chirptask.storage.Task toggleTask) 
+                                    throws UnknownHostException, IOException {
+        String googleId = toggleTask.getGoogleId();
+        boolean isDone = toggleTask.isDone();
+        Task toggledTask = _tasksController.toggleTaskDone(googleId, isDone);
+        return toggledTask;
+    }
 
-    // Task type will be changed to an enum, eg. TaskType.FLOATING
-    // From the storage.Task object, we can retrieve the task,
-    // due date, time range, etc. (if exists)
+    public void toggleDone(chirptask.storage.Task taskToToggleDone) throws 
+                                                          UnknownHostException,
+                                                          IOException {
+        if (isGoogleLoaded()) {
+            ConcurrentToggleDone toggledTask = 
+                                    new ConcurrentToggleDone(taskToToggleDone);
+            CONCURRENT.addToExecutor(toggledTask);
+            
+            CONCURRENT.close(); //Should be called when application exits to prevent leakage
+        }
+    }
     /**
      * add(Task) will perform the relevant addTask method depending on the
      * content of the chirptask.storage.Task object passed in. After the task
@@ -263,8 +234,9 @@ public class GoogleController implements Runnable {
      * @return
      * @throws IOException
      */
-    public void add(chirptask.storage.Task taskToAdd) throws IOException,
-            UnknownHostException {
+    public void add(chirptask.storage.Task taskToAdd) throws 
+                                                    UnknownHostException, 
+                                                    IOException {
         if (isGoogleLoaded()) {
             ConcurrentAdd addedTask = new ConcurrentAdd(taskToAdd);
             CONCURRENT.addToExecutor(addedTask);

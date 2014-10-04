@@ -103,7 +103,7 @@ public class Task implements Comparable<Task> {
 		return _contexts;
 	}
 
-	public void setContexts(ArrayList<String> _contexts) {
+	public void setContexts(List<String> _contexts) {
 		this._contexts = _contexts;
 	}
 
@@ -111,7 +111,7 @@ public class Task implements Comparable<Task> {
 		return _categories;
 	}
 
-	public void setCategories(ArrayList<String> _categories) {
+	public void setCategories(List<String> _categories) {
 		this._categories = _categories;
 	}
 }

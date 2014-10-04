@@ -117,7 +117,7 @@ public class CalendarController {
         _workingCalendar = calendar;
     }
 
-    private Calendar createCalendar() throws IOException {
+    private Calendar createCalendar() throws UnknownHostException, IOException {
         Calendar newCalendar = CalendarHandler.addCalendar(DEFAULT_CALENDAR);
         setCalendarId(newCalendar);
         String calendarId = getCalendarId();
@@ -134,7 +134,7 @@ public class CalendarController {
         return _calendarId;
     }
 
-    void showCalendars() throws IOException {
+    void showCalendars() throws UnknownHostException, IOException {
         CalendarList calendarList = _calendarClient.calendarList().list()
                 .execute();
         CalendarViewer.header("Show All Calendars");

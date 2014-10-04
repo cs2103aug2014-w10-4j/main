@@ -17,7 +17,7 @@ public class CalendarHandler {
     }
     
     static Calendar addCalendar(String calendarName) 
-            throws IOException, UnknownHostException {
+            throws UnknownHostException, IOException {
         Calendar createdCalendar = createCalendar(calendarName);
         Calendar addedCalendar = insertCalendarIntoGCal(createdCalendar);
         return addedCalendar;
@@ -39,7 +39,7 @@ public class CalendarHandler {
     }
     
     private static Calendar insertCalendarIntoGCal(Calendar calendarToInsert) 
-            throws IOException, UnknownHostException {
+            throws UnknownHostException, IOException {
         Calendar insertedCalendar = 
                 CalendarController._calendarClient
                                     .calendars().insert(calendarToInsert)
@@ -48,20 +48,20 @@ public class CalendarHandler {
     }
     
     static void updateCalendar(String calendarId) 
-            throws IOException, UnknownHostException {
+            throws UnknownHostException, IOException {
         Calendar calendarToUpdate = retrieveCalendarById(calendarId);
         updateCalendar(calendarId, calendarToUpdate);
     }
     
     private static void updateCalendar(String calendarId, Calendar toUpdate)
-            throws IOException, UnknownHostException {
+            throws UnknownHostException, IOException {
         CalendarController._calendarClient
                             .calendars().update(calendarId, toUpdate)
                             .execute();
     }
     
     static Calendar retrieveCalendarById(String calendarId) 
-            throws IOException, UnknownHostException {
+            throws UnknownHostException, IOException {
         Calendar retrievedCalendar = 
                 CalendarController._calendarClient.calendars().get(calendarId).execute();
         return retrievedCalendar;

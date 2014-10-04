@@ -32,6 +32,20 @@ public class GoogleStorage implements Storage {
         }
         return isAdded;
     }
+    
+    @Override
+    public boolean toggleDone(Task taskToToggle) {
+        boolean isToggled = false;
+        try {
+            _gController.toggleDone(taskToToggle);
+            isToggled = true;
+        } catch (UnknownHostException unknownHostException) {
+            //TODO for no access to Google services
+        } catch (IOException ioException) {
+            
+        }
+        return isToggled;
+    }
 
     @Override
     public Task removeTask(Task removeTask) {
@@ -66,5 +80,7 @@ public class GoogleStorage implements Storage {
         //Talk to storage handler to call add google id
         StorageHandler.updateGoogleId(newTask);
     }
+
+    
 
 }

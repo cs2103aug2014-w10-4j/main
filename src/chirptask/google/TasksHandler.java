@@ -61,8 +61,7 @@ class TasksHandler {
 	}
 
 	static void clearCompletedTasks(String taskListId) 
-	        throws IOException, 
-	        UnknownHostException {
+	        throws UnknownHostException, IOException {
 		TasksController._tasksClient.tasks().clear(taskListId).execute();
 	}
 
@@ -73,67 +72,62 @@ class TasksHandler {
 	}
 
 	static void deleteTaskWithId(String taskListId, String taskId)
-			throws IOException, UnknownHostException {
+			throws UnknownHostException, IOException {
 		TasksController._tasksClient.tasks().delete(taskListId, taskId)
 				.execute();
 	}
 
 	static Task getTaskFromId(String taskListId, String id)
-			throws IOException, UnknownHostException {
+			throws UnknownHostException, IOException {
 		Task retrieveTask = TasksController._tasksClient.tasks()
 				.get(taskListId, id).execute();
 		return retrieveTask;
 	}
 
 	static Tasks getTasksFromId(String taskListId) 
-	        throws IOException, 
-	        UnknownHostException {
+	        throws UnknownHostException, IOException {
 		Tasks retrieveTasks = TasksController._tasksClient.tasks()
 				.list(taskListId).execute();
 		return retrieveTasks;
 	}
 
 	static Tasks getHiddenTasks(String taskListId) 
-	        throws IOException, 
-	        UnknownHostException {
+	        throws UnknownHostException, IOException {
 		Tasks retrieveTasks = TasksController._tasksClient.tasks()
 				.list(taskListId).set("showHidden", true).execute();
 		return retrieveTasks;
 	}
 
 	static Tasks getUndoneTasks(String taskListId) 
-	        throws IOException, 
-	        UnknownHostException {
+	        throws UnknownHostException, IOException {
 		Tasks retrieveTasks = TasksController._tasksClient.tasks()
 				.list(taskListId).set("showCompleted", false).execute();
 		return retrieveTasks;
 	}
 
 	static TaskList getTaskListFromId(String taskListId) 
-	        throws IOException, 
-	        UnknownHostException {
+	        throws UnknownHostException, IOException {
 		TaskList retrieveTaskList = TasksController._tasksClient.tasklists()
 				.get(taskListId).execute();
 		return retrieveTaskList;
 	}
 
 	static TaskList insertTaskList(TaskList newTaskList) 
-	        throws IOException, 
-	        UnknownHostException {
+	        throws UnknownHostException, IOException {
 		TaskList insertList = TasksController._tasksClient.tasklists()
 				.insert(newTaskList).execute();
 		return insertList;
 	}
 
 	static Task insertTaskToList(String taskListId, Task taskToInsert)
-			throws IOException, UnknownHostException {
+			throws UnknownHostException, IOException {
         Task insertTask = TasksController._tasksClient.tasks()
                 .insert(taskListId, taskToInsert).execute();
 		return insertTask;
 	}
 
 	static Task updateTask(String taskListId, String taskId, Task updatedTask)
-			throws IOException, UnknownHostException {
+			throws UnknownHostException, IOException {
 		updatedTask = TasksController._tasksClient.tasks()
 				.update(taskListId, taskId, updatedTask).execute();
 		return updatedTask;

@@ -152,7 +152,7 @@ public class TasksController {
         return insertList;
     }
 
-    private TaskList getTaskListById(String taskListId) throws IOException {
+    private TaskList getTaskListById(String taskListId) throws UnknownHostException, IOException {
         TaskList foundTaskList = null;
 
         try {
@@ -166,18 +166,18 @@ public class TasksController {
         return foundTaskList;
     }
 
-    void showTask(String id) throws IOException {
+    protected void showTask(String id) throws UnknownHostException, IOException {
         Task result = TasksHandler.getTaskFromId(_taskListId, id);
         TasksViewer.display(result);
     }
 
-    public Task addTask(String taskTitle) throws IOException, UnknownHostException {
+    protected Task addTask(String taskTitle) throws UnknownHostException, IOException {
         Task newTask = TasksHandler.createTask(taskTitle);
         Task addedTask = insertTask(newTask);
         return addedTask;
     }
 
-    public Task addTask(String taskTitle, Date dueDate)
+    protected Task addTask(String taskTitle, Date dueDate)
             throws IOException {
         Task newTask = TasksHandler.createTask(taskTitle);
         DateTime dueDateTime = DateTimeHandler.getDateTime(dueDate);
@@ -186,7 +186,7 @@ public class TasksController {
         return addedTask;
     }
 
-    public Task addTask(String taskTitle, String notes, Date dueDate)
+    protected Task addTask(String taskTitle, String notes, Date dueDate)
             throws IOException {
         Task newTask = TasksHandler.createTask(taskTitle);
         newTask = TasksHandler.addNotes(newTask, notes);
@@ -201,30 +201,43 @@ public class TasksController {
         Task result = TasksHandler.insertTaskToList(_taskListId, task);
         return result;
     }
+    
+    protected Task toggleTaskDone(String googleId, boolean isDone) throws 
+                                                        UnknownHostException,
+                                                        IOException {
+        Task toggledTask = TasksHandler.getTaskFromId(_taskListId, googleId);
+        if (isDone) {
+            toggledTask = TasksHandler.setCompleted(toggledTask);
+        } else {
+            toggledTask = TasksHandler.setNotCompleted(toggledTask);
+        }
+        toggledTask = updateTask(toggledTask);
+        return toggledTask;
+    }
 
-    public void deleteTask(String taskId) throws IOException {
+    protected void deleteTask(String taskId) throws IOException {
         TasksHandler.deleteTaskWithId(_taskListId, taskId);
     }
 
-    public void showTasks() throws IOException {
+    protected void showTasks() throws UnknownHostException, IOException {
         Tasks tasks = TasksHandler.getTasksFromId(_taskListId);
         TasksViewer.header("Show All Tasks");
         TasksViewer.display(tasks);
     }
 
-    public void showHiddenTasks() throws IOException {
+    protected void showHiddenTasks() throws UnknownHostException, IOException {
         Tasks tasks = TasksHandler.getHiddenTasks(_taskListId);
         TasksViewer.header("Show All Tasks");
         TasksViewer.display(tasks);
     }
 
-    public void showUndoneTasks() throws IOException {
+    protected void showUndoneTasks() throws UnknownHostException, IOException {
         Tasks tasks = TasksHandler.getUndoneTasks(_taskListId);
         TasksViewer.header("Show All Tasks");
         TasksViewer.display(tasks);
     }
 
-    public Task updateTask(Task updatedTask) throws IOException {
+    private Task updateTask(Task updatedTask) throws UnknownHostException, IOException {
         updatedTask = TasksHandler.updateTask(_taskListId,
                 updatedTask.getId(), updatedTask);
         return updatedTask;

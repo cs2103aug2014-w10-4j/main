@@ -9,6 +9,8 @@ public interface Storage {
     Task removeTask(Task T);
 
     boolean modifyTask(Task T);
+    
+    boolean toggleDone(Task T);
 
     Task getTask(int taskId);
 

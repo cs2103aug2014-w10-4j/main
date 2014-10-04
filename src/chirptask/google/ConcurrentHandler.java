@@ -9,8 +9,90 @@ import chirptask.storage.GoogleStorage;
 
 import com.google.api.services.tasks.model.Task;
 
-public class ConcurrentHandler {
+class ConcurrentHandler {
+    protected static boolean isNull(chirptask.storage.Task task) {
+        if (task == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    protected static boolean isNotNull(Task googleTask) {
+        if (googleTask != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    protected static void addGoogleIdToStorage(Task googleTask,
+                                        chirptask.storage.Task taskToModify) {
+        String googleId = getGoogleId(googleTask);
+        chirptask.storage.Task modifiedTask = 
+                addGoogleIdToChirpTask(taskToModify, googleId);
+        GoogleStorage.addGoogleIdToStorage(modifiedTask);
+    }
 
+    private static String getGoogleId(Task googleTask) {
+        String googleId = googleTask.getId();
+        return googleId;
+    }
+    
+    private static chirptask.storage.Task addGoogleIdToChirpTask(
+                        chirptask.storage.Task taskToModify, String googleId){
+        taskToModify.setGoogleId(googleId);
+        return taskToModify;
+    }
+}
+
+class ConcurrentToggleDone implements Callable<Task> {
+    private chirptask.storage.Task _taskToToggleDone;
+
+    protected ConcurrentToggleDone(
+            chirptask.storage.Task taskToToggleDone) {
+        if (ConcurrentHandler.isNull(taskToToggleDone)) {
+            _taskToToggleDone = null;
+        } else {
+            _taskToToggleDone = taskToToggleDone;
+        }
+    }
+
+    public Task call() throws IOException, UnknownHostException {
+        if (ConcurrentHandler.isNull(_taskToToggleDone)) {
+            return null;
+        }
+        
+        while (!GoogleController.isGoogleLoaded()) {
+            // wait until google is loaded
+        }
+
+        String type = _taskToToggleDone.getType();
+        Task modifiedGoogleTask = null;
+
+        switch (type) {
+        case "floating":
+        case "deadline":
+            modifiedGoogleTask = GoogleController.toggleFloatingDone(_taskToToggleDone);
+            break;
+        case "timed":
+            break;
+        default:
+            break;
+        }
+
+        if (ConcurrentHandler.isNotNull(modifiedGoogleTask)) {
+            /* 
+             * Possibly used to overwrite googleId in local storage, 
+             * eg. change type from floating to timed.
+             * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask, 
+             *                                          _taskToToggleDone);
+             * 
+             */
+        }
+
+        return modifiedGoogleTask;
+    }
 }
 
 class ConcurrentAdd implements Callable<Task> {
@@ -18,7 +100,7 @@ class ConcurrentAdd implements Callable<Task> {
     private chirptask.storage.Task _taskToAdd;
 
     protected ConcurrentAdd(chirptask.storage.Task taskToAdd) {
-        if (taskToAdd == null) {
+        if (ConcurrentHandler.isNull(taskToAdd)) {
             _taskToAdd = null;
         } else {
             _taskToAdd = taskToAdd;
@@ -26,58 +108,40 @@ class ConcurrentAdd implements Callable<Task> {
     }
 
     public Task call() throws IOException, UnknownHostException {
-        while (!GoogleController.isGoogleLoaded()) {
-            //wait until google is loaded
-        }
-        
-        if (_taskToAdd == null) {
+        if (ConcurrentHandler.isNull(_taskToAdd)) {
             return null;
         }
         
+        while (!GoogleController.isGoogleLoaded()) {
+            // wait until google is loaded
+        }
+
         String type = _taskToAdd.getType();
         String task = _taskToAdd.getDescription();
         Date date = null;
-        
+
         if (_taskToAdd.getDate() != null) {
             date = _taskToAdd.getDate();
         }
         Task addedGoogleTask = null;
 
         switch (type) {
-        case "floating" :
+        case "floating":
             addedGoogleTask = GoogleController.addFloatingTask(task);
             break;
-        case "deadline" :
+        case "deadline":
             addedGoogleTask = GoogleController.addDeadlineTask(task, date);
             break;
-        case "timed" :
+        case "timed":
             break;
         default:
             break;
         }
-        
-        if (isNotNull(addedGoogleTask)) {
-            addGoogleIdToStorage(addedGoogleTask);
+
+        if (ConcurrentHandler.isNotNull(addedGoogleTask)) {
+            ConcurrentHandler.addGoogleIdToStorage(addedGoogleTask, _taskToAdd);
         }
-        
+
         return addedGoogleTask;
-    }
-    
-    private boolean isNotNull(Task googleTask) {
-        if (googleTask != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void addGoogleIdToStorage(Task googleTask) {
-        addGoogleIdToCurrentTask(googleTask);
-        GoogleStorage.addGoogleIdToStorage(_taskToAdd);
-    }
-
-    private void addGoogleIdToCurrentTask(Task googleTask) {
-        String googleId = googleTask.getId();
-        _taskToAdd.setGoogleId(googleId);
     }
 }
