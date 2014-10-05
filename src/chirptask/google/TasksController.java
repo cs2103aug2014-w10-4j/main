@@ -210,7 +210,7 @@ public class TasksController {
         return toggledTask;
     }
 
-    void deleteTask(String taskId) throws IOException {
+    void deleteTask(String taskId) {
         TasksHandler.deleteTaskWithId(_taskListId, taskId);
     }
 

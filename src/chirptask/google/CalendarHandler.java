@@ -76,5 +76,19 @@ public class CalendarHandler {
                                     .get(calendarId, eventId).execute();
         return foundEvent;
     }
+    
+    static boolean deleteEvent(String calendarId, String eventId) {
+        boolean isDeleted = false;
+        
+        try {
+            CalendarController._calendarClient.events().delete(calendarId, eventId).execute();
+            isDeleted = true;
+        } catch (UnknownHostException unknownHostException) {
+            
+        } catch (IOException ioException) {
+            
+        }
+        return isDeleted;
+    }
 
 }

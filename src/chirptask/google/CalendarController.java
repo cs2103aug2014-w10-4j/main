@@ -140,5 +140,11 @@ public class CalendarController {
         CalendarViewer.header("Show All Calendars");
         CalendarViewer.display(calendarList);
     }
+    
+    boolean deleteEvent(String eventId) {
+        boolean isDeleted = false;
+        isDeleted = CalendarHandler.deleteEvent(_calendarId, eventId);
+        return isDeleted;
+    }
 
 }

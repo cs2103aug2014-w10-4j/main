@@ -3,7 +3,6 @@ package chirptask.storage;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import chirptask.google.GoogleController;
 
@@ -34,8 +33,22 @@ public class GoogleStorage implements Storage {
     }
 
     @Override
-    public Task removeTask(Task removeTask) {
-        return null;
+    public Task removeTask(Task taskToRemove) {
+        boolean isRemoved = false;
+        try {
+            _gController.removeTask(taskToRemove);
+            isRemoved = true;
+        } catch (UnknownHostException unknownHostException) {
+            //TODO for no access to Google services
+        } catch (IOException ioException) {
+            
+        }
+        
+        if (isRemoved) {
+            return taskToRemove;
+        } else {
+            return null;
+        }
     }
 
     @Override
