@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import chirptask.logic.DisplayView;
 import chirptask.logic.Logic;
 import chirptask.settings.Messages;
 import chirptask.settings.Settings;
@@ -93,7 +92,12 @@ public class MainGui extends Application {
         /* addCategoryIntoList("123");
          addContextIntoList("TEST");
         
+         Date today = new Date();
+         Date tomorrow = new Date();
+         tomorrow.setDate(today.getDate()+1);
          addNewTaskViewDate(new Date());
+         
+         addNewTaskViewDate(tomorrow);
          addNewTaskViewToDate(new Date(), 0, "#123 @123 TEST", "all-day",
          true);
          addNewTaskViewToDate(new Date(), 4, "#TEST @123", "all-day", true);
@@ -295,7 +299,7 @@ public class MainGui extends Application {
 
     private ScrollPane generateTaskView() {
         ScrollPane taskViewScrollPane = new ScrollPane();
-        taskViewScrollPane.setPadding(new Insets(10));
+        taskViewScrollPane.setPadding(new Insets(5));
         taskViewScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         taskViewScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
@@ -385,7 +389,7 @@ public class MainGui extends Application {
         return descriptionBox;
     }
 
-    private EventHandler<MouseEvent> clickOnContext() {
+    private static EventHandler<MouseEvent> clickOnContext() {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -394,7 +398,7 @@ public class MainGui extends Application {
         };
     }
 
-    private EventHandler<MouseEvent> clickOnCategory() {
+    private static EventHandler<MouseEvent> clickOnCategory() {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -443,13 +447,6 @@ public class MainGui extends Application {
         });
     }
 
-    public void addContextIntoList(String Context) {
-        Text contextText = new Text(Settings.CONTEXT_STRING + Context);
-        contextText.getStyleClass().add("context-text");
-        contextText.setOnMouseClicked(clickOnContext());
-        _contextList.getChildren().add(contextText);
-    }
-
     public String getFilter() {
         return _filterField.getText();
     }
@@ -476,6 +473,13 @@ public class MainGui extends Application {
         _statusText.getStyleClass().add("error-message");
     }
 
+    public void addContextIntoList(String Context) {
+        Text contextText = new Text(Settings.CONTEXT_STRING + Context);
+        contextText.getStyleClass().add("context-text");
+        contextText.setOnMouseClicked(clickOnContext());
+        _contextList.getChildren().add(contextText);
+    }
+
     public void addCategoryIntoList(String Category) {
         Text categoryText = new Text(Settings.CATEGORY_STRING + Category);
         categoryText.getStyleClass().add("category-text");
@@ -496,7 +500,7 @@ public class MainGui extends Application {
     /*
      * Move to logic(?)
      */
-    public TextFlow parseDescriptionToTextFlow(String description,
+    public static TextFlow parseDescriptionToTextFlow(String description,
             boolean done) {
         TextFlow parsedDesc = new TextFlow();
         StringBuilder descSb = new StringBuilder(description);
