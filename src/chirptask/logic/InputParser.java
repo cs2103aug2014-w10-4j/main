@@ -3,6 +3,7 @@ package chirptask.logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import chirptask.gui.MainGui;
 import chirptask.storage.LocalStorage;
 import chirptask.storage.Task;
 
@@ -14,14 +15,14 @@ public class InputParser {
 	private GroupAction _actions;
 
 	public InputParser() {
-		_actions = new GroupAction(); 
+		_actions = new GroupAction();
 	}
-	
+
 	public InputParser(String userInput) {
 		_userInput = userInput;
 		_actions = processCommand();
 	}
-	
+
 	public void receiveInput(String userInput) {
 		_userInput = userInput;
 		_actions = processCommand();
@@ -31,22 +32,22 @@ public class InputParser {
 		String commandType = getCommandTypeString();
 		String parameter = getParameter();
 		switch (commandType) {
-			case "add" :
-				return processForAdd(parameter);
-			case "edit" :
-				return processForEdit(parameter);
-			case "delete" :
-				return processForDelete(parameter);
-			case "done" :
-				return processForDone(parameter);
-			case "undo" :
-				return processNoTask(commandType);
-			case "display" :
-				return processDisplay(parameter);
-			case "login" :
-				return processLogin();
-			default:
-				return new GroupAction();
+		case "add":
+			return processForAdd(parameter);
+		case "edit":
+			return processForEdit(parameter);
+		case "delete":
+			return processForDelete(parameter);
+		case "done":
+			return processForDone(parameter);
+		case "undo":
+			return processNoTask(commandType);
+		case "display":
+			return processDisplay(parameter);
+		case "login":
+			return processLogin();
+		default:
+			return new GroupAction();
 		}
 	}
 
@@ -72,8 +73,9 @@ public class InputParser {
 
 	private GroupAction processForDone(String parameter) {
 		GroupAction actions = null;
-		List<Integer> list = getTaskIdFromString(parameter);
+		List<Integer> list = getTaskIndexFromString(parameter);
 		if (list != null) {
+			convertFromIndexToId(list);
 			actions = new GroupAction();
 			for (Integer i : list) {
 				Action action = new Action();
@@ -103,8 +105,10 @@ public class InputParser {
 
 	private GroupAction processForDelete(String parameter) {
 		GroupAction actions = null;
-		List<Integer> list = getTaskIdFromString(parameter);
+		List<Integer> list = getTaskIndexFromString(parameter);
+
 		if (list != null) {
+			convertFromIndexToId(list);
 			actions = new GroupAction();
 			for (Integer i : list) {
 				Action action = new Action();
@@ -125,7 +129,17 @@ public class InputParser {
 		return actions;
 	}
 
-	private List<Integer> getTaskIdFromString(String parameter) {
+	private void convertFromIndexToId(List<Integer> list) {
+		ArrayList<Integer> index = MainGui.getTaskIndexToId();
+		for (int i = 0; i < list.size(); i++) {
+			int ind = list.get(i) - 1;
+			if (ind < index.size() && ind >= 0) {
+				list.set(i, index.get(ind));
+			}
+		}
+	}
+
+	private List<Integer> getTaskIndexFromString(String parameter) {
 		List<Integer> taskIds = new ArrayList<Integer>();
 		String[] split = parameter.trim().split("\\s+|,");
 		for (int i = 0; i < split.length; i++) {
@@ -151,17 +165,21 @@ public class InputParser {
 		Task toDo = new Task();
 
 		int taskId = getId(parameter);
-		parameter = parameter.trim().split("\\s+", 2)[1];
-		getTaskFromString(parameter, toDo);
-		toDo.setTaskId(taskId);
+		if (taskId >= 1) {
+			String[] parameters = parameter.trim().split("\\s+", 2);
+			if (parameters.length > 1) {
+				parameter = parameters[1];
+				getTaskFromString(parameter, toDo);
+				toDo.setTaskId(taskId);
 
-		action.setCommandType("edit");
-		action.setTask(toDo);
-		negate.setCommandType("edit");
-		negate.setTask(new Task(taskId, ""));
-		action.setUndo(negate);
-
-		actions.addAction(action);
+				action.setCommandType("edit");
+				action.setTask(toDo);
+				negate.setCommandType("edit");
+				negate.setTask(new Task(taskId, ""));
+				action.setUndo(negate);
+			}
+			actions.addAction(action);
+		}
 		return actions;
 	}
 
@@ -172,8 +190,8 @@ public class InputParser {
 		Task toDo = new Task();
 
 		getTaskFromString(parameter, toDo);
-		toDo.setType("floating"); //Needs attention. Input Parser please handle
-		toDo.setTaskId(LocalStorage.generateId()); 
+		toDo.setType("floating"); // Needs attention. Input Parser please handle
+		toDo.setTaskId(LocalStorage.generateId());
 		action.setCommandType("add");
 		action.setTask(toDo);
 		negate.setCommandType("delete");
@@ -187,9 +205,9 @@ public class InputParser {
 	private void getTaskFromString(String parameter, Task task) {
 		parameter = parameter.trim();
 		String[] taskDesc = parameter.split("@|#", 2);
-		//task.setDescription(taskDesc[0]);
+		// task.setDescription(taskDesc[0]);
 		task.setDescription(parameter);
-		
+
 		if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
 			String[] conCat = parameter.split("(?=@|#)");
 			ArrayList<String> contexts = new ArrayList<String>();
@@ -215,10 +233,15 @@ public class InputParser {
 	}
 
 	private int getIdFromList(int id) {
-		List<Task> taskList = FilterTasks.getFilteredList();
-		Task task = taskList.get(normalizeId(id));
-		int taskId = task.getTaskId();
-		return taskId;
+		List<Integer> list = MainGui.getTaskIndexToId();
+		id = normalizeId(id);
+		if (id < list.size() && id >= 0) {
+			return list.get(id);
+		}
+		// List<Task> taskList = FilterTasks.getFilteredList();
+		// Task task = taskList.get(normalizeId(id));
+		// int taskId = task.getTaskId();
+		return -1;
 	}
 
 	private int normalizeId(int id) {
@@ -238,17 +261,16 @@ public class InputParser {
 			return null;
 		}
 	}
-	
-    private GroupAction processLogin() {
-        GroupAction actions = new GroupAction();
-        Action action = new Action();
-        action.setCommandType(COMMAND_LOGIN);
-        action.setTask(null);
-        action.setUndo(null);
-        actions.addAction(action);
-        return actions;
-    }
 
+	private GroupAction processLogin() {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		action.setCommandType(COMMAND_LOGIN);
+		action.setTask(null);
+		action.setUndo(null);
+		actions.addAction(action);
+		return actions;
+	}
 
 	public GroupAction getActions() {
 		return _actions;

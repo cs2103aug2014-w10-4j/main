@@ -64,7 +64,7 @@ public class MainGui extends Application {
     private final VBox _taskViewByDate = new VBox();
 
     private final SortedMap<String, VBox> _taskViewDateMap = new TreeMap<>();
-    private final ArrayList<Integer> _taskIndexToId = new ArrayList<>();
+    private static final ArrayList<Integer> _taskIndexToId = new ArrayList<>();
 
     private Logic _logic = new Logic(this);
 
@@ -582,6 +582,10 @@ public class MainGui extends Application {
                 .add(taskPane);
 
         return true;
+    }
+    
+    public static ArrayList<Integer> getTaskIndexToId() {
+    	return _taskIndexToId;
     }
 
 }
