@@ -334,10 +334,4 @@ public class LocalStorage implements Storage {
 
 	}
 
-    @Override
-    public boolean toggleDone(Task T) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
 }

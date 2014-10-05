@@ -130,7 +130,7 @@ public class CalendarController {
         setCalendarId(calendarId);
     }
     
-    String getCalendarId() {
+    static String getCalendarId() {
         return _calendarId;
     }
 

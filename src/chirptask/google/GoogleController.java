@@ -18,6 +18,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.model.Calendar;
+import com.google.api.services.calendar.model.Event;
 import com.google.api.services.tasks.model.Task;
 
 /**
@@ -183,6 +184,7 @@ public class GoogleController implements Runnable {
         }
     }
 
+    // Called by ConcurrentAdd
     /**
      * adds a floating task with the specified task title.
      * 
@@ -191,35 +193,91 @@ public class GoogleController implements Runnable {
      * @return the reference to the created Task object
      * @throws IOException
      */
-    protected static Task addFloatingTask(String taskTitle) throws 
+    static Task addFloatingTask(String taskTitle) throws 
                                                         UnknownHostException, 
                                                         IOException {
         Task addedTask = _tasksController.addTask(taskTitle);
         return addedTask;
     }
 
-    protected static Task addDeadlineTask(String taskTitle, Date date)
+    static Task addDeadlineTask(String taskTitle, Date date)
                                     throws UnknownHostException, IOException {
         Task addedTask = _tasksController.addTask(taskTitle, date);
         return addedTask;
     }
     
-    protected static Task toggleFloatingDone(chirptask.storage.Task toggleTask) 
-                                    throws UnknownHostException, IOException {
-        String googleId = toggleTask.getGoogleId();
+    // Called by ConcurrentModify 
+    static Task toggleTasksDone(Task googleTask, chirptask.storage.Task toggleTask) {
+        
         boolean isDone = toggleTask.isDone();
-        Task toggledTask = _tasksController.toggleTaskDone(googleId, isDone);
-        return toggledTask;
+        Task toggledTask = _tasksController.toggleTaskDone(googleTask, isDone);
+        
+        if (toggledTask != null) {
+            return toggledTask;
+        } else {
+            return null;
+        }
     }
+    
+    static boolean isEntryExists(String googleId, String taskType) 
+                                    throws UnknownHostException, IOException {
+        boolean isExist = false;
+        String googleListId = "";
+        
+        switch (taskType) {
+        case "floating" :
+        case "deadline" :
+            googleListId = TasksController.getTaskListId();
+            Task foundTask = TasksHandler.getTaskFromId(googleListId, googleId);
+            if (foundTask != null) {
+                isExist = true;
+            }
+            break;
+        case "timed" :
+            googleListId = CalendarController.getCalendarId();
+            Event foundEvent = CalendarHandler.getEventFromId(googleListId, googleId);
+            if (foundEvent != null) {
+                isExist = true;
+            }
+            break;
+        }
+        
+        return isExist;
+    }
+    
+    static Task updateDueDate(Task taskToUpdate, chirptask.storage.Task updatedTask) {
+        Date newDueDate = updatedTask.getDate();
+        Task updatedGoogleTask = _tasksController.updateDueDate(taskToUpdate, newDueDate);
 
-    public void toggleDone(chirptask.storage.Task taskToToggleDone) throws 
-                                                          UnknownHostException,
-                                                          IOException {
+        if (updatedGoogleTask != null) {
+            return updatedGoogleTask;
+        } else {
+            return null;
+        }
+    }
+    
+    static Task updateTasksDescription(Task taskToUpdate, chirptask.storage.Task updatedTask) {
+        
+        String updatedDescription = updatedTask.getDescription();
+        Task updatedGoogleTask = _tasksController.updateDescription(taskToUpdate, updatedDescription);
+        
+        if (updatedGoogleTask != null) {
+            return updatedGoogleTask;
+        } else {
+            return null;
+        }
+    }
+    
+    
+    // Called by GoogleStorage
+    public void modifyTask(chirptask.storage.Task taskToModify) throws 
+                                                    UnknownHostException,
+                                                    IOException {
         if (isGoogleLoaded()) {
-            ConcurrentToggleDone toggledTask = 
-                                    new ConcurrentToggleDone(taskToToggleDone);
-            CONCURRENT.addToExecutor(toggledTask);
-            
+            ConcurrentModify modifyTask = 
+                    new ConcurrentModify(taskToModify);
+            CONCURRENT.addToExecutor(modifyTask);
+
             CONCURRENT.close(); //Should be called when application exits to prevent leakage
         }
     }
@@ -238,8 +296,8 @@ public class GoogleController implements Runnable {
                                                     UnknownHostException, 
                                                     IOException {
         if (isGoogleLoaded()) {
-            ConcurrentAdd addedTask = new ConcurrentAdd(taskToAdd);
-            CONCURRENT.addToExecutor(addedTask);
+            ConcurrentAdd addTask = new ConcurrentAdd(taskToAdd);
+            CONCURRENT.addToExecutor(addTask);
             
             CONCURRENT.close(); //Should be called when application exits to prevent leakage
         }
