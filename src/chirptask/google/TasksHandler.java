@@ -78,10 +78,20 @@ class TasksHandler {
 		return newTaskList;
 	}
 
-	static void deleteTaskWithId(String taskListId, String taskId)
-			throws UnknownHostException, IOException {
-		TasksController._tasksClient.tasks().delete(taskListId, taskId)
-				.execute();
+	static boolean deleteTaskWithId(String taskListId, String taskId) {
+	    boolean isDeleted = false;
+	    
+		try {
+            TasksController._tasksClient.tasks().delete(taskListId, taskId)
+            		.execute();
+            isDeleted = true;
+        } catch (UnknownHostException unknownHostException) {
+            // TODO Auto-generated catch block
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+        }
+		
+		return isDeleted;
 	}
 
 	static Task getTaskFromId(String taskListId, String id)
