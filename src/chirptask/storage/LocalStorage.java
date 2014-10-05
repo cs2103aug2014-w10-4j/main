@@ -36,7 +36,7 @@ public class LocalStorage implements Storage {
 	DocumentBuilder docBuilder;
 	Transformer trans;
 	Document localStorage;
-	int idGenerator;
+	static int idGenerator;
 	
 	public LocalStorage() {
 		localStorageInit();
@@ -56,12 +56,11 @@ public class LocalStorage implements Storage {
 			
 			if (local.exists()) {
 				int id = getLatestId();
-				System.out.println(id);
 				setIdGenerator(id);
 			} else {
 				addRoot();
 				writeToFile();
-				setIdGenerator(1);
+				setIdGenerator(0);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -117,7 +116,8 @@ public class LocalStorage implements Storage {
 		if (root == null) {
 			return false;
 		}
-		root.appendChild(getTaskNode(localStorage, task));
+		root.setAttribute("LatestId", String.valueOf(task.getTaskId()));
+		root.appendChild(generateTaskNode(localStorage, task));
 		writeToFile();
 		return true;
 	}
@@ -144,7 +144,7 @@ public class LocalStorage implements Storage {
 	 * @param taskToAdd
 	 * @return the corresponding node
 	 */
-	private static Node getTaskNode(Document doc, Task taskToAdd) {
+	private static Node generateTaskNode(Document doc, Task taskToAdd) {
 		Element node = doc.createElement("task");
 		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
 		node.setAttribute("done", String.valueOf(taskToAdd.isDone()));
@@ -361,18 +361,13 @@ public class LocalStorage implements Storage {
 
 	}
 
-<<<<<<< HEAD
-    @Override
     public boolean toggleDone(Task T) {
         // TODO Auto-generated method stub
         return false;
     }
     
-    public int generateId() {
+    public static int generateId() {
     	idGenerator++;
     	return idGenerator;
     }
-
-=======
->>>>>>> 6f451b9a0e72dda5252f63a29b1f1ef878800e17
 }

@@ -3,19 +3,25 @@ package chirptask.logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import chirptask.storage.LocalStorage;
 import chirptask.storage.Task;
 
 public class InputParser {
 	private static final int USER_INPUT_TO_ARRAYLIST = 1;
 	private static final String COMMAND_LOGIN = "login";
 
-	private static int _idGenerator = 0;
 	private String _userInput;
 	private GroupAction _actions;
 
 	public InputParser() {
+		_actions = new GroupAction(); 
 	}
-
+	
+	public InputParser(String userInput) {
+		_userInput = userInput;
+		_actions = processCommand();
+	}
+	
 	public void receiveInput(String userInput) {
 		_userInput = userInput;
 		_actions = processCommand();
@@ -167,7 +173,7 @@ public class InputParser {
 
 		getTaskFromString(parameter, toDo);
 		toDo.setType("floating"); //Needs attention. Input Parser please handle
-		toDo.setTaskId(_idGenerator++); //Needs attention.
+		toDo.setTaskId(LocalStorage.generateId()); 
 		action.setCommandType("add");
 		action.setTask(toDo);
 		negate.setCommandType("delete");
