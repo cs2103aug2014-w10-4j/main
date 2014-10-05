@@ -361,6 +361,7 @@ public class LocalStorage implements Storage {
 
 	}
 
+<<<<<<< HEAD
     @Override
     public boolean toggleDone(Task T) {
         // TODO Auto-generated method stub
@@ -372,4 +373,6 @@ public class LocalStorage implements Storage {
     	return idGenerator;
     }
 
+=======
+>>>>>>> 6f451b9a0e72dda5252f63a29b1f1ef878800e17
 }

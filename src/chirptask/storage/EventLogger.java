@@ -87,10 +87,4 @@ public class EventLogger implements Storage {
 		return null;
 	}
 
-    @Override
-    public boolean toggleDone(Task T) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
 }

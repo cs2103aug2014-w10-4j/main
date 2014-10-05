@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import com.google.api.services.calendar.model.Calendar;
+import com.google.api.services.calendar.model.Event;
 
 public class CalendarHandler {
     private static final String DEFAULT_TIME_ZONE = "Asia/Singapore";
@@ -63,8 +64,17 @@ public class CalendarHandler {
     static Calendar retrieveCalendarById(String calendarId) 
             throws UnknownHostException, IOException {
         Calendar retrievedCalendar = 
-                CalendarController._calendarClient.calendars().get(calendarId).execute();
+                CalendarController._calendarClient.calendars()
+                                    .get(calendarId).execute();
         return retrievedCalendar;
+    }
+    
+    static Event getEventFromId(String calendarId, String eventId) 
+            throws UnknownHostException, IOException {
+        Event foundEvent = 
+                CalendarController._calendarClient.events()
+                                    .get(calendarId, eventId).execute();
+        return foundEvent;
     }
 
 }

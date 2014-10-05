@@ -18,9 +18,9 @@ class ConcurrentController {
         googleExecutor = Executors.newFixedThreadPool(10);
     }
     
-    void addToExecutor(Callable<Task> task) {
+    void addToExecutor(Callable<Boolean> task) {
         startExecutorIfNotRunning();
-        Future<Task> futureTask = googleExecutor.submit(task);
+        Future<Boolean> futureTask = googleExecutor.submit(task);
     }
     
     private void startExecutorIfNotRunning() {

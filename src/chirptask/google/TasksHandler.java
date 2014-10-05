@@ -3,6 +3,7 @@ package chirptask.google;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.tasks.model.Task;
@@ -39,13 +40,14 @@ class TasksHandler {
 		return newTask;
 	}
 
-	static Task addNotes(Task taskToEdit, String notes) {
+	static Task setNotes(Task taskToEdit, String notes) {
 		Task editedTask = taskToEdit.setNotes(notes);
 		return editedTask;
 	}
 
-	static Task addDueDate(Task taskToEdit, DateTime dueDate) {
-		Task editedTask = taskToEdit.setDue(dueDate);
+	static Task setDueDate(Task taskToEdit, Date dueDate) {
+	    DateTime googleDateTime = DateTimeHandler.getDateTime(dueDate);
+		Task editedTask = taskToEdit.setDue(googleDateTime);
 		return editedTask;
 	}
 
@@ -58,6 +60,11 @@ class TasksHandler {
 		Task editedTask = taskToEdit.setStatus("needsAction");
 		editedTask = editedTask.setCompleted(null);
 		return editedTask;
+	}
+	
+	static Task setTitle(Task taskToEdit, String description) {
+	    Task editedTask = taskToEdit.setTitle(description);
+	    return editedTask;
 	}
 
 	static void clearCompletedTasks(String taskListId) 
