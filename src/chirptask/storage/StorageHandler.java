@@ -127,43 +127,23 @@ public class StorageHandler {
     }
     
     private static boolean isStoragesListInit() {
-        if (_listOfStorages != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return (_listOfStorages != null); 
     }
 
     private static boolean isLocalListInit() {
-        if (_allTasks != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return (_allTasks != null); 
     }
 
     private static boolean isLocalStorageInit() {
-        if (localStorage != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return (localStorage != null); 
     }
 
     private static boolean isEventStorageInit() {
-        if (eventStorage != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return (eventStorage != null); 
     }
 
     private static boolean isGoogleStorageInit() {
-        if (googleStorage != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return (googleStorage != null);
     }
 
 }

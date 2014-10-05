@@ -36,11 +36,10 @@ public class LocalStorage implements Storage {
 	DocumentBuilder docBuilder;
 	Transformer trans;
 	Document localStorage;
-
+	int idGenerator;
+	
 	public LocalStorage() {
 		localStorageInit();
-		addRoot();
-		writeToFile();
 	}
 
 	/**
@@ -54,9 +53,36 @@ public class LocalStorage implements Storage {
 			localStorage = docBuilder.newDocument();
 			trans = TransformerFactory.newInstance().newTransformer();
 			trans.setOutputProperty(OutputKeys.INDENT, "yes");
+			
+			if (local.exists()) {
+				int id = getLatestId();
+				System.out.println(id);
+				setIdGenerator(id);
+			} else {
+				addRoot();
+				writeToFile();
+				setIdGenerator(1);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * returns latest ID stored as root attribute
+	 * @throws SAXException
+	 * @throws IOException
+	 */
+	private int getLatestId() throws SAXException, IOException {
+		int id;
+		localStorage = docBuilder.parse(local);
+		Node root = getRoot();
+		id = Integer.parseInt(root.getAttributes().getNamedItem("LatestId").getNodeValue());
+		return id;
+	}
+
+	private void setIdGenerator(int id) {
+		idGenerator = id;
 	}
 
 	/**
@@ -64,6 +90,7 @@ public class LocalStorage implements Storage {
 	 */
 	private void addRoot() {
 		Element rootElement = localStorage.createElement("Tasks");
+		rootElement.setAttribute("LatestId", "1");
 		localStorage.appendChild(rootElement);
 	}
 
@@ -96,13 +123,13 @@ public class LocalStorage implements Storage {
 	}
 
 	/**
-	 * @return
+	 * @return root element
 	 * @throws SAXException
 	 * @throws IOException
 	 */
 	private Element getRoot() {
 		try {
-			localStorage = docBuilder.parse(local);
+//			localStorage = docBuilder.parse(local);
 			Element root = localStorage.getDocumentElement();
 			return root;
 		} catch (Exception e) {
@@ -181,7 +208,7 @@ public class LocalStorage implements Storage {
 		if (taskNode == null) {
 			return null;
 		} else {
-			taskToReturn = getTaskFromFile(taskNode);
+			taskToReturn = retrieveTaskFromFile(taskNode);
 			taskNode.getParentNode().removeChild(taskNode);
 			writeToFile();
 		}
@@ -211,7 +238,7 @@ public class LocalStorage implements Storage {
 		if (taskNode == null) {
 			return null;
 		} else {
-			return getTaskFromFile(taskNode);
+			return retrieveTaskFromFile(taskNode);
 		}
 
 	}
@@ -257,7 +284,7 @@ public class LocalStorage implements Storage {
 
 			NodeList taskNodes = localStorage.getElementsByTagName("task");
 			for (int i = 0; i < taskNodes.getLength(); i++) {
-				tasks.add(getTaskFromFile(taskNodes.item(i)));
+				tasks.add(retrieveTaskFromFile(taskNodes.item(i)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -272,7 +299,7 @@ public class LocalStorage implements Storage {
 	 * @param node
 	 * @return task
 	 */
-	private Task getTaskFromFile(Node node) {
+	private Task retrieveTaskFromFile(Node node) {
 		Task task = null;
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element item = (Element) node;
@@ -338,6 +365,11 @@ public class LocalStorage implements Storage {
     public boolean toggleDone(Task T) {
         // TODO Auto-generated method stub
         return false;
+    }
+    
+    public int generateId() {
+    	idGenerator++;
+    	return idGenerator;
     }
 
 }
