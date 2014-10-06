@@ -9,6 +9,8 @@ import java.util.List;
  */
 
 public class Task implements Comparable<Task> {
+    private static final String TASK_FLOATING = "floating";
+    
     //@author A0111889W
 	private List<String> _contexts;
 	private List<String> _categories;
@@ -22,6 +24,7 @@ public class Task implements Comparable<Task> {
 		_contexts = new ArrayList<String>();
 		_categories = new ArrayList<String>();
 		_googleId = "";
+        _type = TASK_FLOATING;
 	}
 
 	public Task(int taskId, String description) {
@@ -29,6 +32,13 @@ public class Task implements Comparable<Task> {
 		_taskId = taskId;
 		_description = description;
 	}
+	
+    public Task(int taskId, String description, String taskType) {
+        super();
+        _taskId = taskId;
+        _description = description;
+        _type = taskType;
+    }
 
 	/*
 	 * Compare first by Date object then description
