@@ -60,7 +60,8 @@ public class GoogleAuthorizer {
     }
     
     private static String getOAuthClientId() {
-        String oAuthClientId = "157073781842-d8dlmu4d07othjlqegcv7d1pdajso5gv.apps.googleusercontent.com";
+        String oAuthClientId = 
+            "157073781842-d8dlmu4d07othjlqegcv7d1pdajso5gv.apps.googleusercontent.com";
         return oAuthClientId;
     }
     
