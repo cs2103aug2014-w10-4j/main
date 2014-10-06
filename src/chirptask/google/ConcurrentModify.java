@@ -35,12 +35,12 @@ class ConcurrentModify implements Callable<Boolean> {
         switch (taskType) { // Currently, floating and deadline uses same API.
         case "floating":
         case "deadline":
-            isModified = isModified
-                    && ConcurrentHandler.modifyGoogleTasks(_taskToModify);
+            isModified = isModified && 
+                            ConcurrentHandler.modifyGoogleTask(_taskToModify);
             break;
         case "timed":
-            // isModified = isModified &&
-            // ConcurrentHandler.modifyGoogleEvent(_taskToModify);
+             isModified = isModified &&
+                            ConcurrentHandler.modifyGoogleEvent(_taskToModify);
             break;
         default:
             break;

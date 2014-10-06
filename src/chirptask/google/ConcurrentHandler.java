@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.concurrent.Callable;
 
 import chirptask.storage.GoogleStorage;
+import chirptask.storage.TimedTask;
 
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.tasks.model.Task;
@@ -39,7 +40,7 @@ class ConcurrentHandler {
         }
     }
 
-    static boolean modifyGoogleTasks(chirptask.storage.Task taskToModify)
+    static boolean modifyGoogleTask(chirptask.storage.Task taskToModify)
             throws UnknownHostException, IOException {
         boolean isModified = false;
 
@@ -52,18 +53,18 @@ class ConcurrentHandler {
             return isModified;
         }
             String taskListId = TasksController.getTaskListId();
-            Task modifiedGoogleTasks = TasksHandler.getTaskFromId(taskListId, googleId);
+            Task modifiedGoogleTask = TasksHandler.getTaskFromId(taskListId, googleId);
 
-            modifiedGoogleTasks = GoogleController
-                                    .toggleTasksDone(modifiedGoogleTasks, taskToModify);
-            modifiedGoogleTasks = GoogleController
-                                    .updateTasksDescription(modifiedGoogleTasks, taskToModify);
-            modifiedGoogleTasks = GoogleController
-                                    .updateDueDate(modifiedGoogleTasks, taskToModify);
-            modifiedGoogleTasks = TasksController
-                                    .updateTask(modifiedGoogleTasks);
+            modifiedGoogleTask = GoogleController
+                                    .toggleTasksDone(modifiedGoogleTask, taskToModify);
+            modifiedGoogleTask = GoogleController
+                                    .updateTasksDescription(modifiedGoogleTask, taskToModify);
+            modifiedGoogleTask = GoogleController
+                                    .updateDueDate(modifiedGoogleTask, taskToModify);
+            modifiedGoogleTask = TasksController
+                                    .updateTask(modifiedGoogleTask);
             
-            if (isNotNull(modifiedGoogleTasks)) {
+            if (isNotNull(modifiedGoogleTask)) {
                 /*
                  * Possibly used to overwrite googleId in local storage, eg.
                  * change type from floating to timed. (GoogleTasks <->
@@ -99,6 +100,45 @@ class ConcurrentHandler {
         } else {
             return false;
         }
+    }
+    
+    static boolean modifyGoogleEvent(chirptask.storage.Task taskToModify)
+                                    throws UnknownHostException, IOException {
+        boolean isModified = false;
+
+        // First check if Google ID exists
+        String googleId = taskToModify.getGoogleId();
+        String taskType = taskToModify.getType();
+
+        if (GoogleController.isEntryExists(googleId, taskType)) {
+            isModified = false;
+            return isModified;
+        }
+        
+            TimedTask modifyTask = (TimedTask) taskToModify;
+            Date newStartTime = modifyTask.getStartTime();
+            Date newEndTime = modifyTask.getEndTime();
+            String newDescription = modifyTask.getDescription();
+            String calendarId = CalendarController.getCalendarId();
+        
+            Event modifiedGoogleEvent = CalendarHandler.getEventFromId(calendarId, googleId);
+            modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent, newDescription);
+            modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent, newStartTime);
+            modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent, newEndTime);
+            modifiedGoogleEvent = CalendarHandler.updateEvent(calendarId, googleId, modifiedGoogleEvent);
+            
+            if (isNotNull(modifiedGoogleEvent)) {
+                /*
+                 * Possibly used to overwrite googleId in local storage, eg.
+                 * change type from floating to timed. (GoogleTasks <->
+                 * GoogleCalendar)
+                 * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask,
+                 * taskToModify);
+                 */
+                isModified = true;
+            }
+
+        return isModified;
     }
 
     /*

@@ -72,10 +72,13 @@ public class CalendarHandler {
     //Methods related to Events
     static Event createEvent(String eventName) {
         Event newEvent = new Event();
-        
-        newEvent.setSummary(eventName);
-        
+        newEvent = setSummary(newEvent, eventName);
         return newEvent;
+    }
+    
+    static Event setSummary(Event eventToSet, String eventDescription) {
+        Event updatedEvent = eventToSet.setSummary(eventDescription);
+        return updatedEvent;
     }
     
     static Event setStart(Event eventToSet, Date startTime) {
@@ -109,6 +112,17 @@ public class CalendarHandler {
                                 .insert(calendarId, eventToInsert)
                                 .execute();
         return insertedEvent;
+    }
+    
+    static Event updateEvent(String calendarId, String eventId, Event newEvent) 
+            throws UnknownHostException, IOException {
+        
+        com.google.api.services.calendar.Calendar calendarClient = 
+                CalendarController.getCalendarClient();
+        
+        Event updatedEvent = calendarClient.events().update(calendarId, eventId, newEvent).execute();
+        
+        return updatedEvent;
     }
     
     static Event getEventFromId(String calendarId, String eventId) 
