@@ -330,14 +330,23 @@ public class GoogleController implements Runnable {
         }
     }
     
-    static Task updateDueDate(Task taskToUpdate, chirptask.storage.Task updatedTask) {
-        Date newDueDate = updatedTask.getDate();
-        Task updatedGoogleTask = _tasksController.updateDueDate(taskToUpdate, newDueDate);
+    static Task updateDueDate(Task taskToUpdate, 
+                                chirptask.storage.Task updatedTask) {
+        String taskType = updatedTask.getType();
+        
+        if (taskType.equals("deadline")) { //magic string, must solve this.
+            Date newDueDate = updatedTask.getDate();
+        
+            Task updatedGoogleTask = 
+                    _tasksController.updateDueDate(taskToUpdate, newDueDate);
 
-        if (updatedGoogleTask != null) {
-            return updatedGoogleTask;
-        } else {
-            return null;
+            if (updatedGoogleTask != null) {
+                return updatedGoogleTask;
+            } else {
+                return taskToUpdate;
+            }
+        } else { //Is a floating task
+            return taskToUpdate;
         }
     }
     

@@ -31,11 +31,7 @@ class ConcurrentAdd implements Callable<Boolean> {
 
         String type = _taskToAdd.getType();
         String task = _taskToAdd.getDescription();
-        Date date = null;
 
-        if (_taskToAdd.getDate() != null) {
-            date = _taskToAdd.getDate();
-        }
         Task addedGoogleTask = null;
 
         switch (type) {
@@ -43,7 +39,8 @@ class ConcurrentAdd implements Callable<Boolean> {
             addedGoogleTask = GoogleController.addFloatingTask(task);
             break;
         case "deadline":
-            addedGoogleTask = GoogleController.addDeadlineTask(task, date);
+            Date dueDate = _taskToAdd.getDate();
+            addedGoogleTask = GoogleController.addDeadlineTask(task, dueDate);
             break;
         case "timed":
             break;
