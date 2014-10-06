@@ -581,6 +581,7 @@ public class MainGui extends Application {
         _taskViewDateMap.get(convertDateToString(date)).getChildren()
                 .add(taskPane);
 
+        
         return true;
     }
     

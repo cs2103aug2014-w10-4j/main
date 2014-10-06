@@ -1,11 +1,14 @@
 package chirptask.logic;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import chirptask.gui.MainGui;
+import chirptask.storage.DeadlineTask;
 import chirptask.storage.LocalStorage;
 import chirptask.storage.Task;
+import chirptask.storage.TimedTask;
 
 public class InputParser {
 	private static final int USER_INPUT_TO_ARRAYLIST = 1;
@@ -32,8 +35,8 @@ public class InputParser {
 		String commandType = getCommandTypeString();
 		String parameter = getParameter();
 		switch (commandType) {
-		case "add":
-			return processForAdd(parameter);
+		case "add": case "addt": case "addd":
+			return processForAdd(commandType, parameter);
 		case "edit":
 			return processForEdit(parameter);
 		case "delete":
@@ -183,14 +186,30 @@ public class InputParser {
 		return actions;
 	}
 
-	private GroupAction processForAdd(String parameter) {
+	private GroupAction processForAdd(String command, String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
 		Action negate = new Action();
-		Task toDo = new Task();
-
+		Task toDo;
+		DateParser dp = new DateParser(parameter);
+		switch (command) {
+		case "addd":
+			toDo = new DeadlineTask();
+			toDo.setType("deadline task");
+			if (dp.getDate().size() >= 1) {
+				((DeadlineTask) toDo).setDate(dp.getDate().get(0));
+			}
+			break;
+		case "addt":
+			toDo = new TimedTask();
+			toDo.setType("timed task");
+			((TimedTask) toDo).setEndTime(dp.getDate().get(0));
+			break;
+		default:
+			toDo = new Task();
+			toDo.setType("floating");
+		}
 		getTaskFromString(parameter, toDo);
-		toDo.setType("floating"); // Needs attention. Input Parser please handle
 		toDo.setTaskId(LocalStorage.generateId());
 		action.setCommandType("add");
 		action.setTask(toDo);
@@ -205,7 +224,7 @@ public class InputParser {
 	private void getTaskFromString(String parameter, Task task) {
 		parameter = parameter.trim();
 		String[] taskDesc = parameter.split("@|#", 2);
-		// task.setDescription(taskDesc[0]);
+	//	task.setDescription(taskDesc[0]);
 		task.setDescription(parameter);
 
 		if (taskDesc.length > 1 && !taskDesc[1].equals("")) {

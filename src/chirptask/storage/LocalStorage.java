@@ -148,10 +148,12 @@ public class LocalStorage implements Storage {
 		Element node = doc.createElement("task");
 		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
 		node.setAttribute("done", String.valueOf(taskToAdd.isDone()));
-
+		
 		node.appendChild(getElement(doc, "description",
 				taskToAdd.getDescription()));
-
+		
+		node.appendChild(getElement(doc, "googleId", taskToAdd.getGoogleId()));
+		
 		List<String> contexts = taskToAdd.getContexts();
 		if (contexts != null && !contexts.isEmpty()) {
 			for (String s : contexts) {
@@ -166,14 +168,14 @@ public class LocalStorage implements Storage {
 			}
 		}
 
-		if (taskToAdd instanceof TimedTask) {
+		if (taskToAdd.getType().equalsIgnoreCase("timed task")) {
 			TimedTask timedTask = (TimedTask) taskToAdd;
 			node.appendChild(getElement(doc, "type", "Timed Task"));
 			node.appendChild(getElement(doc, "start", taskToAdd.getDate()
 					.toString()));
 			node.appendChild(getElement(doc, "end", timedTask.getEndTime()
 					.toString()));
-		} else if (taskToAdd instanceof DeadlineTask) {
+		} else if (taskToAdd.getType().equalsIgnoreCase("deadline task")) {
 			node.appendChild(getElement(doc, "deadline", taskToAdd.getDate()
 					.toString()));
 			node.appendChild(getElement(doc, "type", "Deadline Task"));
