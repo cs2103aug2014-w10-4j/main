@@ -213,10 +213,10 @@ public class InputParser {
 			ArrayList<String> contexts = new ArrayList<String>();
 			ArrayList<String> categories = new ArrayList<String>();
 			for (int i = 1; i < conCat.length; i++) {
-				if (conCat[i].contains("@") && conCat[i].length() > 1) {
+				if (conCat[i].contains("#") && conCat[i].length() > 1) {
 					contexts.add(conCat[i].substring(1));
 				}
-				if (conCat[i].contains("#") && conCat[i].length() > 1) {
+				if (conCat[i].contains("@") && conCat[i].length() > 1) {
 					categories.add(conCat[i].substring(1));
 				}
 			}
