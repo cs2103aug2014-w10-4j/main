@@ -96,7 +96,7 @@ public class DisplayView {
 						"ERROR", action.getTask().getDescription()));
 			} else if (action.getCommandType().equalsIgnoreCase("delete")) {
 				gui.setError(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
-						"ERROR", action.getTask().getTaskId()));
+						"ERROR", action.getTask().getDescription()));
 			} else if (action.getCommandType().equalsIgnoreCase("Edit")) {
 				gui.setError(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
 						"ERROR", action.getTask().getDescription()));
@@ -117,7 +117,7 @@ public class DisplayView {
 						"Success", action.getTask().getDescription()));
 			} else if (action.getCommandType().equalsIgnoreCase("delete")) {
 				gui.setStatus(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
-						"Success", action.getTask().getTaskId()));
+						"Success", action.getTask().getDescription()));
 			} else if (action.getCommandType().equalsIgnoreCase("Edit")) {
 				gui.setStatus(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
 						"Success", action.getTask().getDescription()));
