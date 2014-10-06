@@ -278,8 +278,8 @@ public class LocalStorage implements Storage {
 	/**
 	 * This method returns a list of tasks stored in XML file
 	 */
-	public ArrayList<Task> getAllTasks() {
-		ArrayList<Task> tasks = new ArrayList<Task>();
+	public List<Task> getAllTasks() {
+		List<Task> tasks = new ArrayList<Task>();
 		try {
 			localStorage = docBuilder.parse(local);
 			localStorage.getDocumentElement().normalize();

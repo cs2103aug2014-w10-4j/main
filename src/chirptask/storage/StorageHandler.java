@@ -21,6 +21,7 @@ public class StorageHandler {
         addLocalList();
         addLocalStorage();
         addEventStorage();
+        setAllTasks(localStorage.getAllTasks());
     }
 
     public boolean initCloudStorage() {
@@ -69,6 +70,10 @@ public class StorageHandler {
     public static List<Task> getAllTasks() {
         return _allTasks;
     }
+    
+    public void setAllTasks(List<Task> allTasks) {
+        _allTasks = allTasks;
+    }
 
     // @author A0111889W
     public void closeStorages() {
@@ -105,14 +110,18 @@ public class StorageHandler {
     }
 
     // @author A0111889W
-    public boolean deleteTask(Task deletedTask) {
+    public Task deleteTask(Task deletedTask) {
         boolean isDeleted = false;
         _allTasks.remove(deletedTask);
         for (Storage individualStorage : _listOfStorages) {
             individualStorage.removeTask(deletedTask);
         }
         isDeleted = true;
-        return isDeleted;
+        if(isDeleted){
+        	return deletedTask;
+        } else{
+        	return null;
+        }
     }
 
     static void updateGoogleId(Task modifiedTask) {

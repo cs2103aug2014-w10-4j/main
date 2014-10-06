@@ -32,7 +32,7 @@ public class Action {
 	}
 
 	public String getCommandType() {
-		return this._commandType;
+		return _commandType;
 	}
 
 	public void setCommandType(String commandType) {
@@ -47,7 +47,7 @@ public class Action {
 		_task = task;
 	}
 
-	public Action undo(Action undo) {
+	public Action undo() {
 		// do some negation logic
 		return _negateAction;
 	}
