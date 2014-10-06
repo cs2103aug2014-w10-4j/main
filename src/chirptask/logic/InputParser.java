@@ -130,17 +130,26 @@ public class InputParser {
 	}
 
 	private void convertFromIndexToId(List<Integer> list) {
-		List<Integer> index = MainGui.getTaskIndexToId();
+        List<Task> allTasks = FilterTasks.getFilteredList();
 		for (int i = 0; i < list.size(); i++) {
-			int ind = list.get(i) - 1;
-			if (ind < index.size() && ind >= 0) {
-				list.set(i, index.get(ind));
+		    int index = list.get(i);
+			int normalizedIndex = normalizeIndexToListId(index);
+			if (normalizedIndex < allTasks.size() && normalizedIndex >= 0) {
+				Integer listId = allTasks.get(normalizedIndex).getTaskId();
+				list.set(i, listId);
+			} else {
+			    list.remove(i);
 			}
 		}
 	}
+	
+	private int normalizeIndexToListId(int index) {
+	    int listId = index - 1;
+	    return listId;
+	}
 
 	private List<Integer> getTaskIndexFromString(String parameter) {
-		List<Integer> taskIds = new ArrayList<Integer>();
+		List<Integer> taskIds = new ArrayList<Integer>(); //Maybe use set, See below.
 		String[] split = parameter.trim().split("\\s+|,");
 		for (int i = 0; i < split.length; i++) {
 			if (!split[i].equals("") && split[i].contains("-")) {
@@ -148,10 +157,10 @@ public class InputParser {
 				int start = Integer.parseInt(sequence[0]);
 				int end = Integer.parseInt(sequence[1]);
 				for (int j = start; j <= end; j++) {
-					taskIds.add(j);
+					taskIds.add(j); //what if delete 1-2 1-2 1-2? Maybe use Set.
 				}
 			} else if (!split[i].equals("")) {
-				taskIds.add(Integer.parseInt(split[i]));
+				taskIds.add(Integer.parseInt(split[i])); //what if delete 1 1 1 
 			}
 		}
 
@@ -212,7 +221,7 @@ public class InputParser {
 			String[] conCat = parameter.split("(?=@|#)");
 			ArrayList<String> contexts = new ArrayList<String>();
 			ArrayList<String> categories = new ArrayList<String>();
-			for (int i = 1; i < conCat.length; i++) {
+			for (int i = 0; i < conCat.length; i++) {
 				if (conCat[i].contains("#") && conCat[i].length() > 1) {
 					contexts.add(conCat[i].substring(1));
 				}
