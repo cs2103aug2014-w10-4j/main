@@ -154,6 +154,7 @@ public class Logic {
 			break;
 		case DISPLAY:
 			// now can only filter string
+			System.out.println("Display");
 			processDisplay(task);
 			break;
 		case EDIT:
@@ -209,6 +210,7 @@ public class Logic {
 	}
 
 	private void processDisplay(Task task) {
+		clearUI();
 		FilterTasks.filter(task);
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}

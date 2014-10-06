@@ -20,15 +20,18 @@ public class FilterTasks {
 		currentFilter = T.getDescription();
 		List<Task> allTask = StorageHandler.getAllTasks();
 		// check 1st String to determine the type of filter
-		for (Task a : allTask) {
-			if (a.getDescription().contains(currentFilter)) {
-				filteredTask.add(a);
+		if (currentFilter.isEmpty()) {
+			filteredTask = StorageHandler.getAllTasks();
+		} else {
+			for (Task a : allTask) {
+				if (a.getDescription().contains(currentFilter)) {
+					filteredTask.add(a);
+				}
+			}
+			for (Task task : filteredTask) {
+				populateContext(task);
 			}
 		}
-		for (Task task : filteredTask) {
-			populateContext(task);
-		}
-
 	}
 
 	// Add in filter time, date, task, done, undone
@@ -62,24 +65,24 @@ public class FilterTasks {
 	}
 
 	private static void populateCategory(Task task) {
-		
-			for (String category : task.getCategories()) {
-				if (!categoriesList.contains(category.toLowerCase())) {
-					categoriesList.add(category.toLowerCase());
-					
-				}
+
+		for (String category : task.getCategories()) {
+			if (!categoriesList.contains(category.toLowerCase())) {
+				categoriesList.add(category.toLowerCase());
+
 			}
-		
+		}
+
 	}
 
 	private static void populateContext(Task task) {
-		
-			for (String context : task.getContexts()) {
-				if (!contextsList.contains(context.toLowerCase())) {
-					contextsList.add(context.toLowerCase());
-				}
+
+		for (String context : task.getContexts()) {
+			if (!contextsList.contains(context.toLowerCase())) {
+				contextsList.add(context.toLowerCase());
 			}
-		
+		}
+
 	}
 
 	public static List<Task> getFilteredList() {
@@ -89,8 +92,8 @@ public class FilterTasks {
 	public static List<String> getContextList() {
 		return contextsList;
 	}
-	
-	public static List<String> getCategoryList(){
+
+	public static List<String> getCategoryList() {
 		return categoriesList;
 	}
 }
