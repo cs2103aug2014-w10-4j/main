@@ -40,8 +40,10 @@ public class InputParser {
             return processForDelete(parameter);
         case "done":
             return processForDone(parameter);
+        case "undone":
+            return processForUndone(parameter);
         case "undo":
-            return processNoTask(commandType);
+            return processUndo(commandType);
         case "display":
             return processDisplay(parameter);
         case "login":
@@ -63,7 +65,7 @@ public class InputParser {
                     task.setDescription(filters[i]);
                     action.setCommandType("display");
                     action.setTask(task);
-                    action.setUndo(null);
+                    action.setUndo(null); //previous filter?
                     actions.addAction(action);
                 }
             }
@@ -84,27 +86,56 @@ public class InputParser {
         GroupAction actions = null;
         List<Integer> list = getTaskIndexFromString(parameter);
         if (list != null) {
-            convertFromIndexToId(list);
+            // convertFromIndexToId(list);
             actions = new GroupAction();
+            List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
                 action.setCommandType("done");
-                Task task = new Task();
-                task.setTaskId(i);
-                action.setTask(task);
+                int normalizedIndex = normalizeIndexToListId(i);
+                if (isIndexInRange(normalizedIndex)) {
+                    Task task = allTasks.get(normalizedIndex);
+                    action.setTask(task);
 
-                Action negate = new Action();
-                negate.setCommandType("undone");
-                negate.setTask(task);
+                    Action negate = new Action();
+                    negate.setCommandType("undone");
+                    negate.setTask(task);
 
-                action.setUndo(negate);
-                actions.addAction(action);
+                    action.setUndo(negate);
+                    actions.addAction(action);
+                }
             }
         }
         return actions;
     }
 
-    private GroupAction processNoTask(String command) {
+    private GroupAction processForUndone(String parameter) {
+        GroupAction actions = null;
+        List<Integer> list = getTaskIndexFromString(parameter);
+        if (list != null) {
+            actions = new GroupAction();
+            List<Task> allTasks = FilterTasks.getFilteredList();
+            for (Integer i : list) {
+                Action action = new Action();
+                action.setCommandType("undone");
+                int normalizedIndex = normalizeIndexToListId(i);
+                if (isIndexInRange(normalizedIndex)) {
+                    Task task = allTasks.get(normalizedIndex);
+                    action.setTask(task);
+
+                    Action negate = new Action();
+                    negate.setCommandType("done");
+                    negate.setTask(task);
+
+                    action.setUndo(negate);
+                    actions.addAction(action);
+                }
+            }
+        }
+        return actions;
+    }
+
+    private GroupAction processUndo(String command) {
         GroupAction actions = new GroupAction();
         Action action = new Action();
         action.setCommandType(command);
@@ -117,22 +148,24 @@ public class InputParser {
         List<Integer> list = getTaskIndexFromString(parameter);
 
         if (list != null) {
-            convertFromIndexToId(list);
+            // convertFromIndexToId(list);
             actions = new GroupAction();
+            List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
                 action.setCommandType("delete");
-                Task task = new Task();
-                task.setTaskId(i);
-                task.setDescription("");
-                action.setTask(task);
+                int normalizedIndex = normalizeIndexToListId(i);
+                if (isIndexInRange(normalizedIndex)) {
+                    Task task = allTasks.get(normalizedIndex);
+                    action.setTask(task);
 
-                Action negate = new Action();
-                negate.setCommandType("add");
-                negate.setTask(task);
+                    Action negate = new Action();
+                    negate.setCommandType("add");
+                    negate.setTask(task);
 
-                action.setUndo(negate);
-                actions.addAction(action);
+                    action.setUndo(negate);
+                    actions.addAction(action);
+                }
             }
         }
         return actions;
@@ -158,8 +191,7 @@ public class InputParser {
     }
 
     private List<Integer> getTaskIndexFromString(String parameter) {
-        List<Integer> taskIds = new ArrayList<Integer>(); // Maybe use set, See
-                                                          // below.
+        List<Integer> taskIds = new ArrayList<Integer>(); 
         String[] split = parameter.trim().split("\\s+|,");
         for (int i = 0; i < split.length; i++) {
             if (!split[i].equals("") && split[i].contains("-")) {
@@ -167,11 +199,10 @@ public class InputParser {
                 int start = Integer.parseInt(sequence[0]);
                 int end = Integer.parseInt(sequence[1]);
                 for (int j = start; j <= end; j++) {
-                    taskIds.add(j); // what if delete 1-2 1-2 1-2? Maybe use
-                                    // Set.
+                    taskIds.add(j); 
                 }
             } else if (!split[i].equals("")) {
-                taskIds.add(Integer.parseInt(split[i])); // what if delete 1 1 1
+                taskIds.add(Integer.parseInt(split[i]));
             }
         }
 
@@ -182,20 +213,24 @@ public class InputParser {
         GroupAction actions = new GroupAction();
         Action action = new Action();
         Action negate = new Action();
-        Task toDo = new Task();
 
         int taskId = getId(parameter);
         if (taskId >= 1) {
+            List<Task> taskList = FilterTasks.getFilteredList();
+            int normalizedIndex = normalizeIndexToListId(taskId);
+            Task oldTask = taskList.get(normalizedIndex);
             String[] parameters = parameter.trim().split("\\s+", 2);
             if (parameters.length > 1) {
                 parameter = parameters[1];
-                getTaskFromString(parameter, toDo);
-                toDo.setTaskId(taskId);
+
+                Task editedTask = getTaskFromString(parameter); //we should handle edit better.
+                //edit description? or edit due date? or edit start/end time?
+                editedTask.setTaskId(oldTask.getTaskId());
 
                 action.setCommandType("edit");
-                action.setTask(toDo);
+                action.setTask(editedTask);
                 negate.setCommandType("edit");
-                negate.setTask(new Task(taskId, ""));
+                negate.setTask(oldTask);
                 action.setUndo(negate);
             }
             actions.addAction(action);
@@ -208,16 +243,15 @@ public class InputParser {
         if (parameter != null) {
             Action action = new Action();
             Action negate = new Action();
-            Task toDo = new Task();
 
-            getTaskFromString(parameter, toDo);
-            toDo.setType("floating"); // Needs attention. Input Parser please
+            Task newTask = getTaskFromString(parameter);
+            newTask.setType("floating"); // Needs attention. Input Parser please
                                       // handle
-            toDo.setTaskId(LocalStorage.generateId());
+            newTask.setTaskId(LocalStorage.generateId());
             action.setCommandType("add");
-            action.setTask(toDo);
+            action.setTask(newTask);
             negate.setCommandType("delete");
-            negate.setTask(toDo);
+            negate.setTask(newTask);
             action.setUndo(negate);
 
             actions.addAction(action);
@@ -225,16 +259,17 @@ public class InputParser {
         return actions;
     }
 
-    private void getTaskFromString(String parameter, Task task) {
+    private Task getTaskFromString(String parameter) {
+        Task newTask = new Task();
         parameter = parameter.trim();
         String[] taskDesc = parameter.split("@|#", 2);
         // task.setDescription(taskDesc[0]);
-        task.setDescription(parameter);
+        newTask.setDescription(parameter);
 
         if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
             String[] conCat = parameter.split("(?=@|#)");
-            ArrayList<String> contexts = new ArrayList<String>();
-            ArrayList<String> categories = new ArrayList<String>();
+            List<String> contexts = new ArrayList<String>();
+            List<String> categories = new ArrayList<String>();
             for (int i = 0; i < conCat.length; i++) {
                 if (conCat[i].contains("#") && conCat[i].length() > 1) {
                     contexts.add(conCat[i].substring(1));
@@ -243,9 +278,10 @@ public class InputParser {
                     categories.add(conCat[i].substring(1));
                 }
             }
-            task.setCategories(categories);
-            task.setContexts(contexts);
+            newTask.setCategories(categories);
+            newTask.setContexts(contexts);
         }
+        return newTask;
     }
 
     private int getId(String parameter) {
@@ -301,5 +337,14 @@ public class InputParser {
 
     public void setActions(GroupAction actions) {
         _actions = actions;
+    }
+
+    private boolean isIndexInRange(int index) {
+        boolean isInRange = false;
+        List<Task> allTasks = FilterTasks.getFilteredList();
+        if (index >= 0 && index < allTasks.size()) {
+            isInRange = true;
+        }
+        return isInRange;
     }
 }

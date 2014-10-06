@@ -3,23 +3,15 @@ package chirptask.logic;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
-import chirptask.google.GoogleController;
 import chirptask.gui.*;
 
 enum CommandType {
-	ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, LOGIN, INVALID, EXIT
+	ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT
 }
 
 enum StatusType {
@@ -130,7 +122,9 @@ public class Logic {
 			return CommandType.UNDO;
 		} else if (commandTypeString.equalsIgnoreCase("done")) {
 			return CommandType.DONE;
-		} else if (commandTypeString.equalsIgnoreCase("login")) {
+		} else if (commandTypeString.equalsIgnoreCase("undone")) {
+            return CommandType.UNDONE;
+        } else if (commandTypeString.equalsIgnoreCase("login")) {
 			return CommandType.LOGIN;
 		} else if (commandTypeString.equalsIgnoreCase("exit")) {
 			return CommandType.EXIT;
@@ -162,11 +156,14 @@ public class Logic {
 			break;
 		case UNDO:
 			// negate action and run excecuteAction again
-			processUndo(command);
+			processUndo();
 			break;
 		case DONE:
 			processDone(command, task);
 			break;
+        case UNDONE:
+            processUndone(command, task);
+            break;
 		case LOGIN:
 			processLogin(command);
 			break;
@@ -195,14 +192,19 @@ public class Logic {
 		task.setDone(true);
 		processEdit(command, task);
 	}
+	
+	private void processUndone(Action command, Task task) {
+        task.setDone(false);
+        processEdit(command, task);
+    }
 
-	private void processUndo(Action command) {
-		executeAction(command.undo(this.getLastAction()));
-        clearUi();
-		FilterTasks.filter();
-		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+	private void processUndo() {
+	    Action lastAction = getLastAction();
+	    Action undoAction = lastAction.undo();
+	    undoAction.setUndo(lastAction);
+		executeAction(undoAction);
 	}
-
+	
 	private void processEdit(Action command, Task task) {
 		boolean isSuccess;
 		isSuccess = _storageHandler.modifyTask(task);
@@ -229,7 +231,7 @@ public class Logic {
 
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		// set lastAction
-		this.setLastAction(command);
+	    this.setLastAction(command);
         clearUi();
 		FilterTasks.filter();
 		showStatusToUser(command, isSuccess);
