@@ -50,6 +50,9 @@ public class FilterTasks {
 					filteredTask.add(a);
 				}
 			}
+			categoriesList.clear();
+			contextsList.clear();
+			populateCategoryAndContext();
 		}
 	}
 
@@ -61,37 +64,24 @@ public class FilterTasks {
 	}
 
 	private static void populateCategory(Task task) {
-		if (categoriesList.isEmpty()) {
+		
 			for (String category : task.getCategories()) {
-				if (!categoriesList.contains(category)) {
-					categoriesList.add(category);
+				if (!categoriesList.contains(category.toLowerCase())) {
+					categoriesList.add(category.toLowerCase());
+					
 				}
 			}
-		} else {
-			categoriesList.clear();
-			for (String category : task.getCategories()) {
-				if (!categoriesList.contains(category)) {
-					categoriesList.add(category);
-				}
-			}
-		}
+		
 	}
 
 	private static void populateContext(Task task) {
-		if (contextsList.isEmpty()) {
+		
 			for (String context : task.getContexts()) {
-				if (!contextsList.contains(context)) {
-					contextsList.add(context);
+				if (!contextsList.contains(context.toLowerCase())) {
+					contextsList.add(context.toLowerCase());
 				}
 			}
-		} else {
-			contextsList.clear();
-			for (String context : task.getContexts()) {
-				if (!contextsList.contains(context)) {
-					contextsList.add(context);
-				}
-			}
-		}
+		
 	}
 
 	public static List<Task> getFilteredList() {
