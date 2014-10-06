@@ -157,9 +157,6 @@ public class GoogleController implements Runnable {
             CONCURRENT.close(); //Should be called when application exits to prevent leakage
         }
     }
- 
-
-    
 
     /**
      * deletes a specific task in Google Tasks by its ID
@@ -290,6 +287,7 @@ public class GoogleController implements Runnable {
         Event addedEvent = _calendarController.addTimedTask(taskTitle, startTime, endTime);
         return addedEvent;
     }
+    
     
     // Called by ConcurrentDelete
     static boolean deleteTask(chirptask.storage.Task taskToDelete) 
