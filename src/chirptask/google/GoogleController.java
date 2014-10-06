@@ -343,8 +343,8 @@ public class GoogleController implements Runnable {
     public void modifyTask(chirptask.storage.Task taskToModify) 
                                 throws UnknownHostException, IOException {
         if (isGoogleLoaded()) {
-            ConcurrentDelete modifyTask = 
-                    new ConcurrentDelete(taskToModify);
+            ConcurrentModify modifyTask = 
+                    new ConcurrentModify(taskToModify);
             CONCURRENT.addToExecutor(modifyTask);
 
             CONCURRENT.close(); //Should be called when application exits to prevent leakage
