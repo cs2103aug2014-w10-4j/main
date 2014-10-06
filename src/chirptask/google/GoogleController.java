@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.Date;
-import java.util.concurrent.Callable;
 
 import chirptask.storage.GoogleStorage;
 
@@ -15,7 +14,6 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.Event;
