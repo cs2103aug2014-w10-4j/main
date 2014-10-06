@@ -19,7 +19,7 @@ public class DisplayView {
      * 
      * @param _gui
      * */
-    public static void updateTaskView(List<Task> tasks, MainGui _gui) {
+    public static void updateTaskView(List<Task> tasks, MainGui gui) {
         // Should change .getAllTasks() to arraylist?
         // List<Task> allTasks = _storageHandler.getAllTasks();
         Collections.sort(tasks);
@@ -31,13 +31,13 @@ public class DisplayView {
             if (map.containsKey(currDate)) {
                 map.get(currDate).addToTaskList(task);
             } else {
-                TasksByDate dateTask = new TasksByDate();
-                dateTask.setTaskDate(task.getDate());
-                dateTask.addToTaskList(task);
-                _gui.addNewTaskViewDate(task.getDate());
+                  TasksByDate dateTask = new TasksByDate();
+              //  dateTask.setTaskDate(task.getDate());
+              //  dateTask.addToTaskList(task);
+                gui.addNewTaskViewDate(task.getDate());
                 map.put(currDate, dateTask);
             }
-            _gui.addNewTaskViewToDate(new Date(), task.getTaskId(),
+            gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
                     task.getDescription(), task.getDate().toString(),
                     task.isDone());
 
@@ -59,7 +59,7 @@ public class DisplayView {
         if (allTasks != null) {
             //allTasks is emptyt
             Collections.sort(allTasks);
-            System.out.println(allTasks);
+            //System.out.println(allTasks);
             // call filter
             updateTaskView(allTasks, gui);
         }
@@ -67,18 +67,17 @@ public class DisplayView {
     }
 
     // Take in type, action
-    public static void showStatusToUser(StatusType type, Action action) {
+    public static void showStatusToUser(StatusType type, Action action, MainGui gui) {
         if (type == StatusType.ERROR) {
             // message processing and call GUI api
-            action.getCommandType();
-            action.getTask().getDescription();
-            action.getTask().getDate().toString();
+        	gui.setError("Error in " + action.getCommandType());
+            //action.getCommandType();
+            //action.getTask().getDescription();
+            //action.getTask().getDate().toString();
 
         } else {
             // message processing and call GUI api
-            action.getCommandType();
-            action.getTask().getDescription();
-            action.getTask().getDate().toString();
+        	gui.setStatus("Success in "+ action.getCommandType());
         }
     }
     // Add in checkTaskType
