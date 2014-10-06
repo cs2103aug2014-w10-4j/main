@@ -14,7 +14,7 @@ import chirptask.storage.Task;
 public class DisplayView {
 	/**
 	 * This will take in a filtered list and update the taskview, sort to
-	 * date/time, store into Arraylist of TasksByDates of arraylist of tasks
+	 * date/time, store into List of tasks
 	 * 
 	 * @param _gui
 	 * */

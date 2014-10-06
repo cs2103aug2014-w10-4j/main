@@ -40,7 +40,6 @@ public class Logic {
 			new InputStreamReader(System.in));
 
 	public Logic(MainGui gui) {
-
 		_storageHandler = new StorageHandler();
 		_parser = new InputParser();
 		_gui = gui;
@@ -100,6 +99,11 @@ public class Logic {
 
 	private void exitChirpTask(int typeOfExit) {
 		System.exit(typeOfExit);
+	}
+	
+	private void clearUI() {
+	    _gui.clearTrendingList();
+	    _gui.clearTaskView();
 	}
 
 	public void retrieveInputFromUI(String input) {
@@ -193,6 +197,7 @@ public class Logic {
 
 	private void processUndo(Action command) {
 		executeAction(command.undo(this.getLastAction()));
+        clearUI();
 		FilterTasks.filter();
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
@@ -223,6 +228,7 @@ public class Logic {
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		// set lastAction
 		this.setLastAction(command);
+        clearUI();
 		FilterTasks.filter();
 		showStatusToUser(command, isSuccess);
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);

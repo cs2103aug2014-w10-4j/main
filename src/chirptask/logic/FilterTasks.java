@@ -38,9 +38,7 @@ public class FilterTasks {
 		contextsList = new ArrayList<String>();
 		if (currentFilter.isEmpty()) {
 			filteredTask = StorageHandler.getAllTasks();
-
 			populateCategoryAndContext();
-
 		} else {
 			filteredTask = new ArrayList<Task>();
 			List<Task> allTask = StorageHandler.getAllTasks();

@@ -130,7 +130,7 @@ public class InputParser {
 	}
 
 	private void convertFromIndexToId(List<Integer> list) {
-		ArrayList<Integer> index = MainGui.getTaskIndexToId();
+		List<Integer> index = MainGui.getTaskIndexToId();
 		for (int i = 0; i < list.size(); i++) {
 			int ind = list.get(i) - 1;
 			if (ind < index.size() && ind >= 0) {

@@ -3,6 +3,7 @@ package chirptask.gui;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -64,9 +65,9 @@ public class MainGui extends Application {
     private final VBox _taskViewByDate = new VBox();
 
     private final SortedMap<String, VBox> _taskViewDateMap = new TreeMap<>();
-    private static final ArrayList<Integer> _taskIndexToId = new ArrayList<>();
+    private static final List<Integer> _taskIndexToId = new ArrayList<>();
 
-    private Logic _logic = new Logic(this);
+    private Logic _logic;
 
     /*
      * (non-Javadoc)
@@ -88,6 +89,8 @@ public class MainGui extends Application {
 
         prepareScene(primaryStage, border, mainDisplay, trendingList);
         primaryStage.show();
+        
+        _logic = new Logic(this);
 
         /* addCategoryIntoList("123");
          addContextIntoList("TEST");
@@ -584,7 +587,13 @@ public class MainGui extends Application {
         return true;
     }
     
-    public static ArrayList<Integer> getTaskIndexToId() {
+    public void clearTaskView() {
+        _taskViewByDate.getChildren().clear();
+        _taskViewDateMap.clear();
+        _taskIndexToId.clear();
+    }
+    
+    public static List<Integer> getTaskIndexToId() {
     	return _taskIndexToId;
     }
 
