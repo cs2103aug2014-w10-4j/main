@@ -190,6 +190,7 @@ public class InputParser {
 		Task toDo = new Task();
 
 		getTaskFromString(parameter, toDo);
+		toDo.setType("floating"); // Needs attention. Input Parser please handle
 		toDo.setTaskId(LocalStorage.generateId());
 		action.setCommandType("add");
 		action.setTask(toDo);

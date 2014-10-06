@@ -3,15 +3,17 @@ package chirptask.storage;
 import java.util.Date;
 
 public class TimedTask extends Task {
-    private static final String TASK_TIMED = "timedtask";
-    
     //@author A0111889W
 	Date _startTime;
 	Date _endTime;
 
+	public TimedTask() {
+		super();
+	}
+
 	public TimedTask(int taskId, String description, Date startTime,
 			Date endTime) {
-		super(taskId, description, TASK_TIMED);
+		super(taskId, description);
 		_startTime = startTime;
 		_endTime = endTime;
 	}
