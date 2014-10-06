@@ -23,8 +23,11 @@ public class StorageHandler {
         addEventStorage();
     }
 
-    public void initCloudStorage() {
+    public boolean initCloudStorage() {
+        boolean isInit = false;
         addGoogleStorage();
+        isInit = true;
+        return isInit;
     }
 
     /*private void createStoragesList() {
@@ -75,7 +78,8 @@ public class StorageHandler {
     }
 
     // @author A0111889W
-    public void modifyTask(Task modifiedTask) {
+    public boolean modifyTask(Task modifiedTask) {
+        boolean isModified = false;
         if (_allTasks.contains(modifiedTask)) {
             int indexOfTask = _allTasks.indexOf(modifiedTask);
             _allTasks.add(indexOfTask, modifiedTask);
@@ -85,22 +89,30 @@ public class StorageHandler {
         for (Storage individualStorage : _listOfStorages) {
             individualStorage.modifyTask(modifiedTask);
         }
+        isModified = true;
+        return isModified;
     }
 
     // @author A0111889W
-    public void addTask(Task addedTask) {
+    public boolean addTask(Task addedTask) {
+        boolean isAdded = false;
         _allTasks.add(addedTask);
         for (Storage individualStorage : _listOfStorages) {
             individualStorage.storeNewTask(addedTask);
         }
+        isAdded = true;
+        return isAdded;
     }
 
     // @author A0111889W
-    public void deleteTask(Task deletedTask) {
+    public boolean deleteTask(Task deletedTask) {
+        boolean isDeleted = false;
         _allTasks.remove(deletedTask);
         for (Storage individualStorage : _listOfStorages) {
             individualStorage.removeTask(deletedTask);
         }
+        isDeleted = true;
+        return isDeleted;
     }
 
     static void updateGoogleId(Task modifiedTask) {
