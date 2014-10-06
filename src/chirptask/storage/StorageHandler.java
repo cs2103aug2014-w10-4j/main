@@ -21,6 +21,7 @@ public class StorageHandler {
         addLocalList();
         addLocalStorage();
         addEventStorage();
+        setAllTasks(localStorage.getAllTasks());
     }
 
     public boolean initCloudStorage() {
@@ -68,6 +69,10 @@ public class StorageHandler {
 
     public static List<Task> getAllTasks() {
         return _allTasks;
+    }
+    
+    public void setAllTasks(List<Task> allTasks) {
+        _allTasks = allTasks;
     }
 
     // @author A0111889W
