@@ -101,7 +101,7 @@ public class Logic {
 		System.exit(typeOfExit);
 	}
 	
-	private void clearUI() {
+	private void clearUi() {
 	    _gui.clearTrendingList();
 	    _gui.clearTaskView();
 	}
@@ -198,7 +198,7 @@ public class Logic {
 
 	private void processUndo(Action command) {
 		executeAction(command.undo(this.getLastAction()));
-        clearUI();
+        clearUi();
 		FilterTasks.filter();
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
@@ -210,7 +210,7 @@ public class Logic {
 	}
 
 	private void processDisplay(Task task) {
-		clearUI();
+	    clearUi();
 		FilterTasks.filter(task);
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
@@ -230,7 +230,7 @@ public class Logic {
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		// set lastAction
 		this.setLastAction(command);
-        clearUI();
+        clearUi();
 		FilterTasks.filter();
 		showStatusToUser(command, isSuccess);
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
