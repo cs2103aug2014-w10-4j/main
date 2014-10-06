@@ -210,8 +210,10 @@ public class TasksController {
         return toggledTask;
     }
 
-    void deleteTask(String taskId) {
-        TasksHandler.deleteTaskWithId(_taskListId, taskId);
+    boolean deleteTask(String taskId) {
+        boolean isDeleted = false;
+        isDeleted = TasksHandler.deleteTaskWithId(_taskListId, taskId);
+        return isDeleted;
     }
 
     void showTasks() throws UnknownHostException, IOException {

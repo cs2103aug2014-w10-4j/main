@@ -171,8 +171,7 @@ public class GoogleController implements Runnable {
         boolean isDeleted = false;
         
         if (isGoogleLoaded()) {
-            _tasksController.deleteTask(taskId);
-            isDeleted = true;
+            isDeleted = _tasksController.deleteTask(taskId);
         }
         
         return isDeleted;
@@ -187,8 +186,7 @@ public class GoogleController implements Runnable {
     private static boolean deleteGoogleEvent(String taskId) {
         boolean isDeleted = false;
         if (isGoogleLoaded()) {
-            _calendarController.deleteEvent(taskId);
-            isDeleted = true;
+            isDeleted = _calendarController.deleteEvent(taskId);
         }
         return isDeleted;
     }
