@@ -4,12 +4,14 @@ package chirptask.google;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
+import com.google.api.services.calendar.model.Event;
 
 /**
  * CalendarController is the main controller that interacts with Google 
@@ -30,7 +32,7 @@ public class CalendarController {
      * Global instance of the Google Calendar Service Client. Calendar
      * calendarClient; is the main object connected to the Google Calendar API.
      */
-    static com.google.api.services.calendar.Calendar _calendarClient;
+    private static com.google.api.services.calendar.Calendar _calendarClient;
     
     /** Global instance of the working Google Calendar */
     private static Calendar _workingCalendar;
@@ -133,6 +135,24 @@ public class CalendarController {
     static String getCalendarId() {
         return _calendarId;
     }
+    
+    Event addTimedTask(String taskTitle, Date startTime, Date endTime) 
+                                throws UnknownHostException, IOException {
+        Event newTimedTask = CalendarHandler.createEvent(taskTitle);
+        newTimedTask = CalendarHandler.setStart(newTimedTask, startTime);
+        newTimedTask = CalendarHandler.setEnd(newTimedTask, endTime);
+        Event addedEvent = insertEvent(newTimedTask);
+        return addedEvent;
+    }
+    
+    private Event insertEvent(Event timedTask)
+                                throws UnknownHostException, IOException {
+        String calendarId = getCalendarId();
+        Event insertedEvent = CalendarHandler.insertToCalendar(calendarId, timedTask);
+        return insertedEvent;
+    }
+    
+    
 
     void showCalendars() throws UnknownHostException, IOException {
         CalendarList calendarList = _calendarClient.calendarList().list()
@@ -147,4 +167,7 @@ public class CalendarController {
         return isDeleted;
     }
 
+    static com.google.api.services.calendar.Calendar getCalendarClient() {
+        return _calendarClient;
+    }
 }

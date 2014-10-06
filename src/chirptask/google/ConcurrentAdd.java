@@ -5,6 +5,9 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
+import chirptask.storage.TimedTask;
+
+import com.google.api.services.calendar.model.Event;
 import com.google.api.services.tasks.model.Task;
 
 class ConcurrentAdd implements Callable<Boolean> {
@@ -19,7 +22,7 @@ class ConcurrentAdd implements Callable<Boolean> {
         }
     }
 
-    public Boolean call() throws IOException, UnknownHostException {
+    public Boolean call() throws UnknownHostException, IOException  {
         Boolean isAdded = false;
         if (ConcurrentHandler.isNull(_taskToAdd)) {
             return isAdded;
@@ -33,6 +36,7 @@ class ConcurrentAdd implements Callable<Boolean> {
         String task = _taskToAdd.getDescription();
 
         Task addedGoogleTask = null;
+        Event addedGoogleEvent = null;
 
         switch (type) {
         case "floating":
@@ -43,6 +47,10 @@ class ConcurrentAdd implements Callable<Boolean> {
             addedGoogleTask = GoogleController.addDeadlineTask(task, dueDate);
             break;
         case "timed":
+            TimedTask timedTask = (TimedTask) _taskToAdd;
+            Date startTime = timedTask.getStartTime();
+            Date endTime = timedTask.getEndTime();
+            addedGoogleEvent = GoogleController.addTimedTask(task, startTime, endTime);
             break;
         default:
             break;
@@ -50,6 +58,9 @@ class ConcurrentAdd implements Callable<Boolean> {
 
         if (ConcurrentHandler.isNotNull(addedGoogleTask)) {
             ConcurrentHandler.addGoogleIdToStorage(addedGoogleTask, _taskToAdd);
+            isAdded = true;
+        } else if (ConcurrentHandler.isNotNull(addedGoogleEvent)) {
+            ConcurrentHandler.addGoogleIdToStorage(addedGoogleEvent, _taskToAdd);
             isAdded = true;
         }
 

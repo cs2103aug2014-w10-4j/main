@@ -285,6 +285,12 @@ public class GoogleController implements Runnable {
         return addedTask;
     }
     
+    static Event addTimedTask(String taskTitle, Date startTime, Date endTime) 
+                                    throws UnknownHostException, IOException {
+        Event addedEvent = _calendarController.addTimedTask(taskTitle, startTime, endTime);
+        return addedEvent;
+    }
+    
     // Called by ConcurrentDelete
     static boolean deleteTask(chirptask.storage.Task taskToDelete) 
                                     throws UnknownHostException, IOException {

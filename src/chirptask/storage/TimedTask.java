@@ -18,11 +18,11 @@ public class TimedTask extends Task {
 		_endTime = endTime;
 	}
 
-	public Date getDate() {
+	public Date getStartTime() {
 		return _startTime;
 	}
 
-	public void setDate(Date startTime) {
+	public void setStartTime(Date startTime) {
 		_startTime = startTime;
 	}
 

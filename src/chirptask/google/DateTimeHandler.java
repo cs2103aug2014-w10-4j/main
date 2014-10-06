@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.model.EventDateTime;
 
 /**
  * DateTimeHandler is a class that contains static methods to help
@@ -14,6 +15,7 @@ import com.google.api.client.util.DateTime;
  * into a Google DateTime object used by the relevant Google API.
  */
 public class DateTimeHandler {
+    private static final String DEFAULT_TIME_ZONE = "Asia/Singapore";
 	static final String DATE_FORMAT = "yyyy-MM-dd";
 	static final String DEFAULT_DATE = "2015-12-31";
 
@@ -35,7 +37,7 @@ public class DateTimeHandler {
 
 	static DateTime getDateTime() {
 		Date currentDate = getDateFromToday();
-		TimeZone hostTimeZone = getTimeZoneFromHost();
+		TimeZone hostTimeZone = getTimeZoneFromDefault();
 		DateTime newDateTime = newDateTime(currentDate, hostTimeZone);
 		return newDateTime;
 	}
@@ -45,6 +47,11 @@ public class DateTimeHandler {
 		return newDate;
 	}
 
+	static TimeZone getTimeZoneFromDefault() {
+	    TimeZone defaultTimeZone = TimeZone.getTimeZone(DEFAULT_TIME_ZONE);
+	    return defaultTimeZone;
+	}
+	
 	static TimeZone getTimeZoneFromHost() {
 		TimeZone hostTimeZone = TimeZone.getDefault();
 		return hostTimeZone;
@@ -57,15 +64,24 @@ public class DateTimeHandler {
 
 	static DateTime getDateTime(String inputDate) {
 		Date dateFromInput = getDateFromInput(inputDate);
-		TimeZone hostTimeZone = getTimeZoneFromHost();
+		TimeZone hostTimeZone = getTimeZoneFromDefault();
 		DateTime newDateTime = newDateTime(dateFromInput, hostTimeZone);
 		return newDateTime;
 	}
 	
 	static DateTime getDateTime(Date inputDate) {
-        TimeZone hostTimeZone = getTimeZoneFromHost();
+        TimeZone hostTimeZone = getTimeZoneFromDefault();
         DateTime newDateTime = newDateTime(inputDate, hostTimeZone);
         return newDateTime;
     }
+	
+	//For Google Calendar Events
+	static EventDateTime getEventDateTime(Date inputDate) {
+	    DateTime googleDateTime = getDateTime(inputDate);
+	    EventDateTime eventDateTime = new EventDateTime();
+	    eventDateTime.setDate(googleDateTime);
+	    return eventDateTime;
+        
+	}
 
 }

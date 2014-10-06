@@ -101,10 +101,11 @@ public class GoogleAuthorizer {
     private static Credential authorizeUsingOAuth(
                                         GoogleAuthorizationCodeFlow codeFlow,
                                         String credentialUser) 
-                                        throws IOException{
+                                                throws IOException{
         
         VerificationCodeReceiver codeReceiver = new LocalServerReceiver();
-        AuthorizationCodeInstalledApp authorizer = new AuthorizationCodeInstalledApp(
+        AuthorizationCodeInstalledApp authorizer = 
+                                            new AuthorizationCodeInstalledApp(
                                                 codeFlow,
                                                 codeReceiver);
         

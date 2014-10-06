@@ -16,7 +16,7 @@ class ConcurrentModify implements Callable<Boolean> {
         }
     }
 
-    public Boolean call() throws IOException, UnknownHostException {
+    public Boolean call() throws UnknownHostException, IOException {
         Boolean isModified = true;
 
         if (ConcurrentHandler.isNull(_taskToModify)) {

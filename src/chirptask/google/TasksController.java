@@ -178,7 +178,7 @@ public class TasksController {
     }
 
     Task addTask(String taskTitle, Date dueDate)
-            throws IOException {
+            throws UnknownHostException, IOException {
         Task newTask = TasksHandler.createTask(taskTitle);
         newTask = TasksHandler.setDueDate(newTask, dueDate);
         Task addedTask = insertTask(newTask);
@@ -186,7 +186,7 @@ public class TasksController {
     }
 
     Task addTask(String taskTitle, String notes, Date dueDate)
-            throws IOException {
+            throws UnknownHostException, IOException {
         Task newTask = TasksHandler.createTask(taskTitle);
         newTask = TasksHandler.setNotes(newTask, notes);
         newTask = TasksHandler.setDueDate(newTask, dueDate);
@@ -195,7 +195,7 @@ public class TasksController {
     }
 
     private Task insertTask(Task task) 
-            throws IOException, UnknownHostException {
+            throws UnknownHostException, IOException {
         Task result = TasksHandler.insertTaskToList(_taskListId, task);
         return result;
     }

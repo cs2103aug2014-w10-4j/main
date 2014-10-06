@@ -16,7 +16,7 @@ public class ConcurrentDelete implements Callable<Boolean> {
         }
     }
 
-    public Boolean call() throws IOException, UnknownHostException {
+    public Boolean call() throws UnknownHostException, IOException {
         Boolean isDeleted = false;
         
         if (ConcurrentHandler.isNull(_taskToDelete)) {

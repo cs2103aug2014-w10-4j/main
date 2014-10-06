@@ -2,9 +2,12 @@ package chirptask.google;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Date;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 
 public class CalendarHandler {
     private static final String DEFAULT_TIME_ZONE = "Asia/Singapore";
@@ -17,6 +20,7 @@ public class CalendarHandler {
         }
     }
     
+    //Methods related to Calendars
     static Calendar addCalendar(String calendarName) 
             throws UnknownHostException, IOException {
         Calendar createdCalendar = createCalendar(calendarName);
@@ -31,57 +35,103 @@ public class CalendarHandler {
         return createdCalendar;
     }
     
-    static void setCalendarName(Calendar editCalendar, String newName) {
+    private static void setCalendarName(Calendar editCalendar, String newName) {
         editCalendar.setSummary(newName);
     }
     
-    static void setTimeZone(Calendar editCalendar, String timeZone) {
+    private static void setTimeZone(Calendar editCalendar, String timeZone) {
         editCalendar.setTimeZone(timeZone);
     }
     
     private static Calendar insertCalendarIntoGCal(Calendar calendarToInsert) 
             throws UnknownHostException, IOException {
-        Calendar insertedCalendar = 
-                CalendarController._calendarClient
-                                    .calendars().insert(calendarToInsert)
+        
+        com.google.api.services.calendar.Calendar calendarClient = 
+                CalendarController.getCalendarClient();
+        
+        Calendar insertedCalendar = calendarClient
+                                    .calendars()
+                                    .insert(calendarToInsert)
                                     .execute();
         return insertedCalendar;
     }
     
-    static void updateCalendar(String calendarId) 
-            throws UnknownHostException, IOException {
-        Calendar calendarToUpdate = retrieveCalendarById(calendarId);
-        updateCalendar(calendarId, calendarToUpdate);
-    }
-    
-    private static void updateCalendar(String calendarId, Calendar toUpdate)
-            throws UnknownHostException, IOException {
-        CalendarController._calendarClient
-                            .calendars().update(calendarId, toUpdate)
-                            .execute();
-    }
-    
     static Calendar retrieveCalendarById(String calendarId) 
             throws UnknownHostException, IOException {
-        Calendar retrievedCalendar = 
-                CalendarController._calendarClient.calendars()
-                                    .get(calendarId).execute();
+        
+        com.google.api.services.calendar.Calendar calendarClient = 
+                CalendarController.getCalendarClient();
+        
+        Calendar retrievedCalendar = calendarClient
+                                        .calendars()
+                                        .get(calendarId)
+                                        .execute();
         return retrievedCalendar;
+    }
+    
+    //Methods related to Events
+    static Event createEvent(String eventName) {
+        Event newEvent = new Event();
+        
+        newEvent.setSummary(eventName);
+        
+        return newEvent;
+    }
+    
+    static Event setStart(Event eventToSet, Date startTime) {
+        EventDateTime eventStartTime = new EventDateTime();
+        DateTime googleDateTime = DateTimeHandler.getDateTime(startTime);
+        eventStartTime.setDateTime(googleDateTime);
+        
+        Event updatedEvent = eventToSet.setStart(eventStartTime);
+        
+        return updatedEvent;
+    }
+    
+    static Event setEnd(Event eventToSet, Date endTime) {
+        EventDateTime eventEndTime = new EventDateTime();
+        DateTime googleDateTime = DateTimeHandler.getDateTime(endTime);
+        eventEndTime.setDateTime(googleDateTime);
+        
+        Event updatedEvent = eventToSet.setEnd(eventEndTime);
+        
+        return updatedEvent;
+    }
+    
+    static Event insertToCalendar(String calendarId, Event eventToInsert) 
+            throws UnknownHostException, IOException {
+        
+        com.google.api.services.calendar.Calendar calendarClient = 
+                CalendarController.getCalendarClient();
+        
+        Event insertedEvent = calendarClient
+                                .events()
+                                .insert(calendarId, eventToInsert)
+                                .execute();
+        return insertedEvent;
     }
     
     static Event getEventFromId(String calendarId, String eventId) 
             throws UnknownHostException, IOException {
-        Event foundEvent = 
-                CalendarController._calendarClient.events()
-                                    .get(calendarId, eventId).execute();
+        
+        com.google.api.services.calendar.Calendar calendarClient = 
+                CalendarController.getCalendarClient();
+        
+        Event foundEvent = calendarClient
+                                    .events()
+                                    .get(calendarId, eventId)
+                                    .execute();
         return foundEvent;
     }
     
     static boolean deleteEvent(String calendarId, String eventId) {
         boolean isDeleted = false;
         
+        com.google.api.services.calendar.Calendar calendarClient = 
+                CalendarController.getCalendarClient();
+        
         try {
-            CalendarController._calendarClient.events().delete(calendarId, eventId).execute();
+            calendarClient.events().delete(calendarId, eventId).execute();
             isDeleted = true;
         } catch (UnknownHostException unknownHostException) {
             
