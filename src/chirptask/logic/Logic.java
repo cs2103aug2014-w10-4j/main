@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+
+import chirptask.settings.Messages;
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
@@ -148,7 +150,6 @@ public class Logic {
 			break;
 		case DISPLAY:
 			// now can only filter string
-			System.out.println("Display");
 			processDisplay(task);
 			break;
 		case EDIT:
@@ -218,8 +219,16 @@ public class Logic {
 	}
 
 	private void processDelete(Action command, Task task) {
+		Task deletedTask;
 		boolean isSuccess;
-		isSuccess = _storageHandler.deleteTask(task);
+		deletedTask = _storageHandler.deleteTask(task);
+		if(deletedTask == null){
+			isSuccess = false;
+			;
+		} else{
+			isSuccess = true;
+			
+		}
 		filterAndDisplay(command, isSuccess);
 	}
 

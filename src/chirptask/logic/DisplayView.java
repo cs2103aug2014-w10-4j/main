@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import chirptask.gui.MainGui;
+import chirptask.settings.Messages;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 
@@ -24,7 +25,7 @@ public class DisplayView {
 		TreeMap<String, TasksByDate> map = new TreeMap<String, TasksByDate>();
 
 		processUpdateTaskView(tasks, gui, map);
-		
+
 		processUpdateContextAndCategoryView(gui);
 		// Iterator<Map.Entry<Date, TasksByDate>> it =
 		// map.entrySet().iterator();
@@ -90,13 +91,46 @@ public class DisplayView {
 	public static void showStatusToUser(StatusType type, Action action,
 			MainGui gui) {
 		if (type == StatusType.ERROR) {
-
-			gui.setError("Error in " + action.getCommandType() + " task");
+			if (action.getCommandType().equalsIgnoreCase("add")) {
+				gui.setError(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+						"ERROR", action.getTask().getDescription()));
+			} else if (action.getCommandType().equalsIgnoreCase("delete")) {
+				gui.setError(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+						"ERROR", action.getTask().getTaskId()));
+			} else if (action.getCommandType().equalsIgnoreCase("Edit")) {
+				gui.setError(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+						"ERROR", action.getTask().getDescription()));
+			} else if (action.getCommandType().equalsIgnoreCase("done")) {
+				gui.setError(String.format(Messages.LOG_MESSAGE_DONE, "ERROR",
+						action.getTask().getDescription()));
+			} else if (action.getCommandType().equalsIgnoreCase("undone")) {
+				gui.setError(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+						"ERROR", action.getTask().getDescription()));
+			} else if (action.getCommandType().equalsIgnoreCase("login")) {
+				gui.setError(String.format(Messages.LOG_MESSAGE_LOGIN, "ERROR"));
+			}
 
 		} else {
 
-			gui.setStatus("Success in " + action.getCommandType() + " task");
+			if (action.getCommandType().equalsIgnoreCase("add")) {
+				gui.setStatus(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+						"Success", action.getTask().getDescription()));
+			} else if (action.getCommandType().equalsIgnoreCase("delete")) {
+				gui.setStatus(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+						"Success", action.getTask().getTaskId()));
+			} else if (action.getCommandType().equalsIgnoreCase("Edit")) {
+				gui.setStatus(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+						"Success", action.getTask().getDescription()));
+			} else if (action.getCommandType().equalsIgnoreCase("done")) {
+				gui.setStatus(String.format(Messages.LOG_MESSAGE_DONE,
+						"Success", action.getTask().getDescription()));
+			} else if (action.getCommandType().equalsIgnoreCase("undone")) {
+				gui.setStatus(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+						"Success", action.getTask().getDescription()));
+			} else if (action.getCommandType().equalsIgnoreCase("login")) {
+				gui.setStatus(String.format(Messages.LOG_MESSAGE_LOGIN,
+						"Success"));
+			}
 		}
 	}
-
 }
