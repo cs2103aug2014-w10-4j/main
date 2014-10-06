@@ -1,7 +1,33 @@
+# Directories #
+/build/
+/credentials/
 /bin/
-/credentials/google_oauth_credential/*
-/credentials/googletasks/*
-/credentials/googlecalendar/*
+
+
+
+# Files #
+*.class
 eventlogs.txt
 local.xml
-resources/client_secrets.json
+
+
+
+# Windows #
+# Windows image file caches
+Thumbs.db 
+ 
+# Folder config file
+Desktop.ini
+ 
+
+
+# OSX #
+.DS_Store
+.svn
+ 
+# Thumbnails
+._*
+ 
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
