@@ -12,73 +12,91 @@ import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 
 public class DisplayView {
-    /**
-     * This will take in a filtered list and update the taskview, sort to
-     * date/time, store
-     * into Arraylist of TasksByDates of arraylist of tasks
-     * 
-     * @param _gui
-     * */
-    public static void updateTaskView(List<Task> tasks, MainGui gui) {
-        // Should change .getAllTasks() to arraylist?
-        // List<Task> allTasks = _storageHandler.getAllTasks();
-        Collections.sort(tasks);
-        TreeMap<String, TasksByDate> map = new TreeMap<String, TasksByDate>();
+	/**
+	 * This will take in a filtered list and update the taskview, sort to
+	 * date/time, store into Arraylist of TasksByDates of arraylist of tasks
+	 * 
+	 * @param _gui
+	 * */
+	public static void updateTaskView(List<Task> tasks, MainGui gui) {
 
-        for (Task task : tasks) {
-            String currDate = MainGui.convertDateToString(task.getDate());
+		Collections.sort(tasks);
+		TreeMap<String, TasksByDate> map = new TreeMap<String, TasksByDate>();
 
-            if (map.containsKey(currDate)) {
-                map.get(currDate).addToTaskList(task);
-            } else {
-                  TasksByDate dateTask = new TasksByDate();
-              //  dateTask.setTaskDate(task.getDate());
-              //  dateTask.addToTaskList(task);
-                gui.addNewTaskViewDate(task.getDate());
-                map.put(currDate, dateTask);
-            }
-            gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
-                    task.getDescription(), task.getDate().toString(),
-                    task.isDone());
+		processUpdateTaskView(tasks, gui, map);
+		
+		processUpdateContextAndCategoryView(gui);
+		// Iterator<Map.Entry<Date, TasksByDate>> it =
+		// map.entrySet().iterator();
+		// TaskView view = new TaskView();
+		// while (it.hasNext()) {
+		// view.addToTaskView(it.next().getValue());
+		// }
 
-        }
+	}
 
-        // Iterator<Map.Entry<Date, TasksByDate>> it =
-        // map.entrySet().iterator();
-        // TaskView view = new TaskView();
-        // while (it.hasNext()) {
-        // view.addToTaskView(it.next().getValue());
-        // }
+	private static void processUpdateContextAndCategoryView(MainGui gui) {
+		updateCategoryView(gui);
+		updateContextView(gui);
+	}
 
-    }
+	private static void processUpdateTaskView(List<Task> tasks, MainGui gui,
+			TreeMap<String, TasksByDate> map) {
+		for (Task task : tasks) {
+			String currDate = MainGui.convertDateToString(task.getDate());
 
-    // Call this at init to show all tasks.
-    public static void updateTaskView(MainGui gui) {
+			if (map.containsKey(currDate)) {
+				map.get(currDate).addToTaskList(task);
+			} else {
+				TasksByDate dateTask = new TasksByDate();
+				// dateTask.setTaskDate(task.getDate());
+				// dateTask.addToTaskList(task);
+				gui.addNewTaskViewDate(task.getDate());
+				map.put(currDate, dateTask);
+			}
+			gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
+					task.getDescription(), task.getDate().toString(),
+					task.isDone());
 
-        List<Task> allTasks = StorageHandler.getAllTasks();
-        if (allTasks != null) {
-            //allTasks is emptyt
-            Collections.sort(allTasks);
-            //System.out.println(allTasks);
-            // call filter
-            updateTaskView(allTasks, gui);
-        }
+		}
+	}
 
-    }
+	// Call this at init to show all tasks.
+	public static void updateTaskView(MainGui gui) {
 
-    // Take in type, action
-    public static void showStatusToUser(StatusType type, Action action, MainGui gui) {
-        if (type == StatusType.ERROR) {
-            // message processing and call GUI api
-        	gui.setError("Error in " + action.getCommandType());
-            //action.getCommandType();
-            //action.getTask().getDescription();
-            //action.getTask().getDate().toString();
+		List<Task> allTasks = StorageHandler.getAllTasks();
+		if (allTasks != null) {
+			Collections.sort(allTasks);
+			updateTaskView(allTasks, gui);
+		}
 
-        } else {
-            // message processing and call GUI api
-        	gui.setStatus("Success in "+ action.getCommandType());
-        }
-    }
-    // Add in checkTaskType
+	}
+
+	public static void updateCategoryView(MainGui gui) {
+		List<String> categories = FilterTasks.getCategoryList();
+		for (String category : categories) {
+			gui.addCategoryIntoList(category);
+		}
+	}
+
+	public static void updateContextView(MainGui gui) {
+		List<String> contexts = FilterTasks.getContextList();
+		for (String context : contexts) {
+			gui.addContextIntoList(context);
+		}
+	}
+
+	// Take in type, action
+	public static void showStatusToUser(StatusType type, Action action,
+			MainGui gui) {
+		if (type == StatusType.ERROR) {
+
+			gui.setError("Error in " + action.getCommandType() + " task");
+
+		} else {
+
+			gui.setStatus("Success in " + action.getCommandType() + " task");
+		}
+	}
+
 }

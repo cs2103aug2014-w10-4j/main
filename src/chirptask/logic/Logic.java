@@ -44,7 +44,7 @@ public class Logic {
 		_storageHandler = new StorageHandler();
 		_parser = new InputParser();
 		_gui = gui;
-
+		FilterTasks.filter();
 		DisplayView.updateTaskView(_gui);
 	}
 
@@ -52,6 +52,8 @@ public class Logic {
 
 		_storageHandler = new StorageHandler();
 		_parser = new InputParser();
+		FilterTasks.filter();
+		
 		// runUntilExitCommand(); //Temporary CLI code before full integration
 		// with GUI
 		// lastAction = new Action();
@@ -138,7 +140,6 @@ public class Logic {
 		String action = command.getCommandType();
 		CommandType actionType = determineCommandType(action);
 		Task task = command.getTask();
-		boolean isSuccess;
 
 		switch (actionType) {
 		case ADD:

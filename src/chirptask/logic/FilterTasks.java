@@ -9,28 +9,38 @@ import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 
 public class FilterTasks {
-	private StorageHandler _storageHandler;
+
 	private static List<Task> filteredTask;
+	private static List<String> categoriesList;
+	private static List<String> contextsList;
 	private static String currentFilter = "";
 
 	static void filter(Task T) {
 		filteredTask = new ArrayList<Task>();
 		currentFilter = T.getDescription();
 		List<Task> allTask = StorageHandler.getAllTasks();
-
+		// check 1st String to determine the type of filter
 		for (Task a : allTask) {
-			if (a.getDescription().equalsIgnoreCase(currentFilter)) {
+			if (a.getDescription().contains(currentFilter)) {
 				filteredTask.add(a);
 			}
+		}
+		for (Task task : filteredTask) {
+			populateContext(task);
 		}
 
 	}
 
 	// Add in filter time, date, task, done, undone
-	// add in checkTaskType
+
 	static void filter() {
+		categoriesList = new ArrayList<String>();
+		contextsList = new ArrayList<String>();
 		if (currentFilter.isEmpty()) {
 			filteredTask = StorageHandler.getAllTasks();
+
+			populateCategoryAndContext();
+
 		} else {
 			filteredTask = new ArrayList<Task>();
 			List<Task> allTask = StorageHandler.getAllTasks();
@@ -43,7 +53,56 @@ public class FilterTasks {
 		}
 	}
 
-	static List<Task> getFilteredList() {
+	private static void populateCategoryAndContext() {
+		for (Task task : StorageHandler.getAllTasks()) {
+			populateContext(task);
+			populateCategory(task);
+		}
+	}
+
+	private static void populateCategory(Task task) {
+		if (categoriesList.isEmpty()) {
+			for (String category : task.getCategories()) {
+				if (!categoriesList.contains(category)) {
+					categoriesList.add(category);
+				}
+			}
+		} else {
+			categoriesList.clear();
+			for (String category : task.getCategories()) {
+				if (!categoriesList.contains(category)) {
+					categoriesList.add(category);
+				}
+			}
+		}
+	}
+
+	private static void populateContext(Task task) {
+		if (contextsList.isEmpty()) {
+			for (String context : task.getContexts()) {
+				if (!contextsList.contains(context)) {
+					contextsList.add(context);
+				}
+			}
+		} else {
+			contextsList.clear();
+			for (String context : task.getContexts()) {
+				if (!contextsList.contains(context)) {
+					contextsList.add(context);
+				}
+			}
+		}
+	}
+
+	public static List<Task> getFilteredList() {
 		return filteredTask;
+	}
+
+	public static List<String> getContextList() {
+		return contextsList;
+	}
+	
+	public static List<String> getCategoryList(){
+		return categoriesList;
 	}
 }
