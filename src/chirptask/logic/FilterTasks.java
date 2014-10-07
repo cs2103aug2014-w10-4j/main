@@ -20,6 +20,7 @@ public class FilterTasks {
 		currentFilter = T.getDescription();
 		List<Task> allTask = StorageHandler.getAllTasks();
 		// check 1st String to determine the type of filter
+
 		if (currentFilter.isEmpty()) {
 			filteredTask = StorageHandler.getAllTasks();
 		} else {
@@ -28,9 +29,11 @@ public class FilterTasks {
 					filteredTask.add(a);
 				}
 			}
-			for (Task task : filteredTask) {
-				populateContext(task);
-			}
+
+		}
+		contextsList.clear();
+		for (Task task : filteredTask) {
+			populateContext(task);
 		}
 	}
 
