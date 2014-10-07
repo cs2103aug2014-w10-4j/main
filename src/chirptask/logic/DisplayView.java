@@ -47,41 +47,42 @@ public class DisplayView {
     private static void processUpdateTaskView(List<Task> tasks, MainGui gui,
             TreeMap<String, TasksByDate> map) {
         for (Task task : tasks) {
-            String dateToString = "";
-            Date taskViewDate = null;
-            
-            if (task.getType() == "floating") {
-                dateToString = "all-day";
-                taskViewDate = task.getDate();
-            } else if (task instanceof DeadlineTask) {
-                DeadlineTask dTask = (DeadlineTask) task;
-                dateToString = "due by " + dTask.getDate().getHours() + ":"
-                        + dTask.getDate().getMinutes();
-                taskViewDate = task.getDate();
-            } else if (task instanceof TimedTask) {
-                TimedTask tTask = (TimedTask) task;
-                dateToString = tTask.getStartTime().getHours() + ":"
-                        + tTask.getStartTime().getMinutes() + " to "
-                        + tTask.getEndTime().getHours() + ":"
-                        + tTask.getEndTime().getMinutes();
-                taskViewDate = tTask.getStartTime();
-            }
-            
-            String currDate = MainGui.convertDateToString(taskViewDate);
-            
+            String currDate = MainGui.convertDateToString(task.getDate());
+
             if (map.containsKey(currDate)) {
                 map.get(currDate).addToTaskList(task);
             } else {
                 TasksByDate dateTask = new TasksByDate();
                 // dateTask.setTaskDate(task.getDate());
                 // dateTask.addToTaskList(task);
-                gui.addNewTaskViewDate(taskViewDate);
+                gui.addNewTaskViewDate(task.getDate());
                 map.put(currDate, dateTask);
             }
 
-            gui.addNewTaskViewToDate(taskViewDate, task.getTaskId(),
+            String dateToString = "";
+            dateToString = convertTaskDateToString(task);
+
+            gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
                     task.getDescription(), dateToString, task.isDone());
         }
+    }
+
+    private static String convertTaskDateToString(Task task) {
+        String dateToString;
+        if (task.getType() == "floating") {
+            dateToString = "all-day";
+        } else if (task.getType() == "deadline") {
+            DeadlineTask dTask = (DeadlineTask) task;
+            dateToString = "due by " + task.getDate().getHours() + ":"
+                    + task.getDate().getMinutes();
+        } else {
+            TimedTask tTask = (TimedTask) task;
+            dateToString = tTask.getStartTime().getHours() + ":"
+                    + tTask.getStartTime().getMinutes() + " to "
+                    + tTask.getEndTime().getHours() + ":"
+                    + tTask.getEndTime().getMinutes();
+        }
+        return dateToString;
     }
 
     // Call this at init to show all tasks.

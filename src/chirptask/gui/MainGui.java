@@ -32,6 +32,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -95,7 +96,6 @@ public class MainGui extends Application {
             public void handle(WindowEvent we) {
                 guiClosing();
             }
-
         });
 
         _logic = new Logic(this);
@@ -140,7 +140,7 @@ public class MainGui extends Application {
     private BorderPane generateHeaderBar() {
         BorderPane headerBar = new BorderPane();
 
-        headerBar.setPadding(new Insets(13, 10, 13, 10));
+        headerBar.setPadding(new Insets(13, 10, 8, 10));
         headerBar.getStyleClass().add("header-bar");
 
         Text sceneTitle = new Text(Messages.TITLE_SOFTWARE);
@@ -181,9 +181,11 @@ public class MainGui extends Application {
 
         ScrollPane contextPane = generateContextList();
         ScrollPane categoryPane = generateCategoryList();
-
-        VBox.setVgrow(categoryPane, Priority.ALWAYS);
+        
         VBox.setVgrow(contextPane, Priority.ALWAYS);
+        VBox.setVgrow(categoryPane, Priority.ALWAYS);
+        contextPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+        categoryPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 
         trendingList.getChildren().addAll(categoryPane, contextPane);
         return trendingList;
@@ -196,11 +198,9 @@ public class MainGui extends Application {
         _contextList.setPadding(new Insets(8));
         _contextList.setSpacing(5);
         _contextList.getChildren().add(contextTitle);
-
         ScrollPane contextScrollPane = new ScrollPane();
         contextScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         contextScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
         contextScrollPane.setContent(_contextList);
 
         return contextScrollPane;
@@ -221,7 +221,6 @@ public class MainGui extends Application {
         ScrollPane categoryScrollPane = new ScrollPane();
         categoryScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         categoryScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
         categoryScrollPane.setContent(_categoryList);
         categoryScrollPane.getStyleClass().add("category-scroll");
 
