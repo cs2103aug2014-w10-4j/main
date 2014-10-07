@@ -14,6 +14,7 @@ public class InputParser {
 
     private static final int USER_INPUT_TO_ARRAYLIST = 1;
     private static final String COMMAND_LOGIN = "login";
+    private static final DateParser dateParser = new DateParser();
 
     private String _userInput;
     private GroupAction _actions;
@@ -36,15 +37,15 @@ public class InputParser {
         String commandType = getCommandTypeString();
         String parameter = getParameter();
         switch (commandType) {
-        case "add":
-            return processForAdd(parameter);
+        case "add": case "addt": case "addd":
+            return processForAdd(commandType, parameter);
         case "edit":
             return processForEdit(parameter);
         case "delete":
             return processForDelete(parameter);
         case "done":
             return processForDone(parameter);
-        case "undone":
+        case "undone" : 
             return processForUndone(parameter);
         case "undo":
             return processUndo(commandType);
@@ -96,7 +97,7 @@ public class InputParser {
             for (Integer i : list) {
                 Action action = new Action();
                 action.setCommandType("done");
-                int normalizedIndex = normalizeIndexToListId(i);
+                int normalizedIndex = normalizeId(i);
                 if (isIndexInRange(normalizedIndex)) {
                     Task task = allTasks.get(normalizedIndex);
                     action.setTask(task);
@@ -122,7 +123,7 @@ public class InputParser {
             for (Integer i : list) {
                 Action action = new Action();
                 action.setCommandType("undone");
-                int normalizedIndex = normalizeIndexToListId(i);
+                int normalizedIndex = normalizeId(i);
                 if (isIndexInRange(normalizedIndex)) {
                     Task task = allTasks.get(normalizedIndex);
                     action.setTask(task);
@@ -152,13 +153,12 @@ public class InputParser {
         List<Integer> list = getTaskIndexFromString(parameter);
 
         if (list != null) {
-            // convertFromIndexToId(list);
             actions = new GroupAction();
             List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
                 action.setCommandType("delete");
-                int normalizedIndex = normalizeIndexToListId(i);
+                int normalizedIndex = normalizeId(i);
                 if (isIndexInRange(normalizedIndex)) {
                     Task task = allTasks.get(normalizedIndex);
                     action.setTask(task);
@@ -173,25 +173,6 @@ public class InputParser {
             }
         }
         return actions;
-    }
-
-    private void convertFromIndexToId(List<Integer> list) {
-        List<Task> allTasks = FilterTasks.getFilteredList();
-        for (int i = 0; i < list.size(); i++) {
-            int index = list.get(i);
-            int normalizedIndex = normalizeIndexToListId(index);
-            if (normalizedIndex < allTasks.size() && normalizedIndex >= 0) {
-                Integer listId = allTasks.get(normalizedIndex).getTaskId();
-                list.set(i, listId);
-            } else {
-                list.remove(i);
-            }
-        }
-    }
-
-    private int normalizeIndexToListId(int index) {
-        int listId = index - 1;
-        return listId;
     }
 
     private List<Integer> getTaskIndexFromString(String parameter) {
@@ -218,18 +199,17 @@ public class InputParser {
         Action action = new Action();
         Action negate = new Action();
 
-        int taskId = getId(parameter);
-        if (taskId >= 1) {
+        int taskIndex = getId(parameter);
+        if (taskIndex >= 1) {
             List<Task> taskList = FilterTasks.getFilteredList();
-            int normalizedIndex = normalizeIndexToListId(taskId);
+            int normalizedIndex = normalizeId(taskIndex);
             Task oldTask = taskList.get(normalizedIndex);
             String[] parameters = parameter.trim().split("\\s+", 2);
             if (parameters.length > 1) {
                 parameter = parameters[1];
 
-                Task editedTask = getTaskFromString(parameter); //we should handle edit better.
-                //edit description? or edit due date? or edit start/end time?
-                editedTask.setTaskId(oldTask.getTaskId());
+                Task editedTask = getTaskFromString(parameter);
+                copyAttributesFromOldTask(oldTask, editedTask); 
 
                 action.setCommandType("edit");
                 action.setTask(editedTask);
@@ -241,27 +221,84 @@ public class InputParser {
         }
         return actions;
     }
-
-    private GroupAction processForAdd(String parameter) {
-        GroupAction actions = new GroupAction();
-        if (parameter != null) {
-            Action action = new Action();
-            Action negate = new Action();
-
-            Task newTask = getTaskFromString(parameter);
-            newTask.setType("floating"); // Needs attention. Input Parser please
-                                      // handle
-            newTask.setTaskId(LocalStorage.generateId());
-            action.setCommandType("add");
-            action.setTask(newTask);
-            negate.setCommandType("delete");
-            negate.setTask(newTask);
-            action.setUndo(negate);
-
-            actions.addAction(action);
+    
+    private Task copyAttributesFromOldTask(Task oldTask, Task editedTask) {
+        int taskId = oldTask.getTaskId();
+        String taskType = oldTask.getType();
+        String googleId = oldTask.getGoogleId();
+        
+        editedTask.setTaskId(taskId);
+        editedTask.setType(taskType);
+        editedTask.setGoogleId(googleId);
+        
+        switch (taskType) {
+        case "deadline" :
+            //setDueDate
+            break;
+        case "timed" :
+            //setStartTime
+            //setEndTime
+            break;
+        default :
+            break;
         }
+        
+        return editedTask;
+    }
+
+    private GroupAction processForAdd(String command, String parameter) {
+        GroupAction actions = new GroupAction();
+        Action action = new Action();
+        Action negate = new Action();
+        
+        Task toDo = getTaskFromString(parameter);
+        
+        int taskId = LocalStorage.generateId();
+        String description = toDo.getDescription();
+        List<Date> parsedDates = dateParser.parseDate(parameter);
+        
+        switch (command) {
+        case "add": 
+            Task floating = new Task(taskId, description);
+            floating.setCategories(toDo.getCategories());
+            floating.setContexts(toDo.getContexts());
+            toDo = floating;
+            break;
+        case "addd":
+            if (parsedDates.size() >= 1) {
+                Date dueDate = parsedDates.get(0);
+                Task deadline = new DeadlineTask(taskId, description, dueDate);
+                deadline.setCategories(toDo.getCategories());
+                deadline.setContexts(toDo.getContexts());
+                toDo = deadline;
+            }
+            break;
+        case "addt":
+            if (parsedDates.size() > 1) {
+                Date startTime = parsedDates.get(0);
+                Date endTime = parsedDates.get(1);
+                Task timed = new TimedTask(taskId, description, startTime, endTime);
+                timed.setCategories(toDo.getCategories());
+                timed.setContexts(toDo.getContexts());
+                toDo = timed;
+            }
+            break;
+        default:
+            break;
+        }
+        toDo.setTaskId(LocalStorage.generateId());
+        action.setCommandType("add");
+        action.setTask(toDo);
+        negate.setCommandType("delete");
+        negate.setTask(toDo);
+        action.setUndo(negate);
+
+        actions.addAction(action);
         return actions;
     }
+
+    
+    
 
     private Task getTaskFromString(String parameter) {
         Task newTask = new Task();
@@ -291,20 +328,7 @@ public class InputParser {
     private int getId(String parameter) {
         String id = parameter.trim().split("\\s+")[0];
         int listId = Integer.parseInt(id);
-        int taskId = getIdFromList(listId);
-        return taskId;
-    }
-
-    private int getIdFromList(int id) {
-        List<Integer> list = MainGui.getTaskIndexToId();
-        id = normalizeId(id);
-        if (id < list.size() && id >= 0) {
-            return list.get(id);
-        }
-        // List<Task> taskList = FilterTasks.getFilteredList();
-        // Task task = taskList.get(normalizeId(id));
-        // int taskId = task.getTaskId();
-        return -1;
+        return listId;
     }
 
     private int normalizeId(int id) {

@@ -28,13 +28,13 @@ public class Task implements Comparable<Task> {
 	}
 
 	public Task(int taskId, String description) {
-		super();
+		this();
 		_taskId = taskId;
 		_description = description;
 	}
 	
     public Task(int taskId, String description, String taskType) {
-        super();
+        this();
         _taskId = taskId;
         _description = description;
         _type = taskType;

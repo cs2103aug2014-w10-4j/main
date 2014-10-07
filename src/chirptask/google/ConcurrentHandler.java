@@ -48,7 +48,7 @@ class ConcurrentHandler {
         String googleId = taskToModify.getGoogleId();
         String taskType = taskToModify.getType();
 
-        if (GoogleController.isEntryExists(googleId, taskType)) {
+        if (!GoogleController.isEntryExists(googleId, taskType)) {
             isModified = false;
             return isModified;
         }
@@ -110,7 +110,7 @@ class ConcurrentHandler {
         String googleId = taskToModify.getGoogleId();
         String taskType = taskToModify.getType();
 
-        if (GoogleController.isEntryExists(googleId, taskType)) {
+        if (!GoogleController.isEntryExists(googleId, taskType)) {
             isModified = false;
             return isModified;
         }
