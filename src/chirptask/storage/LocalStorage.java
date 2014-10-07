@@ -350,8 +350,8 @@ public class LocalStorage implements Storage {
 	 * @param item
 	 * @return ArrayList<String>
 	 */
-	private static ArrayList<String> getValues(String tag, Element item) {
-		ArrayList<String> contents = new ArrayList<String>();
+	private static List<String> getValues(String tag, Element item) {
+		List<String> contents = new ArrayList<String>();
 		NodeList nodes = item.getElementsByTagName(tag);
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = (Node) nodes.item(i);

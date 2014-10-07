@@ -286,7 +286,6 @@ public class InputParser {
         default:
             break;
         }
-        toDo.setTaskId(LocalStorage.generateId());
         action.setCommandType("add");
         action.setTask(toDo);
         negate.setCommandType("delete");
