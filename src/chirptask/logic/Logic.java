@@ -224,7 +224,6 @@ public class Logic {
 		deletedTask = _storageHandler.deleteTask(task);
 		if (deletedTask == null) {
 			isSuccess = false;
-			;
 		} else {
 			isSuccess = true;
 
