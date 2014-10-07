@@ -76,6 +76,15 @@ public class InputParser {
                     actions.addAction(action);
                 }
             }
+        } else {
+            Action action = new Action();
+            Task task = new Task();
+            task.setTaskId(-1);
+            task.setDescription("");
+            action.setCommandType("display");
+            action.setTask(task);
+            action.setUndo(null);
+            actions.addAction(action);
         }
         return actions;
     }
