@@ -278,9 +278,10 @@ public class InputParser {
             String[] parameters = parameter.trim().split("\\s+", 2);
             if (parameters.length > 1) {
                 parameter = parameters[1];
+                List<Date> dateList = _dateParser.parseDate(parameter);
 
                 Task editedTask = getTaskFromString(parameter);
-                copyAttributesFromOldTask(oldTask, editedTask);
+                editedTask = getEditedTask(oldTask, editedTask, dateList);
 
                 action.setCommandType("edit");
                 action.setTask(editedTask);
@@ -293,28 +294,45 @@ public class InputParser {
         return actions;
     }
 
-    private Task copyAttributesFromOldTask(Task oldTask, Task editedTask) {
+    private Task getEditedTask(Task oldTask, Task editedTask, List<Date> dateList) {
         int taskId = oldTask.getTaskId();
-        String taskType = oldTask.getType();
+        String taskType = oldTask.getType(); //Assumes cannot change task type
         String googleId = oldTask.getGoogleId();
-
-        editedTask.setTaskId(taskId);
-        editedTask.setType(taskType);
-        editedTask.setGoogleId(googleId);
-
+        
+        String editedDescription = editedTask.getDescription();
+        List<String> editedCategoryList = editedTask.getCategories();
+        List<String> editedContextList = editedTask.getContexts();
+        List<Date> editedDateList = dateList;
+        
+        Task newTask = null;
         switch (taskType) {
-        case "deadline":
-            // setDueDate
+        case "deadline" :
+            if (editedDateList.size() > 0) {
+                Date editedDueDate = editedDateList.get(0);
+                newTask = new DeadlineTask(taskId, editedDescription, editedDueDate);
+            }
             break;
-        case "timed":
-            // setStartTime
-            // setEndTime
+        case "timedtask" :
+            if (editedDateList.size() > 1) {
+                Date editedStartDate = editedDateList.get(0);
+                Date editedEndDate = editedDateList.get(1);
+                newTask = new TimedTask(taskId, editedDescription, editedStartDate, editedEndDate);
+            }
+            break;
+        case "floating" :
+            newTask = new Task(taskId, editedDescription);
             break;
         default:
             break;
         }
+        
+        if (newTask != null) {
+            newTask.setCategories(editedCategoryList);
+            newTask.setContexts(editedContextList);
+            newTask.setGoogleId(googleId);
+        }
 
-        return editedTask;
+        return newTask;
     }
 
     private Task getTaskFromString(String parameter) {

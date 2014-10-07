@@ -168,18 +168,18 @@ public class LocalStorage implements Storage {
 			}
 		}
 
-		if (taskToAdd.getType().equalsIgnoreCase("timedtask")) {
+		if (taskToAdd instanceof TimedTask) {
 			TimedTask timedTask = (TimedTask) taskToAdd;
 			node.appendChild(getElement(doc, "type", "Timed Task"));
 			node.appendChild(getElement(doc, "start", taskToAdd.getDate()
 					.toString()));
 			node.appendChild(getElement(doc, "end", timedTask.getEndTime()
 					.toString()));
-		} else if (taskToAdd.getType().equalsIgnoreCase("deadline")) {
+		} else if (taskToAdd instanceof DeadlineTask) {
 			node.appendChild(getElement(doc, "deadline", taskToAdd.getDate()
 					.toString()));
 			node.appendChild(getElement(doc, "type", "Deadline Task"));
-		} else {
+		} else if (taskToAdd.getType().equalsIgnoreCase("floating")){
 			node.appendChild(getElement(doc, "type", "Floating Task"));
 		}
 

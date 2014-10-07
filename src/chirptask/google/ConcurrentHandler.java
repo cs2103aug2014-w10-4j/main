@@ -116,18 +116,21 @@ class ConcurrentHandler {
         }
 
             chirptask.storage.Task modifyTask = taskToModify;
-            //TimedTask timedTask = (TimedTask) modifyTask;
             
-            
-            //Date newStartTime = timedTask.getStartTime();
-            //Date newEndTime = timedTask.getEndTime();
             String newDescription = modifyTask.getDescription();
             String calendarId = CalendarController.getCalendarId();
 
             Event modifiedGoogleEvent = CalendarHandler.getEventFromId(calendarId, googleId);
             modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent, newDescription);
-            //modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent, newStartTime);
-            //modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent, newEndTime);
+            
+            if (taskToModify instanceof TimedTask) { //Try type casting
+                TimedTask modifyTimeTask = (TimedTask) modifyTask;
+                Date newStartTime = modifyTimeTask.getStartTime();
+                Date newEndTime = modifyTimeTask.getEndTime();
+                modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent, newStartTime);
+                modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent, newEndTime);
+            }
+            
             modifiedGoogleEvent = CalendarHandler.updateEvent(calendarId, googleId, modifiedGoogleEvent);
 
             if (isNotNull(modifiedGoogleEvent)) {

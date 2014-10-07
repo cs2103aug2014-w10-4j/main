@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 
-import chirptask.storage.TimedTask;
 
 class ConcurrentModify implements Callable<Boolean> {
 
