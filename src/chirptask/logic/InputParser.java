@@ -11,147 +11,143 @@ import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
 public class InputParser {
-	private static final int USER_INPUT_TO_ARRAYLIST = 1;
-	private static final String COMMAND_LOGIN = "login";
+    private static final int USER_INPUT_TO_ARRAYLIST = 1;
+    private static final String COMMAND_LOGIN = "login";
 
-	private String _userInput;
-	private GroupAction _actions;
+    private final DateParser _dateParser = new DateParser();
 
-	public InputParser() {
-		_actions = new GroupAction();
-	}
+    private String _userInput;
+    private GroupAction _actions;
 
-	public InputParser(String userInput) {
-		_userInput = userInput;
-		_actions = processCommand();
-	}
+    public InputParser() {
+        _actions = new GroupAction();
+    }
 
-	public void receiveInput(String userInput) {
-		_userInput = userInput;
-		_actions = processCommand();
-	}
+    public InputParser(String userInput) {
+        _userInput = userInput;
+        _actions = processCommand();
+    }
 
-	private GroupAction processCommand() {
-		String commandType = getCommandTypeString();
-		String parameter = getParameter();
-		switch (commandType) {
-		case "add": case "addt": case "addd":
-			return processForAdd(commandType, parameter);
-		case "edit":
-			return processForEdit(parameter);
-		case "delete":
-			return processForDelete(parameter);
-		case "done":
-			return processForDone(parameter);
-		case "undone":
+    public void receiveInput(String userInput) {
+        _userInput = userInput;
+        _actions = processCommand();
+    }
+
+    private GroupAction processCommand() {
+        String commandType = getCommandTypeString();
+        String parameter = getParameter();
+        switch (commandType) {
+        case "add":
+        case "addt":
+        case "addd":
+            return processForAdd(commandType, parameter);
+        case "edit":
+            return processForEdit(parameter);
+        case "delete":
+            return processForDelete(parameter);
+        case "done":
+            return processForDone(parameter);
+        case "undone":
             return processForUndone(parameter);
-		case "undo":
-			return processNoTask(commandType);
-		case "display":
-			return processDisplay(parameter);
-		case "login":
-			return processLogin();
-		default:
-			return new GroupAction();
-		}
-	}
+        case "undo":
+            return processUndo(commandType);
+        case "display":
+            return processDisplay(parameter);
+        case "login":
+            return processLogin();
+        default:
+            return new GroupAction();
+        }
+    }
 
-	private GroupAction processDisplay(String parameter) {
-		GroupAction actions = new GroupAction();
-		if (parameter != null) {
-			String[] filters = parameter.trim().split("\\s+|-");
-			for (int i = 0; i < filters.length; i++) {
-				if (!filters[i].equals("")) {
-					Action action = new Action();
-					Task task = new Task();
-					task.setTaskId(-1);
-					task.setDescription(filters[i]);
-					action.setCommandType("display");
-					action.setTask(task);
-					action.setUndo(null);
-					actions.addAction(action);
-				}
-			}
-		}
-		return actions;
-	}
+    private GroupAction processDisplay(String parameter) {
+        GroupAction actions = new GroupAction();
+        if (parameter != null) {
+            String[] filters = parameter.trim().split("\\s+|-");
+            for (int i = 0; i < filters.length; i++) {
+                if (!filters[i].equals("")) {
+                    Action action = new Action();
+                    Task task = new Task();
+                    task.setTaskId(-1);
+                    task.setDescription(filters[i]);
+                    action.setCommandType("display");
+                    action.setTask(task);
+                    action.setUndo(null);
+                    actions.addAction(action);
+                }
+            }
+        }
+        return actions;
+    }
 
+    private GroupAction processForAdd(String command, String parameter) {
+        GroupAction actions = new GroupAction();
+        Action action = new Action();
+        Action negate = new Action();
 
-	private GroupAction processNoTask(String command) {
-		GroupAction actions = new GroupAction();
-		Action action = new Action();
-		action.setCommandType(command);
-		actions.addAction(action);
-		return actions;
-	}
+        if (parameter == null) {
+            actions = returnInvalidAction();
+            return actions;
+        }
 
-	private GroupAction processForAdd(String command, String parameter) {
-		GroupAction actions = new GroupAction();
-		Action action = new Action();
-		Action negate = new Action();
-		Task toDo;
-		DateParser dp = new DateParser(parameter);
-		switch (command) {
-		case "addd":
-			toDo = new DeadlineTask();
-			toDo.setType("deadline task");
-			if (dp.getDate().size() >= 1) {
-				((DeadlineTask) toDo).setDate(dp.getDate().get(0));
-			}
-			break;
-		case "addt":
-			toDo = new TimedTask();
-			toDo.setType("timed task");
-			if (dp.getDate().size() == 2) {
-				((TimedTask) toDo).setStartTime(dp.getDate().get(0));
-				((TimedTask) toDo).setEndTime(dp.getDate().get(1));
-			}
-			break;
-		default:
-			toDo = new Task();
-			toDo.setType("floating");
-		}
-		getTaskFromString(parameter, toDo);
-		toDo.setTaskId(LocalStorage.generateId());
-		action.setCommandType("add");
-		action.setTask(toDo);
-		negate.setCommandType("delete");
-		negate.setTask(toDo);
-		action.setUndo(negate);
+        Task toDo = getTaskFromString(parameter);
+        int taskIndex = LocalStorage.generateId();
+        String description = toDo.getDescription();
+        List<String> categoryList = toDo.getCategories();
+        List<String> contextList = toDo.getContexts();
+        List<Date> dateList = _dateParser.parseDate(parameter);
 
-		actions.addAction(action);
-		return actions;
-	}
+        switch (command) {
+        case "addd":
+            if (dateList.size() < 1) {
+                actions = returnInvalidAction();
+                return actions;
+            }
+            Date dueDate = dateList.get(0);
+            Task deadline = new DeadlineTask(taskIndex, description, dueDate);
+            toDo = deadline;
+            break;
+        case "addt":
+            if (dateList.size() < 2) {
+                actions = returnInvalidAction();
+                return actions;
+            }
+            Date startTime = dateList.get(0);
+            Date endTime = dateList.get(1);
+            Task timed = new TimedTask(taskIndex, description, startTime,
+                    endTime);
+            toDo = timed;
+            break;
+        default:
+            Task floating = new Task(taskIndex, description);
+            toDo = floating;
+            break;
+        }
 
-	private void getTaskFromString(String parameter, Task task) {
-		parameter = parameter.trim();
-		String[] taskDesc = parameter.split("@|#", 2);
-	//	task.setDescription(taskDesc[0]);
-		task.setDescription(parameter);
+        toDo.setCategories(categoryList);
+        toDo.setContexts(contextList);
 
-		if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
-			String[] conCat = parameter.split("(?=@|#)");
-			ArrayList<String> contexts = new ArrayList<String>();
-			ArrayList<String> categories = new ArrayList<String>();
-			for (int i = 1; i < conCat.length; i++) {
-				if (conCat[i].contains("@") && conCat[i].length() > 1) {
-					contexts.add(conCat[i].substring(1));
-				}
-				if (conCat[i].contains("#") && conCat[i].length() > 1) {
-					categories.add(conCat[i].substring(1));
-				}
-			}
-			task.setCategories(categories);
-			task.setContexts(contexts);
-		}
-	}
+        action.setCommandType("add");
+        action.setTask(toDo);
+        negate.setCommandType("delete");
+        negate.setTask(toDo);
+        action.setUndo(negate);
+
+        actions.addAction(action);
+        return actions;
+    }
 
     private GroupAction processForDone(String parameter) {
-        GroupAction actions = null;
+        GroupAction actions = new GroupAction();
+
+        if (parameter == null) {
+            actions = returnInvalidAction();
+            return actions;
+        }
+
         List<Integer> list = getTaskIndexFromString(parameter);
         if (list != null) {
             // convertFromIndexToId(list);
-            actions = new GroupAction();
             List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
@@ -174,10 +170,15 @@ public class InputParser {
     }
 
     private GroupAction processForUndone(String parameter) {
-        GroupAction actions = null;
+        GroupAction actions = new GroupAction();
+
+        if (parameter == null) {
+            actions = returnInvalidAction();
+            return actions;
+        }
+
         List<Integer> list = getTaskIndexFromString(parameter);
         if (list != null) {
-            actions = new GroupAction();
             List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
@@ -208,11 +209,16 @@ public class InputParser {
     }
 
     private GroupAction processForDelete(String parameter) {
-        GroupAction actions = null;
+        GroupAction actions = new GroupAction();
+
+        if (parameter == null) {
+            actions = returnInvalidAction();
+            return actions;
+        }
+
         List<Integer> list = getTaskIndexFromString(parameter);
 
         if (list != null) {
-            actions = new GroupAction();
             List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
@@ -235,7 +241,7 @@ public class InputParser {
     }
 
     private List<Integer> getTaskIndexFromString(String parameter) {
-        List<Integer> taskIds = new ArrayList<Integer>(); 
+        List<Integer> taskIds = new ArrayList<Integer>();
         String[] split = parameter.trim().split("\\s+|,");
         for (int i = 0; i < split.length; i++) {
             if (!split[i].equals("") && split[i].contains("-")) {
@@ -243,7 +249,7 @@ public class InputParser {
                 int start = Integer.parseInt(sequence[0]);
                 int end = Integer.parseInt(sequence[1]);
                 for (int j = start; j <= end; j++) {
-                    taskIds.add(j); 
+                    taskIds.add(j);
                 }
             } else if (!split[i].equals("")) {
                 taskIds.add(Integer.parseInt(split[i]));
@@ -258,6 +264,11 @@ public class InputParser {
         Action action = new Action();
         Action negate = new Action();
 
+        if (parameter == null) {
+            actions = returnInvalidAction();
+            return actions;
+        }
+
         int taskIndex = getId(parameter);
         if (taskIndex >= 1) {
             List<Task> taskList = FilterTasks.getFilteredList();
@@ -269,7 +280,7 @@ public class InputParser {
                 parameter = parameters[1];
 
                 Task editedTask = getTaskFromString(parameter);
-                copyAttributesFromOldTask(oldTask, editedTask); 
+                copyAttributesFromOldTask(oldTask, editedTask);
 
                 action.setCommandType("edit");
                 action.setTask(editedTask);
@@ -281,48 +292,52 @@ public class InputParser {
         }
         return actions;
     }
-    
+
     private Task copyAttributesFromOldTask(Task oldTask, Task editedTask) {
         int taskId = oldTask.getTaskId();
         String taskType = oldTask.getType();
         String googleId = oldTask.getGoogleId();
-        
+
         editedTask.setTaskId(taskId);
         editedTask.setType(taskType);
         editedTask.setGoogleId(googleId);
-        
+
         switch (taskType) {
-        case "deadline" :
-            //setDueDate
+        case "deadline":
+            // setDueDate
             break;
-        case "timed" :
-            //setStartTime
-            //setEndTime
+        case "timed":
+            // setStartTime
+            // setEndTime
             break;
-        default :
+        default:
             break;
         }
-        
+
         return editedTask;
-    }    
+    }
 
     private Task getTaskFromString(String parameter) {
         Task newTask = new Task();
+
         parameter = parameter.trim();
         String[] taskDesc = parameter.split("@|#", 2);
-        // task.setDescription(taskDesc[0]);
         newTask.setDescription(parameter);
 
-        if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
-            String[] conCat = parameter.split("(?=@|#)");
+        if (taskDesc.length > 0 && !taskDesc[0].equals("")) {
             List<String> contexts = new ArrayList<String>();
             List<String> categories = new ArrayList<String>();
-            for (int i = 0; i < conCat.length; i++) {
-                if (conCat[i].contains("#") && conCat[i].length() > 1) {
-                    contexts.add(conCat[i].substring(1));
+
+            String[] word = parameter.split("\\s+");
+
+            for (int i = 0; i < word.length; i++) {
+                char firstChar = word[i].charAt(0);
+
+                if (firstChar == '#' && word[i].length() > 1) {
+                    contexts.add(word[i].substring(1));
                 }
-                if (conCat[i].contains("@") && conCat[i].length() > 1) {
-                    categories.add(conCat[i].substring(1));
+                if (firstChar == '@' && word[i].length() > 1) {
+                    categories.add(word[i].substring(1));
                 }
             }
             newTask.setCategories(categories);
@@ -334,7 +349,7 @@ public class InputParser {
     private int getId(String parameter) {
         String id = parameter.trim().split("\\s+")[0];
         int listId = Integer.parseInt(id);
-//        int taskId = getIdFromList(listId);
+        // int taskId = getIdFromList(listId);
         return listId;
     }
 
@@ -394,4 +409,13 @@ public class InputParser {
         }
         return isInRange;
     }
+
+    private GroupAction returnInvalidAction() {
+        GroupAction actions = new GroupAction();
+        Action action = new Action();
+        action.setCommandType("invalid");
+        actions.addAction(action);
+        return actions;
+    }
 }
+

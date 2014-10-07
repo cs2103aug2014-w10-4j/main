@@ -16,13 +16,15 @@ public class DateParser {
 	public DateParser() {
 		
 	}
-	public DateParser(String toParse) {
-		list = new ArrayList<Date>();
-		if (toParse.contains("by")) {
-			getDeadline(toParse);
-		} else if (toParse.contains("from") || toParse.contains("to")) {
-			getStartEnd(toParse);
-		}
+	
+	public List<Date> parseDate(String toParse) {
+	    list = new ArrayList<Date>();
+        if (toParse.contains("by")) {
+            getDeadline(toParse);
+        } else if (toParse.contains("from") || toParse.contains("to")) {
+            getStartEnd(toParse);
+        }
+        return list;
 	}
 
 	private void getStartEnd(String toParse) {
@@ -91,3 +93,4 @@ public class DateParser {
 		return list;
 	}
 }
+
