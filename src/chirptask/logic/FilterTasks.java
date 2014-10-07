@@ -30,6 +30,7 @@ public class FilterTasks {
             processFilter(currentFilter);
 
         }
+        contextsList.clear();
         for (Task task : filteredTask) {
             populateContext(task);
         }
