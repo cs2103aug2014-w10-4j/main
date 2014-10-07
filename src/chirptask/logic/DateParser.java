@@ -52,7 +52,6 @@ public class DateParser {
 	private void timedTaskAnotherDay(String toParse) {
 		String[] dates = toParse.trim().split("\\s+");
 		Date day = getSimpleDateFromString(dates[dates.length - 1]);
-		System.out.println(day);
 		String hours = new String();
 		for (int i = 0; i < dates.length - 1; i++) {
 			hours += dates[i];
@@ -62,7 +61,6 @@ public class DateParser {
 		for (Date d : eventTime) {
 			d.setDate(day.getDate());
 			d.setMonth(day.getMonth());
-			System.out.println(d);
 			list.add(d);
 		}
 	}
