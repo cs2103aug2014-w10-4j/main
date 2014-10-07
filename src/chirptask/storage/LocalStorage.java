@@ -116,7 +116,7 @@ public class LocalStorage implements Storage {
 		if (root == null) {
 			return false;
 		}
-		root.setAttribute("LatestId", String.valueOf(task.getTaskId()));
+		root.setAttribute("LatestId", String.valueOf(idGenerator));
 		root.appendChild(generateTaskNode(localStorage, task));
 		writeToFile();
 		return true;
