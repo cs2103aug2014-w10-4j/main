@@ -14,6 +14,8 @@ public class InputParser {
 	private static final int USER_INPUT_TO_ARRAYLIST = 1;
 	private static final String COMMAND_LOGIN = "login";
 
+    private final DateParser _dateParser = new DateParser();
+    
 	private String _userInput;
 	private GroupAction _actions;
 
@@ -46,7 +48,7 @@ public class InputParser {
 		case "undone":
             return processForUndone(parameter);
 		case "undo":
-			return processNoTask(commandType);
+			return processUndo(commandType);
 		case "display":
 			return processDisplay(parameter);
 		case "login":
@@ -76,43 +78,45 @@ public class InputParser {
 		return actions;
 	}
 
-
-	private GroupAction processNoTask(String command) {
-		GroupAction actions = new GroupAction();
-		Action action = new Action();
-		action.setCommandType(command);
-		actions.addAction(action);
-		return actions;
-	}
-
 	private GroupAction processForAdd(String command, String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
 		Action negate = new Action();
-		Task toDo;
-		DateParser dp = new DateParser(parameter);
+		
+		if (parameter == null) {
+		    action.setCommandType("invalid");
+		    actions.addAction(action);
+		    return actions;
+		}
+		
+		Task toDo = getTaskFromString(parameter);
+		int taskIndex = LocalStorage.generateId();
+		String description = toDo.getDescription();
+		List<String> categoryList = toDo.getCategories();
+		List<String> contextList = toDo.getContexts();
+		List<Date> dateList = _dateParser.parseDate(parameter);
+		
 		switch (command) {
 		case "addd":
-			toDo = new DeadlineTask();
-			toDo.setType("deadline task");
-			if (dp.getDate().size() >= 1) {
-				((DeadlineTask) toDo).setDate(dp.getDate().get(0));
-			}
+		    Date dueDate = dateList.get(0);
+			Task deadline = new DeadlineTask(taskIndex, description, dueDate);
+			toDo = deadline;
 			break;
 		case "addt":
-			toDo = new TimedTask();
-			toDo.setType("timed task");
-			if (dp.getDate().size() == 2) {
-				((TimedTask) toDo).setStartTime(dp.getDate().get(0));
-				((TimedTask) toDo).setEndTime(dp.getDate().get(1));
-			}
+		    Date startTime = dateList.get(0);
+		    Date endTime = dateList.get(1);
+			Task timed = new TimedTask(taskIndex, description, startTime, endTime);
+			toDo = timed;
 			break;
 		default:
-			toDo = new Task();
-			toDo.setType("floating");
+			Task floating = new Task(taskIndex, description);
+			toDo = floating;
+			break;
 		}
-		getTaskFromString(parameter, toDo);
-		toDo.setTaskId(LocalStorage.generateId());
+		
+		toDo.setCategories(categoryList);
+		toDo.setContexts(contextList);
+		
 		action.setCommandType("add");
 		action.setTask(toDo);
 		negate.setCommandType("delete");
@@ -123,35 +127,19 @@ public class InputParser {
 		return actions;
 	}
 
-	private void getTaskFromString(String parameter, Task task) {
-		parameter = parameter.trim();
-		String[] taskDesc = parameter.split("@|#", 2);
-	//	task.setDescription(taskDesc[0]);
-		task.setDescription(parameter);
-
-		if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
-			String[] conCat = parameter.split("(?=@|#)");
-			ArrayList<String> contexts = new ArrayList<String>();
-			ArrayList<String> categories = new ArrayList<String>();
-			for (int i = 1; i < conCat.length; i++) {
-				if (conCat[i].contains("@") && conCat[i].length() > 1) {
-					contexts.add(conCat[i].substring(1));
-				}
-				if (conCat[i].contains("#") && conCat[i].length() > 1) {
-					categories.add(conCat[i].substring(1));
-				}
-			}
-			task.setCategories(categories);
-			task.setContexts(contexts);
-		}
-	}
-
     private GroupAction processForDone(String parameter) {
-        GroupAction actions = null;
+        GroupAction actions = new GroupAction();
+        
+        if (parameter == null) {
+            Action action = new Action();
+            action.setCommandType("invalid");
+            actions.addAction(action);
+            return actions;
+        }
+        
         List<Integer> list = getTaskIndexFromString(parameter);
         if (list != null) {
             // convertFromIndexToId(list);
-            actions = new GroupAction();
             List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
@@ -174,10 +162,17 @@ public class InputParser {
     }
 
     private GroupAction processForUndone(String parameter) {
-        GroupAction actions = null;
+        GroupAction actions = new GroupAction();
+        
+        if (parameter == null) {
+            Action action = new Action();
+            action.setCommandType("invalid");
+            actions.addAction(action);
+            return actions;
+        }
+        
         List<Integer> list = getTaskIndexFromString(parameter);
         if (list != null) {
-            actions = new GroupAction();
             List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
@@ -208,11 +203,18 @@ public class InputParser {
     }
 
     private GroupAction processForDelete(String parameter) {
-        GroupAction actions = null;
+        GroupAction actions = new GroupAction();
+        
+        if (parameter == null) {
+            Action action = new Action();
+            action.setCommandType("invalid");
+            actions.addAction(action);
+            return actions;
+        }
+        
         List<Integer> list = getTaskIndexFromString(parameter);
 
         if (list != null) {
-            actions = new GroupAction();
             List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
@@ -257,6 +259,12 @@ public class InputParser {
         GroupAction actions = new GroupAction();
         Action action = new Action();
         Action negate = new Action();
+        
+        if (parameter == null) {
+            action.setCommandType("invalid");
+            actions.addAction(action);
+            return actions;
+        }
 
         int taskIndex = getId(parameter);
         if (taskIndex >= 1) {
@@ -308,21 +316,25 @@ public class InputParser {
 
     private Task getTaskFromString(String parameter) {
         Task newTask = new Task();
+        
         parameter = parameter.trim();
         String[] taskDesc = parameter.split("@|#", 2);
-        // task.setDescription(taskDesc[0]);
         newTask.setDescription(parameter);
 
-        if (taskDesc.length > 1 && !taskDesc[1].equals("")) {
-            String[] conCat = parameter.split("(?=@|#)");
+        if (taskDesc.length > 0 && !taskDesc[0].equals("")) {
             List<String> contexts = new ArrayList<String>();
             List<String> categories = new ArrayList<String>();
-            for (int i = 0; i < conCat.length; i++) {
-                if (conCat[i].contains("#") && conCat[i].length() > 1) {
-                    contexts.add(conCat[i].substring(1));
+            
+            String[] word = parameter.split("\\s+");
+            
+            for (int i = 0; i < word.length; i++) {
+                char firstChar = word[i].charAt(0);
+                
+                if (firstChar == '#' && word[i].length() > 1) {
+                    contexts.add(word[i].substring(1));
                 }
-                if (conCat[i].contains("@") && conCat[i].length() > 1) {
-                    categories.add(conCat[i].substring(1));
+                if (firstChar == '@' && word[i].length() > 1) {
+                    categories.add(word[i].substring(1));
                 }
             }
             newTask.setCategories(categories);
