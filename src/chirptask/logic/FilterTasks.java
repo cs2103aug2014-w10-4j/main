@@ -43,65 +43,93 @@ public class FilterTasks {
 	 * Assuming that we use keywords like -TIME -DONE -UNDONE -DATE -TIME
 	 * Assuming if no flag indication means filter by that keyword
 	 * **/
-	private static void processFilter(String filter) {
-		String[] param = filter.split("\\s+");
+	private static void processFilter(String filters) {
+		String[] param = filters.split("\\s+");
 		List<Task> templist = new ArrayList<Task>();
 		for (int i = 0; i < param.length; i++) {
+			String filter = param[i];
 			
-			if (param[i].equalsIgnoreCase("/TASK")) {
-				// search task type
-				if (param[i + PARAM_FILTER].equalsIgnoreCase("timed")) {
-					
-					populateTaskList(templist, "timed");
-				} else if (param[i + PARAM_FILTER].equalsIgnoreCase("floating")) {
-					populateTaskList(templist, "floating");
-				} else if (param[i + PARAM_FILTER].equalsIgnoreCase("deadline")) {
-					populateTaskList(templist, "deadline");
-				}
-				i++;
-			} else if (param[i].equalsIgnoreCase("/DONE")) {
-				// search done task
-				populateDoneList(templist, true);
-			} else if (param[i].equalsIgnoreCase("/UNDONE")) {
-				// search undone task
-				populateDoneList(templist, false);
-			} else {
-				// String search, assume only 1 keyword
-				populateStringList(templist, param[i]);
+			switch (filter) {
+			case "/done" :
+                // search done task
+                filterDone(templist, true);
+			    break;
+			case "/undone" :
+                // search undone task
+                filterDone(templist, false);
+			    break;
+			case "/floating" :
+			    filterTaskType(templist, "floating");
+			    break;
+			case "/timed" :
+			    filterTaskType(templist, "timed");
+			    break;
+			case "/deadline" :
+			    filterTaskType(templist, "deadline");
+			    break;
+			default :
+                // Entire string keyword search
+			    filterKeywords(templist, filters);
+			    break;
 			}
+			
 			filteredTask = templist;
-			
 		}
 
 	}
-	private static void populateStringList(List<Task> templist, String filter) {
+	
+	private static void filterKeywords(List<Task> tempList, String keywords) {
+	    populateStringList(tempList, keywords);
+	    if (tempList.isEmpty()) {
+	        resetFilteredTask();
+	        populateStringList(tempList, keywords);
+	    }
+	}
+	private static void populateStringList(List<Task> templist, String keywords) {
 		for (Task T : filteredTask) {
-			if (T.getDescription().contains(filter)) {
+			if (T.getDescription().contains(keywords)) {
 				templist.add(T);
 			}
 		}
 	}
-	private static void populateDoneList(List<Task> templist, boolean done) {
-		for (Task T : filteredTask) {
-			if (done) {
-				if (T.isDone()) {
-					templist.add(T);
-					System.out.println(T.getDescription());
-				}
-			} else {
-				if (!T.isDone()) {
-					templist.add(T);
-				}
-			}
-		}
+	
+	private static void filterDone(List<Task> tempList, boolean done) {
+	    populateDoneList(tempList, done);
+        if (tempList.isEmpty()) {
+            resetFilteredTask();
+            populateDoneList(tempList, done);
+        }
+	}
+	
+	private static void populateDoneList(List<Task> tempList, boolean done) {
+        for (Task T : filteredTask) {
+            if (done) {
+                if (T.isDone()) {
+                    tempList.add(T);
+                }
+            } else {
+                if (!T.isDone()) {
+                    tempList.add(T);
+                }
+            }
+        }
+    }
+	
+	private static void resetFilteredTask() {
+	    filteredTask = StorageHandler.getAllTasks();
 	}
 
-	private static void populateTaskList(List<Task> templist, String type) {
+	private static void filterTaskType(List<Task> tempList, String taskType) {
+	    populateTaskList(tempList, taskType);
+	    if (filteredTask.isEmpty()) {
+	        resetFilteredTask();
+	        populateTaskList(tempList, taskType);
+	    }
+	}
+	private static void populateTaskList(List<Task> tempList, String taskType) {
 		for (Task T : filteredTask) {
-			
-			if (T.getType().equalsIgnoreCase(type)) {
-				templist.add(T);
-				
+			if (T.getType().equalsIgnoreCase(taskType)) {
+				tempList.add(T);
 			}
 		}
 	}
