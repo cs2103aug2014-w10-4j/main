@@ -316,17 +316,31 @@ public class InputParser {
         Task newTask = null;
         switch (taskType) {
         case "deadline" :
+            Date dueDate = oldTask.getDate();
             if (editedDateList.size() > 0) {
-                Date editedDueDate = editedDateList.get(0);
-                newTask = new DeadlineTask(taskId, editedDescription, editedDueDate);
+                dueDate = editedDateList.get(0);
+            } else {
+                //should append due date to description eg. " by 8/10"
+                //String appendDueDate = regex the old description?
+                //editedDescription = editedDescription + appendDueDate;
             }
+            newTask = new DeadlineTask(taskId, editedDescription, dueDate); 
             break;
         case "timedtask" :
+            TimedTask timedTask = (TimedTask) oldTask;
+            Date startDate = timedTask.getStartTime();
+            Date endDate = timedTask.getEndTime();
+            
             if (editedDateList.size() > 1) {
-                Date editedStartDate = editedDateList.get(0);
-                Date editedEndDate = editedDateList.get(1);
-                newTask = new TimedTask(taskId, editedDescription, editedStartDate, editedEndDate);
+                startDate = editedDateList.get(0);
+                endDate = editedDateList.get(1);
+            } else {
+                //should append start/end to description eg. " from 8 to 10"
+                //String appendInfo = regex the old description?
+                //editedDescription = editedDescription + appendInfo;
             }
+
+            newTask = new TimedTask(taskId, editedDescription, startDate, endDate);
             break;
         case "floating" :
             newTask = new Task(taskId, editedDescription);

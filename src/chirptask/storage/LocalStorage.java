@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -306,29 +307,37 @@ public class LocalStorage implements Storage {
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element item = (Element) node;
 			try {
+			    int taskId = Integer.parseInt(item.getAttribute("TaskId"));
 				String typeTask = getValues("type", item).get(0);
+				String description = getValues("description", item).get(0);
+				String googleId = getValues("googleId", item).get(0);
+				String taskStatus = item.getAttribute("done");
+				SimpleDateFormat dateFormatter = 
+				                            new SimpleDateFormat(DATE_FORMAT);
+				
 				if (typeTask.equalsIgnoreCase("Deadline Task")) {
-					task = new DeadlineTask();
-					((DeadlineTask) task).setDate(new SimpleDateFormat(
-							DATE_FORMAT).parse(getValues("deadline", item).get(
-							0)));
+				    Date dueDate = dateFormatter
+				                            .parse(getValues("deadline", item)
+				                            .get(0));
+					task = new DeadlineTask(taskId, description, dueDate);
 				} else if (typeTask.equalsIgnoreCase("Timed Task")) {
-					task = new TimedTask();
-					((TimedTask) task)
-							.setStartTime(new SimpleDateFormat(DATE_FORMAT)
-									.parse(getValues("start", item).get(0)));
-					((TimedTask) task).setEndTime(new SimpleDateFormat(
-							DATE_FORMAT).parse(getValues("end", item).get(0)));
+					Date startTime = dateFormatter
+                                            .parse(getValues("start", item)
+                                            .get(0));
+					Date endTime = dateFormatter
+                                            .parse(getValues("end", item)
+                                            .get(0));
+					task = new TimedTask(taskId, description, startTime, endTime);
 				} else {
-					task = new Task();
+					task = new Task(taskId, description);
 				}
 
-				task.setTaskId(Integer.parseInt(item.getAttribute("TaskId")));
-				task.setDescription(getValues("description", item).get(0));
 				task.setContexts(getValues("contexts", item));
 				task.setCategories(getValues("categories", item));
+				task.setGoogleId(googleId);
+				
 				//A0111930W
-				if(item.getAttribute("done").equalsIgnoreCase("true")){
+				if(taskStatus.equalsIgnoreCase("true")){
 					task.setDone(true);
 				}
 				else{
