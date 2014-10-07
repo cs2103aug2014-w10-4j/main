@@ -47,34 +47,39 @@ public class DisplayView {
     private static void processUpdateTaskView(List<Task> tasks, MainGui gui,
             TreeMap<String, TasksByDate> map) {
         for (Task task : tasks) {
-            String currDate = MainGui.convertDateToString(task.getDate());
-
+            String dateToString = "";
+            Date taskViewDate = null;
+            
+            if (task.getType() == "floating") {
+                dateToString = "all-day";
+                taskViewDate = task.getDate();
+            } else if (task instanceof DeadlineTask) {
+                DeadlineTask dTask = (DeadlineTask) task;
+                dateToString = "due by " + dTask.getDate().getHours() + ":"
+                        + dTask.getDate().getMinutes();
+                taskViewDate = task.getDate();
+            } else if (task instanceof TimedTask) {
+                TimedTask tTask = (TimedTask) task;
+                dateToString = tTask.getStartTime().getHours() + ":"
+                        + tTask.getStartTime().getMinutes() + " to "
+                        + tTask.getEndTime().getHours() + ":"
+                        + tTask.getEndTime().getMinutes();
+                taskViewDate = tTask.getStartTime();
+            }
+            
+            String currDate = MainGui.convertDateToString(taskViewDate);
+            
             if (map.containsKey(currDate)) {
                 map.get(currDate).addToTaskList(task);
             } else {
                 TasksByDate dateTask = new TasksByDate();
                 // dateTask.setTaskDate(task.getDate());
                 // dateTask.addToTaskList(task);
-                gui.addNewTaskViewDate(task.getDate());
+                gui.addNewTaskViewDate(taskViewDate);
                 map.put(currDate, dateTask);
             }
 
-            String dateToString = "";
-            if (task.getType() == "floating") {
-                dateToString = "all-day";
-            } else if (task.getType() == "deadline") {
-                DeadlineTask dTask = (DeadlineTask) task;
-                dateToString = "due by " + task.getDate().getHours() + ":"
-                        + task.getDate().getMinutes();
-            } else {
-                TimedTask tTask = (TimedTask) task;
-                dateToString = tTask.getStartTime().getHours() + ":"
-                        + tTask.getStartTime().getMinutes() + " to "
-                        + tTask.getEndTime().getHours() + ":"
-                        + tTask.getEndTime().getMinutes();
-            }
-
-            gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
+            gui.addNewTaskViewToDate(taskViewDate, task.getTaskId(),
                     task.getDescription(), dateToString, task.isDone());
         }
     }
