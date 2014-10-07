@@ -180,6 +180,7 @@ public class Logic {
 	}
 
 	private void processExit() {
+	    System.out.println("TEST");
 		System.exit(0);
 	}
 
@@ -215,6 +216,7 @@ public class Logic {
 	private void processDisplay(Task task) {
 		clearUi();
 		FilterTasks.filter(task);
+		_gui.setFilterText(task.getDescription());
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
 

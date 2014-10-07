@@ -39,6 +39,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 public class MainGui extends Application {
@@ -89,27 +90,20 @@ public class MainGui extends Application {
 
         prepareScene(primaryStage, border, mainDisplay, trendingList);
         primaryStage.show();
-        
+
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent we) {
+                guiClosing();
+            }
+
+        });
+
         _logic = new Logic(this);
 
-        /* addCategoryIntoList("123");
-         addContextIntoList("TEST");
-        
-         Date today = new Date();
-         Date tomorrow = new Date();
-         tomorrow.setDate(today.getDate()+1);
-         addNewTaskViewDate(new Date());
-         
-         addNewTaskViewDate(tomorrow);
-         addNewTaskViewToDate(new Date(), 0, "#123 @123 TEST", "all-day",
-         true);
-         addNewTaskViewToDate(new Date(), 4, "#TEST @123", "all-day", true);
-         addNewTaskViewToDate(new Date(), 1, "TEST @123 #123",
-         "8:00 to 10:00",
-         true);
-         addNewTaskViewToDate(new Date(), 2, "#TEST", "noon to 16:00", true);
-         addNewTaskViewToDate(new Date(), 3, "@TEST", "due by 16:00", true);*/
+    }
 
+    private void guiClosing() {
+        System.out.println("Stage is closing");
     }
 
     private void prepareScene(Stage primaryStage, BorderPane border,
@@ -152,11 +146,11 @@ public class MainGui extends Application {
         Text sceneTitle = new Text(Messages.TITLE_SOFTWARE);
         sceneTitle.getStyleClass().add("header-title");
 
-        Text settingsButton = new Text(Messages.TITLE_SETTINGS);
-        settingsButton.getStyleClass().add("header-title");
+        // Text settingsButton = new Text(Messages.TITLE_SETTINGS);
+        // settingsButton.getStyleClass().add("header-title");
 
         headerBar.setLeft(sceneTitle);
-        headerBar.setRight(settingsButton);
+        // headerBar.setRight(settingsButton);
 
         return headerBar;
     }
@@ -191,7 +185,7 @@ public class MainGui extends Application {
         VBox.setVgrow(categoryPane, Priority.ALWAYS);
         VBox.setVgrow(contextPane, Priority.ALWAYS);
 
-        trendingList.getChildren().addAll(contextPane, categoryPane);
+        trendingList.getChildren().addAll(categoryPane, contextPane);
         return trendingList;
     }
 
@@ -208,7 +202,6 @@ public class MainGui extends Application {
         contextScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         contextScrollPane.setContent(_contextList);
-        contextScrollPane.getStyleClass().add("context-scroll");
 
         return contextScrollPane;
     }
@@ -230,12 +223,14 @@ public class MainGui extends Application {
         categoryScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         categoryScrollPane.setContent(_categoryList);
+        categoryScrollPane.getStyleClass().add("category-scroll");
 
         return categoryScrollPane;
     }
 
     private HBox generateFilterBox() {
         _filterField.setText(Settings.DEFAULT_FILTER);
+        _filterField.setOnKeyReleased(filterModified());
 
         HBox.setHgrow(_filterField, Priority.ALWAYS);
 
@@ -249,6 +244,19 @@ public class MainGui extends Application {
         filterBox.getChildren().add(_filterField);
 
         return filterBox;
+    }
+
+    private EventHandler<KeyEvent> filterModified() {
+        return new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                // check difference
+                if (event.getCode() == KeyCode.ENTER) {
+                    _logic.retrieveInputFromUI("display "
+                            + _filterField.getText());
+                }
+            }
+        };
     }
 
     private VBox generateUserInputAndStatusBar() {
@@ -327,9 +335,20 @@ public class MainGui extends Application {
                 new ChangeListener<Boolean>() {
                     public void changed(ObservableValue<? extends Boolean> ov,
                             Boolean old_val, Boolean new_val) {
+
                         HBox descriptionBox = (HBox) taskPane.getCenter();
                         TextFlow desc = (TextFlow) descriptionBox.getChildren()
                                 .get(0);
+                        String index = ""
+                                + ((Text) desc.getChildren().get(0)).getText()
+                                        .split("\\.")[0];
+
+                        if (new_val) {
+                            _logic.retrieveInputFromUI("done " + index);
+                        } else {
+                            _logic.retrieveInputFromUI("undone " + index);
+                        }
+
                         Iterator<Node> descChildIterator = desc.getChildren()
                                 .iterator();
                         Text taskTime = (Text) taskPane.getRight();
@@ -341,6 +360,7 @@ public class MainGui extends Application {
 
                     }
                 });
+
         Pane checkBoxPane = new Pane();
         checkBoxPane.setMaxWidth(20);
         checkBoxPane.getChildren().add(markTaskAsDone);
@@ -361,8 +381,7 @@ public class MainGui extends Application {
         taskViewHeader.setPadding(new Insets(5, 5, 3, 5));
         taskViewHeader.setLeft(dayLabel);
         taskViewHeader.setRight(dateLabel);
-        
-        
+
         boolean isToday = convertDateToString(date).equals(
                 convertDateToString(new Date()));
         if (isToday) {
@@ -452,6 +471,12 @@ public class MainGui extends Application {
 
     public String getFilter() {
         return _filterField.getText();
+    }
+
+    public void setFilterText(String text) {
+        int caretPosition = _filterField.getCaretPosition();
+        _filterField.setText(text);
+        _filterField.positionCaret(caretPosition);
     }
 
     public String getUserInput() {
@@ -584,18 +609,17 @@ public class MainGui extends Application {
         _taskViewDateMap.get(convertDateToString(date)).getChildren()
                 .add(taskPane);
 
-        
         return true;
     }
-    
+
     public void clearTaskView() {
         _taskViewByDate.getChildren().clear();
         _taskViewDateMap.clear();
         _taskIndexToId.clear();
     }
-    
+
     public static List<Integer> getTaskIndexToId() {
-    	return _taskIndexToId;
+        return _taskIndexToId;
     }
 
 }

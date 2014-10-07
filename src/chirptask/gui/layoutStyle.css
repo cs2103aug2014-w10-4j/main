@@ -46,7 +46,7 @@
 	-fx-fill:rgba(68.0,167.0,3.0);
 }
 
-.context-scroll {
+.category-scroll {
     -fx-border-width: 0.0px 0.0px 1.0px 0.0px;
     -fx-border-style: solid;
     -fx-border-color: transparent transparent #ddd transparent;
