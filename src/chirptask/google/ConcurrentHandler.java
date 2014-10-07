@@ -114,19 +114,22 @@ class ConcurrentHandler {
             isModified = false;
             return isModified;
         }
-        
-            TimedTask modifyTask = (TimedTask) taskToModify;
-            Date newStartTime = modifyTask.getStartTime();
-            Date newEndTime = modifyTask.getEndTime();
+
+            chirptask.storage.Task modifyTask = taskToModify;
+            //TimedTask timedTask = (TimedTask) modifyTask;
+            
+            
+            //Date newStartTime = timedTask.getStartTime();
+            //Date newEndTime = timedTask.getEndTime();
             String newDescription = modifyTask.getDescription();
             String calendarId = CalendarController.getCalendarId();
-        
+
             Event modifiedGoogleEvent = CalendarHandler.getEventFromId(calendarId, googleId);
             modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent, newDescription);
-            modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent, newStartTime);
-            modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent, newEndTime);
+            //modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent, newStartTime);
+            //modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent, newEndTime);
             modifiedGoogleEvent = CalendarHandler.updateEvent(calendarId, googleId, modifiedGoogleEvent);
-            
+
             if (isNotNull(modifiedGoogleEvent)) {
                 /*
                  * Possibly used to overwrite googleId in local storage, eg.

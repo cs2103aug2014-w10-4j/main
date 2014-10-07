@@ -311,7 +311,7 @@ public class GoogleController implements Runnable {
         case "deadline" :
             isDeleted = deleteGoogleTask(googleId);
             break;
-        case "timed" :
+        case "timedtask" :
             isDeleted = deleteGoogleEvent(googleId);
             break;
         default :
@@ -394,7 +394,7 @@ public class GoogleController implements Runnable {
                 isExist = true;
             }
             break;
-        case "timed" :
+        case "timedtask" :
             googleListId = CalendarController.getCalendarId();
             Event foundEvent = CalendarHandler.getEventFromId(googleListId, googleId);
             if (foundEvent != null) {

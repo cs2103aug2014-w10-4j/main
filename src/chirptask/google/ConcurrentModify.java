@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 
+import chirptask.storage.TimedTask;
+
 class ConcurrentModify implements Callable<Boolean> {
 
     private chirptask.storage.Task _taskToModify;
@@ -38,7 +40,7 @@ class ConcurrentModify implements Callable<Boolean> {
             isModified = isModified && 
                             ConcurrentHandler.modifyGoogleTask(_taskToModify);
             break;
-        case "timed":
+        case "timedtask":
              isModified = isModified &&
                             ConcurrentHandler.modifyGoogleEvent(_taskToModify);
             break;
