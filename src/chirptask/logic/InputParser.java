@@ -365,7 +365,7 @@ public class InputParser {
         String[] taskDesc = parameter.split("@|#", 2);
         newTask.setDescription(parameter);
 
-        if (taskDesc.length > 0 && !taskDesc[0].equals("")) {
+        if (taskDesc.length > 0) {
             List<String> contexts = new ArrayList<String>();
             List<String> categories = new ArrayList<String>();
 
