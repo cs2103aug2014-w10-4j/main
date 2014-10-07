@@ -15,7 +15,7 @@ public class FilterTasks {
 	private static List<String> categoriesList;
 	private static List<String> contextsList;
 	private static String currentFilter = "";
-
+	private static final int PARAM_FILTER = 1; 
 	static void filter(Task T) {
 		currentFilter = T.getDescription();
 		
@@ -50,12 +50,12 @@ public class FilterTasks {
 			
 			if (param[i].equalsIgnoreCase("/TASK")) {
 				// search task type
-				if (param[i + 1].equalsIgnoreCase("timed")) {
+				if (param[i + PARAM_FILTER].equalsIgnoreCase("timed")) {
 					
 					populateTaskList(templist, "timed");
-				} else if (param[i + 1].equalsIgnoreCase("floating")) {
+				} else if (param[i + PARAM_FILTER].equalsIgnoreCase("floating")) {
 					populateTaskList(templist, "floating");
-				} else if (param[i + 1].equalsIgnoreCase("deadline")) {
+				} else if (param[i + PARAM_FILTER].equalsIgnoreCase("deadline")) {
 					populateTaskList(templist, "deadline");
 				}
 				i++;
@@ -86,6 +86,7 @@ public class FilterTasks {
 			if (done) {
 				if (T.isDone()) {
 					templist.add(T);
+					System.out.println(T.getDescription());
 				}
 			} else {
 				if (!T.isDone()) {

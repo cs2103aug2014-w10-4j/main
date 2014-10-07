@@ -111,7 +111,7 @@ public class Logic {
 		}
 	}
 
-	private CommandType determineCommandType(String commandTypeString) {
+	public static CommandType determineCommandType(String commandTypeString) {
 		if (commandTypeString.equalsIgnoreCase("add")) {
 			return CommandType.ADD;
 		} else if (commandTypeString.equalsIgnoreCase("display")) {

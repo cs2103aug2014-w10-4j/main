@@ -327,6 +327,13 @@ public class LocalStorage implements Storage {
 				task.setDescription(getValues("description", item).get(0));
 				task.setContexts(getValues("contexts", item));
 				task.setCategories(getValues("categories", item));
+				//A0111930W
+				if(item.getAttribute("done").equalsIgnoreCase("true")){
+					task.setDone(true);
+				}
+				else{
+					task.setDone(false);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
