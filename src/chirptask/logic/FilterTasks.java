@@ -8,6 +8,7 @@ import java.util.List;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 
+//@A0111930W
 public class FilterTasks {
 
 	private static List<Task> filteredTask;
@@ -16,19 +17,16 @@ public class FilterTasks {
 	private static String currentFilter = "";
 
 	static void filter(Task T) {
-		filteredTask = new ArrayList<Task>();
 		currentFilter = T.getDescription();
+		
 		List<Task> allTask = StorageHandler.getAllTasks();
 		// check 1st String to determine the type of filter
 
 		if (currentFilter.isEmpty()) {
 			filteredTask = StorageHandler.getAllTasks();
 		} else {
-			for (Task a : allTask) {
-				if (a.getDescription().contains(currentFilter)) {
-					filteredTask.add(a);
-				}
-			}
+			
+			processFilter(currentFilter);			
 
 		}
 		contextsList.clear();
@@ -37,7 +35,75 @@ public class FilterTasks {
 		}
 	}
 
+	
+
 	// Add in filter time, date, task, done, undone
+
+	/**
+	 * Assuming that we use keywords like -TIME -DONE -UNDONE -DATE -TIME
+	 * Assuming if no flag indication means filter by that keyword
+	 * **/
+	private static void processFilter(String filter) {
+		String[] param = filter.split("\\s+");
+		List<Task> templist = new ArrayList<Task>();
+		for (int i = 0; i < param.length; i++) {
+			
+			if (param[i].equalsIgnoreCase("/TASK")) {
+				// search task type
+				if (param[i + 1].equalsIgnoreCase("timed")) {
+					
+					populateTaskList(templist, "timed");
+				} else if (param[i + 1].equalsIgnoreCase("floating")) {
+					populateTaskList(templist, "floating");
+				} else if (param[i + 1].equalsIgnoreCase("deadline")) {
+					populateTaskList(templist, "deadline");
+				}
+				i++;
+			} else if (param[i].equalsIgnoreCase("/DONE")) {
+				// search done task
+				populateDoneList(templist, true);
+			} else if (param[i].equalsIgnoreCase("/UNDONE")) {
+				// search undone task
+				populateDoneList(templist, false);
+			} else {
+				// String search, assume only 1 keyword
+				populateStringList(templist, param[i]);
+			}
+			filteredTask = templist;
+			
+		}
+
+	}
+	private static void populateStringList(List<Task> templist, String filter) {
+		for (Task T : filteredTask) {
+			if (T.getDescription().contains(filter)) {
+				templist.add(T);
+			}
+		}
+	}
+	private static void populateDoneList(List<Task> templist, boolean done) {
+		for (Task T : filteredTask) {
+			if (done) {
+				if (T.isDone()) {
+					templist.add(T);
+				}
+			} else {
+				if (!T.isDone()) {
+					templist.add(T);
+				}
+			}
+		}
+	}
+
+	private static void populateTaskList(List<Task> templist, String type) {
+		for (Task T : filteredTask) {
+			
+			if (T.getType().equalsIgnoreCase(type)) {
+				templist.add(T);
+				
+			}
+		}
+	}
 
 	static void filter() {
 		categoriesList = new ArrayList<String>();

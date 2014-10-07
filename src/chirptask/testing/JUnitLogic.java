@@ -19,20 +19,18 @@ public class JUnitLogic {
 		Logic a = new Logic();
 		Action act = new Action();
 		Task task = new Task();
-		
+
 		task.setTaskId(-1);
-		task.setDescription("tml");
+		task.setDescription("/undone /task floating");
 		act.setCommandType("display");
 		act.setTask(task);
 		act.setUndo(null);
-		
+
 		List<Task> list = FilterTasks.getFilteredList();
-		
-		
+
 		a.executeAction(act);
 		assertEquals(list, FilterTasks.getFilteredList());
-		
-		
+
 	}
 
 }

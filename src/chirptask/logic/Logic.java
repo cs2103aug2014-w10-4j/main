@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-
 import chirptask.settings.Messages;
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
@@ -20,6 +19,7 @@ enum StatusType {
 	ERROR, MESSAGE
 }
 
+// @A0111390W
 public class Logic {
 	private static final String MESSAGE_NEW_COMMAND = "command: ";
 	private static final int ERROR_OPENING_STREAM = 57;
@@ -46,7 +46,7 @@ public class Logic {
 		_storageHandler = new StorageHandler();
 		_parser = new InputParser();
 		FilterTasks.filter();
-		
+
 		// runUntilExitCommand(); //Temporary CLI code before full integration
 		// with GUI
 		// lastAction = new Action();
@@ -94,10 +94,10 @@ public class Logic {
 	private void exitChirpTask(int typeOfExit) {
 		System.exit(typeOfExit);
 	}
-	
+
 	private void clearUi() {
-	    _gui.clearTrendingList();
-	    _gui.clearTaskView();
+		_gui.clearTrendingList();
+		_gui.clearTaskView();
 	}
 
 	public void retrieveInputFromUI(String input) {
@@ -125,8 +125,8 @@ public class Logic {
 		} else if (commandTypeString.equalsIgnoreCase("done")) {
 			return CommandType.DONE;
 		} else if (commandTypeString.equalsIgnoreCase("undone")) {
-            return CommandType.UNDONE;
-        } else if (commandTypeString.equalsIgnoreCase("login")) {
+			return CommandType.UNDONE;
+		} else if (commandTypeString.equalsIgnoreCase("login")) {
 			return CommandType.LOGIN;
 		} else if (commandTypeString.equalsIgnoreCase("exit")) {
 			return CommandType.EXIT;
@@ -162,9 +162,9 @@ public class Logic {
 		case DONE:
 			processDone(command, task);
 			break;
-        case UNDONE:
-            processUndone(command, task);
-            break;
+		case UNDONE:
+			processUndone(command, task);
+			break;
 		case LOGIN:
 			processLogin(command);
 			break;
@@ -193,19 +193,19 @@ public class Logic {
 		task.setDone(true);
 		processEdit(command, task);
 	}
-	
+
 	private void processUndone(Action command, Task task) {
-        task.setDone(false);
-        processEdit(command, task);
-    }
+		task.setDone(false);
+		processEdit(command, task);
+	}
 
 	private void processUndo() {
-	    Action lastAction = getLastAction();
-	    Action undoAction = lastAction.undo();
-	    undoAction.setUndo(lastAction);
+		Action lastAction = getLastAction();
+		Action undoAction = lastAction.undo();
+		undoAction.setUndo(lastAction);
 		executeAction(undoAction);
 	}
-	
+
 	private void processEdit(Action command, Task task) {
 		boolean isSuccess;
 		isSuccess = _storageHandler.modifyTask(task);
@@ -213,7 +213,7 @@ public class Logic {
 	}
 
 	private void processDisplay(Task task) {
-	    clearUi();
+		clearUi();
 		FilterTasks.filter(task);
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
@@ -222,12 +222,12 @@ public class Logic {
 		Task deletedTask;
 		boolean isSuccess;
 		deletedTask = _storageHandler.deleteTask(task);
-		if(deletedTask == null){
+		if (deletedTask == null) {
 			isSuccess = false;
 			;
-		} else{
+		} else {
 			isSuccess = true;
-			
+
 		}
 		filterAndDisplay(command, isSuccess);
 	}
@@ -240,8 +240,8 @@ public class Logic {
 
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		// set lastAction
-	    this.setLastAction(command);
-        clearUi();
+		this.setLastAction(command);
+		clearUi();
 		FilterTasks.filter();
 		showStatusToUser(command, isSuccess);
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
