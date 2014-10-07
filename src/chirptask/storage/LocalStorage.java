@@ -168,7 +168,7 @@ public class LocalStorage implements Storage {
 			}
 		}
 
-		if (taskToAdd.getType().equalsIgnoreCase("timed")) {
+		if (taskToAdd.getType().equalsIgnoreCase("timedtask")) {
 			TimedTask timedTask = (TimedTask) taskToAdd;
 			node.appendChild(getElement(doc, "type", "Timed Task"));
 			node.appendChild(getElement(doc, "start", taskToAdd.getDate()
