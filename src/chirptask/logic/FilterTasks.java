@@ -69,7 +69,7 @@ public class FilterTasks {
 			    break;
 			default :
                 // Entire string keyword search
-			    filterKeywords(templist, filters);
+			    filterKeyword(templist, filter);
 			    break;
 			}
 			
@@ -78,11 +78,11 @@ public class FilterTasks {
 
 	}
 	
-	private static void filterKeywords(List<Task> tempList, String keywords) {
-	    populateStringList(tempList, keywords);
+	private static void filterKeyword(List<Task> tempList, String keyword) {
+	    populateStringList(tempList, keyword);
 	    if (tempList.isEmpty()) {
 	        resetFilteredTask();
-	        populateStringList(tempList, keywords);
+	        populateStringList(tempList, keyword);
 	    }
 	}
 	private static void populateStringList(List<Task> templist, String keywords) {
