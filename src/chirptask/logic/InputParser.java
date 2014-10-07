@@ -146,8 +146,6 @@ public class InputParser {
 		}
 	}
 
-
-
     private GroupAction processForDone(String parameter) {
         GroupAction actions = null;
         List<Integer> list = getTaskIndexFromString(parameter);
@@ -158,7 +156,7 @@ public class InputParser {
             for (Integer i : list) {
                 Action action = new Action();
                 action.setCommandType("done");
-                int normalizedIndex = normalizeIndexToListId(i);
+                int normalizedIndex = normalizeId(i);
                 if (isIndexInRange(normalizedIndex)) {
                     Task task = allTasks.get(normalizedIndex);
                     action.setTask(task);
@@ -184,7 +182,7 @@ public class InputParser {
             for (Integer i : list) {
                 Action action = new Action();
                 action.setCommandType("undone");
-                int normalizedIndex = normalizeIndexToListId(i);
+                int normalizedIndex = normalizeId(i);
                 if (isIndexInRange(normalizedIndex)) {
                     Task task = allTasks.get(normalizedIndex);
                     action.setTask(task);
@@ -214,13 +212,12 @@ public class InputParser {
         List<Integer> list = getTaskIndexFromString(parameter);
 
         if (list != null) {
-            // convertFromIndexToId(list);
             actions = new GroupAction();
             List<Task> allTasks = FilterTasks.getFilteredList();
             for (Integer i : list) {
                 Action action = new Action();
                 action.setCommandType("delete");
-                int normalizedIndex = normalizeIndexToListId(i);
+                int normalizedIndex = normalizeId(i);
                 if (isIndexInRange(normalizedIndex)) {
                     Task task = allTasks.get(normalizedIndex);
                     action.setTask(task);
@@ -235,25 +232,6 @@ public class InputParser {
             }
         }
         return actions;
-    }
-
-    private void convertFromIndexToId(List<Integer> list) {
-        List<Task> allTasks = FilterTasks.getFilteredList();
-        for (int i = 0; i < list.size(); i++) {
-            int index = list.get(i);
-            int normalizedIndex = normalizeIndexToListId(index);
-            if (normalizedIndex < allTasks.size() && normalizedIndex >= 0) {
-                Integer listId = allTasks.get(normalizedIndex).getTaskId();
-                list.set(i, listId);
-            } else {
-                list.remove(i);
-            }
-        }
-    }
-
-    private int normalizeIndexToListId(int index) {
-        int listId = index - 1;
-        return listId;
     }
 
     private List<Integer> getTaskIndexFromString(String parameter) {
@@ -280,18 +258,18 @@ public class InputParser {
         Action action = new Action();
         Action negate = new Action();
 
-        int taskId = getId(parameter);
-        if (taskId >= 1) {
-        	List<Task> taskList = FilterTasks.getFilteredList();
-            int normalizedIndex = normalizeId(taskId);
+        int taskIndex = getId(parameter);
+        if (taskIndex >= 1) {
+            List<Task> taskList = FilterTasks.getFilteredList();
+            int normalizedIndex = normalizeId(taskIndex);
+
             Task oldTask = taskList.get(normalizedIndex);
             String[] parameters = parameter.trim().split("\\s+", 2);
             if (parameters.length > 1) {
                 parameter = parameters[1];
 
-                Task editedTask = getTaskFromString(parameter); //we should handle edit better.
-                //edit description? or edit due date? or edit start/end time?
-                editedTask.setTaskId(oldTask.getTaskId());
+                Task editedTask = getTaskFromString(parameter);
+                copyAttributesFromOldTask(oldTask, editedTask); 
 
                 action.setCommandType("edit");
                 action.setTask(editedTask);
@@ -303,8 +281,30 @@ public class InputParser {
         }
         return actions;
     }
-
-
+    
+    private Task copyAttributesFromOldTask(Task oldTask, Task editedTask) {
+        int taskId = oldTask.getTaskId();
+        String taskType = oldTask.getType();
+        String googleId = oldTask.getGoogleId();
+        
+        editedTask.setTaskId(taskId);
+        editedTask.setType(taskType);
+        editedTask.setGoogleId(googleId);
+        
+        switch (taskType) {
+        case "deadline" :
+            //setDueDate
+            break;
+        case "timed" :
+            //setStartTime
+            //setEndTime
+            break;
+        default :
+            break;
+        }
+        
+        return editedTask;
+    }    
 
     private Task getTaskFromString(String parameter) {
         Task newTask = new Task();

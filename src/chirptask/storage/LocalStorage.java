@@ -168,14 +168,14 @@ public class LocalStorage implements Storage {
 			}
 		}
 
-		if (taskToAdd.getType().equalsIgnoreCase("timed task")) {
+		if (taskToAdd.getType().equalsIgnoreCase("timed")) {
 			TimedTask timedTask = (TimedTask) taskToAdd;
 			node.appendChild(getElement(doc, "type", "Timed Task"));
 			node.appendChild(getElement(doc, "start", taskToAdd.getDate()
 					.toString()));
 			node.appendChild(getElement(doc, "end", timedTask.getEndTime()
 					.toString()));
-		} else if (taskToAdd.getType().equalsIgnoreCase("deadline task")) {
+		} else if (taskToAdd.getType().equalsIgnoreCase("deadline")) {
 			node.appendChild(getElement(doc, "deadline", taskToAdd.getDate()
 					.toString()));
 			node.appendChild(getElement(doc, "type", "Deadline Task"));
@@ -327,6 +327,13 @@ public class LocalStorage implements Storage {
 				task.setDescription(getValues("description", item).get(0));
 				task.setContexts(getValues("contexts", item));
 				task.setCategories(getValues("categories", item));
+				//A0111930W
+				if(item.getAttribute("done").equalsIgnoreCase("true")){
+					task.setDone(true);
+				}
+				else{
+					task.setDone(false);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
@@ -343,8 +350,8 @@ public class LocalStorage implements Storage {
 	 * @param item
 	 * @return ArrayList<String>
 	 */
-	private static ArrayList<String> getValues(String tag, Element item) {
-		ArrayList<String> contents = new ArrayList<String>();
+	private static List<String> getValues(String tag, Element item) {
+		List<String> contents = new ArrayList<String>();
 		NodeList nodes = item.getElementsByTagName(tag);
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = (Node) nodes.item(i);

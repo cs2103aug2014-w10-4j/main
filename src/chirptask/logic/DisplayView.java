@@ -12,6 +12,7 @@ import chirptask.settings.Messages;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 
+//@A0111930W
 public class DisplayView {
 	/**
 	 * This will take in a filtered list and update the taskview, sort to
@@ -58,7 +59,6 @@ public class DisplayView {
 			gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
 					task.getDescription(), task.getDate().toString(),
 					task.isDone());
-
 		}
 	}
 
@@ -90,47 +90,88 @@ public class DisplayView {
 	// Take in type, action
 	public static void showStatusToUser(StatusType type, Action action,
 			MainGui gui) {
+		CommandType command = Logic.determineCommandType(action
+				.getCommandType());
 		if (type == StatusType.ERROR) {
-			if (action.getCommandType().equalsIgnoreCase("add")) {
-				gui.setError(String.format(Messages.LOG_MESSAGE_ADD_TASK,
-						"ERROR", action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("delete")) {
-				gui.setError(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
-						"ERROR", action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("Edit")) {
-				gui.setError(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
-						"ERROR", action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("done")) {
-				gui.setError(String.format(Messages.LOG_MESSAGE_DONE, "ERROR",
-						action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("undone")) {
-				gui.setError(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
-						"ERROR", action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("login")) {
-				gui.setError(String.format(Messages.LOG_MESSAGE_LOGIN, "ERROR"));
-			}
+			switch (command) {
+			case ADD:
+				processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
+						Messages.LOG_MESSAGE_ERROR);
+				break;
+			case DELETE:
+				processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
+						Messages.LOG_MESSAGE_ERROR);
+				break;
 
+			case EDIT:
+				processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+						Messages.LOG_MESSAGE_ERROR);
+
+				break;
+			case DONE:
+				processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
+						Messages.LOG_MESSAGE_ERROR);
+				break;
+			case UNDONE:
+				processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+						Messages.LOG_MESSAGE_ERROR);
+				break;
+			case LOGIN:
+				processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN,
+						Messages.LOG_MESSAGE_ERROR);
+				break;
+			}
 		} else {
+			switch (command) {
+			case ADD:
+				processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
+						Messages.LOG_MESSAGE_SUCCESS);
 
-			if (action.getCommandType().equalsIgnoreCase("add")) {
-				gui.setStatus(String.format(Messages.LOG_MESSAGE_ADD_TASK,
-						"Success", action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("delete")) {
-				gui.setStatus(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
-						"Success", action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("Edit")) {
-				gui.setStatus(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
-						"Success", action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("done")) {
-				gui.setStatus(String.format(Messages.LOG_MESSAGE_DONE,
-						"Success", action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("undone")) {
-				gui.setStatus(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
-						"Success", action.getTask().getDescription()));
-			} else if (action.getCommandType().equalsIgnoreCase("login")) {
-				gui.setStatus(String.format(Messages.LOG_MESSAGE_LOGIN,
-						"Success"));
+				break;
+			case DELETE:
+				processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
+						Messages.LOG_MESSAGE_SUCCESS);
+				break;
+
+			case EDIT:
+				processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+						Messages.LOG_MESSAGE_SUCCESS);
+
+				break;
+			case DONE:
+				processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
+						Messages.LOG_MESSAGE_SUCCESS);
+
+				break;
+			case UNDONE:
+				processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+						Messages.LOG_MESSAGE_SUCCESS);
+				break;
+			case LOGIN:
+				processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN,
+						Messages.LOG_MESSAGE_SUCCESS);
+				break;
 			}
+		}
+	}
+
+	private static void processGuiLogin(MainGui gui, String message,
+			String result) {
+		if (result.equalsIgnoreCase(Messages.LOG_MESSAGE_SUCCESS)) {
+			gui.setStatus(String.format(message, result));
+		} else {
+			gui.setError(String.format(message, result));
+		}
+	}
+
+	private static void processGUI(Action action, MainGui gui, String message,
+			String result) {
+		if (result.equalsIgnoreCase(Messages.LOG_MESSAGE_SUCCESS)) {
+			gui.setStatus(String.format(message, result, action.getTask()
+					.getDescription()));
+		} else {
+			gui.setError(String.format(message, result, action.getTask()
+					.getDescription()));
 		}
 	}
 }

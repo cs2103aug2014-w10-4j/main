@@ -13,6 +13,9 @@ import java.util.List;
 public class DateParser {
 	private List<Date> list;
 
+	public DateParser() {
+		
+	}
 	public DateParser(String toParse) {
 		list = new ArrayList<Date>();
 		if (toParse.contains("by")) {

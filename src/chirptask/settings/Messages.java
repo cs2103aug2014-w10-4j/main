@@ -16,7 +16,9 @@ public class Messages {
     public static final String LOG_MESSAGE_LOGIN = "%1$s: Login";
     public static final String LOG_MESSAGE_DONE = "%1$s: Done %2$s";
     public static final String LOG_MESSAGE_UNDONE = "%1$s: Undone %2$s";
-
+    public static final String LOG_MESSAGE_SUCCESS = "Success";
+    public static final String LOG_MESSAGE_ERROR = "ERROR";
+    
     public static final String LABEL_FILTER = "Filter: ";
     public static final String TITLE_SETTINGS = "Settings";
     public static final String TITLE_SOFTWARE = "ChirpTask";
