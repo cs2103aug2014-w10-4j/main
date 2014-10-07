@@ -143,6 +143,8 @@ public class DisplayView {
                     processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN,
                             Messages.LOG_MESSAGE_ERROR);
                     break;
+                default :
+                    break;
             }
         } else {
             switch (command) {
@@ -173,6 +175,8 @@ public class DisplayView {
                 case LOGIN :
                     processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN,
                             Messages.LOG_MESSAGE_SUCCESS);
+                    break;
+                default :
                     break;
             }
         }
