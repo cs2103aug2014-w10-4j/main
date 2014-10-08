@@ -61,7 +61,7 @@ public class FilterTasks {
                     filterTaskType(templist, "floating");
                     break;
                 case "/timed" :
-                    filterTaskType(templist, "timed");
+                    filterTaskType(templist, "timedtask");
                     break;
                 case "/deadline" :
                     filterTaskType(templist, "deadline");
