@@ -8,8 +8,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 
-import chirptask.settings.Settings;
-import chirptask.settings.Messages;
+import chirptask.common.Messages;
+import chirptask.common.Settings;
 
 public class EventLogger implements Storage {
 	//@author A0111889W
