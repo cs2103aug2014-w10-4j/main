@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import chirptask.common.Messages;
 import chirptask.gui.MainGui;
+import chirptask.settings.Messages;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;

@@ -1,4 +1,4 @@
-package chirptask.common;
+package chirptask.settings;
 
 /**
  *

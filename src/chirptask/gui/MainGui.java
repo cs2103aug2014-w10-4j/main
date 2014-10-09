@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import chirptask.common.Messages;
-import chirptask.common.Settings;
 import chirptask.logic.Logic;
+import chirptask.settings.Messages;
+import chirptask.settings.Settings;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
