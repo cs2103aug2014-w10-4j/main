@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import chirptask.settings.Messages;
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
+import chirptask.common.Messages;
 import chirptask.gui.*;
 
 enum CommandType {
