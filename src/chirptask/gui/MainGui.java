@@ -181,11 +181,13 @@ public class MainGui extends Application {
 
         ScrollPane contextPane = generateContextList();
         ScrollPane categoryPane = generateCategoryList();
-        
+
         VBox.setVgrow(contextPane, Priority.ALWAYS);
         VBox.setVgrow(categoryPane, Priority.ALWAYS);
-        contextPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
-        categoryPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+        contextPane.setMaxSize(Region.USE_COMPUTED_SIZE,
+                Region.USE_COMPUTED_SIZE);
+        categoryPane.setMaxSize(Region.USE_COMPUTED_SIZE,
+                Region.USE_COMPUTED_SIZE);
 
         trendingList.getChildren().addAll(categoryPane, contextPane);
         return trendingList;
@@ -489,18 +491,21 @@ public class MainGui extends Application {
     }
 
     public void setStatus(String message) {
+        assert !message.isEmpty();
         _statusText.setText("Status: " + message);
         _statusText.getStyleClass().clear();
         _statusText.getStyleClass().add("status-message");
     }
 
     public void setError(String errorMessage) {
+        assert !errorMessage.isEmpty();
         _statusText.setText("Error: " + errorMessage);
         _statusText.getStyleClass().clear();
         _statusText.getStyleClass().add("error-message");
     }
 
     public void addContextIntoList(String Context) {
+        assert !Context.isEmpty();
         Text contextText = new Text(Settings.CONTEXT_STRING + Context);
         contextText.getStyleClass().add("context-text");
         contextText.setOnMouseClicked(clickOnContext());
@@ -508,6 +513,7 @@ public class MainGui extends Application {
     }
 
     public void addCategoryIntoList(String Category) {
+        assert !Category.isEmpty();
         Text categoryText = new Text(Settings.CATEGORY_STRING + Category);
         categoryText.getStyleClass().add("category-text");
         categoryText.setOnMouseClicked(clickOnCategory());
@@ -518,6 +524,7 @@ public class MainGui extends Application {
      * Move this to logic (?)
      */
     public static String convertDateToString(Date date) {
+        assert date != null;
         String parseDateToString = date.getDate() + "/" + date.getMonth() + "/"
                 + (1900 + date.getYear());
 
@@ -561,6 +568,7 @@ public class MainGui extends Application {
     }
 
     public boolean addNewTaskViewDate(Date date) {
+        assert date != null;
         String parseDateToString = convertDateToString(date);
 
         if (_taskViewDateMap.containsKey(parseDateToString)) {
@@ -583,7 +591,7 @@ public class MainGui extends Application {
 
     public boolean addNewTaskViewToDate(Date date, int taskId,
             String description, String time, boolean done) {
-
+        assert date != null && !time.isEmpty() && taskId > -1;
         if (_taskIndexToId.contains(taskId)) {
             return false;
         }
