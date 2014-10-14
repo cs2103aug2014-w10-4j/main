@@ -19,7 +19,7 @@ enum StatusType {
 	ERROR, MESSAGE
 }
 
-// @A0111390W
+//@author A0111930W
 public class Logic {
 	private static final String MESSAGE_NEW_COMMAND = "command: ";
 	private static final int ERROR_OPENING_STREAM = 57;
