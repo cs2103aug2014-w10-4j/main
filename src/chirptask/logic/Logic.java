@@ -102,6 +102,8 @@ public class Logic {
 
 	public void retrieveInputFromUI(String input) {
 		_parser.receiveInput(input);
+		//Assuming there will always be GroupActions parse by InputParser every user input.
+		assert _parser.getActions()!=null;
 		processGroupAction(_parser.getActions().getActionList());
 	}
 
@@ -139,8 +141,9 @@ public class Logic {
 	public void executeAction(Action command) {
 		String action = command.getCommandType();
 		CommandType actionType = determineCommandType(action);
+		assert actionType!=null;
 		Task task = command.getTask();
-
+		
 		switch (actionType) {
 		case ADD:
 			processAdd(command, task);
@@ -180,22 +183,25 @@ public class Logic {
 	}
 
 	private void processExit() {
-	    System.out.println("TEST");
+		//Add in GUI code to close
 		System.exit(0);
 	}
 
 	private void processLogin(Action command) {
+		assert command != null;
 		boolean isSuccess;
 		isSuccess = _storageHandler.initCloudStorage();
 		this.showStatusToUser(command, isSuccess);
 	}
 
 	private void processDone(Action command, Task task) {
+		assert command!=null && task != null;
 		task.setDone(true);
 		processEdit(command, task);
 	}
 
 	private void processUndone(Action command, Task task) {
+		assert command!=null && task != null;
 		task.setDone(false);
 		processEdit(command, task);
 	}
@@ -208,12 +214,14 @@ public class Logic {
 	}
 
 	private void processEdit(Action command, Task task) {
+		assert command!=null && task != null;
 		boolean isSuccess;
 		isSuccess = _storageHandler.modifyTask(task);
 		filterAndDisplay(command, isSuccess);
 	}
 
 	private void processDisplay(Task task) {
+		assert task!=null;
 		clearUi();
 		FilterTasks.filter(task);
 		_gui.setFilterText(task.getDescription());
@@ -221,6 +229,7 @@ public class Logic {
 	}
 
 	private void processDelete(Action command, Task task) {
+		assert command!=null && task != null;
 		Task deletedTask;
 		boolean isSuccess;
 		deletedTask = _storageHandler.deleteTask(task);
@@ -234,12 +243,14 @@ public class Logic {
 	}
 
 	private void processAdd(Action command, Task task) {
+		assert command!=null && task != null;
 		boolean isSuccess;
 		isSuccess = _storageHandler.addTask(task);
 		filterAndDisplay(command, isSuccess);
 	}
 
 	private void filterAndDisplay(Action command, boolean isSuccess) {
+		assert command!=null;
 		// set lastAction
 		this.setLastAction(command);
 		clearUi();
@@ -249,6 +260,7 @@ public class Logic {
 	}
 
 	private void showStatusToUser(Action command, boolean isSuccess) {
+		assert command!=null;
 		if (isSuccess == true) {
 			DisplayView.showStatusToUser(StatusType.MESSAGE, command, _gui);
 		} else {
