@@ -5,15 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 import chirptask.common.Messages;
+import chirptask.common.Settings;
 import chirptask.gui.*;
-
-enum CommandType {
-	ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT
-}
 
 enum StatusType {
 	ERROR, MESSAGE
@@ -113,34 +111,10 @@ public class Logic {
 		}
 	}
 
-	public static CommandType determineCommandType(String commandTypeString) {
-		if (commandTypeString.equalsIgnoreCase("add")) {
-			return CommandType.ADD;
-		} else if (commandTypeString.equalsIgnoreCase("display")) {
-			return CommandType.DISPLAY;
-		} else if (commandTypeString.equalsIgnoreCase("delete")) {
-			return CommandType.DELETE;
-		} else if (commandTypeString.equalsIgnoreCase("edit")) {
-			return CommandType.EDIT;
-		} else if (commandTypeString.equalsIgnoreCase("undo")) {
-			return CommandType.UNDO;
-		} else if (commandTypeString.equalsIgnoreCase("done")) {
-			return CommandType.DONE;
-		} else if (commandTypeString.equalsIgnoreCase("undone")) {
-			return CommandType.UNDONE;
-		} else if (commandTypeString.equalsIgnoreCase("login")) {
-			return CommandType.LOGIN;
-		} else if (commandTypeString.equalsIgnoreCase("exit")) {
-			return CommandType.EXIT;
-		} else {
-			return CommandType.INVALID;
-		}
-	}
 
 	// Will take in Action object
 	public void executeAction(Action command) {
-		String action = command.getCommandType();
-		CommandType actionType = determineCommandType(action);
+		Settings.CommandType actionType = command.getCommandType();
 		assert actionType!=null;
 		Task task = command.getTask();
 		

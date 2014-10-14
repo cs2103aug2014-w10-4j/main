@@ -4,39 +4,40 @@ import chirptask.storage.Task;
 import chirptask.common.Settings;
 
 public class Action {
-	private String _commandType;
+	private Settings.CommandType _commandType;
+//	private String _commandType;
 	private Task _task;
 	private Action _negateAction;
 
 	public Action() {
-		_commandType = new String();
+		_commandType = Settings.CommandType.INVALID;
 		_task = null;
 		_negateAction = null;
 	}
 
-	public Action(String commandType) {
+	public Action(Settings.CommandType commandType) {
 		_commandType = commandType;
 		_task = null;
 		_negateAction = null;
 	}
 
-	public Action(String commandType, Task task) {
+	public Action(Settings.CommandType commandType, Task task) {
 		_commandType = commandType;
 		_task = task;
 		_negateAction = null;
 	}
 
-	public Action(String commandType, Task task, Action negateAction) {
+	public Action(Settings.CommandType commandType, Task task, Action negateAction) {
 		_commandType = commandType;
 		_task = task;
 		_negateAction = negateAction;
 	}
 
-	public String getCommandType() {
+	public Settings.CommandType getCommandType() {
 		return _commandType;
 	}
 
-	public void setCommandType(String commandType) {
+	public void setCommandType(Settings.CommandType commandType) {
 		_commandType = commandType;
 	}
 
@@ -58,7 +59,7 @@ public class Action {
 	}
 
 	public String toString() {
-		String stringToReturn = _commandType;
+		String stringToReturn = _commandType.toString();
 
 		if (_task != null) {
 			stringToReturn += " " + String.valueOf(_task.getTaskId()) + " "

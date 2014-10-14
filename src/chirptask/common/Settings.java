@@ -16,7 +16,7 @@ public class Settings {
     
     public static final String CATEGORY = "@";
     public static final String CONTEXT = "#";
-    enum CommandType {
+    public enum CommandType {
     	ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT
     }
 

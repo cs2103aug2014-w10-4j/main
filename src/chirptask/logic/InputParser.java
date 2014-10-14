@@ -54,7 +54,7 @@ public class InputParser {
 		case "undone":
 			return processForUndone(parameter);
 		case "undo":
-			return processUndo(commandType);
+			return processUndo();
 		case "display":
 			return processDisplay(parameter);
 		case "login":
@@ -69,9 +69,7 @@ public class InputParser {
 	private GroupAction processExit() {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
-		action.setCommandType("exit");
-		action.setTask(null);
-		action.setUndo(null);
+		action.setCommandType(Settings.CommandType.EXIT);
 		actions.addAction(action);
 		return actions;
 	}
@@ -89,26 +87,21 @@ public class InputParser {
 
 	private GroupAction processDisplay(String parameter) {
 		GroupAction actions = new GroupAction();
-		if (parameter != null) {
-			Action action = new Action();
-			Task task = new Task();
-			task.setTaskId(-1);
-			task.setDescription(parameter);
-			action.setCommandType("display");
-			action.setTask(task);
-			action.setUndo(null);
-			actions.addAction(action);
+		Action action = new Action();
+		Task task = new Task();
+		task.setTaskId(-1);
+		action.setCommandType(Settings.CommandType.DISPLAY);
 
+		if (parameter != null) {
+			task.setDescription(parameter);
 		} else {
-			Action action = new Action();
-			Task task = new Task();
-			task.setTaskId(-1);
 			task.setDescription("");
-			action.setCommandType("display");
-			action.setTask(task);
-			action.setUndo(null);
-			actions.addAction(action);
 		}
+		
+		action.setTask(task);
+		action.setUndo(null);
+		actions.addAction(action);
+
 		return actions;
 	}
 
@@ -155,9 +148,9 @@ public class InputParser {
 		toDo.setCategories(categoryList);
 		toDo.setContexts(contextList);
 
-		action.setCommandType("add");
+		action.setCommandType(Settings.CommandType.ADD);
 		action.setTask(toDo);
-		negate.setCommandType("delete");
+		negate.setCommandType(Settings.CommandType.DELETE);
 		negate.setTask(toDo);
 		action.setUndo(negate);
 
@@ -167,11 +160,13 @@ public class InputParser {
 
 	private String getStringToParseDate(String parameter) {
 		String toReturn = new String();
-		if (parameter.contains(Settings.CATEGORY) || parameter.contains(Settings.CONTEXT)) {
+		if (parameter.contains(Settings.CATEGORY)
+				|| parameter.contains(Settings.CONTEXT)) {
 			String[] split = parameter.split("(?=@|#|\\s+)");
-			
-			for (String s: split) {
-				if (!(s.contains(Settings.CATEGORY) || s.contains(Settings.CONTEXT))) {
+
+			for (String s : split) {
+				if (!(s.contains(Settings.CATEGORY) || s
+						.contains(Settings.CONTEXT))) {
 					toReturn = toReturn.concat(s);
 				}
 			}
@@ -195,14 +190,14 @@ public class InputParser {
 			List<Task> allTasks = FilterTasks.getFilteredList();
 			for (Integer i : list) {
 				Action action = new Action();
-				action.setCommandType("done");
+				action.setCommandType(Settings.CommandType.DONE);
 				int normalizedIndex = normalizeId(i);
 				if (isIndexInRange(normalizedIndex)) {
 					Task task = allTasks.get(normalizedIndex);
 					action.setTask(task);
 
 					Action negate = new Action();
-					negate.setCommandType("undone");
+					negate.setCommandType(Settings.CommandType.UNDONE);
 					negate.setTask(task);
 
 					action.setUndo(negate);
@@ -226,14 +221,14 @@ public class InputParser {
 			List<Task> allTasks = FilterTasks.getFilteredList();
 			for (Integer i : list) {
 				Action action = new Action();
-				action.setCommandType("undone");
+				action.setCommandType(Settings.CommandType.UNDONE);
 				int normalizedIndex = normalizeId(i);
 				if (isIndexInRange(normalizedIndex)) {
 					Task task = allTasks.get(normalizedIndex);
 					action.setTask(task);
 
 					Action negate = new Action();
-					negate.setCommandType("done");
+					negate.setCommandType(Settings.CommandType.DONE);
 					negate.setTask(task);
 
 					action.setUndo(negate);
@@ -244,10 +239,10 @@ public class InputParser {
 		return actions;
 	}
 
-	private GroupAction processUndo(String command) {
+	private GroupAction processUndo() {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
-		action.setCommandType(command);
+		action.setCommandType(Settings.CommandType.UNDO);
 		actions.addAction(action);
 		return actions;
 	}
@@ -266,14 +261,14 @@ public class InputParser {
 			List<Task> allTasks = FilterTasks.getFilteredList();
 			for (Integer i : list) {
 				Action action = new Action();
-				action.setCommandType("delete");
+				action.setCommandType(Settings.CommandType.DELETE);
 				int normalizedIndex = normalizeId(i);
 				if (isIndexInRange(normalizedIndex)) {
 					Task task = allTasks.get(normalizedIndex);
 					action.setTask(task);
 
 					Action negate = new Action();
-					negate.setCommandType("add");
+					negate.setCommandType(Settings.CommandType.ADD);
 					negate.setTask(task);
 
 					action.setUndo(negate);
@@ -327,9 +322,9 @@ public class InputParser {
 				Task editedTask = getTaskFromString(parameter);
 				editedTask = getEditedTask(oldTask, editedTask, dateList);
 
-				action.setCommandType("edit");
+				action.setCommandType(Settings.CommandType.EDIT);
 				action.setTask(editedTask);
-				negate.setCommandType("edit");
+				negate.setCommandType(Settings.CommandType.EDIT);
 				negate.setTask(oldTask);
 				action.setUndo(negate);
 			}
@@ -466,9 +461,7 @@ public class InputParser {
 	private GroupAction processLogin() {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
-		action.setCommandType(COMMAND_LOGIN);
-		action.setTask(null);
-		action.setUndo(null);
+		action.setCommandType(Settings.CommandType.LOGIN);
 		actions.addAction(action);
 		return actions;
 	}
@@ -493,7 +486,7 @@ public class InputParser {
 	private GroupAction returnInvalidAction() {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
-		action.setCommandType("invalid");
+		action.setCommandType(Settings.CommandType.INVALID);
 		actions.addAction(action);
 		return actions;
 	}
