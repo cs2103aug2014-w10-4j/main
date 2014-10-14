@@ -28,6 +28,7 @@ import org.xml.sax.SAXException;
  * This class handles the tasks list in XML format. The XML file it manages
  * contains tasks id, description, contexts, categories and deadline/start time
  * - end time
+ * @author A0113022
  */
 public class LocalStorage implements Storage {
 	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
