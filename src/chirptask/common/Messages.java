@@ -24,5 +24,7 @@ public class Messages {
     public static final String TITLE_SOFTWARE = "ChirpTask";
     public static final String DEFAULT_STATUS = "Nothing is happening.";
     
-    public static final String ERROR_USER_INPUT = "%1$s: Invalid user input %2$s.";
+    public static final String ERROR = "%1$s: Error %2$s";
+	public static final String INVALID_INPUT = "Invalid input: %1$s.";
+    public static final String ERROR_LOCAL = "Local storage %2$s.";
 }

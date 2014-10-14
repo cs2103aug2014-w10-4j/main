@@ -16,6 +16,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
@@ -24,22 +25,26 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import chirptask.common.Messages;
+
 /**
  * This class handles the tasks list in XML format. The XML file it manages
  * contains tasks id, description, contexts, categories and deadline/start time
  * - end time
+ * 
  * @author A0113022
  */
 public class LocalStorage implements Storage {
 	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
-	private static final String XPATH_EXPRESSION = "//task[@TaskId = '%1$s']";
-
+	private static final String XPATH_EXPRESSION_ID = "//task[@TaskId = '%1$s']";
+	private static final String XPATH_EXPRESSION_SPACE = "//text()[normalize-space(.) = '']";
+	
 	File local;
 	DocumentBuilder docBuilder;
 	Transformer trans;
 	Document localStorage;
 	static int idGenerator;
-	
+
 	public LocalStorage() {
 		localStorageInit();
 	}
@@ -55,7 +60,7 @@ public class LocalStorage implements Storage {
 			localStorage = docBuilder.newDocument();
 			trans = TransformerFactory.newInstance().newTransformer();
 			trans.setOutputProperty(OutputKeys.INDENT, "yes");
-			
+
 			if (local.exists()) {
 				int id = getLatestId();
 				setIdGenerator(id);
@@ -65,12 +70,15 @@ public class LocalStorage implements Storage {
 				setIdGenerator(0);
 			}
 		} catch (Exception e) {
+			((EventLogger) StorageHandler.eventStorage).logError(String.format(
+					Messages.ERROR_LOCAL, "initialization"));
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * returns latest ID stored as root attribute
+	 * 
 	 * @throws SAXException
 	 * @throws IOException
 	 */
@@ -78,7 +86,8 @@ public class LocalStorage implements Storage {
 		int id;
 		localStorage = docBuilder.parse(local);
 		Node root = getRoot();
-		id = Integer.parseInt(root.getAttributes().getNamedItem("LatestId").getNodeValue());
+		id = Integer.parseInt(root.getAttributes().getNamedItem("LatestId")
+				.getNodeValue());
 		return id;
 	}
 
@@ -105,6 +114,8 @@ public class LocalStorage implements Storage {
 			StreamResult file = new StreamResult(local);
 			trans.transform(source, file);
 		} catch (Exception e) {
+			((EventLogger) StorageHandler.eventStorage).logError(String.format(
+					Messages.ERROR_LOCAL, "write to file"));
 			e.printStackTrace();
 		}
 	}
@@ -131,10 +142,11 @@ public class LocalStorage implements Storage {
 	 */
 	private Element getRoot() {
 		try {
-//			localStorage = docBuilder.parse(local);
 			Element root = localStorage.getDocumentElement();
 			return root;
 		} catch (Exception e) {
+			((EventLogger) StorageHandler.eventStorage).logError(String.format(
+					Messages.ERROR_LOCAL, "get root"));
 			return null;
 		}
 	}
@@ -150,12 +162,12 @@ public class LocalStorage implements Storage {
 		Element node = doc.createElement("task");
 		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
 		node.setAttribute("done", String.valueOf(taskToAdd.isDone()));
-		
+
 		node.appendChild(getElement(doc, "description",
 				taskToAdd.getDescription()));
-		
+
 		node.appendChild(getElement(doc, "googleId", taskToAdd.getGoogleId()));
-		
+
 		List<String> contexts = taskToAdd.getContexts();
 		if (contexts != null && !contexts.isEmpty()) {
 			for (String s : contexts) {
@@ -181,7 +193,7 @@ public class LocalStorage implements Storage {
 			node.appendChild(getElement(doc, "deadline", taskToAdd.getDate()
 					.toString()));
 			node.appendChild(getElement(doc, "type", "Deadline Task"));
-		} else if (taskToAdd.getType().equalsIgnoreCase("floating")){
+		} else if (taskToAdd.getType().equalsIgnoreCase("floating")) {
 			node.appendChild(getElement(doc, "type", "Floating Task"));
 		}
 
@@ -214,9 +226,28 @@ public class LocalStorage implements Storage {
 		} else {
 			taskToReturn = retrieveTaskFromFile(taskNode);
 			taskNode.getParentNode().removeChild(taskNode);
+			removeWhiteSpace();
 			writeToFile();
 		}
 		return taskToReturn;
+	}
+
+	private void removeWhiteSpace() {
+		XPathFactory xPathfactory = XPathFactory.newInstance();
+		XPath xpath = xPathfactory.newXPath();
+		try {
+			NodeList spaces = (NodeList) xpath.compile(XPATH_EXPRESSION_SPACE).evaluate(localStorage,
+					XPathConstants.NODESET);
+			for (int i = 0; i < spaces.getLength(); i++) {
+				Node space = spaces.item(i);
+				space.getParentNode().removeChild(space);
+			}
+		} catch (XPathExpressionException e) {
+			((EventLogger) StorageHandler.eventStorage).logError(String.format(
+					Messages.ERROR_LOCAL, "XPath expression in remove spaces"));
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**
@@ -261,7 +292,7 @@ public class LocalStorage implements Storage {
 
 			XPathFactory xPathfactory = XPathFactory.newInstance();
 			XPath xpath = xPathfactory.newXPath();
-			String expression = String.format(XPATH_EXPRESSION,
+			String expression = String.format(XPATH_EXPRESSION_ID,
 					String.valueOf(taskId));
 
 			taskNode = (Node) xpath.compile(expression).evaluate(localStorage,
@@ -271,6 +302,8 @@ public class LocalStorage implements Storage {
 				return null;
 			}
 		} catch (Exception e) {
+			((EventLogger) StorageHandler.eventStorage).logError(String.format(
+					Messages.ERROR_LOCAL, "Can't get task with given Id"));
 			e.printStackTrace();
 			return null;
 		}
@@ -291,6 +324,8 @@ public class LocalStorage implements Storage {
 				tasks.add(retrieveTaskFromFile(taskNodes.item(i)));
 			}
 		} catch (Exception e) {
+			((EventLogger) StorageHandler.eventStorage).logError(String.format(
+					Messages.ERROR_LOCAL, "get all Tasks"));
 			e.printStackTrace();
 			return null;
 		}
@@ -308,27 +343,25 @@ public class LocalStorage implements Storage {
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element item = (Element) node;
 			try {
-			    int taskId = Integer.parseInt(item.getAttribute("TaskId"));
+				int taskId = Integer.parseInt(item.getAttribute("TaskId"));
 				String typeTask = getValues("type", item).get(0);
 				String description = getValues("description", item).get(0);
 				String googleId = getValues("googleId", item).get(0);
 				String taskStatus = item.getAttribute("done");
-				SimpleDateFormat dateFormatter = 
-				                            new SimpleDateFormat(DATE_FORMAT);
-				
+				SimpleDateFormat dateFormatter = new SimpleDateFormat(
+						DATE_FORMAT);
+
 				if (typeTask.equalsIgnoreCase("Deadline Task")) {
-				    Date dueDate = dateFormatter
-				                            .parse(getValues("deadline", item)
-				                            .get(0));
+					Date dueDate = dateFormatter.parse(getValues("deadline",
+							item).get(0));
 					task = new DeadlineTask(taskId, description, dueDate);
 				} else if (typeTask.equalsIgnoreCase("Timed Task")) {
-					Date startTime = dateFormatter
-                                            .parse(getValues("start", item)
-                                            .get(0));
-					Date endTime = dateFormatter
-                                            .parse(getValues("end", item)
-                                            .get(0));
-					task = new TimedTask(taskId, description, startTime, endTime);
+					Date startTime = dateFormatter.parse(getValues("start",
+							item).get(0));
+					Date endTime = dateFormatter.parse(getValues("end", item)
+							.get(0));
+					task = new TimedTask(taskId, description, startTime,
+							endTime);
 				} else {
 					task = new Task(taskId, description);
 				}
@@ -336,15 +369,16 @@ public class LocalStorage implements Storage {
 				task.setContexts(getValues("contexts", item));
 				task.setCategories(getValues("categories", item));
 				task.setGoogleId(googleId);
-				
-				//A0111930W
-				if(taskStatus.equalsIgnoreCase("true")){
+
+				// A0111930W
+				if (taskStatus.equalsIgnoreCase("true")) {
 					task.setDone(true);
-				}
-				else{
+				} else {
 					task.setDone(false);
 				}
 			} catch (Exception e) {
+				((EventLogger) StorageHandler.eventStorage).logError(String.format(
+						Messages.ERROR_LOCAL, "retrieve task from file"));
 				e.printStackTrace();
 				return null;
 			}
@@ -380,13 +414,13 @@ public class LocalStorage implements Storage {
 
 	}
 
-    public boolean toggleDone(Task T) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    
-    public static int generateId() {
-    	idGenerator++;
-    	return idGenerator;
-    }
+	public boolean toggleDone(Task T) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static int generateId() {
+		idGenerator++;
+		return idGenerator;
+	}
 }

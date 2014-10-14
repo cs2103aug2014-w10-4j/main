@@ -89,7 +89,7 @@ public class EventLogger implements Storage {
 	}
 
 	public void logError(String error) {
-		fileWriter.println(String.format(Messages.ERROR_USER_INPUT, new Date(),
+		fileWriter.println(String.format(Messages.ERROR, new Date(),
 				error));
 		fileWriter.flush();
 	}

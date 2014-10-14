@@ -10,6 +10,7 @@ import chirptask.storage.LocalStorage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
+import chirptask.common.Messages;
 import chirptask.common.Settings;
 
 /**
@@ -262,8 +263,8 @@ public class InputParser {
 				try {
 					taskIndex.add(Integer.parseInt(split[i]));
 				} catch (Exception e) {
-					((EventLogger) StorageHandler.eventStorage)
-							.logError(_userInput);
+					((EventLogger) StorageHandler.eventStorage).logError(String.format(
+							Messages.INVALID_INPUT, _userInput));
 				}
 			}
 		}
@@ -285,7 +286,7 @@ public class InputParser {
 		if (taskIndex >= 1) {
 			List<Task> taskList = FilterTasks.getFilteredList();
 			int normalizedIndex = normalizeId(taskIndex);
-			
+
 			if (isIndexInRange(normalizedIndex)) {
 				Task oldTask = taskList.get(normalizedIndex);
 				String[] parameters = parameter.trim().split("\\s+", 2);
@@ -406,7 +407,8 @@ public class InputParser {
 		try {
 			listId = Integer.parseInt(id);
 		} catch (Exception e) {
-			((EventLogger) StorageHandler.eventStorage).logError(_userInput);
+			((EventLogger) StorageHandler.eventStorage).logError(String.format(
+					Messages.INVALID_INPUT, _userInput));
 		}
 		return listId;
 	}
@@ -451,7 +453,8 @@ public class InputParser {
 		Action action = new Action();
 		action.setCommandType(Settings.CommandType.INVALID);
 		actions.addAction(action);
-		((EventLogger) StorageHandler.eventStorage).logError(_userInput);
+		((EventLogger) StorageHandler.eventStorage).logError(String.format(
+				Messages.INVALID_INPUT, _userInput));
 		return actions;
 	}
 }
