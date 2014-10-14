@@ -24,7 +24,7 @@ public class InputParser {
 
 	private String _userInput;
 	private GroupAction _actions;
-	
+
 	public InputParser() {
 		_actions = new GroupAction();
 	}
@@ -78,7 +78,8 @@ public class InputParser {
 
 	private GroupAction processForUnrecognized(String input) {
 		String[] tokens = input.trim().split("\\s+");
-		if (input.contains(Settings.CATEGORY) || input.contains(Settings.CONTEXT) ) {
+		if (input.contains(Settings.CATEGORY)
+				|| input.contains(Settings.CONTEXT)) {
 			return processForAdd(input);
 		} else if (tokens.length >= 2) {
 			return processForAdd(input);
@@ -89,19 +90,15 @@ public class InputParser {
 	private GroupAction processDisplay(String parameter) {
 		GroupAction actions = new GroupAction();
 		if (parameter != null) {
-			String[] filters = parameter.trim().split("\\s+|-");
-			for (int i = 0; i < filters.length; i++) {
-				if (!filters[i].equals("")) {
-					Action action = new Action();
-					Task task = new Task();
-					task.setTaskId(-1);
-					task.setDescription(filters[i]);
-					action.setCommandType("display");
-					action.setTask(task);
-					action.setUndo(null);
-					actions.addAction(action);
-				}
-			}
+			Action action = new Action();
+			Task task = new Task();
+			task.setTaskId(-1);
+			task.setDescription(parameter);
+			action.setCommandType("display");
+			action.setTask(task);
+			action.setUndo(null);
+			actions.addAction(action);
+
 		} else {
 			Action action = new Action();
 			Task task = new Task();
@@ -397,10 +394,12 @@ public class InputParser {
 			for (int i = 0; i < word.length; i++) {
 				char firstChar = word[i].charAt(0);
 
-				if (firstChar == Settings.CONTEXT_STRING && word[i].length() > 1) {
+				if (firstChar == Settings.CONTEXT_STRING
+						&& word[i].length() > 1) {
 					contexts.add(word[i].substring(1));
 				}
-				if (firstChar == Settings.CATEGORY_STRING && word[i].length() > 1) {
+				if (firstChar == Settings.CATEGORY_STRING
+						&& word[i].length() > 1) {
 					categories.add(word[i].substring(1));
 				}
 			}
