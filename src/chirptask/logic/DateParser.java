@@ -6,8 +6,8 @@ import java.util.List;
 import com.joestelmach.natty.*;
 
 /**
- * Acknowledgment: this code uses methods found in natty (author joestelmach) 
- * @author Linh
+ * Acknowledgment: this code uses natty 0.9 (author joestelmach) 
+ * @author A0113022
  * note: the date format is mm/dd
  */
 public class DateParser {

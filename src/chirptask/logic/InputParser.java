@@ -9,6 +9,7 @@ import chirptask.storage.DeadlineTask;
 import chirptask.storage.LocalStorage;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
+import chirptask.common.Settings;
 
 /**
  * 
@@ -23,7 +24,7 @@ public class InputParser {
 
 	private String _userInput;
 	private GroupAction _actions;
-
+	
 	public InputParser() {
 		_actions = new GroupAction();
 	}
@@ -58,9 +59,31 @@ public class InputParser {
 			return processDisplay(parameter);
 		case "login":
 			return processLogin();
+		case "exit":
+			return processExit();
 		default:
-			return new GroupAction();
+			return processForUnrecognized(_userInput);
 		}
+	}
+
+	private GroupAction processExit() {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		action.setCommandType("exit");
+		action.setTask(null);
+		action.setUndo(null);
+		actions.addAction(action);
+		return actions;
+	}
+
+	private GroupAction processForUnrecognized(String input) {
+		String[] tokens = input.trim().split("\\s+");
+		if (input.contains(Settings.CATEGORY) || input.contains(Settings.CONTEXT) ) {
+			return processForAdd(input);
+		} else if (tokens.length >= 2) {
+			return processForAdd(input);
+		}
+		return returnInvalidAction();
 	}
 
 	private GroupAction processDisplay(String parameter) {
@@ -374,10 +397,10 @@ public class InputParser {
 			for (int i = 0; i < word.length; i++) {
 				char firstChar = word[i].charAt(0);
 
-				if (firstChar == '#' && word[i].length() > 1) {
+				if (firstChar == Settings.CONTEXT_STRING && word[i].length() > 1) {
 					contexts.add(word[i].substring(1));
 				}
-				if (firstChar == '@' && word[i].length() > 1) {
+				if (firstChar == Settings.CATEGORY_STRING && word[i].length() > 1) {
 					categories.add(word[i].substring(1));
 				}
 			}
