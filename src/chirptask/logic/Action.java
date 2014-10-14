@@ -5,7 +5,6 @@ import chirptask.common.Settings;
 
 public class Action {
 	private String _commandType;
-	private CommandType _command;
 	private Task _task;
 	private Action _negateAction;
 

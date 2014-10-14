@@ -127,7 +127,8 @@ public class InputParser {
 		String description = toDo.getDescription();
 		List<String> categoryList = toDo.getCategories();
 		List<String> contextList = toDo.getContexts();
-		List<Date> dateList = _dateParser.parseDate(parameter);
+		String toParse = getStringToParseDate(parameter);
+		List<Date> dateList = _dateParser.parseDate(toParse);
 
 		switch (dateList.size()) {
 		case 0:
@@ -162,6 +163,22 @@ public class InputParser {
 
 		actions.addAction(action);
 		return actions;
+	}
+
+	private String getStringToParseDate(String parameter) {
+		String toReturn = new String();
+		if (parameter.contains(Settings.CATEGORY) || parameter.contains(Settings.CONTEXT)) {
+			String[] split = parameter.split("(?=@|#|\\s+)");
+			
+			for (String s: split) {
+				if (!(s.contains(Settings.CATEGORY) || s.contains(Settings.CONTEXT))) {
+					toReturn = toReturn.concat(s);
+				}
+			}
+		} else {
+			toReturn = parameter;
+		}
+		return toReturn;
 	}
 
 	private GroupAction processForDone(String parameter) {
