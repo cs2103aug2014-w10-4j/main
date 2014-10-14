@@ -23,4 +23,6 @@ public class Messages {
     public static final String TITLE_SETTINGS = "Settings";
     public static final String TITLE_SOFTWARE = "ChirpTask";
     public static final String DEFAULT_STATUS = "Nothing is happening.";
+    
+    public static final String ERROR_USER_INPUT = "%1$s: Invalid user input %2$s.";
 }

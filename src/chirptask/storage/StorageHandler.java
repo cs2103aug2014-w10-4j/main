@@ -10,7 +10,7 @@ public class StorageHandler {
     private static List<Storage> _listOfStorages = new ArrayList<Storage>();
     private static Storage localStorage;
     private static Storage googleStorage;
-    private static Storage eventStorage;
+    public static Storage eventStorage;
 
     public StorageHandler() {
         initStorages();

@@ -12,9 +12,10 @@ import chirptask.common.Messages;
 import chirptask.common.Settings;
 
 public class EventLogger implements Storage {
-	//@author A0111889W
+	// @author A0111889W
 	PrintWriter fileWriter;
-	//Suggestion: Convert to output stream instead
+
+	// Suggestion: Convert to output stream instead
 	public EventLogger() {
 		try {
 			fileWriter = new PrintWriter(new BufferedWriter(new FileWriter(
@@ -85,6 +86,12 @@ public class EventLogger implements Storage {
 				new Date()));
 		fileWriter.flush();
 		return null;
+	}
+
+	public void logError(String error) {
+		fileWriter.println(String.format(Messages.ERROR_USER_INPUT, new Date(),
+				error));
+		fileWriter.flush();
 	}
 
 }
