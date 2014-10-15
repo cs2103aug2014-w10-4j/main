@@ -157,7 +157,8 @@ public class Logic {
 	}
 
 	private void processExit() {
-		//Add in GUI code to close
+		//Add in GUI code to close, storage close
+		
 		System.exit(0);
 	}
 
