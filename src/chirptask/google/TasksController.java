@@ -10,10 +10,9 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.util.DateTime;
 import com.google.api.services.tasks.model.Task;
-import com.google.api.services.tasks.model.Tasks;
 import com.google.api.services.tasks.model.TaskList;
+import com.google.api.services.tasks.model.Tasks;
 
 
 /**
