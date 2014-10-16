@@ -164,6 +164,8 @@ public class Logic {
 	}
 
 	private void processInvalid(Action command) {
+		//Check whether Action is a command, if is command call GUI to display on textbox
+
 		//showStatus to user
 		showStatusToUser(command, false);
 		//log down invalid input to log file
