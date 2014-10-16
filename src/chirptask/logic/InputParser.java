@@ -37,6 +37,7 @@ public class InputParser {
 	}
 
 	public void receiveInput(String userInput) {
+
 		_userInput = userInput;
 		_actions = processCommand();
 	}
@@ -263,8 +264,8 @@ public class InputParser {
 				try {
 					taskIndex.add(Integer.parseInt(split[i]));
 				} catch (Exception e) {
-					((EventLogger) StorageHandler.eventStorage).logError(String.format(
-							Messages.INVALID_INPUT, _userInput));
+					((EventLogger) StorageHandler.eventStorage).logError(String
+							.format(Messages.INVALID_INPUT, _userInput));
 				}
 			}
 		}
