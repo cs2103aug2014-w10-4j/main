@@ -144,6 +144,8 @@ public class DisplayView {
                             Messages.LOG_MESSAGE_ERROR);
                     break;
                 default :
+                	processGUI(action, gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
+                            Messages.LOG_MESSAGE_ERROR);
                     break;
             }
         } else {
@@ -177,6 +179,7 @@ public class DisplayView {
                             Messages.LOG_MESSAGE_SUCCESS);
                     break;
                 default :
+                	
                     break;
             }
         }

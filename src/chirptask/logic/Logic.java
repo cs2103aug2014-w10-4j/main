@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 
+
+import chirptask.storage.EventLogger;
 //import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
@@ -26,7 +28,7 @@ public class Logic {
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private MainGui _gui;
-
+	private EventLogger _logger;
 	// For working ChirpTask
 	private BufferedReader commandBufferReader = new BufferedReader(
 			new InputStreamReader(System.in));
@@ -35,6 +37,7 @@ public class Logic {
 		_storageHandler = new StorageHandler();
 		_parser = new InputParser();
 		_gui = gui;
+		_logger = new EventLogger();
 		FilterTasks.filter();
 		DisplayView.updateTaskView(_gui);
 	}
@@ -149,17 +152,31 @@ public class Logic {
 			processExit();
 			break;
 		case INVALID:
-			// call print some invalid message
+			processInvalid(command);
 			break;
 		default:
-			// throw error
+			//Assuming InputParser will always pass a Action object
+			//code will never reach here.
+			assert false;
+			
 		}
 	}
 
-	private void processExit() {
-		//Add in GUI code to close, storage close
+	private void processInvalid(Action command) {
+		//showStatus to user
+		showStatusToUser(command, false);
+		//log down invalid input to log file
+		logErrorCommand();
 		
-		System.exit(0);
+	}
+
+	private void logErrorCommand() {
+		_logger.logError(String.format(Messages.LOG_MESSAGE_INVALID_COMMAND, Messages.LOG_MESSAGE_ERROR));
+	}
+
+	private void processExit() {
+		//Add in GUI code to close, storage close	
+		System.exit(Settings.EXIT_APPLICATION_NO);
 	}
 
 	private void processLogin(Action command) {

@@ -13,7 +13,7 @@ public class Settings {
     public static final String DEFAULT_FILTER = "";
     public static final char CATEGORY_STRING = '@';
     public static final char CONTEXT_STRING = '#';
-    
+    public static final int EXIT_APPLICATION_NO = 0;
     public static final String CATEGORY = "@";
     public static final String CONTEXT = "#";
     public enum CommandType {
