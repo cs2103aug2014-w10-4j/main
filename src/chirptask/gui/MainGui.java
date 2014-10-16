@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import chirptask.common.Messages;
-import chirptask.common.Settings;
-import chirptask.logic.Logic;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -42,6 +39,9 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import chirptask.common.Messages;
+import chirptask.common.Settings;
+import chirptask.logic.Logic;
 
 public class MainGui extends Application {
 
@@ -92,18 +92,12 @@ public class MainGui extends Application {
         prepareScene(primaryStage, border, mainDisplay, trendingList);
         primaryStage.show();
 
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            public void handle(WindowEvent we) {
-                guiClosing();
-            }
-        });
-
         _logic = new Logic(this);
-
     }
 
     private void guiClosing() {
         System.out.println("Stage is closing");
+        _logic.retrieveInputFromUI("exit");
     }
 
     private void prepareScene(Stage primaryStage, BorderPane border,
@@ -122,6 +116,12 @@ public class MainGui extends Application {
 
         // focus on CLI
         _commandLineInterface.requestFocus();
+
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent we) {
+                guiClosing();
+            }
+        });
     }
 
     /**
@@ -478,6 +478,11 @@ public class MainGui extends Application {
         int caretPosition = _filterField.getCaretPosition();
         _filterField.setText(text);
         _filterField.positionCaret(caretPosition);
+    }
+
+    public void setUserInputText(String text) {
+        _commandLineInterface.setText(text);
+        _commandLineInterface.positionCaret(text.length());
     }
 
     public String getUserInput() {
