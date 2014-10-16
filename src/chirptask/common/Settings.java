@@ -19,6 +19,8 @@ public class Settings {
     public enum CommandType {
     	ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT
     }
-
+    public enum StatusType {
+    	ERROR, MESSAGE
+    }
 
 }

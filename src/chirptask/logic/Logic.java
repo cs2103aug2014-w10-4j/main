@@ -16,9 +16,7 @@ import chirptask.gui.MainGui;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 
-enum StatusType {
-	ERROR, MESSAGE
-}
+
 
 //@author A0111930W
 public class Logic {
@@ -257,9 +255,9 @@ public class Logic {
 	private void showStatusToUser(Action command, boolean isSuccess) {
 		assert command!=null;
 		if (isSuccess == true) {
-			DisplayView.showStatusToUser(StatusType.MESSAGE, command, _gui);
+			DisplayView.showStatusToUser(Settings.StatusType.MESSAGE, command, _gui);
 		} else {
-			DisplayView.showStatusToUser(StatusType.ERROR, command, _gui);
+			DisplayView.showStatusToUser(Settings.StatusType.ERROR, command, _gui);
 		}
 	}
 

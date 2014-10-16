@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import chirptask.common.Messages;
+import chirptask.common.Settings;
 import chirptask.common.Settings.CommandType;
 import chirptask.gui.MainGui;
 import chirptask.storage.DeadlineTask;
@@ -109,10 +110,10 @@ public class DisplayView {
 	}
 
 	// Take in type, action
-	public static void showStatusToUser(StatusType type, Action action,
+	public static void showStatusToUser(Settings.StatusType type, Action action,
 			MainGui gui) {
 		CommandType command = action.getCommandType();
-		if (type == StatusType.ERROR) {
+		if (type == Settings.StatusType.ERROR) {
 			switch (command) {
 			case ADD:
 				processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
