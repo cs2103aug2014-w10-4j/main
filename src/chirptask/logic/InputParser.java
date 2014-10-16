@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import chirptask.common.Messages;
+import chirptask.common.Settings;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.EventLogger;
 import chirptask.storage.LocalStorage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
-import chirptask.common.Messages;
-import chirptask.common.Settings;
 
 /**
  * 

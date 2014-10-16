@@ -31,8 +31,8 @@
 	<classpathentry kind="lib" path="libs/jetty-util-6.1.26.jar" sourcepath="libs-sources/jetty-util-6.1.26-sources.jar"/>
 	<classpathentry kind="lib" path="libs/jsr305-1.3.9.jar"/>
 	<classpathentry kind="lib" path="libs/javax.servlet-5.1.12.jar"/>
-	<classpathentry kind="lib" path="/NattyApp/libs/antlr-runtime-3.2.jar"/>
-	<classpathentry kind="lib" path="/NattyApp/libs/ical4j-1.0.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Linh/Documents/IVLE/CS2103/natty-0.9.jar"/>
+	<classpathentry kind="lib" path="libs/natty-0.9.jar"/>
+	<classpathentry kind="lib" path="libs/antlr-runtime-3.2.jar"/>
+	<classpathentry kind="lib" path="libs/ical4j-1.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,13 +1,14 @@
 package chirptask.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 
 import org.junit.Test;
 
-import chirptask.storage.*;
+import chirptask.storage.DeadlineTask;
+import chirptask.storage.EventLogger;
 
 public class JUnitEventLogger {
 	// @author A0111889W

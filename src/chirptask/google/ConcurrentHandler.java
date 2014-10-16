@@ -3,7 +3,6 @@ package chirptask.google;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.concurrent.Callable;
 
 import chirptask.storage.GoogleStorage;
 import chirptask.storage.TimedTask;
