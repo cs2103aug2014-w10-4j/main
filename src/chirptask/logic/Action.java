@@ -1,7 +1,7 @@
 package chirptask.logic;
 
-import chirptask.storage.Task;
 import chirptask.common.Settings;
+import chirptask.storage.Task;
 
 public class Action {
 	private Settings.CommandType _commandType;

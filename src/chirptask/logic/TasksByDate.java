@@ -1,10 +1,10 @@
 package chirptask.logic;
 
-import chirptask.storage.Task;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import chirptask.storage.Task;
 //@author A0111930W
 public class TasksByDate {
 	private Date taskDate;

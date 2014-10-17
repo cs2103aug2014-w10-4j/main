@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import chirptask.common.Messages;
+import chirptask.common.Settings;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.EventLogger;
 import chirptask.storage.LocalStorage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
-import chirptask.common.Messages;
-import chirptask.common.Settings;
 
 //@author A0113022
 
@@ -34,6 +34,7 @@ public class InputParser {
 	}
 
 	public void receiveInput(String userInput) {
+
 		_userInput = userInput;
 		_actions = processCommand();
 	}
@@ -266,7 +267,13 @@ public class InputParser {
 			} else if (!split[i].equals("")) {
 				try {
 					taskIndex.add(Integer.parseInt(split[i]));
+<<<<<<< HEAD
 				} catch (NumberFormatException e) {
+=======
+				} catch (Exception e) {
+					((EventLogger) StorageHandler.eventStorage).logError(String
+							.format(Messages.INVALID_INPUT, _userInput));
+>>>>>>> 18257f52df0f3e993e45b77d067288d0c77f1dc6
 				}
 			}
 		}

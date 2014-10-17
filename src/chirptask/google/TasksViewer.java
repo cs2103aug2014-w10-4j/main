@@ -4,8 +4,8 @@ package chirptask.google;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.tasks.model.Task;
 import com.google.api.services.tasks.model.TaskList;
-import com.google.api.services.tasks.model.Tasks;
 import com.google.api.services.tasks.model.TaskLists;
+import com.google.api.services.tasks.model.Tasks;
 
 /**
  * TasksViewer provides static methods to separate methods, that perform
