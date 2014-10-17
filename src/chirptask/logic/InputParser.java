@@ -13,11 +13,8 @@ import chirptask.storage.TimedTask;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 
-/**
- * 
- * @author A0113022
- *
- */
+//@author A0113022
+
 public class InputParser {
 	private static final int USER_INPUT_TO_ARRAYLIST = 1;
 	private static final int TASK_ID_DISPLAY = -1;
@@ -241,30 +238,35 @@ public class InputParser {
 
 	private List<Integer> getTaskIndexFromString(String parameter) {
 		List<Integer> taskIndex = new ArrayList<Integer>();
+
 		if (parameter.equals("all")) {
 			int size = FilterTasks.getFilteredList().size();
 			for (int i = 1; i <= size; i++) {
 				taskIndex.add(i);
 			}
 		}
+		parameter = parameter.replaceAll("\\s+(?=-)", "").replaceAll(
+				"(?<=-)\\s+", "");
 		String[] split = parameter.trim().split("\\s+|,");
 		for (int i = 0; i < split.length; i++) {
 			if (!split[i].equals("") && split[i].contains("-")) {
 				String[] sequence = split[i].split("-");
 				try {
-					int start = Integer.parseInt(sequence[0]);
-					int end = Integer.parseInt(sequence[1]);
-					for (int j = start; j <= end; j++) {
-						taskIndex.add(j);
+					int size = sequence.length;
+					if (size == 2) {
+						int start = Integer.parseInt(sequence[0]);
+						int end = Integer.parseInt(sequence[1]);
+						for (int j = start; j <= end; j++) {
+							taskIndex.add(j);
+						}
 					}
-				} catch (Exception e) {
+				} catch (NumberFormatException e) {
+					//TODO handle invalid input
 				}
 			} else if (!split[i].equals("")) {
 				try {
 					taskIndex.add(Integer.parseInt(split[i]));
-				} catch (Exception e) {
-					((EventLogger) StorageHandler.eventStorage).logError(String.format(
-							Messages.INVALID_INPUT, _userInput));
+				} catch (NumberFormatException e) {
 				}
 			}
 		}
@@ -451,10 +453,11 @@ public class InputParser {
 	private GroupAction processInvalidAction() {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
+		Task invalidInput = new Task(TASK_ID_INVALID, _userInput);
 		action.setCommandType(Settings.CommandType.INVALID);
+		action.setTask(invalidInput);
 		actions.addAction(action);
-		((EventLogger) StorageHandler.eventStorage).logError(String.format(
-				Messages.INVALID_INPUT, _userInput));
+
 		return actions;
 	}
 }

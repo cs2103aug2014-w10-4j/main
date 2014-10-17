@@ -7,9 +7,9 @@ import com.joestelmach.natty.*;
 
 /**
  * Acknowledgment: this code uses natty 0.9 (author joestelmach) 
- * @author A0113022
  * note: the date format is mm/dd
  */
+//@author A0113022
 public class DateParser {
 	private List<Date> list;
 

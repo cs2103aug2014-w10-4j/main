@@ -84,7 +84,7 @@ public class FilterTasks {
             populateStringList(tempList, keyword);
         }
     }
-
+    
     private static void populateStringList(List<Task> templist, String keywords) {
         for (Task T : filteredTask) {
             if (T.getDescription().contains(keywords)) {

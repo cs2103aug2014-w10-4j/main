@@ -9,9 +9,12 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
@@ -32,18 +35,19 @@ import chirptask.common.Messages;
  * contains tasks id, description, contexts, categories and deadline/start time
  * - end time
  * 
- * @author A0113022
  */
+//@author A0113022
 public class LocalStorage implements Storage {
+	
 	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
 	private static final String XPATH_EXPRESSION_ID = "//task[@TaskId = '%1$s']";
 	private static final String XPATH_EXPRESSION_SPACE = "//text()[normalize-space(.) = '']";
-	
-	File local;
-	DocumentBuilder docBuilder;
-	Transformer trans;
-	Document localStorage;
-	static int idGenerator;
+
+	private File local;
+	private DocumentBuilder docBuilder;
+	private Transformer trans;
+	private Document localStorage;
+	private static int idGenerator;
 
 	public LocalStorage() {
 		localStorageInit();
@@ -53,6 +57,30 @@ public class LocalStorage implements Storage {
 	 * Initialize all components of LocalStorage
 	 */
 	private void localStorageInit() {
+		setUpXmlWriter();
+		if (local.exists()) {
+			try {
+				setIdGenerator(getLatestId());
+			} catch (SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			addRoot();
+			writeToFile();
+			setIdGenerator(0);
+		} 
+	}
+
+	/**
+	 * @throws ParserConfigurationException
+	 * @throws TransformerConfigurationException
+	 * @throws TransformerFactoryConfigurationError
+	 */
+	private void setUpXmlWriter() {
 		try {
 			local = new File("local.xml");
 			docBuilder = DocumentBuilderFactory.newInstance()
@@ -60,19 +88,11 @@ public class LocalStorage implements Storage {
 			localStorage = docBuilder.newDocument();
 			trans = TransformerFactory.newInstance().newTransformer();
 			trans.setOutputProperty(OutputKeys.INDENT, "yes");
-
-			if (local.exists()) {
-				int id = getLatestId();
-				setIdGenerator(id);
-			} else {
-				addRoot();
-				writeToFile();
-				setIdGenerator(0);
-			}
-		} catch (Exception e) {
+		} catch (ParserConfigurationException
+				| TransformerConfigurationException
+				| TransformerFactoryConfigurationError e) {
 			((EventLogger) StorageHandler.eventStorage).logError(String.format(
 					Messages.ERROR_LOCAL, "initialization"));
-			e.printStackTrace();
 		}
 	}
 
@@ -236,8 +256,8 @@ public class LocalStorage implements Storage {
 		XPathFactory xPathfactory = XPathFactory.newInstance();
 		XPath xpath = xPathfactory.newXPath();
 		try {
-			NodeList spaces = (NodeList) xpath.compile(XPATH_EXPRESSION_SPACE).evaluate(localStorage,
-					XPathConstants.NODESET);
+			NodeList spaces = (NodeList) xpath.compile(XPATH_EXPRESSION_SPACE)
+					.evaluate(localStorage, XPathConstants.NODESET);
 			for (int i = 0; i < spaces.getLength(); i++) {
 				Node space = spaces.item(i);
 				space.getParentNode().removeChild(space);
@@ -247,7 +267,7 @@ public class LocalStorage implements Storage {
 					Messages.ERROR_LOCAL, "XPath expression in remove spaces"));
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -377,8 +397,9 @@ public class LocalStorage implements Storage {
 					task.setDone(false);
 				}
 			} catch (Exception e) {
-				((EventLogger) StorageHandler.eventStorage).logError(String.format(
-						Messages.ERROR_LOCAL, "retrieve task from file"));
+				((EventLogger) StorageHandler.eventStorage)
+						.logError(String.format(Messages.ERROR_LOCAL,
+								"retrieve task from file"));
 				e.printStackTrace();
 				return null;
 			}
@@ -394,6 +415,7 @@ public class LocalStorage implements Storage {
 	 * @param item
 	 * @return ArrayList<String>
 	 */
+	// @author A0113022
 	private static List<String> getValues(String tag, Element item) {
 		List<String> contents = new ArrayList<String>();
 		NodeList nodes = item.getElementsByTagName(tag);
@@ -412,11 +434,6 @@ public class LocalStorage implements Storage {
 
 	public void close() {
 
-	}
-
-	public boolean toggleDone(Task T) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public static int generateId() {

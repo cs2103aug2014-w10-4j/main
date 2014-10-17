@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import chirptask.common.Settings;
 import chirptask.logic.Action;
 import chirptask.logic.FilterTasks;
 import chirptask.logic.Logic;
@@ -22,7 +23,7 @@ public class JUnitLogic {
 
 		task.setTaskId(-1);
 		task.setDescription("/undone /task floating");
-		act.setCommandType("display");
+		act.setCommandType(Settings.CommandType.DISPLAY);
 		act.setTask(task);
 		act.setUndo(null);
 
