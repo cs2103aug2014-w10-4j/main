@@ -267,13 +267,13 @@ public class InputParser {
 			} else if (!split[i].equals("")) {
 				try {
 					taskIndex.add(Integer.parseInt(split[i]));
-<<<<<<< HEAD
+
 				} catch (NumberFormatException e) {
-=======
+
 				} catch (Exception e) {
 					((EventLogger) StorageHandler.eventStorage).logError(String
 							.format(Messages.INVALID_INPUT, _userInput));
->>>>>>> 18257f52df0f3e993e45b77d067288d0c77f1dc6
+
 				}
 			}
 		}

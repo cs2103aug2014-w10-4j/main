@@ -16,6 +16,7 @@ public class JUnitLogic {
 
 	@Test
 	public void test() {
+		// Testing display logic with tag /undone
 		Logic a = new Logic();
 		Action act = new Action();
 		Task task = new Task();
