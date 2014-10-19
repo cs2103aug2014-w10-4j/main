@@ -1,5 +1,6 @@
 package chirptask.logic;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
@@ -72,14 +73,14 @@ public class DisplayView {
 			dateToString = "all-day";
 		} else if (task.getType() == "deadline") {
 			DeadlineTask dTask = (DeadlineTask) task;
-			dateToString = "due by " + task.getDate().getHours() + ":"
-					+ task.getDate().getMinutes();
+			dateToString = "due by " + task.getDate().get(Calendar.HOUR) + ":"
+					+ task.getDate().get(Calendar.MINUTE);
 		} else {
 			TimedTask tTask = (TimedTask) task;
-			dateToString = tTask.getStartTime().getHours() + ":"
-					+ tTask.getStartTime().getMinutes() + " to "
-					+ tTask.getEndTime().getHours() + ":"
-					+ tTask.getEndTime().getMinutes();
+			dateToString = tTask.getStartTime().get(Calendar.HOUR) + ":"
+					+ tTask.getStartTime().get(Calendar.MINUTE) + " to "
+					+ tTask.getEndTime().get(Calendar.HOUR) + ":"
+					+ tTask.getEndTime().get(Calendar.MINUTE);
 		}
 		return dateToString;
 	}

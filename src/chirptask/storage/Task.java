@@ -1,6 +1,7 @@
 package chirptask.storage;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -105,8 +106,8 @@ public class Task implements Comparable<Task> {
 	    _type = type;
 	}
 
-	public Date getDate() {
-		Date today = new Date();
+	public Calendar getDate() {
+		Calendar today = Calendar.getInstance();
 		return today;
 	}
 

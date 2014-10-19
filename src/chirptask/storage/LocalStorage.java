@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -372,14 +372,17 @@ public class LocalStorage implements Storage {
 						DATE_FORMAT);
 
 				if (typeTask.equalsIgnoreCase("Deadline Task")) {
-					Date dueDate = dateFormatter.parse(getValues("deadline",
-							item).get(0));
+					Calendar dueDate = Calendar.getInstance();
+					dueDate.setTime(dateFormatter.parse(getValues("deadline",
+							item).get(0)));
 					task = new DeadlineTask(taskId, description, dueDate);
 				} else if (typeTask.equalsIgnoreCase("Timed Task")) {
-					Date startTime = dateFormatter.parse(getValues("start",
-							item).get(0));
-					Date endTime = dateFormatter.parse(getValues("end", item)
-							.get(0));
+					Calendar startTime = Calendar.getInstance();
+					startTime.setTime(dateFormatter.parse(getValues("start",
+							item).get(0)));
+					Calendar endTime = Calendar.getInstance();
+					endTime.setTime(dateFormatter.parse(getValues("end", item)
+							.get(0)));
 					task = new TimedTask(taskId, description, startTime,
 							endTime);
 				} else {

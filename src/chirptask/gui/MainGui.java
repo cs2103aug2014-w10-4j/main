@@ -1,7 +1,8 @@
 package chirptask.gui;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
@@ -369,14 +370,14 @@ public class MainGui extends Application {
         return checkBoxPane;
     }
 
-    private BorderPane generateTaskViewHeader(Date date) {
+    private BorderPane generateTaskViewHeader(Calendar date) {
 
         Text dayLabel = new Text();
-        dayLabel.setText(DAY_OF_WEEK[date.getDay()]);
+        dayLabel.setText(DAY_OF_WEEK[date.get(Calendar.DAY_OF_WEEK)]);
 
         Text dateLabel = new Text();
-        dateLabel.setText(date.getDate() + " " + MONTH[date.getMonth()] + ", "
-                + (1900 + date.getYear()));
+        dateLabel.setText(date.get(Calendar.DAY_OF_MONTH) + " " + MONTH[date.get(Calendar.MONTH) + 1] + ", "
+                + (date.get(Calendar.YEAR)));
 
         BorderPane taskViewHeader = new BorderPane();
         taskViewHeader.setPadding(new Insets(5, 5, 3, 5));
@@ -384,7 +385,7 @@ public class MainGui extends Application {
         taskViewHeader.setRight(dateLabel);
 
         boolean isToday = convertDateToString(date).equals(
-                convertDateToString(new Date()));
+                convertDateToString(Calendar.getInstance()));
         if (isToday) {
             taskViewHeader.getStyleClass().add("taskView-header-today");
             formatTextLabel(dayLabel, "#CC6C6B");
@@ -528,10 +529,10 @@ public class MainGui extends Application {
     /*
      * Move this to logic (?)
      */
-    public static String convertDateToString(Date date) {
+    public static String convertDateToString(Calendar date) {
         assert date != null;
-        String parseDateToString = date.getDate() + "/" + date.getMonth() + "/"
-                + (1900 + date.getYear());
+        String parseDateToString = date.get(Calendar.DAY_OF_MONTH) + "/" + (date.get(Calendar.MONTH) +1) + "/"
+                + date.get(Calendar.YEAR);
 
         return parseDateToString;
     }
@@ -572,7 +573,7 @@ public class MainGui extends Application {
         return parsedDesc;
     }
 
-    public boolean addNewTaskViewDate(Date date) {
+    public boolean addNewTaskViewDate(Calendar date) {
         assert date != null;
         String parseDateToString = convertDateToString(date);
 
@@ -594,7 +595,7 @@ public class MainGui extends Application {
         return true;
     }
 
-    public boolean addNewTaskViewToDate(Date date, int taskId,
+    public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
         assert date != null && !time.isEmpty() && taskId > -1;
         if (_taskIndexToId.contains(taskId)) {

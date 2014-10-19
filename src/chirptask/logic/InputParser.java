@@ -1,7 +1,7 @@
 package chirptask.logic;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 import chirptask.common.Messages;
@@ -133,7 +133,7 @@ public class InputParser {
 		List<String> contextList = toDo.getContexts();
 
 		String toParse = getStringToParseDate(parameter);
-		List<Date> dateList = _dateParser.parseDate(toParse);
+		List<Calendar> dateList = _dateParser.parseDate(toParse);
 
 		switch (dateList.size()) {
 		case 0:
@@ -141,13 +141,13 @@ public class InputParser {
 			toDo = floating;
 			break;
 		case 1:
-			Date dueDate = dateList.get(0);
+			Calendar dueDate = dateList.get(0);
 			Task deadline = new DeadlineTask(taskIndex, description, dueDate);
 			toDo = deadline;
 			break;
 		case 2:
-			Date startTime = dateList.get(0);
-			Date endTime = dateList.get(1);
+			Calendar startTime = dateList.get(0);
+			Calendar endTime = dateList.get(1);
 			Task timed = new TimedTask(taskIndex, description, startTime,
 					endTime);
 			toDo = timed;
@@ -267,14 +267,8 @@ public class InputParser {
 			} else if (!split[i].equals("")) {
 				try {
 					taskIndex.add(Integer.parseInt(split[i]));
-<<<<<<< HEAD
 				} catch (NumberFormatException e) {
-=======
-				} catch (Exception e) {
-					((EventLogger) StorageHandler.eventStorage).logError(String
-							.format(Messages.INVALID_INPUT, _userInput));
->>>>>>> 18257f52df0f3e993e45b77d067288d0c77f1dc6
-				}
+				} 
 			}
 		}
 
@@ -302,7 +296,7 @@ public class InputParser {
 				if (parameters.length > 1) {
 					parameter = parameters[1];
 					String toParse = getStringToParseDate(parameter);
-					List<Date> dateList = _dateParser.parseDate(toParse);
+					List<Calendar> dateList = _dateParser.parseDate(toParse);
 
 					Task editedTask = getTaskFromString(parameter);
 					editedTask = getEditedTask(oldTask, editedTask, dateList);
@@ -322,7 +316,7 @@ public class InputParser {
 	}
 
 	private Task getEditedTask(Task oldTask, Task editedTask,
-			List<Date> dateList) {
+			List<Calendar> dateList) {
 		int taskId = oldTask.getTaskId();
 		String taskType = oldTask.getType(); // Assumes cannot change task type
 
@@ -331,12 +325,12 @@ public class InputParser {
 		String editedDescription = editedTask.getDescription();
 		List<String> editedCategoryList = editedTask.getCategories();
 		List<String> editedContextList = editedTask.getContexts();
-		List<Date> editedDateList = dateList;
+		List<Calendar> editedDateList = dateList;
 
 		Task newTask = null;
 		switch (taskType) {
 		case "deadline":
-			Date dueDate = oldTask.getDate();
+			Calendar dueDate = oldTask.getDate();
 			if (editedDateList.size() > 0) {
 				dueDate = editedDateList.get(0);
 			} else {
@@ -348,8 +342,8 @@ public class InputParser {
 			break;
 		case "timedtask":
 			TimedTask timedTask = (TimedTask) oldTask;
-			Date startDate = timedTask.getStartTime();
-			Date endDate = timedTask.getEndTime();
+			Calendar startDate = timedTask.getStartTime();
+			Calendar endDate = timedTask.getEndTime();
 
 			if (editedDateList.size() > 1) {
 				startDate = editedDateList.get(0);
