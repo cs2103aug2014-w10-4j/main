@@ -2,6 +2,7 @@ package chirptask.logic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
@@ -42,7 +43,7 @@ public class FilterTasks {
      * **/
     private static void processFilter(String filters) {
         String[] param = filters.split("\\s+");
-        List<Task> templist = new ArrayList<Task>();
+        List<Task> templist = new CopyOnWriteArrayList<Task>();;
         for (int i = 0; i < param.length; i++) {
             String filter = param[i];
 
@@ -69,8 +70,9 @@ public class FilterTasks {
                     filterKeyword(templist, filter);
                     break;
             }
-
-            filteredTask = templist;
+            
+            filteredTask = new ArrayList<Task>(templist);
+            templist.clear();
         }
 
     }
@@ -126,11 +128,14 @@ public class FilterTasks {
     }
 
     private static void populateTaskList(List<Task> tempList, String taskType) {
-        for (Task T : filteredTask) {
+        
+    	for (Task T : filteredTask) {
             if (T.getType().equalsIgnoreCase(taskType)) {
                 tempList.add(T);
+                
             }
         }
+    	
     }
 
     static void filter() {

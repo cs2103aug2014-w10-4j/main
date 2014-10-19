@@ -22,7 +22,7 @@ public class JUnitLogic {
 		Task task = new Task();
 
 		task.setTaskId(-1);
-		task.setDescription("/undone /task floating");
+		task.setDescription("/undone /floating");
 		act.setCommandType(Settings.CommandType.DISPLAY);
 		act.setTask(task);
 		act.setUndo(null);
