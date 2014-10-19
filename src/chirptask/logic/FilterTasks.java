@@ -82,7 +82,6 @@ public class FilterTasks {
 
 	private static Calendar processFilterDateParam(String filter) {
 		String[] temp = filter.split("/");
-		System.out.println(temp[0] + "/" +temp[1]);
 		Calendar filterdate = Calendar.getInstance();
 		filterdate.set(filterdate.get(Calendar.YEAR),
 				Integer.parseInt(temp[1]), Integer.parseInt(temp[0]));
@@ -111,7 +110,7 @@ public class FilterTasks {
 			Calendar filterdate) {
 		for (Task T : filteredTask) {
 			//>= 0 means the current calendar is after or equals to the Task calendar
-			if (filterdate.compareTo(T.getCalendar()) >= 0) {
+			if (filterdate.compareTo(T.getDate()) >= 0) {
 				tempList.add(T);		
 			}
 		}
