@@ -262,24 +262,22 @@ public class InputParser {
 						}
 					}
 				} catch (NumberFormatException e) {
-					//TODO handle invalid input
+					// TODO handle invalid input
 				}
 			} else if (!split[i].equals("")) {
 				try {
 					taskIndex.add(Integer.parseInt(split[i]));
-<<<<<<< HEAD
-				} catch (NumberFormatException e) {
-				} 
-=======
 
-				} catch (NumberFormatException e) {
+				}
+
+				catch (NumberFormatException e) {
 
 				} catch (Exception e) {
 					((EventLogger) StorageHandler.eventStorage).logError(String
 							.format(Messages.INVALID_INPUT, _userInput));
 
 				}
->>>>>>> 123ca3ca091c5acb4f161673e673c99893ce036c
+
 			}
 		}
 

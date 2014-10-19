@@ -5,17 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-
-
-
 import chirptask.storage.EventLogger;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.gui.MainGui;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
-
-
 
 //@author A0111930W
 public class Logic {
@@ -101,24 +96,25 @@ public class Logic {
 
 	public void retrieveInputFromUI(String input) {
 		_parser.receiveInput(input);
-		//Assuming there will always be GroupActions parse by InputParser every user input.
-		assert _parser.getActions()!=null;
+		// Assuming there will always be GroupActions parse by InputParser every
+		// user input.
+		assert _parser.getActions() != null;
 		processGroupAction(_parser.getActions().getActionList());
 	}
 
 	public void processGroupAction(List<Action> list) {
+
 		for (Action a : list) {
 			executeAction(a);
 		}
 	}
 
-
 	// Will take in Action object
 	public void executeAction(Action command) {
 		Settings.CommandType actionType = command.getCommandType();
-		assert actionType!=null;
+		assert actionType != null;
 		Task task = command.getTask();
-		
+
 		switch (actionType) {
 		case ADD:
 			processAdd(command, task);
@@ -153,29 +149,31 @@ public class Logic {
 			processInvalid(command);
 			break;
 		default:
-			//Assuming InputParser will always pass a Action object
-			//code will never reach here.
+			// Assuming InputParser will always pass a Action object
+			// code will never reach here.
 			assert false;
-			
+
 		}
 	}
 
 	private void processInvalid(Action command) {
-		//Check whether Action is a command, if is command call GUI to display on textbox
+		// Check whether Action is a command, if is command call GUI to display
+		// on textbox
 
-		//showStatus to user
+		// showStatus to user
 		showStatusToUser(command, false);
-		//log down invalid input to log file
+		// log down invalid input to log file
 		logErrorCommand();
-		
+
 	}
 
 	private void logErrorCommand() {
-		_logger.logError(String.format(Messages.LOG_MESSAGE_INVALID_COMMAND, Messages.LOG_MESSAGE_ERROR));
+		_logger.logError(String.format(Messages.LOG_MESSAGE_INVALID_COMMAND,
+				Messages.LOG_MESSAGE_ERROR));
 	}
 
 	private void processExit() {
-		//Add in GUI code to close, storage close	
+		// Add in GUI code to close, storage close
 		System.exit(Settings.EXIT_APPLICATION_NO);
 	}
 
@@ -187,13 +185,13 @@ public class Logic {
 	}
 
 	private void processDone(Action command, Task task) {
-		assert command!=null && task != null;
+		assert command != null && task != null;
 		task.setDone(true);
 		processEdit(command, task);
 	}
 
 	private void processUndone(Action command, Task task) {
-		assert command!=null && task != null;
+		assert command != null && task != null;
 		task.setDone(false);
 		processEdit(command, task);
 	}
@@ -205,15 +203,19 @@ public class Logic {
 		executeAction(undoAction);
 	}
 
+	private void processUndoDelete() {
+
+	}
+
 	private void processEdit(Action command, Task task) {
-		assert command!=null && task != null;
+		assert command != null && task != null;
 		boolean isSuccess;
 		isSuccess = _storageHandler.modifyTask(task);
 		filterAndDisplay(command, isSuccess);
 	}
 
 	private void processDisplay(Task task) {
-		assert task!=null;
+		assert task != null;
 		clearUi();
 		FilterTasks.filter(task);
 		_gui.setFilterText(task.getDescription());
@@ -221,7 +223,7 @@ public class Logic {
 	}
 
 	private void processDelete(Action command, Task task) {
-		assert command!=null && task != null;
+		assert command != null && task != null;
 		Task deletedTask;
 		boolean isSuccess;
 		deletedTask = _storageHandler.deleteTask(task);
@@ -235,14 +237,14 @@ public class Logic {
 	}
 
 	private void processAdd(Action command, Task task) {
-		assert command!=null && task != null;
+		assert command != null && task != null;
 		boolean isSuccess;
 		isSuccess = _storageHandler.addTask(task);
 		filterAndDisplay(command, isSuccess);
 	}
 
 	private void filterAndDisplay(Action command, boolean isSuccess) {
-		assert command!=null;
+		assert command != null;
 		// set lastAction
 		this.setLastAction(command);
 		clearUi();
@@ -252,11 +254,13 @@ public class Logic {
 	}
 
 	private void showStatusToUser(Action command, boolean isSuccess) {
-		assert command!=null;
+		assert command != null;
 		if (isSuccess == true) {
-			DisplayView.showStatusToUser(Settings.StatusType.MESSAGE, command, _gui);
+			DisplayView.showStatusToUser(Settings.StatusType.MESSAGE, command,
+					_gui);
 		} else {
-			DisplayView.showStatusToUser(Settings.StatusType.ERROR, command, _gui);
+			DisplayView.showStatusToUser(Settings.StatusType.ERROR, command,
+					_gui);
 		}
 	}
 
