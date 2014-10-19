@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import chirptask.common.Messages;
+import chirptask.common.Settings;
+import chirptask.storage.EventLogger;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
+
 import java.util.Calendar;
 
 //@author A0111930W
@@ -16,7 +20,7 @@ public class FilterTasks {
 	private static List<String> contextsList;
 	private static String currentFilter = "";
 	private static final int PARAM_FILTER = 1;
-
+	private static EventLogger log = new EventLogger();
 	static void filter(Task T) {
 		currentFilter = T.getDescription();
 
@@ -64,8 +68,14 @@ public class FilterTasks {
 				break;
 			case "/date":
 				// Assuming input is 23/10
-				Calendar filterdate = processFilterDateParam(param[i+1]);
-				filterTaskByDate(templist, filterdate);
+				try {
+					Calendar filterdate = processFilterDateParam(param[i+1]);
+					filterTaskByDate(templist, filterdate);
+				}catch (ArrayIndexOutOfBoundsException e){
+					//log down invalid input
+					log.logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
+					
+				}
 				i++;
 				break;
 			default:
@@ -84,7 +94,8 @@ public class FilterTasks {
 		String[] temp = filter.split("/");
 		Calendar filterdate = Calendar.getInstance();
 		filterdate.set(filterdate.get(Calendar.YEAR),
-				Integer.parseInt(temp[1]), Integer.parseInt(temp[0]));
+				Integer.parseInt(temp[0])-1, Integer.parseInt(temp[1]));
+		
 		return filterdate;
 	}
 
@@ -109,8 +120,10 @@ public class FilterTasks {
 	private static void populateDateList(List<Task> tempList,
 			Calendar filterdate) {
 		for (Task T : filteredTask) {
+			//System.out.println(T.getDate().get(Calendar.DATE)+"/"+T.getDate().get(Calendar.MONTH));
 			//>= 0 means the current calendar is after or equals to the Task calendar
 			if (filterdate.compareTo(T.getDate()) >= 0) {
+				//System.out.println(filterdate.get(Calendar.DATE));
 				tempList.add(T);		
 			}
 		}

@@ -269,12 +269,12 @@ public class InputParser {
 					taskIndex.add(Integer.parseInt(split[i]));
 
 				} catch (NumberFormatException e) {
-					//TODO Handle invalid input
+					// TODO Handle invalid input
 				}
 			}
 		}
 		return taskIndex;
-			
+
 	}
 
 	private GroupAction processForEdit(String parameter) {
