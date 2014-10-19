@@ -262,7 +262,7 @@ public class InputParser {
 						}
 					}
 				} catch (NumberFormatException e) {
-					//TODO handle invalid input
+					// TODO handle invalid input
 				}
 			} else if (!split[i].equals("")) {
 				try {
@@ -271,7 +271,6 @@ public class InputParser {
 				} catch (NumberFormatException e) {
 					//TODO Handle invalid input
 				}
-				} 
 			}
 		return taskIndex;
 			

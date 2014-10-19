@@ -64,7 +64,7 @@ public class FilterTasks {
 				break;
 			case "/date":
 				// Assuming input is 23/10
-				Calendar filterdate = processFilterDateParam(filter);
+				Calendar filterdate = processFilterDateParam(param[i+1]);
 				filterTaskByDate(templist, filterdate);
 				i++;
 				break;
@@ -110,7 +110,7 @@ public class FilterTasks {
 			Calendar filterdate) {
 		for (Task T : filteredTask) {
 			//>= 0 means the current calendar is after or equals to the Task calendar
-			if (filterdate.compareTo(T.getCalendar()) >= 0) {
+			if (filterdate.compareTo(T.getDate()) >= 0) {
 				tempList.add(T);		
 			}
 		}
