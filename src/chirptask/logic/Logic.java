@@ -203,10 +203,6 @@ public class Logic {
 		executeAction(undoAction);
 	}
 
-	private void processUndoDelete() {
-
-	}
-
 	private void processEdit(Action command, Task task) {
 		assert command != null && task != null;
 		boolean isSuccess;

@@ -64,7 +64,7 @@ public class FilterTasks {
 				break;
 			case "/date":
 				// Assuming input is 23/10
-				Calendar filterdate = processFilterDateParam(filter);
+				Calendar filterdate = processFilterDateParam(param[i+1]);
 				filterTaskByDate(templist, filterdate);
 				i++;
 				break;
@@ -82,6 +82,7 @@ public class FilterTasks {
 
 	private static Calendar processFilterDateParam(String filter) {
 		String[] temp = filter.split("/");
+		System.out.println(temp[0] + "/" +temp[1]);
 		Calendar filterdate = Calendar.getInstance();
 		filterdate.set(filterdate.get(Calendar.YEAR),
 				Integer.parseInt(temp[1]), Integer.parseInt(temp[0]));
