@@ -338,7 +338,7 @@ public class GoogleController implements Runnable {
         String taskType = updatedTask.getType();
         
         if (taskType.equals("deadline")) { //magic string, must solve this.
-            Date newDueDate = updatedTask.getDate();
+            Date newDueDate = updatedTask.getDate().getTime();
         
             Task updatedGoogleTask = 
                     _tasksController.updateDueDate(taskToUpdate, newDueDate);

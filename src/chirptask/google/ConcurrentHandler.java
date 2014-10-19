@@ -124,8 +124,8 @@ class ConcurrentHandler {
             
             if (taskToModify instanceof TimedTask) { //Try type casting
                 TimedTask modifyTimeTask = (TimedTask) modifyTask;
-                Date newStartTime = modifyTimeTask.getStartTime();
-                Date newEndTime = modifyTimeTask.getEndTime();
+                Date newStartTime = modifyTimeTask.getStartTime().getTime();
+                Date newEndTime = modifyTimeTask.getEndTime().getTime();
                 modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent, newStartTime);
                 modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent, newEndTime);
             }

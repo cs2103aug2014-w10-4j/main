@@ -53,8 +53,8 @@ public class MainGui extends Application {
     private static final int MIN_WIDTH = 500;
     private static final int MIN_HEIGHT = 300;
 
-    private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
-            "Monday", "Tuesday", "Wednesday", "Thusday", "Friday", "Saturday" };
+    private static final String[] DAY_OF_WEEK = new String[] { "Saturday", "Sunday", 
+            "Monday", "Tuesday", "Wednesday", "Thusday", "Friday"  };
     private static final String[] MONTH = new String[] { "January", "February",
             "March", "April", "May", "June", "July", "August", "September",
             "October", "November", "December" };
@@ -376,7 +376,7 @@ public class MainGui extends Application {
         dayLabel.setText(DAY_OF_WEEK[date.get(Calendar.DAY_OF_WEEK)]);
 
         Text dateLabel = new Text();
-        dateLabel.setText(date.get(Calendar.DAY_OF_MONTH) + " " + MONTH[date.get(Calendar.MONTH) + 1] + ", "
+        dateLabel.setText(date.get(Calendar.DAY_OF_MONTH) + " " + MONTH[date.get(Calendar.MONTH)] + ", "
                 + (date.get(Calendar.YEAR)));
 
         BorderPane taskViewHeader = new BorderPane();
@@ -531,7 +531,7 @@ public class MainGui extends Application {
      */
     public static String convertDateToString(Calendar date) {
         assert date != null;
-        String parseDateToString = date.get(Calendar.DAY_OF_MONTH) + "/" + (date.get(Calendar.MONTH) +1) + "/"
+        String parseDateToString = date.get(Calendar.DAY_OF_MONTH) + "/" + (date.get(Calendar.MONTH)) + "/"
                 + date.get(Calendar.YEAR);
 
         return parseDateToString;

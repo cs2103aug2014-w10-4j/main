@@ -267,23 +267,14 @@ public class InputParser {
 			} else if (!split[i].equals("")) {
 				try {
 					taskIndex.add(Integer.parseInt(split[i]));
-<<<<<<< HEAD
-				} catch (NumberFormatException e) {
-				} 
-=======
 
 				} catch (NumberFormatException e) {
-
-				} catch (Exception e) {
-					((EventLogger) StorageHandler.eventStorage).logError(String
-							.format(Messages.INVALID_INPUT, _userInput));
-
+					//TODO Handle invalid input
 				}
->>>>>>> 123ca3ca091c5acb4f161673e673c99893ce036c
+				} 
 			}
-		}
-
 		return taskIndex;
+			
 	}
 
 	private GroupAction processForEdit(String parameter) {

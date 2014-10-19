@@ -43,13 +43,13 @@ class ConcurrentAdd implements Callable<Boolean> {
             addedGoogleTask = GoogleController.addFloatingTask(task);
             break;
         case "deadline":
-            Date dueDate = _taskToAdd.getDate();
+            Date dueDate = _taskToAdd.getDate().getTime();
             addedGoogleTask = GoogleController.addDeadlineTask(task, dueDate);
             break;
         case "timedtask":
             TimedTask timedTask = (TimedTask) _taskToAdd;
-            Date startTime = timedTask.getStartTime();
-            Date endTime = timedTask.getEndTime();
+            Date startTime = timedTask.getStartTime().getTime();
+            Date endTime = timedTask.getEndTime().getTime();
             addedGoogleEvent = GoogleController.addTimedTask(task, startTime, endTime);
             break;
         default:

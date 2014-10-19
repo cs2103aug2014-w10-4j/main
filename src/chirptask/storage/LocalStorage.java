@@ -206,12 +206,12 @@ public class LocalStorage implements Storage {
 			TimedTask timedTask = (TimedTask) taskToAdd;
 			node.appendChild(getElement(doc, "type", "Timed Task"));
 			node.appendChild(getElement(doc, "start", timedTask.getStartTime()
-					.toString()));
+					.getTime().toString()));
 			node.appendChild(getElement(doc, "end", timedTask.getEndTime()
-					.toString()));
+					.getTime().toString()));
 		} else if (taskToAdd instanceof DeadlineTask) {
 			node.appendChild(getElement(doc, "deadline", taskToAdd.getDate()
-					.toString()));
+					.getTime().toString()));
 			node.appendChild(getElement(doc, "type", "Deadline Task"));
 		} else if (taskToAdd.getType().equalsIgnoreCase("floating")) {
 			node.appendChild(getElement(doc, "type", "Floating Task"));
