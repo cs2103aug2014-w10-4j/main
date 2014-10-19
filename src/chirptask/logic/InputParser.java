@@ -272,6 +272,7 @@ public class InputParser {
 					//TODO Handle invalid input
 				}
 			}
+		}
 		return taskIndex;
 			
 	}

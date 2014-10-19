@@ -1,7 +1,9 @@
 package chirptask.storage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,8 +64,11 @@ public class LocalStorage implements Storage {
 			try {
 				setIdGenerator(getLatestId());
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				clearContent(local);
+				addRoot();
+				writeToFile();
+				setIdGenerator(0);
+//				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -73,6 +78,20 @@ public class LocalStorage implements Storage {
 			writeToFile();
 			setIdGenerator(0);
 		} 
+	}
+
+	private void clearContent(File file) {
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(file);
+			writer.print("");
+			writer.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 	/**
