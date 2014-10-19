@@ -63,7 +63,7 @@ public class LocalStorage implements Storage {
 		if (local.exists()) {
 			try {
 				setIdGenerator(getLatestId());
-			} catch (SAXException e) {
+			} catch (SAXException e) { //if file cannot be parsed
 				clearContent(local);
 				addRoot();
 				writeToFile();

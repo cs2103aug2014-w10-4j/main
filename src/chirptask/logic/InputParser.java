@@ -62,7 +62,7 @@ public class InputParser {
 		case "exit":
 			return processNoTask(commandType);
 		default:
-			return processForUnrecognized(_userInput);
+			return processInvalidAction();
 		}
 	}
 
@@ -83,17 +83,6 @@ public class InputParser {
 		}
 		actions.addAction(action);
 		return actions;
-	}
-
-	private GroupAction processForUnrecognized(String input) {
-		String[] tokens = input.trim().split("\\s+");
-		if (input.contains(Settings.CATEGORY)
-				|| input.contains(Settings.CONTEXT)) {
-			return processForAdd(input);
-		} else if (tokens.length >= 2) {
-			return processForAdd(input);
-		}
-		return processInvalidAction();
 	}
 
 	private GroupAction processDisplay(String parameter) {
