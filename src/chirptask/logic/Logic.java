@@ -12,7 +12,6 @@ import chirptask.storage.EventLogger;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.gui.MainGui;
-//import chirptask.storage.Storage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 

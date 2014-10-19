@@ -23,7 +23,7 @@ public class DisplayView {
 	 * @param _gui
 	 * */
 	public static void updateTaskView(List<Task> tasks, MainGui gui) {
-
+		
 		Collections.sort(tasks);
 		TreeMap<String, TasksByDate> map = new TreeMap<String, TasksByDate>();
 

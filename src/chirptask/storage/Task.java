@@ -21,7 +21,8 @@ public class Task implements Comparable<Task> {
     private String _googleId;
 	private String _type;
 	private boolean _isDone = false;
-
+	private Calendar _cal = Calendar.getInstance();
+	
 	public Task() {
 		_contexts = new ArrayList<String>();
 		_categories = new ArrayList<String>();
@@ -110,7 +111,15 @@ public class Task implements Comparable<Task> {
 		Calendar today = Calendar.getInstance();
 		return today;
 	}
-
+	//@author A0111930W
+	public Calendar getCalendar(){
+		return _cal;
+	}
+	//@author A0111930W
+	public void setCalendar(int month, int date){
+		_cal.set(_cal.get(Calendar.YEAR), month, date);
+	}
+	
 	public List<String> getContexts() {
 		return _contexts;
 	}
