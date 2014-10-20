@@ -154,9 +154,8 @@ public class Logic {
 	private void processDisplay(Action command, Task task) {
 		assert task != null;
 		clearUi();
-		FilterTasks.filter(task);
+		FilterTasks.filter(task,_gui);
 		_gui.setFilterText(task.getDescription());
-		showStatusToUser(command, true);
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
 

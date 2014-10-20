@@ -7,6 +7,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import chirptask.common.Messages;
 import chirptask.common.Settings;
+import chirptask.common.Settings.StatusType;
+import chirptask.gui.MainGui;
 import chirptask.storage.EventLogger;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
@@ -22,18 +24,20 @@ public class FilterTasks {
 	private static String currentFilter = "";
 	private static final int PARAM_FILTER = 1;
 	private static EventLogger log = new EventLogger();
-	static void filter(Task T) {
+	static void filter(Task T, MainGui gui) {
 		currentFilter = T.getDescription();
 
 		List<Task> allTask = StorageHandler.getAllTasks();
 		// check 1st String to determine the type of filter
 
 		if (currentFilter.isEmpty()) {
+			
 			filteredTask = StorageHandler.getAllTasks();
 			filteredTask = hideDeleted(filteredTask);
+			DisplayView.showStatusToUser(StatusType.MESSAGE, gui, "");
 		} else {
 
-			processFilter(currentFilter);
+			processFilter(currentFilter, gui);
 
 		}
 		contextsList.clear();
@@ -57,7 +61,7 @@ public class FilterTasks {
 	}
 
 	
-	private static void processFilter(String filters) {
+	private static void processFilter(String filters, MainGui gui) {
 		String[] param = filters.split("\\s+");
 		List<Task> templist = new CopyOnWriteArrayList<Task>();
 		;
@@ -87,10 +91,13 @@ public class FilterTasks {
 				try {
 					Calendar filterdate = processFilterDateParam(param[i+1]);
 					filterTaskByDate(templist, filterdate);
+					DisplayView.showStatusToUser(StatusType.MESSAGE, gui,param[i+1] );
 				}catch (ArrayIndexOutOfBoundsException e){
 					//log down invalid input
 					log.logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
-					
+					DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+					templist = new ArrayList<Task>(StorageHandler.getAllTasks());
+					break;
 				}
 				i++;
 				break;

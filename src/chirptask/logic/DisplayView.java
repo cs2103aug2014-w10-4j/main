@@ -20,7 +20,11 @@ public class DisplayView {
 	 * This will take in a filtered list and update the taskview, sort to
 	 * date/time, store into List of tasks
 	 * 
+	 * @author a0111930w
 	 * @param _gui
+	 * @param List
+	 *            <Task>
+	 * 
 	 * */
 	public static void updateTaskView(List<Task> tasks, MainGui gui) {
 
@@ -39,11 +43,26 @@ public class DisplayView {
 
 	}
 
+	/**
+	 * This method will update the Context and category on the GUI
+	 * 
+	 * @author A0111930W
+	 * @param gui
+	 */
 	private static void processUpdateContextAndCategoryView(MainGui gui) {
 		updateCategoryView(gui);
 		updateContextView(gui);
 	}
 
+	/**
+	 * This method will update the user GUI view. The GUI view will be sorted to
+	 * all tasks under a date.
+	 * 
+	 * @author A0111930W
+	 * @param tasks
+	 * @param gui
+	 * @param map
+	 */
 	private static void processUpdateTaskView(List<Task> tasks, MainGui gui,
 			TreeMap<String, TasksByDate> map) {
 		for (Task task : tasks) {
@@ -67,14 +86,19 @@ public class DisplayView {
 		}
 	}
 
+	/**
+	 * 
+	 * @param task
+	 * @return
+	 */
 	private static String convertTaskDateToString(Task task) {
 		String dateToString;
 		if (task.getType() == "floating") {
 			dateToString = "all-day";
 		} else if (task.getType() == "deadline") {
 			DeadlineTask dTask = (DeadlineTask) task;
-			dateToString = "due by " + task.getDate().get(Calendar.HOUR) + ":"
-					+ task.getDate().get(Calendar.MINUTE);
+			dateToString = "due by " + dTask.getDate().get(Calendar.HOUR) + ":"
+					+ dTask.getDate().get(Calendar.MINUTE);
 		} else {
 			TimedTask tTask = (TimedTask) task;
 			dateToString = tTask.getStartTime().get(Calendar.HOUR) + ":"
@@ -110,7 +134,28 @@ public class DisplayView {
 		}
 	}
 
-	// Take in type, action
+	public static void showStatusToUser(Settings.StatusType type, MainGui gui,
+			String filter) {
+		if (type == Settings.StatusType.ERROR) {
+			processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
+					Messages.LOG_MESSAGE_ERROR, "");
+		} else {
+			processGUIError(gui, Messages.LOG_MESSAGE_DISPLAY,
+					Messages.LOG_MESSAGE_SUCCESS, filter);
+		}
+	}
+
+	/**
+	 * This method will show the status result to user after each action user
+	 * input.
+	 * 
+	 * @author A0111930W
+	 * @param type
+	 * @param action
+	 * @param gui
+	 * 
+	 * 
+	 */
 	public static void showStatusToUser(Settings.StatusType type,
 			Action action, MainGui gui) {
 		CommandType command = action.getCommandType();
@@ -144,9 +189,8 @@ public class DisplayView {
 				break;
 
 			default:
-				processGUIError(action, gui,
-						Messages.LOG_MESSAGE_INVALID_COMMAND,
-						Messages.LOG_MESSAGE_ERROR);
+				processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
+						Messages.LOG_MESSAGE_ERROR, "");
 				break;
 			}
 		} else {
@@ -189,12 +233,34 @@ public class DisplayView {
 		}
 	}
 
-	private static void processGUIError(Action action, MainGui gui,
-			String logMessageInvalidCommand, String logMessageError) {
-		gui.setError(String.format(logMessageInvalidCommand));
-
+	/**
+	 * This method will process the show the user error when a wrong command is
+	 * input.
+	 * 
+	 * @author A0111930W
+	 * @param action
+	 * @param gui
+	 * @param logMessageInvalidCommand
+	 * @param logMessageError
+	 */
+	private static void processGUIError(MainGui gui,
+			String logMessageInvalidCommand, String logMessageError,
+			String filter) {
+		if (logMessageError == Messages.LOG_MESSAGE_ERROR) {
+			gui.setError(String.format(logMessageInvalidCommand));
+		}
+		else{
+			gui.setStatus(String.format(logMessageInvalidCommand, logMessageError, filter));
+		}
 	}
 
+	/**
+	 * This method will show the failure or success of login to user.
+	 * 
+	 * @param gui
+	 * @param message
+	 * @param result
+	 */
 	private static void processGuiLogin(MainGui gui, String message,
 			String result) {
 		if (result.equalsIgnoreCase(Messages.LOG_MESSAGE_SUCCESS)) {
@@ -204,6 +270,15 @@ public class DisplayView {
 		}
 	}
 
+	/**
+	 * This method will show the failure or success for simple
+	 * add/delete/done/undone/login/display
+	 * 
+	 * @param action
+	 * @param gui
+	 * @param message
+	 * @param result
+	 */
 	private static void processGUI(Action action, MainGui gui, String message,
 			String result) {
 		if (result.equalsIgnoreCase(Messages.LOG_MESSAGE_SUCCESS)) {
