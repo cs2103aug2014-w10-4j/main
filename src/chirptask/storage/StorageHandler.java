@@ -120,7 +120,14 @@ public class StorageHandler {
                 individualStorage.removeTask(deletedTask);
             }
         } else {
-            modifyTask(deletedTask);
+            if (!isStorageInit()) {
+                modifyTask(deletedTask);
+            } else {
+                _allTasks.remove(deletedTask);
+                for (Storage individualStorage : _listOfStorages) {
+                    individualStorage.removeTask(deletedTask);
+                }
+            }
         }
         
         isDeleted = true;
