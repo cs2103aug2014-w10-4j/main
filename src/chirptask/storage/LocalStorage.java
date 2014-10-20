@@ -110,8 +110,7 @@ public class LocalStorage implements Storage {
 		} catch (ParserConfigurationException
 				| TransformerConfigurationException
 				| TransformerFactoryConfigurationError e) {
-			((EventLogger) StorageHandler.eventStorage).logError(String.format(
-					Messages.ERROR_LOCAL, "initialization"));
+			
 		}
 	}
 
@@ -153,8 +152,6 @@ public class LocalStorage implements Storage {
 			StreamResult file = new StreamResult(local);
 			trans.transform(source, file);
 		} catch (Exception e) {
-			((EventLogger) StorageHandler.eventStorage).logError(String.format(
-					Messages.ERROR_LOCAL, "write to file"));
 			e.printStackTrace();
 		}
 	}
@@ -184,8 +181,6 @@ public class LocalStorage implements Storage {
 			Element root = localStorage.getDocumentElement();
 			return root;
 		} catch (Exception e) {
-			((EventLogger) StorageHandler.eventStorage).logError(String.format(
-					Messages.ERROR_LOCAL, "get root"));
 			return null;
 		}
 	}
@@ -282,8 +277,6 @@ public class LocalStorage implements Storage {
 				space.getParentNode().removeChild(space);
 			}
 		} catch (XPathExpressionException e) {
-			((EventLogger) StorageHandler.eventStorage).logError(String.format(
-					Messages.ERROR_LOCAL, "XPath expression in remove spaces"));
 			e.printStackTrace();
 		}
 
@@ -341,8 +334,6 @@ public class LocalStorage implements Storage {
 				return null;
 			}
 		} catch (Exception e) {
-			((EventLogger) StorageHandler.eventStorage).logError(String.format(
-					Messages.ERROR_LOCAL, "Can't get task with given Id"));
 			e.printStackTrace();
 			return null;
 		}
@@ -363,8 +354,6 @@ public class LocalStorage implements Storage {
 				tasks.add(retrieveTaskFromFile(taskNodes.item(i)));
 			}
 		} catch (Exception e) {
-			((EventLogger) StorageHandler.eventStorage).logError(String.format(
-					Messages.ERROR_LOCAL, "get all Tasks"));
 			e.printStackTrace();
 			return null;
 		}
@@ -419,9 +408,6 @@ public class LocalStorage implements Storage {
 					task.setDone(false);
 				}
 			} catch (Exception e) {
-				((EventLogger) StorageHandler.eventStorage)
-						.logError(String.format(Messages.ERROR_LOCAL,
-								"retrieve task from file"));
 				e.printStackTrace();
 				return null;
 			}

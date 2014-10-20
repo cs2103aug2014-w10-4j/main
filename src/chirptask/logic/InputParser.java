@@ -7,7 +7,6 @@ import java.util.List;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.storage.DeadlineTask;
-import chirptask.storage.EventLogger;
 import chirptask.storage.LocalStorage;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
@@ -117,14 +116,12 @@ public class InputParser {
 		}
 
 		Task toDo = getTaskFromString(parameter);
-
+		String toParse;
+		List<Calendar> dateList;
 		int taskIndex = LocalStorage.generateId();
 		String description = toDo.getDescription();
 		List<String> categoryList = toDo.getCategories();
 		List<String> contextList = toDo.getContexts();
-
-		String toParse = getStringToParseDate(parameter);
-		List<Calendar> dateList = _dateParser.parseDate(toParse);
 
 		switch (command) {
 		case "add":
@@ -132,6 +129,8 @@ public class InputParser {
 			toDo = floating;
 			break;
 		case "addd":
+			toParse = getStringToParseDate(parameter);
+			dateList = _dateParser.parseDate(toParse);
 			if (dateList.size() == 1) {
 				Calendar dueDate = dateList.get(0);
 				Task deadline = new DeadlineTask(taskIndex, description, dueDate);
@@ -141,6 +140,8 @@ public class InputParser {
 			}
 			break;
 		case "addt":
+			toParse = getStringToParseDate(parameter);
+			dateList = _dateParser.parseDate(toParse);
 			if (dateList.size() == 2) {
 				Calendar startTime = dateList.get(0);
 				Calendar endTime = dateList.get(1);
@@ -411,8 +412,6 @@ public class InputParser {
 		try {
 			listId = Integer.parseInt(id);
 		} catch (Exception e) {
-			((EventLogger) StorageHandler.eventStorage).logError(String.format(
-					Messages.INVALID_INPUT, _userInput));
 		}
 		return listId;
 	}

@@ -15,13 +15,12 @@ import com.joestelmach.natty.Parser;
 //@author A0113022
 public class DateParser {
 	private List<Calendar> list;
-
+	private Parser parse;
 	public DateParser() {
-
+		parse = new Parser();
 	}
 
 	public List<Calendar> parseDate(String toParse) {
-		Parser parse = new Parser();
 		list = new ArrayList<Calendar>();
 		List<DateGroup> dateGroup = parse.parse(toParse);
 		for (int i = 0; i < dateGroup.size(); i++) {
