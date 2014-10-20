@@ -28,8 +28,8 @@ public class Logic {
 
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
-		// This will enable auto login
-		_storageHandler.initCloudStorage();
+		// This will enable auto login uncomment this to allow auto login
+		//_storageHandler.initCloudStorage();
 		_parser = new InputParser();
 		_gui = gui;
 		_logger = new EventLogger();
@@ -72,7 +72,7 @@ public class Logic {
 			break;
 		case DISPLAY:
 			// now can only filter string
-			processDisplay(task);
+			processDisplay(command, task);
 			break;
 		case EDIT:
 			processEdit(command, task);
@@ -107,7 +107,6 @@ public class Logic {
 	private void processInvalid(Action command) {
 		// Check whether Action is a command, if is command call GUI to display
 		// on textbox
-
 		// showStatus to user
 		showStatusToUser(command, false);
 		// log down invalid input to log file
@@ -159,11 +158,12 @@ public class Logic {
 		filterAndDisplay(command, isSuccess);
 	}
 
-	private void processDisplay(Task task) {
+	private void processDisplay(Action command ,Task task) {
 		assert task != null;
 		clearUi();
 		FilterTasks.filter(task);
 		_gui.setFilterText(task.getDescription());
+		showStatusToUser(command, true);
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
 

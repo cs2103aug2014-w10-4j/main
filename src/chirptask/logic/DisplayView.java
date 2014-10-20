@@ -23,7 +23,7 @@ public class DisplayView {
 	 * @param _gui
 	 * */
 	public static void updateTaskView(List<Task> tasks, MainGui gui) {
-		
+
 		Collections.sort(tasks);
 		TreeMap<String, TasksByDate> map = new TreeMap<String, TasksByDate>();
 
@@ -88,7 +88,7 @@ public class DisplayView {
 	// Call this at init to show all tasks.
 	public static void updateTaskView(MainGui gui) {
 
-		List<Task> allTasks = FilterTasks.getFilteredList();//StorageHandler.getAllTasks();
+		List<Task> allTasks = FilterTasks.getFilteredList();// StorageHandler.getAllTasks();
 		if (allTasks != null) {
 			Collections.sort(allTasks);
 			updateTaskView(allTasks, gui);
@@ -111,8 +111,8 @@ public class DisplayView {
 	}
 
 	// Take in type, action
-	public static void showStatusToUser(Settings.StatusType type, Action action,
-			MainGui gui) {
+	public static void showStatusToUser(Settings.StatusType type,
+			Action action, MainGui gui) {
 		CommandType command = action.getCommandType();
 		if (type == Settings.StatusType.ERROR) {
 			switch (command) {
@@ -142,6 +142,7 @@ public class DisplayView {
 				processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN,
 						Messages.LOG_MESSAGE_ERROR);
 				break;
+
 			default:
 				processGUIError(action, gui,
 						Messages.LOG_MESSAGE_INVALID_COMMAND,
@@ -178,6 +179,9 @@ public class DisplayView {
 				processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN,
 						Messages.LOG_MESSAGE_SUCCESS);
 				break;
+			case DISPLAY:
+				processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
+						Messages.LOG_MESSAGE_SUCCESS);
 			default:
 
 				break;
