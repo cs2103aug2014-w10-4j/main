@@ -6,6 +6,7 @@ import java.util.List;
 
 import chirptask.common.Messages;
 import chirptask.common.Settings;
+import chirptask.common.Settings.CommandType;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.LocalStorage;
 import chirptask.storage.StorageHandler;
@@ -45,43 +46,56 @@ public class InputParser {
 		case "add":
 		case "addt":
 		case "addd":
-			return processForAdd(commandType, parameter);
+			return processAdd(commandType, parameter);
 		case "edit":
-			return processForEdit(parameter);
+			return processEdit(parameter);
 		case "delete":
-			return processByTaskIndex(commandType, parameter);
+			return processDelete(parameter);
 		case "done":
-			return processByTaskIndex(commandType, parameter);
+			return processDone(parameter);
 		case "undone":
-			return processByTaskIndex(commandType, parameter);
+			return processUndone(parameter);
 		case "undo":
-			return processNoTask(commandType);
+			return processUndo();
 		case "display":
 			return processDisplay(parameter);
 		case "login":
-			return processNoTask(commandType);
+			return processLogin();
 		case "exit":
-			return processNoTask(commandType);
+			return processExit();
 		default:
-			return processInvalidAction();
+			return processInvalid();
 		}
 	}
 
-	private GroupAction processNoTask(String command) {
+	private GroupAction processExit() {
+		return processWithNoTask(CommandType.EXIT);
+	}
+
+	private GroupAction processLogin() {
+		return processWithNoTask(CommandType.LOGIN);
+	}
+
+	private GroupAction processUndo() {
+		return processWithNoTask(CommandType.UNDO);
+	}
+
+	private GroupAction processUndone(String parameter) {
+		return processByTaskIndex(CommandType.UNDONE, parameter);
+	}
+
+	private GroupAction processDone(String parameter) {
+		return processByTaskIndex(CommandType.DONE, parameter);
+	}
+
+	private GroupAction processDelete(String parameter) {
+		return processByTaskIndex(CommandType.DELETE, parameter);
+	}
+
+	private GroupAction processWithNoTask(CommandType command) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
-		switch (command) {
-		case "exit":
-			action.setCommandType(Settings.CommandType.EXIT);
-			break;
-		case "login":
-			action.setCommandType(Settings.CommandType.LOGIN);
-			action.setUndo(new Action(Settings.CommandType.INVALID));
-			break;
-		case "undo":
-			action.setCommandType(Settings.CommandType.UNDO);
-			break;
-		}
+		action.setCommandType(command);
 		actions.addAction(action);
 		return actions;
 	}
@@ -106,13 +120,13 @@ public class InputParser {
 		return actions;
 	}
 
-	private GroupAction processForAdd(String command, String parameter) {
+	private GroupAction processAdd(String command, String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
 		Action negate = new Action();
 
 		if (parameter == null) {
-			return processInvalidAction();
+			return processInvalid();
 		}
 
 		Task toDo = getTaskFromString(parameter);
@@ -136,7 +150,7 @@ public class InputParser {
 				Task deadline = new DeadlineTask(taskIndex, description, dueDate);
 				toDo = deadline;
 			} else {
-				return processInvalidAction();
+				return processInvalid();
 			}
 			break;
 		case "addt":
@@ -149,11 +163,11 @@ public class InputParser {
 					endTime);
 				toDo = timed;
 			} else {
-				return processInvalidAction();
+				return processInvalid();
 			}
 			break;
 		default:
-			actions = processInvalidAction();
+			actions = processInvalid();
 			return actions;
 		}
 
@@ -197,30 +211,26 @@ public class InputParser {
 		return toReturn;
 	}
 
-	private GroupAction processByTaskIndex(String command, String parameter) {
+	private GroupAction processByTaskIndex(CommandType command, String parameter) {
 		GroupAction actions = new GroupAction();
-		Settings.CommandType todo;
 		Settings.CommandType reverse;
 		if (parameter == null) {
-			return processInvalidAction();
+			return processInvalid();
 		}
-
+		
 		switch (command) {
-		case "done":
-			todo = Settings.CommandType.DONE;
-			reverse = Settings.CommandType.UNDONE;
+		case DONE:
+			reverse = CommandType.UNDONE;
 			break;
-		case "undone":
-			todo = Settings.CommandType.UNDONE;
-			reverse = Settings.CommandType.DONE;
+		case UNDONE:
+			reverse = CommandType.DONE;
 			break;
-		case "delete":
-			todo = Settings.CommandType.DELETE;
-			reverse = Settings.CommandType.ADD;
+		case DELETE:
+			reverse = CommandType.ADD;
 			break;
 		default:
-			todo = Settings.CommandType.INVALID;
-			reverse = Settings.CommandType.INVALID;
+			command = CommandType.INVALID;
+			reverse = CommandType.INVALID;
 		}
 
 		List<Integer> list = getTaskIndexFromString(parameter);
@@ -228,7 +238,7 @@ public class InputParser {
 			List<Task> allTasks = FilterTasks.getFilteredList();
 			for (Integer i : list) {
 				Action action = new Action();
-				action.setCommandType(todo);
+				action.setCommandType(command);
 				int normalizedIndex = normalizeId(i);
 				if (isIndexInRange(normalizedIndex)) {
 					Task task = allTasks.get(normalizedIndex);
@@ -286,13 +296,13 @@ public class InputParser {
 
 	}
 
-	private GroupAction processForEdit(String parameter) {
+	private GroupAction processEdit(String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
 		Action negate = new Action();
 
 		if (parameter == null) {
-			actions = processInvalidAction();
+			actions = processInvalid();
 			return actions;
 		}
 
@@ -319,7 +329,7 @@ public class InputParser {
 					action.setUndo(negate);
 				}
 			} else {
-				return processInvalidAction();
+				return processInvalid();
 			}
 			actions.addAction(action);
 		}
@@ -460,7 +470,7 @@ public class InputParser {
 		return isInRange;
 	}
 
-	private GroupAction processInvalidAction() {
+	private GroupAction processInvalid() {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
 		Task invalidInput = new Task(TASK_ID_INVALID, _userInput);
