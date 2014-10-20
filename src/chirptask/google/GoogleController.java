@@ -479,11 +479,19 @@ public class GoogleController implements Runnable {
     public void sync(List<chirptask.storage.Task> allTasks) throws 
                                             UnknownHostException, IOException {
         if (allTasks != null) {
-            syncPhaseOne(allTasks); //Local tasks without Google ID
-            syncPhaseTwo(allTasks); //Local tasks that are deleted locally will be deleted on Google
+            syncPhaseOne(allTasks); 
         }
     }
     
+    /**
+     * Phase one adds local tasks without Google ID to Google; If the task
+     * has been deleted, it does not perform the add operation.
+     * Phase one also deletes tasks with Google ID that are flagged as deleted
+     * from the Google account.
+     * @param allTasks The local list of all tasks
+     * @throws UnknownHostException If Google's servers cannot be reachable
+     * @throws IOException If transmission is interrupted
+     */
     private void syncPhaseOne(List<chirptask.storage.Task> allTasks) throws 
                                             UnknownHostException, IOException {
         if (allTasks != null) {
@@ -492,9 +500,16 @@ public class GoogleController implements Runnable {
             while (iterate.hasNext()) {
                 chirptask.storage.Task currTask = iterate.next();
                 String currGoogleId = currTask.getGoogleId();
+                boolean isDeleted = currTask.isDeleted();
                 
                 if (currGoogleId == null || "".equals(currGoogleId)) {
-                    add(currTask);
+                    if (!isDeleted){
+                        add(currTask);
+                    }
+                } else {
+                    if (isDeleted) {
+                        removeTask(currTask);
+                    }
                 }
             }
             
@@ -506,29 +521,5 @@ public class GoogleController implements Runnable {
         }
     }
     
-    private void syncPhaseTwo(List<chirptask.storage.Task> allTasks) throws 
-                                            UnknownHostException, IOException {
-        if (allTasks != null) {
-            Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
-            
-            while (iterate.hasNext()) {
-                chirptask.storage.Task currTask = iterate.next();
-                String currGoogleId = currTask.getGoogleId();
-                //boolean isDeleted = currTask.getDeleted();
-                
-                if (currGoogleId == null || "".equals(currGoogleId)) {
-                    removeTask(currTask);
-                }
-            }
-            
-            CONCURRENT.close();
-            try {
-                CONCURRENT.awaitTermination();
-            } catch (InterruptedException e) {
-            }
-        }
-    }
-    
-
 }
 

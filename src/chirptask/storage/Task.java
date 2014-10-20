@@ -21,6 +21,7 @@ public class Task implements Comparable<Task> {
     private String _googleId;
 	private String _type;
 	private boolean _isDone = false;
+	private boolean _isDeleted;
 	private Calendar _cal = Calendar.getInstance();
 	
 	public Task() {
@@ -28,12 +29,14 @@ public class Task implements Comparable<Task> {
 		_categories = new ArrayList<String>();
 		_googleId = "";
         _type = TASK_FLOATING;
+        _isDeleted = false;
 	}
 
 	public Task(int taskId, String description) {
 		this();
 		_taskId = taskId;
 		_description = description;
+        _isDeleted = false;
 	}
 	
     public Task(int taskId, String description, String taskType) {
@@ -41,6 +44,7 @@ public class Task implements Comparable<Task> {
         _taskId = taskId;
         _description = description;
         _type = taskType;
+        _isDeleted = false;
     }
 
 	/*
@@ -69,6 +73,14 @@ public class Task implements Comparable<Task> {
 
 	public boolean isDone() {
 		return _isDone;
+	}
+	
+	public boolean isDeleted() {
+	    return _isDeleted;
+	}
+	
+	public void setDeleted(boolean isDeleted) {
+	    _isDeleted = isDeleted;
 	}
 
 	public void setDone(boolean isDone) {
