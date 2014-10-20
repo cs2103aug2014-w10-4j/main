@@ -1,13 +1,9 @@
 package chirptask.storage;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -46,7 +42,7 @@ public class EventLogger implements IStorage {
         try {
             fileWriter
                     .println(String.format(Messages.LOG_MESSAGE_ADD_TASK,
-                            new Date(), T.getDate(), T.getTaskId(),
+                            new Date(), T.getDate().getTime(), T.getTaskId(),
                             T.getDescription()));
             fileWriter.flush();
             return true;
@@ -60,7 +56,7 @@ public class EventLogger implements IStorage {
         try {
             fileWriter
                     .println(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
-                            new Date(), T.getDate(), T.getTaskId(),
+                            new Date(), T.getDate().getTime(), T.getTaskId(),
                             T.getDescription()));
             fileWriter.flush();
             return T;
@@ -74,7 +70,7 @@ public class EventLogger implements IStorage {
         try {
             fileWriter
                     .println(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
-                            new Date(), T.getDate(), T.getTaskId(),
+                            new Date(), T.getDate().getTime(), T.getTaskId(),
                             T.getDescription()));
             fileWriter.flush();
             return true;
