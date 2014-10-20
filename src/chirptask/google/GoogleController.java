@@ -5,20 +5,28 @@ import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import chirptask.storage.DeadlineTask;
 import chirptask.storage.GoogleStorage;
+import chirptask.storage.TimedTask;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.tasks.model.Task;
+import com.google.api.services.tasks.model.Tasks;
 
 /**
  * GoogleController is the main component that interacts with the Google
@@ -180,69 +188,6 @@ public class GoogleController implements Runnable {
             isDeleted = _calendarController.deleteEvent(taskId);
         }
         return isDeleted;
-    }
-
-    /**
-     * shows the specific task in Google Tasks retrieved by its ID
-     * 
-     * @param taskId
-     *            to be passed in, should read in from localStorage
-     */
-    private void showTask(String taskId) {
-        if (isGoogleLoaded()) {
-            try {
-                _tasksController.showTask(taskId);
-            } catch (IOException ioError) {
-
-            }
-        }
-    }
-
-    /**
-     * shows all the available calendars in the authenticated account
-     * 
-     * @throws IOException
-     */
-    private void showCalendars() throws IOException {
-        if (isGoogleLoaded()) {
-            _calendarController.showCalendars();
-        }
-    }
-
-    /**
-     * shows all the tasks in the ChirpTask task list. All tasks include undone
-     * tasks as well as completed tasks which are not cleared yet.
-     * 
-     * @throws IOException
-     */
-    private void showTasks() throws IOException {
-        if (isGoogleLoaded()) {
-            _tasksController.showTasks();
-        }
-    }
-
-    /**
-     * shows all the cleared tasks in the ChirpTask hidden task list. cleared
-     * tasks are completed tasks that went through the clear operation.
-     * 
-     * @throws IOException
-     */
-    private void showHiddenTasks() throws IOException {
-        if (isGoogleLoaded()) {
-            _tasksController.showHiddenTasks();
-        }
-    }
-
-    /**
-     * shows all the tasks which are not done yet. tasks can have a due date
-     * where applicable.
-     * 
-     * @throws IOException
-     */
-    private void showUndoneTasks() throws IOException {
-        if (isGoogleLoaded()) {
-            _tasksController.showUndoneTasks();
-        }
     }
 
     // Called by ConcurrentAdd
@@ -486,6 +431,7 @@ public class GoogleController implements Runnable {
             throws UnknownHostException, IOException {
         if (allTasks != null) {
             syncPhaseOne(allTasks);
+            syncPhaseTwo(allTasks);
         }
     }
 
@@ -532,11 +478,110 @@ public class GoogleController implements Runnable {
                 }
             }
             CONCURRENT.close();
-            try {
-                CONCURRENT.awaitTermination();
+        }
+    }
+    
+    private void syncPhaseTwo(List<chirptask.storage.Task> allTasks)
+                                    throws UnknownHostException, IOException {
+        try {
+            CONCURRENT.awaitTermination();
+        } catch (InterruptedException e) {
+        }
+        
+        if (allTasks != null) {
+            Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
+            Map<String, chirptask.storage.Task> googleIdMap = new TreeMap<String, chirptask.storage.Task>();
+            List<Event> events = _calendarController.getEvents();
+            Tasks tasks = _tasksController.getTasks();
+            List<Task> taskList = tasks.getItems();
+            
+            while (iterate.hasNext()) {
+                chirptask.storage.Task currTask = iterate.next();
+                String googleId = currTask.getGoogleId();
                 
-            } catch (InterruptedException e) {
+                if (googleId != null || "".equals(googleId)) {
+                    googleIdMap.put(googleId, currTask);
+                }
             }
+            
+            for (Event currEvent : events) {
+                String gId = currEvent.getId();
+                if (googleIdMap.containsKey(gId)) {
+                    chirptask.storage.Task currTask = googleIdMap.get(gId);
+                    String googleETag = currEvent.getEtag();
+                    String localETag = currTask.getETag();
+                    if (googleETag != null && localETag != null) {
+                        if (!localETag.equals(googleETag)) {
+                            if (!currTask.isModified()) {  //push from remote to local
+                                String eventDescription = currEvent.getSummary();
+                                EventDateTime start = currEvent.getStart();
+                                EventDateTime end = currEvent.getEnd();
+                                Calendar startDate = DateTimeHandler.getCalendar(start);
+                                Calendar endDate = DateTimeHandler.getCalendar(end);
+                                String doneString = currEvent.getDescription();
+                                
+                                boolean isDone = false;
+                                
+                                if ("[Done]".equals(doneString)) {
+                                    isDone = true;
+                                }
+                                
+                                if (currTask instanceof chirptask.storage.TimedTask) {
+                                    TimedTask timedTask = (TimedTask) currTask;
+                                    timedTask.setDescription(eventDescription);
+                                    timedTask.setStartTime(startDate);
+                                    timedTask.setEndTime(endDate);
+                                    timedTask.setDone(isDone);
+                                    GoogleStorage.updateStorages(timedTask);
+                                }
+                            }
+                        } 
+                    }
+                }
+            }
+            
+            for (Task currTask : taskList) {
+                String gId = currTask.getId();
+                if (googleIdMap.containsKey(gId)) {
+                    chirptask.storage.Task chirpTask = googleIdMap.get(gId);
+                    String googleETag = currTask.getEtag();
+                    String localETag = chirpTask.getETag();
+                    if (googleETag != null && localETag != null) {
+                        if (!localETag.equals(googleETag)) {
+                            if (!chirpTask.isModified()) { //push from remote to local
+                                String eventDescription = currTask.getTitle();
+                                DateTime dueDate = currTask.getDue();
+                                
+                                String doneString = currTask.getStatus();
+                                
+                                boolean isDone = false;
+                                
+                                if ("Completed".equals(doneString)) {
+                                    isDone = true;
+                                }
+                                
+                                chirpTask.setDescription(eventDescription);
+                                chirpTask.setDone(isDone);
+                                
+                                if (chirpTask instanceof DeadlineTask) {
+                                    DeadlineTask deadlineTask = (DeadlineTask) chirpTask;
+                                    Calendar dueCalendar = null;
+                                    
+                                    if (dueDate != null) {
+                                        dueCalendar = DateTimeHandler.getDateFromDateTime(dueDate);
+                                    }
+                                    
+                                    deadlineTask.setDate(dueCalendar);
+                                    GoogleStorage.updateStorages(deadlineTask);
+                                } else {
+                                    GoogleStorage.updateStorages(chirpTask);
+                                }
+                            }
+                        } 
+                    }
+                } 
+            }
+            CONCURRENT.close();
         }
     }
 

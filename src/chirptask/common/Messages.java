@@ -17,8 +17,10 @@ public class Messages {
 	public static final String LOG_MESSAGE_LOGIN = "%1$s: Login";
 	public static final String LOG_MESSAGE_DONE = "%1$s: Done %2$s";
 	public static final String LOG_MESSAGE_UNDONE = "%1$s: Undone %2$s";
+	public static final String LOG_MESSAGE_DISPLAY = "%1$s Displayed %2$s";
 	public static final String LOG_MESSAGE_SUCCESS = "Successfully";
-	public static final String LOG_MESSAGE_ERROR = "ERROR";
+	public static final String LOG_MESSAGE_ERROR = "Error";
+	public static final String LOG_MESSAGE_UNDO_NOTHING = "Nothing to undo";
 
 	public static final String LABEL_FILTER = "Filter: ";
 	public static final String TITLE_SETTINGS = "Settings";

@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.common.Settings.CommandType;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.LocalStorage;
-import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
@@ -418,11 +416,11 @@ public class InputParser {
 			for (int i = 0; i < word.length; i++) {
 				char firstChar = word[i].charAt(0);
 
-				if (firstChar == Settings.CONTEXT_STRING
+				if (firstChar == Settings.CONTEXT_CHAR
 						&& word[i].length() > 1) {
 					contexts.add(word[i].substring(1));
 				}
-				if (firstChar == Settings.CATEGORY_STRING
+				if (firstChar == Settings.CATEGORY_CHAR
 						&& word[i].length() > 1) {
 					categories.add(word[i].substring(1));
 				}

@@ -8,7 +8,7 @@ import chirptask.google.GoogleController;
 
 //For every action, return true, google service is up
 //Return false when google service is down
-public class GoogleStorage implements Storage {
+public class GoogleStorage implements IStorage {
     private static GoogleController _gController;
 
     public GoogleStorage() {
@@ -91,7 +91,7 @@ public class GoogleStorage implements Storage {
         //Talk to storage handler to call add google id
         if (StorageHandler.isStorageInit()) {
             StorageHandler.updateStorages(newTask);
-        }
+        } 
     }
     
     public void sync(List<Task> allTasks) {

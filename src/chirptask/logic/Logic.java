@@ -1,11 +1,7 @@
 package chirptask.logic;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
-import chirptask.storage.EventLogger;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.gui.MainGui;
@@ -14,82 +10,23 @@ import chirptask.storage.Task;
 
 //@author A0111930W
 public class Logic {
-	private static final String MESSAGE_NEW_COMMAND = "command: ";
-	private static final int ERROR_OPENING_STREAM = 57;
 
-	private Action _lastAction;
+	private GroupAction _lastAction;
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
-	private MainGui _gui;
-	private EventLogger _logger;
-	// For working ChirpTask
-	private BufferedReader commandBufferReader = new BufferedReader(
-			new InputStreamReader(System.in));
+	private static MainGui _gui;
 
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
+		// This will enable auto login uncomment this to allow auto login
+		// _storageHandler.initCloudStorage();
 		_parser = new InputParser();
 		_gui = gui;
-		_logger = new EventLogger();
 		FilterTasks.filter();
 		DisplayView.updateTaskView(_gui);
 	}
 
-	public Logic() {
-
-		_storageHandler = new StorageHandler();
-		_parser = new InputParser();
-		FilterTasks.filter();
-
-		// runUntilExitCommand(); //Temporary CLI code before full integration
-		// with GUI
-		// lastAction = new Action();
-
-	}
-
-	/**
-	 * Temporary CLI code before full integration with GUI
-	 */
-	private void runUntilExitCommand() {
-		while (true) {
-			issueNewCommandStatement();
-			String userInput = waitForUserCommand();
-			retrieveInputFromUI(userInput);
-		}
-	}
-
-	private void issueNewCommandStatement() {
-		displayToUser(MESSAGE_NEW_COMMAND);
-	}
-
-	private String waitForUserCommand() {
-		String userCommand = getUserCommand();
-		return userCommand;
-	}
-
-	private void displayToUser(String messageToDisplay) {
-		System.out.print(messageToDisplay);
-	}
-
-	private String getUserCommand() {
-		try {
-			String userInputCommand = commandBufferReader.readLine();
-			return userInputCommand;
-		} catch (IOException ioAccessError) {
-			exitChirpTask(ERROR_OPENING_STREAM);
-		}
-		return "INVALID";
-	}
-
-	/**
-	 * End temporary code
-	 */
-
-	private void exitChirpTask(int typeOfExit) {
-		System.exit(typeOfExit);
-	}
-
-	private void clearUi() {
+	private static void clearUi() {
 		_gui.clearTrendingList();
 		_gui.clearTaskView();
 	}
@@ -99,13 +36,20 @@ public class Logic {
 		// Assuming there will always be GroupActions parse by InputParser every
 		// user input.
 		assert _parser.getActions() != null;
+
+		if (_parser.getActions().getActionList().get(0).getCommandType() != Settings.CommandType.UNDO) {
+			setLastGroupAction(_parser.getActions());
+		}
+
 		processGroupAction(_parser.getActions().getActionList());
 	}
 
 	public void processGroupAction(List<Action> list) {
 
 		for (Action a : list) {
+			// System.out.println("Hello");
 			executeAction(a);
+
 		}
 	}
 
@@ -124,7 +68,7 @@ public class Logic {
 			break;
 		case DISPLAY:
 			// now can only filter string
-			processDisplay(task);
+			processDisplay(command, task);
 			break;
 		case EDIT:
 			processEdit(command, task);
@@ -159,7 +103,6 @@ public class Logic {
 	private void processInvalid(Action command) {
 		// Check whether Action is a command, if is command call GUI to display
 		// on textbox
-
 		// showStatus to user
 		showStatusToUser(command, false);
 		// log down invalid input to log file
@@ -168,7 +111,8 @@ public class Logic {
 	}
 
 	private void logErrorCommand() {
-		_logger.logError(String.format(Messages.LOG_MESSAGE_INVALID_COMMAND,
+		StorageHandler.logError(String.format(
+				Messages.LOG_MESSAGE_INVALID_COMMAND,
 				Messages.LOG_MESSAGE_ERROR));
 	}
 
@@ -197,10 +141,25 @@ public class Logic {
 	}
 
 	private void processUndo() {
-		Action lastAction = getLastAction();
-		Action undoAction = lastAction.undo();
-		undoAction.setUndo(lastAction);
-		executeAction(undoAction);
+		GroupAction lastAction = getLastGroupAction();
+		GroupAction tempGroupAction = new GroupAction();
+		if (lastAction != null) {
+			for (Action action : lastAction.getActionList()) {
+				Action undoAction = action.undo();
+				undoAction.setUndo(action);
+				tempGroupAction.addAction(undoAction);
+
+			}
+			setLastGroupAction(tempGroupAction);
+			lastAction = getLastGroupAction();
+			for (Action action : lastAction.getActionList()) {
+				executeAction(action);
+			}
+
+		}else{
+			//showstatus
+			DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING, _gui);
+		}
 	}
 
 	private void processEdit(Action command, Task task) {
@@ -211,10 +170,10 @@ public class Logic {
 		filterAndDisplay(command, isSuccess);
 	}
 
-	private void processDisplay(Task task) {
+	private void processDisplay(Action command, Task task) {
 		assert task != null;
 		clearUi();
-		FilterTasks.filter(task);
+		FilterTasks.filter(task, _gui);
 		_gui.setFilterText(task.getDescription());
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
@@ -241,10 +200,16 @@ public class Logic {
 		filterAndDisplay(command, isSuccess);
 	}
 
+	public static void refresh() {
+		clearUi();
+		FilterTasks.filter();
+		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+	}
+
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		assert command != null;
 		// set lastAction
-		this.setLastAction(command);
+
 		clearUi();
 		FilterTasks.filter();
 		showStatusToUser(command, isSuccess);
@@ -262,11 +227,11 @@ public class Logic {
 		}
 	}
 
-	public Action getLastAction() {
+	public GroupAction getLastGroupAction() {
 		return _lastAction;
 	}
 
-	public void setLastAction(Action lastAction) {
+	public void setLastGroupAction(GroupAction lastAction) {
 		this._lastAction = lastAction;
 	}
 

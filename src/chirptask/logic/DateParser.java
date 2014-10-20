@@ -21,15 +21,13 @@ public class DateParser {
 	
 	public DateParser() {
 		parse = new Parser();
-		parse.parse("21 oct");
+//		parse.parse("21 oct"); start up natty (the first passing takes >3000 milliseconds
 	}
 
 	public List<Calendar> parseDate(String toParse) {
 		list = new ArrayList<Calendar>();
 		Date today = new Date();
 		List<DateGroup> dateGroup = parse.parse(toParse);
-		Date today2 = new Date();
-		System.out.printf("%d", today.getTime() - today2.getTime());
 		for (int i = 0; i < dateGroup.size(); i++) {
 			List<Date> dates = dateGroup.get(i).getDates();
 			for (int j = 0; j < dates.size(); j++) {
@@ -44,7 +42,7 @@ public class DateParser {
 	private Calendar convertToCalendar(Date date, Date today) {
 		boolean isNotSet = false;
 		//assume the chance of user inputting deadline exactly multiple of 
-		//millisecondADay/20 after the current time negligible
+		//millisecondADay/50 after the current time negligible
 		if (((date.getTime() - today.getTime())/50) % (millisecondADay/50) == 0) {
 			isNotSet = true;
 		}

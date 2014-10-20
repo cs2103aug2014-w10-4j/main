@@ -3,6 +3,7 @@ package chirptask.google;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -82,6 +83,20 @@ public class DateTimeHandler {
 	    eventDateTime.setDate(googleDateTime);
 	    return eventDateTime;
         
+	}
+	
+	static Calendar getCalendar(EventDateTime eventDateTime) {
+	    Long eventLong = eventDateTime.getDateTime().getValue();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(eventLong);
+	    return calendar;
+	}
+	
+	static Calendar getDateFromDateTime(DateTime dateTime) {
+	    Long dateLong = dateTime.getValue();
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.setTimeInMillis(dateLong);
+	    return calendar;
 	}
 
 }

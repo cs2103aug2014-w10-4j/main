@@ -165,9 +165,9 @@ public class TasksController {
         return foundTaskList;
     }
 
-    void showTask(String id) throws UnknownHostException, IOException {
+    Task getTask(String id) throws UnknownHostException, IOException {
         Task result = TasksHandler.getTaskFromId(_taskListId, id);
-        TasksViewer.display(result);
+        return result;
     }
 
     Task addTask(String taskTitle) throws UnknownHostException, IOException {
@@ -215,22 +215,9 @@ public class TasksController {
         return isDeleted;
     }
 
-    void showTasks() throws UnknownHostException, IOException {
+    Tasks getTasks() throws UnknownHostException, IOException {
         Tasks tasks = TasksHandler.getTasksFromId(_taskListId);
-        TasksViewer.header("Show All Tasks");
-        TasksViewer.display(tasks);
-    }
-
-    void showHiddenTasks() throws UnknownHostException, IOException {
-        Tasks tasks = TasksHandler.getHiddenTasks(_taskListId);
-        TasksViewer.header("Show All Tasks");
-        TasksViewer.display(tasks);
-    }
-
-    void showUndoneTasks() throws UnknownHostException, IOException {
-        Tasks tasks = TasksHandler.getUndoneTasks(_taskListId);
-        TasksViewer.header("Show All Tasks");
-        TasksViewer.display(tasks);
+        return tasks;
     }
 
     Task updateDescription(Task taskToUpdate, String description) {

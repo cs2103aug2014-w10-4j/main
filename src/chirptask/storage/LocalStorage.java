@@ -30,8 +30,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import chirptask.common.Messages;
-
 /**
  * This class handles the tasks list in XML format. The XML file it manages
  * contains tasks id, description, contexts, categories and deadline/start time
@@ -39,7 +37,7 @@ import chirptask.common.Messages;
  * 
  */
 //@author A0113022
-public class LocalStorage implements Storage {
+public class LocalStorage implements IStorage {
 	
 	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
 	private static final String XPATH_EXPRESSION_ID = "//task[@TaskId = '%1$s']";

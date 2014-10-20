@@ -1,8 +1,8 @@
 package chirptask.gui;
 
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Calendar;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
@@ -23,6 +23,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -53,8 +55,8 @@ public class MainGui extends Application {
     private static final int MIN_WIDTH = 500;
     private static final int MIN_HEIGHT = 300;
 
-    private static final String[] DAY_OF_WEEK = new String[] { "Sunday", 
-            "Monday", "Tuesday", "Wednesday", "Thusday", "Friday", "Saturday"  };
+    private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
+            "Monday", "Tuesday", "Wednesday", "Thusday", "Friday", "Saturday" };
     private static final String[] MONTH = new String[] { "January", "February",
             "March", "April", "May", "June", "July", "August", "September",
             "October", "November", "December" };
@@ -79,6 +81,7 @@ public class MainGui extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
+
         BorderPane border = new BorderPane();
 
         BorderPane headerBar = generateHeaderBar();
@@ -111,6 +114,8 @@ public class MainGui extends Application {
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setTitle(Messages.TITLE_SOFTWARE);
 
+        primaryStage.getIcons().add(new Image("file:chirptask_clear.png"));
+
         // scroll bar hack to beautify scroll bar
         makeScrollFadeable(mainDisplay.lookup(".address > .scroll-pane"));
         makeScrollFadeable(trendingList.lookup(".address > .scroll-pane"));
@@ -135,6 +140,13 @@ public class MainGui extends Application {
      *            the command line arguments
      */
     public static void main(String[] args) {
+
+//        com.apple.eawt.Application application = com.apple.eawt.Application
+//                .getApplication();
+        java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
+                "chirptask_clear.png");
+//        application.setDockIconImage(image);
+
         launch(args);
     }
 
@@ -149,6 +161,8 @@ public class MainGui extends Application {
 
         // Text settingsButton = new Text(Messages.TITLE_SETTINGS);
         // settingsButton.getStyleClass().add("header-title");
+        // ImageView imgView = new ImageView(new
+        // Image("file:chirptask_clear.png"));
 
         headerBar.setLeft(sceneTitle);
         // headerBar.setRight(settingsButton);
@@ -373,10 +387,11 @@ public class MainGui extends Application {
     private BorderPane generateTaskViewHeader(Calendar date) {
 
         Text dayLabel = new Text();
-        dayLabel.setText(DAY_OF_WEEK[date.get(Calendar.DAY_OF_WEEK) - 1 ]);
+        dayLabel.setText(DAY_OF_WEEK[date.get(Calendar.DAY_OF_WEEK) - 1]);
 
         Text dateLabel = new Text();
-        dateLabel.setText(date.get(Calendar.DAY_OF_MONTH) + " " + MONTH[date.get(Calendar.MONTH)] + ", "
+        dateLabel.setText(date.get(Calendar.DAY_OF_MONTH) + " "
+                + MONTH[date.get(Calendar.MONTH)] + ", "
                 + (date.get(Calendar.YEAR)));
 
         BorderPane taskViewHeader = new BorderPane();
@@ -417,7 +432,7 @@ public class MainGui extends Application {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println(((Text) event.getSource()).getText());
+                // System.out.println(((Text) event.getSource()).getText());
             }
         };
     }
@@ -426,7 +441,7 @@ public class MainGui extends Application {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println(((Text) event.getSource()).getText());
+                // System.out.println(((Text) event.getSource()).getText());
             }
         };
     }
@@ -437,7 +452,6 @@ public class MainGui extends Application {
     // @author A0111889W-reused
     private void makeScrollFadeable(final Node scroll) {
         final Node scrollbar = scroll.lookup(".scroll-bar:vertical");
-        System.out.println(scroll);
         final FadeTransition fader = new FadeTransition(Duration.seconds(0.5),
                 scrollbar);
         fader.setFromValue(1);
@@ -512,7 +526,7 @@ public class MainGui extends Application {
 
     public void addContextIntoList(String Context) {
         assert !Context.isEmpty();
-        Text contextText = new Text(Settings.CONTEXT_STRING + Context);
+        Text contextText = new Text(Settings.CONTEXT_CHAR + Context);
         contextText.getStyleClass().add("context-text");
         contextText.setOnMouseClicked(clickOnContext());
         _contextList.getChildren().add(contextText);
@@ -520,7 +534,7 @@ public class MainGui extends Application {
 
     public void addCategoryIntoList(String Category) {
         assert !Category.isEmpty();
-        Text categoryText = new Text(Settings.CATEGORY_STRING + Category);
+        Text categoryText = new Text(Settings.CATEGORY_CHAR + Category);
         categoryText.getStyleClass().add("category-text");
         categoryText.setOnMouseClicked(clickOnCategory());
         _categoryList.getChildren().add(categoryText);
@@ -531,8 +545,8 @@ public class MainGui extends Application {
      */
     public static String convertDateToString(Calendar date) {
         assert date != null;
-        String parseDateToString = date.get(Calendar.DAY_OF_MONTH) + "/" + (date.get(Calendar.MONTH)) + "/"
-                + date.get(Calendar.YEAR);
+        String parseDateToString = date.get(Calendar.DAY_OF_MONTH) + "/"
+                + (date.get(Calendar.MONTH)) + "/" + date.get(Calendar.YEAR);
 
         return parseDateToString;
     }
@@ -555,11 +569,12 @@ public class MainGui extends Application {
             }
 
             bufferText = new Text(descSb.substring(0, index));
-            if (descSb.charAt(0) == Settings.CONTEXT_STRING) {
+
+            if (descSb.charAt(0) == Settings.CONTEXT_CHAR) {
                 // Context
                 bufferText.getStyleClass().add("context-text");
                 bufferText.setOnMouseClicked(clickOnContext());
-            } else if (descSb.charAt(0) == Settings.CATEGORY_STRING) {
+            } else if (descSb.charAt(0) == Settings.CATEGORY_CHAR) {
                 // Category
                 bufferText.getStyleClass().add("category-text");
                 bufferText.setOnMouseClicked(clickOnCategory());
@@ -634,6 +649,5 @@ public class MainGui extends Application {
     public static List<Integer> getTaskIndexToId() {
         return _taskIndexToId;
     }
-
 
 }
