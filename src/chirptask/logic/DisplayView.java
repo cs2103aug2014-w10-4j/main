@@ -73,8 +73,8 @@ public class DisplayView {
 			dateToString = "all-day";
 		} else if (task.getType() == "deadline") {
 			DeadlineTask dTask = (DeadlineTask) task;
-			dateToString = "due by " + task.getDate().get(Calendar.HOUR) + ":"
-					+ task.getDate().get(Calendar.MINUTE);
+			dateToString = "due by " + dTask.getDate().get(Calendar.HOUR) + ":"
+					+ dTask.getDate().get(Calendar.MINUTE);
 		} else {
 			TimedTask tTask = (TimedTask) task;
 			dateToString = tTask.getStartTime().get(Calendar.HOUR) + ":"
