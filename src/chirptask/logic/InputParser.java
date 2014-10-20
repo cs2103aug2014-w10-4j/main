@@ -44,7 +44,9 @@ public class InputParser {
 		String parameter = getParameter();
 		switch (commandType) {
 		case "add":
-			return processForAdd(parameter);
+		case "addt":
+		case "addd":
+			return processForAdd(commandType, parameter);
 		case "edit":
 			return processForEdit(parameter);
 		case "delete":
@@ -105,7 +107,7 @@ public class InputParser {
 		return actions;
 	}
 
-	private GroupAction processForAdd(String parameter) {
+	private GroupAction processForAdd(String command, String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
 		Action negate = new Action();
@@ -124,22 +126,30 @@ public class InputParser {
 		String toParse = getStringToParseDate(parameter);
 		List<Calendar> dateList = _dateParser.parseDate(toParse);
 
-		switch (dateList.size()) {
-		case 0:
+		switch (command) {
+		case "add":
 			Task floating = new Task(taskIndex, description);
 			toDo = floating;
 			break;
-		case 1:
-			Calendar dueDate = dateList.get(0);
-			Task deadline = new DeadlineTask(taskIndex, description, dueDate);
-			toDo = deadline;
+		case "addd":
+			if (dateList.size() == 1) {
+				Calendar dueDate = dateList.get(0);
+				Task deadline = new DeadlineTask(taskIndex, description, dueDate);
+				toDo = deadline;
+			} else {
+				return processInvalidAction();
+			}
 			break;
-		case 2:
-			Calendar startTime = dateList.get(0);
-			Calendar endTime = dateList.get(1);
-			Task timed = new TimedTask(taskIndex, description, startTime,
+		case "addt":
+			if (dateList.size() == 2) {
+				Calendar startTime = dateList.get(0);
+				Calendar endTime = dateList.get(1);
+				Task timed = new TimedTask(taskIndex, description, startTime,
 					endTime);
-			toDo = timed;
+				toDo = timed;
+			} else {
+				return processInvalidAction();
+			}
 			break;
 		default:
 			actions = processInvalidAction();
