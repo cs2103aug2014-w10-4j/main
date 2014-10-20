@@ -34,7 +34,8 @@ public class ConcurrentDelete implements Callable<Boolean> {
          * Overwrites chirptask.storage.Task in the other storages
          */
         if (isDeleted) {
-            _taskToDelete.setDeleted(false); // Reset the isDeleted flag to false
+            _taskToDelete.setGoogleId(""); // Set Google ID to empty for deletion
+            _taskToDelete.setDeleted(false); // Reset isDeleted flag to false
             ConcurrentHandler.modifyLocalStorage(_taskToDelete);
         }
 

@@ -88,7 +88,7 @@ public class DisplayView {
 	// Call this at init to show all tasks.
 	public static void updateTaskView(MainGui gui) {
 
-		List<Task> allTasks = StorageHandler.getAllTasks();
+		List<Task> allTasks = FilterTasks.getFilteredList();//StorageHandler.getAllTasks();
 		if (allTasks != null) {
 			Collections.sort(allTasks);
 			updateTaskView(allTasks, gui);

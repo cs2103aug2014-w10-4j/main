@@ -113,11 +113,18 @@ public class StorageHandler {
     // @author A0111889W
     public synchronized Task deleteTask(Task deletedTask) {
         boolean isDeleted = false;
-        _allTasks.remove(deletedTask);
-        for (Storage individualStorage : _listOfStorages) {
-            individualStorage.removeTask(deletedTask);
+        
+        if ("".equals(deletedTask.getGoogleId())){
+            _allTasks.remove(deletedTask);
+            for (Storage individualStorage : _listOfStorages) {
+                individualStorage.removeTask(deletedTask);
+            }
+        } else {
+            modifyTask(deletedTask);
         }
+        
         isDeleted = true;
+        
         if(isDeleted){
         	return deletedTask;
         } else{
@@ -138,13 +145,21 @@ public class StorageHandler {
 
     static synchronized void updateStorages(Task modifiedTask) {
         if (isStorageInit()) {
-            if (_allTasks.contains(modifiedTask)) {
-                int indexOfTask = _allTasks.indexOf(modifiedTask);
-                _allTasks.add(indexOfTask, modifiedTask);
-                _allTasks.remove(indexOfTask + 1);
+            if ("".equals(modifiedTask.getGoogleId())){
+                _allTasks.remove(modifiedTask);
+                for (Storage individualStorage : _listOfStorages) {
+                    individualStorage.removeTask(modifiedTask);
+                }
+                // need to update GUI
+            } else {
+                if (_allTasks.contains(modifiedTask)) {
+                    int indexOfTask = _allTasks.indexOf(modifiedTask);
+                    _allTasks.add(indexOfTask, modifiedTask);
+                    _allTasks.remove(indexOfTask + 1);
+                }
+                localStorage.modifyTask(modifiedTask);
+                eventStorage.modifyTask(modifiedTask);
             }
-            localStorage.modifyTask(modifiedTask);
-            eventStorage.modifyTask(modifiedTask);
         }
     }
 

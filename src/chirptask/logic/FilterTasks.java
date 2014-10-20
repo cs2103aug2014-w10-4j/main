@@ -1,6 +1,7 @@
 package chirptask.logic;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -29,6 +30,7 @@ public class FilterTasks {
 
 		if (currentFilter.isEmpty()) {
 			filteredTask = StorageHandler.getAllTasks();
+			filteredTask = hideDeleted(filteredTask);
 		} else {
 
 			processFilter(currentFilter);
@@ -38,6 +40,20 @@ public class FilterTasks {
 		for (Task task : filteredTask) {
 			populateContext(task);
 		}
+	}
+	
+	static List<Task> hideDeleted(List<Task> taskList) {
+	    List<Task> newList = new ArrayList<Task>();
+	    Iterator<Task> tasks = taskList.iterator();
+	    
+	    while (tasks.hasNext()) {
+	        Task currTask = tasks.next();
+	        if (!currTask.isDeleted()) {
+	            newList.add(currTask);
+	        }
+	    }
+	    
+	    return newList;
 	}
 
 	
@@ -170,6 +186,7 @@ public class FilterTasks {
 
 	private static void resetFilteredTask() {
 		filteredTask = StorageHandler.getAllTasks();
+		filteredTask = hideDeleted(filteredTask);
 	}
 
 	private static void filterTaskType(List<Task> tempList, String taskType) {
@@ -196,6 +213,7 @@ public class FilterTasks {
 		contextsList = new ArrayList<String>();
 		if (currentFilter.isEmpty()) {
 			filteredTask = StorageHandler.getAllTasks();
+			filteredTask = hideDeleted(filteredTask);
 			populateCategoryAndContext();
 		} else {
 			filteredTask = new ArrayList<Task>();
@@ -203,7 +221,9 @@ public class FilterTasks {
 
 			for (Task a : allTask) {
 				if (a.getDescription().equalsIgnoreCase(currentFilter)) {
-					filteredTask.add(a);
+				    if (!a.isDeleted()) {
+				        filteredTask.add(a);
+				    }
 				}
 			}
 
