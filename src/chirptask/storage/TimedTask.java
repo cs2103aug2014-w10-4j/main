@@ -10,10 +10,6 @@ public class TimedTask extends Task {
 	Calendar _startTime;
 	Calendar _endTime;
 
-	public TimedTask() {
-		super();
-	}
-
 	public TimedTask(int taskId, String description, Calendar startTime,
 			Calendar endTime) {
 		super(taskId, description, TASK_TIMED);

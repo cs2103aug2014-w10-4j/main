@@ -8,10 +8,6 @@ public class DeadlineTask extends Task {
     //@author A0111889W
 	Calendar _deadline;
 
-	public DeadlineTask() {
-		super();
-	}
-
 	public DeadlineTask(int taskId, String description, Calendar deadline) {
 		super(taskId, description, TASK_DEADLINE);
 		_deadline = deadline;

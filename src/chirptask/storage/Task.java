@@ -2,7 +2,6 @@ package chirptask.storage;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,35 +15,41 @@ public class Task implements Comparable<Task> {
     //@author A0111889W
 	private List<String> _contexts;
 	private List<String> _categories;
+	
 	private int _taskId;
+	
 	private String _description;
+    private String _eTag;
     private String _googleId;
 	private String _type;
+	
 	private boolean _isDone = false;
 	private boolean _isDeleted;
+	private boolean _isModified;
+	
 	private Calendar _cal = Calendar.getInstance();
 	
 	public Task() {
 		_contexts = new ArrayList<String>();
 		_categories = new ArrayList<String>();
+		_eTag = "";
 		_googleId = "";
         _type = TASK_FLOATING;
         _isDeleted = false;
+        _isModified = false;
 	}
 
 	public Task(int taskId, String description) {
 		this();
 		_taskId = taskId;
 		_description = description;
-        _isDeleted = false;
 	}
 	
-    public Task(int taskId, String description, String taskType) {
+    Task(int taskId, String description, String taskType) {
         this();
         _taskId = taskId;
         _description = description;
         _type = taskType;
-        _isDeleted = false;
     }
 
 	/*
@@ -74,6 +79,10 @@ public class Task implements Comparable<Task> {
 	public boolean isDone() {
 		return _isDone;
 	}
+
+    public void setDone(boolean isDone) {
+        _isDone = isDone;
+    }
 	
 	public boolean isDeleted() {
 	    return _isDeleted;
@@ -82,9 +91,21 @@ public class Task implements Comparable<Task> {
 	public void setDeleted(boolean isDeleted) {
 	    _isDeleted = isDeleted;
 	}
-
-	public void setDone(boolean isDone) {
-		_isDone = isDone;
+	
+	public boolean isModified() {
+	    return _isModified;
+	}
+	
+	public void setModified(boolean isModified) {
+	    _isModified = isModified;
+	}
+	
+	public String getETag() {
+	    return _eTag;
+	}
+	
+	public void setETag(String eTag) {
+	    _eTag = eTag;
 	}
 
 	public int getTaskId() {
