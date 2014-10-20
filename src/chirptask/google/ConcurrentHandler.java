@@ -51,28 +51,27 @@ class ConcurrentHandler {
             isModified = false;
             return isModified;
         }
-            String taskListId = TasksController.getTaskListId();
-            Task modifiedGoogleTask = TasksHandler.getTaskFromId(taskListId, googleId);
+        String taskListId = TasksController.getTaskListId();
+        Task modifiedGoogleTask = TasksHandler.getTaskFromId(taskListId,
+                googleId);
 
-            modifiedGoogleTask = GoogleController
-                                    .toggleTasksDone(modifiedGoogleTask, taskToModify);
-            modifiedGoogleTask = GoogleController
-                                    .updateTasksDescription(modifiedGoogleTask, taskToModify);
-            modifiedGoogleTask = GoogleController
-                                    .updateDueDate(modifiedGoogleTask, taskToModify);
-            modifiedGoogleTask = TasksController
-                                    .updateTask(modifiedGoogleTask);
-            
-            if (isNotNull(modifiedGoogleTask)) {
-                /*
-                 * Possibly used to overwrite googleId in local storage, eg.
-                 * change type from floating to timed. (GoogleTasks <->
-                 * GoogleCalendar)
-                 * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask,
-                 * taskToModify);
-                 */
-                isModified = true;
-            }
+        modifiedGoogleTask = GoogleController.toggleTasksDone(
+                modifiedGoogleTask, taskToModify);
+        modifiedGoogleTask = GoogleController.updateTasksDescription(
+                modifiedGoogleTask, taskToModify);
+        modifiedGoogleTask = GoogleController.updateDueDate(modifiedGoogleTask,
+                taskToModify);
+        modifiedGoogleTask = TasksController.updateTask(modifiedGoogleTask);
+
+        if (isNotNull(modifiedGoogleTask)) {
+            /*
+             * Possibly used to overwrite googleId in local storage, eg. change
+             * type from floating to timed. (GoogleTasks <-> GoogleCalendar)
+             * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask,
+             * taskToModify);
+             */
+            isModified = true;
+        }
 
         return isModified;
     }
@@ -80,14 +79,49 @@ class ConcurrentHandler {
     static void addGoogleIdToStorage(Task googleTask,
             chirptask.storage.Task taskToModify) {
         String googleId = getGoogleId(googleTask);
+
         chirptask.storage.Task modifiedTask = addGoogleIdToChirpTask(
                 taskToModify, googleId);
-        GoogleStorage.addGoogleIdToStorage(modifiedTask);
+        GoogleStorage.updateStorages(modifiedTask);
     }
 
     private static String getGoogleId(Task googleTask) {
         String googleId = googleTask.getId();
         return googleId;
+    }
+
+    static void addETagToStorage(Task googleTask,
+            chirptask.storage.Task taskToModify) {
+        String eTag = getETag(googleTask);
+
+        chirptask.storage.Task modifiedTask = addETagToChirpTask(
+                taskToModify,
+                eTag);
+
+        if (modifiedTask != null) {
+            GoogleStorage.updateStorages(modifiedTask);
+        }
+    }
+
+    static String getETag(Task googleTask) {
+        String eTag = "";
+        if (googleTask == null) {
+            return eTag;
+        }
+
+        eTag = googleTask.getEtag();
+
+        return eTag;
+    }
+
+    private static chirptask.storage.Task addETagToChirpTask(
+            chirptask.storage.Task taskToUpdate, String eTag) {
+        chirptask.storage.Task updatedTask = null;
+        if (eTag != null && taskToUpdate != null) {
+            taskToUpdate.setETag(eTag);
+            updatedTask = taskToUpdate;
+        }
+        return updatedTask;
     }
 
     /**
@@ -100,9 +134,9 @@ class ConcurrentHandler {
             return false;
         }
     }
-    
+
     static boolean modifyGoogleEvent(chirptask.storage.Task taskToModify)
-                                    throws UnknownHostException, IOException {
+            throws UnknownHostException, IOException {
         boolean isModified = false;
 
         // First check if Google ID exists
@@ -114,34 +148,38 @@ class ConcurrentHandler {
             return isModified;
         }
 
-            chirptask.storage.Task modifyTask = taskToModify;
-            
-            String newDescription = modifyTask.getDescription();
-            String calendarId = CalendarController.getCalendarId();
+        chirptask.storage.Task modifyTask = taskToModify;
 
-            Event modifiedGoogleEvent = CalendarHandler.getEventFromId(calendarId, googleId);
-            modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent, newDescription);
-            
-            if (taskToModify instanceof TimedTask) { //Try type casting
-                TimedTask modifyTimeTask = (TimedTask) modifyTask;
-                Date newStartTime = modifyTimeTask.getStartTime().getTime();
-                Date newEndTime = modifyTimeTask.getEndTime().getTime();
-                modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent, newStartTime);
-                modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent, newEndTime);
-            }
-            
-            modifiedGoogleEvent = CalendarHandler.updateEvent(calendarId, googleId, modifiedGoogleEvent);
+        String newDescription = modifyTask.getDescription();
+        String calendarId = CalendarController.getCalendarId();
 
-            if (isNotNull(modifiedGoogleEvent)) {
-                /*
-                 * Possibly used to overwrite googleId in local storage, eg.
-                 * change type from floating to timed. (GoogleTasks <->
-                 * GoogleCalendar)
-                 * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask,
-                 * taskToModify);
-                 */
-                isModified = true;
-            }
+        Event modifiedGoogleEvent = CalendarHandler.getEventFromId(calendarId,
+                googleId);
+        modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent,
+                newDescription);
+
+        if (taskToModify instanceof TimedTask) { // Try type casting
+            TimedTask modifyTimeTask = (TimedTask) modifyTask;
+            Date newStartTime = modifyTimeTask.getStartTime().getTime();
+            Date newEndTime = modifyTimeTask.getEndTime().getTime();
+            modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent,
+                    newStartTime);
+            modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent,
+                    newEndTime);
+        }
+
+        modifiedGoogleEvent = CalendarHandler.updateEvent(calendarId, googleId,
+                modifiedGoogleEvent);
+
+        if (isNotNull(modifiedGoogleEvent)) {
+            /*
+             * Possibly used to overwrite googleId in local storage, eg. change
+             * type from floating to timed. (GoogleTasks <-> GoogleCalendar)
+             * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask,
+             * taskToModify);
+             */
+            isModified = true;
+        }
 
         return isModified;
     }
@@ -150,18 +188,53 @@ class ConcurrentHandler {
      * static Event getGoogleEventFromId(String googleId) { return null; }
      */
 
-    static void addGoogleIdToStorage(Event googleTask,
+    static void addGoogleIdToStorage(Event googleEvent,
             chirptask.storage.Task taskToModify) {
-        String googleId = getGoogleId(googleTask);
+        String googleId = getGoogleId(googleEvent);
         chirptask.storage.Task modifiedTask = addGoogleIdToChirpTask(
                 taskToModify, googleId);
-        GoogleStorage.addGoogleIdToStorage(modifiedTask);
+        GoogleStorage.updateStorages(modifiedTask);
+    }
+    
+    static void addETagToStorage(Event googleEvent,
+            chirptask.storage.Task taskToModify) {
+        String eTag = getETag(googleEvent);
+
+        chirptask.storage.Task modifiedTask = addETagToChirpTask(
+                taskToModify,
+                eTag);
+
+        if (modifiedTask != null) {
+            GoogleStorage.updateStorages(modifiedTask);
+        }
     }
 
-    private static String getGoogleId(Event googleTask) {
-        String googleId = googleTask.getId();
+    static void modifyLocalStorage(chirptask.storage.Task taskToModify) {
+        if (taskToModify != null) {
+            GoogleStorage.updateStorages(taskToModify);
+        }
+    }
+
+    private static String getGoogleId(Event googleEvent) {
+        String googleId = "";
+        if (googleEvent == null) {
+            return googleId;
+        }
+        
+        googleId = googleEvent.getId();
+        
         return googleId;
+    }
+    
+    static String getETag(Event googleEvent) {
+        String eTag = "";
+        if (googleEvent == null) {
+            return eTag;
+        }
+
+        eTag = googleEvent.getEtag();
+
+        return eTag;
     }
 
 }
-

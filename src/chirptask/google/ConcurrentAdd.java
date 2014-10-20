@@ -58,9 +58,11 @@ class ConcurrentAdd implements Callable<Boolean> {
 
         if (ConcurrentHandler.isNotNull(addedGoogleTask)) {
             ConcurrentHandler.addGoogleIdToStorage(addedGoogleTask, _taskToAdd);
+            ConcurrentHandler.addETagToStorage(addedGoogleTask, _taskToAdd);
             isAdded = true;
         } else if (ConcurrentHandler.isNotNull(addedGoogleEvent)) {
             ConcurrentHandler.addGoogleIdToStorage(addedGoogleEvent, _taskToAdd);
+            ConcurrentHandler.addETagToStorage(addedGoogleEvent, _taskToAdd);
             isAdded = true;
         }
 

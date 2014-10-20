@@ -87,9 +87,11 @@ public class GoogleStorage implements Storage {
         StorageHandler.addGoogleStorageUponReady();
     }
     
-    public static void addGoogleIdToStorage(Task newTask) {
+    public static void updateStorages(Task newTask) {
         //Talk to storage handler to call add google id
-        StorageHandler.updateGoogleId(newTask);
+        if (StorageHandler.isStorageInit()) {
+            StorageHandler.updateStorages(newTask);
+        }
     }
     
     public void sync(List<Task> allTasks) {

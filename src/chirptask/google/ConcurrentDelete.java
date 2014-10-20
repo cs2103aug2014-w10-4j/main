@@ -30,6 +30,14 @@ public class ConcurrentDelete implements Callable<Boolean> {
 
         isDeleted = GoogleController.deleteTask(_taskToDelete);
 
+        /*
+         * Overwrites chirptask.storage.Task in the other storages
+         */
+        if (isDeleted) {
+            _taskToDelete.setDeleted(false); // Reset the isDeleted flag to false
+            ConcurrentHandler.modifyLocalStorage(_taskToDelete);
+        }
+
         return isDeleted;
     }
 }

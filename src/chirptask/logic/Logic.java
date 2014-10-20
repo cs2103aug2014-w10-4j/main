@@ -206,6 +206,7 @@ public class Logic {
 	private void processEdit(Action command, Task task) {
 		assert command != null && task != null;
 		boolean isSuccess;
+		task.setModified(true);
 		isSuccess = _storageHandler.modifyTask(task);
 		filterAndDisplay(command, isSuccess);
 	}
@@ -222,6 +223,7 @@ public class Logic {
 		assert command != null && task != null;
 		Task deletedTask;
 		boolean isSuccess;
+		task.setDeleted(true);
 		deletedTask = _storageHandler.deleteTask(task);
 		if (deletedTask == null) {
 			isSuccess = false;

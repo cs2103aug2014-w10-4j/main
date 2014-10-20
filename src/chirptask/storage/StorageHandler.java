@@ -136,7 +136,7 @@ public class StorageHandler {
         }
     }
 
-    static void updateGoogleId(Task modifiedTask) {
+    static void updateStorages(Task modifiedTask) {
         if (isStorageInit()) {
             if (_allTasks.contains(modifiedTask)) {
                 int indexOfTask = _allTasks.indexOf(modifiedTask);

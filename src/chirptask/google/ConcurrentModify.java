@@ -48,11 +48,11 @@ class ConcurrentModify implements Callable<Boolean> {
         }
 
         /*
-         * Code below is possibly used to overwrite googleId in local storage,
-         * eg. change type from floating to timed.
+         * Overwrites chirptask.storage.Task in the other storages
          */
         if (isModified) {
-            // TODO if implement modification of task type.
+            _taskToModify.setModified(false); // Reset the isModified Flag to false
+            ConcurrentHandler.modifyLocalStorage(_taskToModify);
         }
 
         return isModified;

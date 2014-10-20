@@ -509,7 +509,7 @@ public class GoogleController implements Runnable {
                                     throws UnknownHostException, IOException {
         if (allTasks != null) {
             Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
-
+            
             while (iterate.hasNext()) {
                 chirptask.storage.Task currTask = iterate.next();
                 String currGoogleId = currTask.getGoogleId();
@@ -533,6 +533,7 @@ public class GoogleController implements Runnable {
             CONCURRENT.close();
             try {
                 CONCURRENT.awaitTermination();
+                
             } catch (InterruptedException e) {
             }
         }
