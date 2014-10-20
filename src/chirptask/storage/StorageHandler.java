@@ -163,6 +163,7 @@ public class StorageHandler {
                     individualStorage.removeTask(modifiedTask);
                 }
                 // need to update GUI
+                
             } else {
                 if (_allTasks.contains(modifiedTask)) {
                     int indexOfTask = _allTasks.indexOf(modifiedTask);

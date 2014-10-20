@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
@@ -16,10 +17,6 @@ import com.google.api.services.calendar.model.Event;
 /**
  * CalendarController is the main controller that interacts with Google 
  * Calendar. It uses the Google Calendar v3 API to do such operations. 
- * CalendarController has a helper class, CalendarViewer.
- * 
- * CalendarViewer is a helper class that is often called to help perform 
- * retrieval of the Calendar's statuses/events/information etc.
  */
 public class CalendarController {
     private final String DEFAULT_CALENDAR = "ChirpTaskv0.1";
@@ -136,6 +133,11 @@ public class CalendarController {
         return _calendarId;
     }
     
+    List<Event> getEvents() throws UnknownHostException, IOException {
+        List<Event> events = CalendarHandler.retrieveEventsById(_calendarId);
+        return events;
+    }
+    
     Event addTimedTask(String taskTitle, Date startTime, Date endTime) 
                                 throws UnknownHostException, IOException {
         Event newTimedTask = CalendarHandler.createEvent(taskTitle);
@@ -150,15 +152,6 @@ public class CalendarController {
         String calendarId = getCalendarId();
         Event insertedEvent = CalendarHandler.insertToCalendar(calendarId, timedTask);
         return insertedEvent;
-    }
-    
-    
-
-    void showCalendars() throws UnknownHostException, IOException {
-        CalendarList calendarList = _calendarClient.calendarList().list()
-                .execute();
-        CalendarViewer.header("Show All Calendars");
-        CalendarViewer.display(calendarList);
     }
     
     boolean deleteEvent(String eventId) {

@@ -2,9 +2,12 @@ package chirptask.google;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.model.Events;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
@@ -68,6 +71,30 @@ public class CalendarHandler {
                                         .execute();
         return retrievedCalendar;
     }
+    
+    static List<Event> retrieveEventsById(String calendarId) throws 
+                                            UnknownHostException, IOException {
+        com.google.api.services.calendar.Calendar calendarClient = 
+                CalendarController.getCalendarClient();
+        
+        String pageToken = null;
+        List<Event> allEvents = new ArrayList<Event>();
+        
+        do {
+            Events retrievedEvents = calendarClient.events().list(calendarId).setPageToken(pageToken).execute();
+            List<Event> currentPageEvents = retrievedEvents.getItems();
+            
+            for (Event currentEvent : currentPageEvents) {
+                allEvents.add(currentEvent);
+            }
+            
+            pageToken = retrievedEvents.getNextPageToken();
+        } while (pageToken != null);
+        
+        return allEvents;
+    }
+    
+    
     
     //Methods related to Events
     static Event createEvent(String eventName) {
