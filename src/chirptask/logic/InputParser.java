@@ -332,6 +332,9 @@ public class InputParser {
 		String taskType = oldTask.getType(); // Assumes cannot change task type
 
 		String googleId = oldTask.getGoogleId();
+		String eTag = oldTask.getETag();
+		boolean isDeleted = oldTask.isDeleted();
+		boolean isModified = oldTask.isModified();
 
 		String editedDescription = editedTask.getDescription();
 		List<String> editedCategoryList = editedTask.getCategories();
@@ -379,6 +382,9 @@ public class InputParser {
 			newTask.setCategories(editedCategoryList);
 			newTask.setContexts(editedContextList);
 			newTask.setGoogleId(googleId);
+			newTask.setETag(eTag);
+			newTask.setDeleted(isDeleted);
+			newTask.setModified(isModified);
 		}
 
 		return newTask;

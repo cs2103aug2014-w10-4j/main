@@ -193,6 +193,10 @@ public class LocalStorage implements Storage {
 	 * @return the corresponding node
 	 */
 	private static Node generateTaskNode(Document doc, Task taskToAdd) {
+	    if (doc == null || taskToAdd == null) {
+	        return null;
+	    }
+	    
 		Element node = doc.createElement("task");
 		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
 		node.setAttribute("done", String.valueOf(taskToAdd.isDone()));
@@ -201,6 +205,12 @@ public class LocalStorage implements Storage {
 				taskToAdd.getDescription()));
 
 		node.appendChild(getElement(doc, "googleId", taskToAdd.getGoogleId()));
+		
+		node.appendChild(getElement(doc, "googleETag", taskToAdd.getETag()));
+		
+		node.appendChild(getElement(doc, "isDeleted", taskToAdd.isDeleted()+""));
+		
+		node.appendChild(getElement(doc, "isModified", taskToAdd.isModified()+""));
 
 		List<String> contexts = taskToAdd.getContexts();
 		if (contexts != null && !contexts.isEmpty()) {
@@ -375,7 +385,22 @@ public class LocalStorage implements Storage {
 				String typeTask = getValues("type", item).get(0);
 				String description = getValues("description", item).get(0);
 				String googleId = getValues("googleId", item).get(0);
+				String googleETag = getValues("googleETag", item).get(0);
 				String taskStatus = item.getAttribute("done");
+                String deleted = getValues("isDeleted", item).get(0);
+                String modified = getValues("isModified", item).get(0);
+                
+                boolean isDeleted = false;
+                boolean isModified = false;
+                
+                if (deleted != null) {
+                    isDeleted = Boolean.parseBoolean(deleted);
+                }
+                
+                if (modified != null) {
+                    isModified = Boolean.parseBoolean(modified);
+                }
+                
 				SimpleDateFormat dateFormatter = new SimpleDateFormat(
 						DATE_FORMAT);
 
@@ -400,6 +425,9 @@ public class LocalStorage implements Storage {
 				task.setContexts(getValues("contexts", item));
 				task.setCategories(getValues("categories", item));
 				task.setGoogleId(googleId);
+				task.setETag(googleETag);
+				task.setDeleted(isDeleted);
+				task.setModified(isModified);
 
 				// A0111930W
 				if (taskStatus.equalsIgnoreCase("true")) {

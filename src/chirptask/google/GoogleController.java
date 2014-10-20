@@ -517,6 +517,7 @@ public class GoogleController implements Runnable {
 
                 if (currGoogleId == null || "".equals(currGoogleId)) {
                     if (!isDeleted) {
+                        currTask.setModified(false);
                         add(currTask);
                     }
                 } else {
