@@ -88,6 +88,18 @@ public class GoogleStorage implements Storage {
         //Talk to storage handler to call add google id
         StorageHandler.updateGoogleId(newTask);
     }
+    
+    public void sync(List<Task> allTasks) {
+        if (allTasks != null) {
+            try {
+                _gController.sync(allTasks);
+            } catch (UnknownHostException unknownHostException) {
+                
+            } catch (IOException ioException) {
+                
+            }
+        }
+    }
 
     
 

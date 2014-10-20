@@ -64,6 +64,7 @@ public class StorageHandler {
     static void addGoogleStorageUponReady() {
         if (isStoragesListInit()) {
             _listOfStorages.add(googleStorage);
+            sync();
         }
     }
 
@@ -124,6 +125,17 @@ public class StorageHandler {
         }
     }
 
+    //@author A0111840W
+    public static void sync() {
+        if (isStorageInit()) {
+            GoogleStorage gStorage = (GoogleStorage) googleStorage;
+            List<Task> allTasks = getAllTasks();
+            if (allTasks != null) {
+                gStorage.sync(allTasks);
+            }
+        }
+    }
+
     static void updateGoogleId(Task modifiedTask) {
         if (isStorageInit()) {
             if (_allTasks.contains(modifiedTask)) {
@@ -136,7 +148,6 @@ public class StorageHandler {
         }
     }
 
-    //@author A0111840W
     static boolean isStorageInit() {
         boolean init = true;
         init = init && isStoragesListInit();

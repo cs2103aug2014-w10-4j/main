@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import chirptask.storage.GoogleStorage;
 
@@ -475,6 +477,28 @@ public class GoogleController implements Runnable {
             GoogleStorage.hasBeenInitialized();
         }
     }
+    
+    public void sync(List<chirptask.storage.Task> allTasks) throws 
+                                            UnknownHostException, IOException {
+        if (allTasks != null) {
+            syncPhaseOne(allTasks);
+        }
+    }
+    
+    private void syncPhaseOne(List<chirptask.storage.Task> allTasks) throws 
+                                            UnknownHostException, IOException {
+        if (allTasks != null) {
+            Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
+            while (iterate.hasNext()) {
+                chirptask.storage.Task currTask = iterate.next();
+                String currGoogleId = currTask.getGoogleId();
+                if (currGoogleId == null || "".equals(currGoogleId)) {
+                    add(currTask);
+                }
+            }
+        }
+    }
+    
 
 }
 
