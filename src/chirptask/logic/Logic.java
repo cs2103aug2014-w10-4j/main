@@ -36,18 +36,18 @@ public class Logic {
 		// Assuming there will always be GroupActions parse by InputParser every
 		// user input.
 		assert _parser.getActions() != null;
-		
-		if(_parser.getActions().getActionList().get(0).getCommandType()!=Settings.CommandType.UNDO){
+
+		if (_parser.getActions().getActionList().get(0).getCommandType() != Settings.CommandType.UNDO) {
 			setLastGroupAction(_parser.getActions());
 		}
-		
+
 		processGroupAction(_parser.getActions().getActionList());
 	}
 
 	public void processGroupAction(List<Action> list) {
 
 		for (Action a : list) {
-			//System.out.println("Hello");
+			// System.out.println("Hello");
 			executeAction(a);
 
 		}
@@ -143,17 +143,22 @@ public class Logic {
 	private void processUndo() {
 		GroupAction lastAction = getLastGroupAction();
 		GroupAction tempGroupAction = new GroupAction();
+		if (lastAction != null) {
+			for (Action action : lastAction.getActionList()) {
+				Action undoAction = action.undo();
+				undoAction.setUndo(action);
+				tempGroupAction.addAction(undoAction);
 
-		for (Action action : lastAction.getActionList()) {
-			Action undoAction = action.undo();
-			undoAction.setUndo(action);
-			tempGroupAction.addAction(undoAction);
+			}
+			setLastGroupAction(tempGroupAction);
+			lastAction = getLastGroupAction();
+			for (Action action : lastAction.getActionList()) {
+				executeAction(action);
+			}
 
-		}
-		setLastGroupAction(tempGroupAction);
-		lastAction = getLastGroupAction();
-		for (Action action : lastAction.getActionList()) {
-			executeAction(action);
+		}else{
+			//showstatus
+			DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING, _gui);
 		}
 	}
 
