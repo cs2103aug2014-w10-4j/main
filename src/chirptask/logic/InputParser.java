@@ -182,9 +182,18 @@ public class InputParser {
 					toReturn = toReturn.concat(s);
 				}
 			}
+			
 		} else {
 			toReturn = parameter;
 		}
+		if (toReturn.contains("by")) {
+			String[] deadline = toReturn.split("by");
+			toReturn = deadline[deadline.length - 1];
+		} else if (toReturn.contains("from")) {
+			String[] timed = toReturn.split("from");
+			toReturn = timed[timed.length - 1];
+		} 
+		
 		return toReturn;
 	}
 
