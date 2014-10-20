@@ -1,6 +1,5 @@
 package chirptask.logic;
 
-
 import java.util.List;
 
 import chirptask.common.Messages;
@@ -12,7 +11,7 @@ import chirptask.storage.Task;
 //@author A0111930W
 public class Logic {
 
-	private Action _lastAction;
+	private GroupAction _lastAction;
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private static MainGui _gui;
@@ -37,13 +36,20 @@ public class Logic {
 		// Assuming there will always be GroupActions parse by InputParser every
 		// user input.
 		assert _parser.getActions() != null;
+		
+		if(_parser.getActions().getActionList().get(0).getCommandType()!=Settings.CommandType.UNDO){
+			setLastGroupAction(_parser.getActions());
+		}
+		
 		processGroupAction(_parser.getActions().getActionList());
 	}
 
 	public void processGroupAction(List<Action> list) {
 
 		for (Action a : list) {
+			//System.out.println("Hello");
 			executeAction(a);
+
 		}
 	}
 
@@ -105,7 +111,8 @@ public class Logic {
 	}
 
 	private void logErrorCommand() {
-		StorageHandler.logError(String.format(Messages.LOG_MESSAGE_INVALID_COMMAND,
+		StorageHandler.logError(String.format(
+				Messages.LOG_MESSAGE_INVALID_COMMAND,
 				Messages.LOG_MESSAGE_ERROR));
 	}
 
@@ -134,10 +141,20 @@ public class Logic {
 	}
 
 	private void processUndo() {
-		Action lastAction = getLastAction();
-		Action undoAction = lastAction.undo();
-		undoAction.setUndo(lastAction);
-		executeAction(undoAction);
+		GroupAction lastAction = getLastGroupAction();
+		GroupAction tempGroupAction = new GroupAction();
+
+		for (Action action : lastAction.getActionList()) {
+			Action undoAction = action.undo();
+			undoAction.setUndo(action);
+			tempGroupAction.addAction(undoAction);
+
+		}
+		setLastGroupAction(tempGroupAction);
+		lastAction = getLastGroupAction();
+		for (Action action : lastAction.getActionList()) {
+			executeAction(action);
+		}
 	}
 
 	private void processEdit(Action command, Task task) {
@@ -151,7 +168,7 @@ public class Logic {
 	private void processDisplay(Action command, Task task) {
 		assert task != null;
 		clearUi();
-		FilterTasks.filter(task,_gui);
+		FilterTasks.filter(task, _gui);
 		_gui.setFilterText(task.getDescription());
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
@@ -177,17 +194,17 @@ public class Logic {
 		isSuccess = _storageHandler.addTask(task);
 		filterAndDisplay(command, isSuccess);
 	}
-	
-	public static void refresh(){
+
+	public static void refresh() {
 		clearUi();
 		FilterTasks.filter();
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
-	
+
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		assert command != null;
 		// set lastAction
-		this.setLastAction(command);
+
 		clearUi();
 		FilterTasks.filter();
 		showStatusToUser(command, isSuccess);
@@ -205,13 +222,12 @@ public class Logic {
 		}
 	}
 
-	public Action getLastAction() {
+	public GroupAction getLastGroupAction() {
 		return _lastAction;
 	}
 
-	public void setLastAction(Action lastAction) {
+	public void setLastGroupAction(GroupAction lastAction) {
 		this._lastAction = lastAction;
 	}
-
 
 }
