@@ -3,7 +3,6 @@ package chirptask.logic;
 
 import java.util.List;
 
-import chirptask.storage.EventLogger;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.gui.MainGui;

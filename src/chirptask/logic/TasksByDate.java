@@ -2,7 +2,6 @@ package chirptask.logic;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import chirptask.storage.Task;

@@ -10,7 +10,6 @@ import chirptask.common.Settings;
 import chirptask.common.Settings.CommandType;
 import chirptask.gui.MainGui;
 import chirptask.storage.DeadlineTask;
-import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 

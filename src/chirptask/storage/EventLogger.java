@@ -10,8 +10,9 @@ import java.util.Date;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 
+//@author A0111889W
 public class EventLogger implements IStorage {
-    // @author A0111889W
+
     private static PrintStream fileWriter;
     private static EventLogger instance = null;
 
@@ -23,8 +24,13 @@ public class EventLogger implements IStorage {
             e.printStackTrace();
         }
     }
-    
-    //allows to setStream to System.out for testing and other purposes.
+
+    /**
+     * Set a printstream to the fileWriter variable, allowing printing of logs
+     * to other output streams like system.out
+     * 
+     * @param output
+     */
     public static void setStream(PrintStream output) {
         fileWriter = output;
     }

@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.LocalStorage;
-import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 

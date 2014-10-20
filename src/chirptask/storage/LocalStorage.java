@@ -30,8 +30,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import chirptask.common.Messages;
-
 /**
  * This class handles the tasks list in XML format. The XML file it manages
  * contains tasks id, description, contexts, categories and deadline/start time

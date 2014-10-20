@@ -7,10 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.model.Events;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.Events;
 
 public class CalendarHandler {
     private static final String DEFAULT_TIME_ZONE = "Asia/Singapore";

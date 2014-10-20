@@ -1,19 +1,16 @@
 package chirptask.logic;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import chirptask.common.Messages;
-import chirptask.common.Settings;
 import chirptask.common.Settings.StatusType;
 import chirptask.gui.MainGui;
-import chirptask.storage.EventLogger;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
-
-import java.util.Calendar;
 
 //@author A0111930W
 public class FilterTasks {
