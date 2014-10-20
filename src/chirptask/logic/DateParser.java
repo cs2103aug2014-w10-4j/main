@@ -16,17 +16,24 @@ import com.joestelmach.natty.Parser;
 public class DateParser {
 	private List<Calendar> list;
 	private Parser parse;
+	
+	private final long millisecondADay = 24*60*60*1000;
+	
 	public DateParser() {
 		parse = new Parser();
+		parse.parse("21 oct");
 	}
 
 	public List<Calendar> parseDate(String toParse) {
 		list = new ArrayList<Calendar>();
+		Date today = new Date();
 		List<DateGroup> dateGroup = parse.parse(toParse);
+		Date today2 = new Date();
+		System.out.printf("%d", today.getTime() - today2.getTime());
 		for (int i = 0; i < dateGroup.size(); i++) {
 			List<Date> dates = dateGroup.get(i).getDates();
 			for (int j = 0; j < dates.size(); j++) {
-				Calendar cal = convertToCalendar(dates.get(j));
+				Calendar cal = convertToCalendar(dates.get(j), today);
 				list.add(cal);
 			}
 		}
@@ -34,9 +41,19 @@ public class DateParser {
 		return list;
 	}
 
-	private Calendar convertToCalendar(Date date) {
+	private Calendar convertToCalendar(Date date, Date today) {
+		boolean isNotSet = false;
+		//assume the chance of user inputting deadline exactly multiple of 
+		//millisecondADay/20 after the current time negligible
+		if (((date.getTime() - today.getTime())/50) % (millisecondADay/50) == 0) {
+			isNotSet = true;
+		}
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
+		if (isNotSet) {
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+		}
 		return cal;
 	}
 }

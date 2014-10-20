@@ -206,7 +206,9 @@ public class InputParser {
 		} else if (toReturn.contains("from")) {
 			String[] timed = toReturn.split("from");
 			toReturn = timed[timed.length - 1];
-		} 
+		} else {
+			toReturn = "";
+		}
 		
 		return toReturn;
 	}
@@ -342,6 +344,9 @@ public class InputParser {
 		String taskType = oldTask.getType(); // Assumes cannot change task type
 
 		String googleId = oldTask.getGoogleId();
+		String eTag = oldTask.getETag();
+		boolean isDeleted = oldTask.isDeleted();
+		boolean isModified = oldTask.isModified();
 
 		String editedDescription = editedTask.getDescription();
 		List<String> editedCategoryList = editedTask.getCategories();
@@ -389,6 +394,9 @@ public class InputParser {
 			newTask.setCategories(editedCategoryList);
 			newTask.setContexts(editedContextList);
 			newTask.setGoogleId(googleId);
+			newTask.setETag(eTag);
+			newTask.setDeleted(isDeleted);
+			newTask.setModified(isModified);
 		}
 
 		return newTask;
@@ -396,10 +404,10 @@ public class InputParser {
 
 	private Task getTaskFromString(String parameter) {
 		Task newTask = new Task();
-
+		newTask.setDescription(parameter);
+		
 		parameter = parameter.trim();
 		String[] taskDesc = parameter.split("@|#", 2);
-		newTask.setDescription(parameter);
 
 		if (taskDesc.length > 0) {
 			List<String> contexts = new ArrayList<String>();
@@ -439,7 +447,7 @@ public class InputParser {
 		int normalizedId = id - USER_INPUT_TO_ARRAYLIST;
 		return normalizedId;
 	}
-
+	//@author A0113022
 	private String getCommandTypeString() {
 		return _userInput.trim().split("\\s+")[0].toLowerCase();
 	}
