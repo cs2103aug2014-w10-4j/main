@@ -26,6 +26,7 @@ public class GoogleStorage implements Storage {
             isAdded = true;
         } catch (UnknownHostException unknownHost) {
             //TODO for no access to Google services
+            // retry add with sleep timer
         } catch (IOException ioError) {
             
         }
@@ -40,6 +41,7 @@ public class GoogleStorage implements Storage {
             isRemoved = true;
         } catch (UnknownHostException unknownHostException) {
             //TODO for no access to Google services
+            // retry remove with sleep timer
         } catch (IOException ioException) {
             
         }
@@ -59,6 +61,7 @@ public class GoogleStorage implements Storage {
             isModified = true;
         } catch (UnknownHostException unknownHostException) {
             //TODO for no access to Google services
+            // retry modify with sleep timer
         } catch (IOException ioException) {
             
         }
@@ -77,7 +80,7 @@ public class GoogleStorage implements Storage {
 
     @Override
     public void close() {
-
+        _gController.close();
     }
     
     public static void hasBeenInitialized() {
@@ -94,7 +97,7 @@ public class GoogleStorage implements Storage {
             try {
                 _gController.sync(allTasks);
             } catch (UnknownHostException unknownHostException) {
-                
+                // retry sync with sleep timer
             } catch (IOException ioException) {
                 
             }

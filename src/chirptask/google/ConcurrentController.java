@@ -4,6 +4,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 class ConcurrentController {
     private ExecutorService googleExecutor;
@@ -28,5 +29,9 @@ class ConcurrentController {
     }
     public void close() {
         googleExecutor.shutdown();
+    }
+    
+    public void awaitTermination() throws InterruptedException {
+        googleExecutor.awaitTermination(180, TimeUnit.SECONDS);
     }
 }

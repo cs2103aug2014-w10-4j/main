@@ -132,8 +132,6 @@ public class GoogleController implements Runnable {
        if (isGoogleLoaded()) {
            ConcurrentAdd addTask = new ConcurrentAdd(taskToAdd);
            CONCURRENT.addToExecutor(addTask);
-           
-           CONCURRENT.close(); //Should be called when application exits to prevent leakage
        }
     }
    
@@ -143,8 +141,6 @@ public class GoogleController implements Runnable {
             ConcurrentModify modifyTask = 
                     new ConcurrentModify(taskToModify);
             CONCURRENT.addToExecutor(modifyTask);
-
-            CONCURRENT.close(); //Should be called when application exits to prevent leakage
         }
     }
     
@@ -154,9 +150,11 @@ public class GoogleController implements Runnable {
             ConcurrentDelete deleteTask = 
                     new ConcurrentDelete(taskToRemove);
             CONCURRENT.addToExecutor(deleteTask);
-
-            CONCURRENT.close(); //Should be called when application exits to prevent leakage
         }
+    }
+    
+    public void close() {
+        CONCURRENT.close();
     }
  
 
@@ -481,7 +479,8 @@ public class GoogleController implements Runnable {
     public void sync(List<chirptask.storage.Task> allTasks) throws 
                                             UnknownHostException, IOException {
         if (allTasks != null) {
-            syncPhaseOne(allTasks);
+            syncPhaseOne(allTasks); //Local tasks without Google ID
+            syncPhaseTwo(allTasks); //Local tasks that are deleted locally will be deleted on Google
         }
     }
     
@@ -489,12 +488,43 @@ public class GoogleController implements Runnable {
                                             UnknownHostException, IOException {
         if (allTasks != null) {
             Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
+            
             while (iterate.hasNext()) {
                 chirptask.storage.Task currTask = iterate.next();
                 String currGoogleId = currTask.getGoogleId();
+                
                 if (currGoogleId == null || "".equals(currGoogleId)) {
                     add(currTask);
                 }
+            }
+            
+            CONCURRENT.close();
+            try {
+                CONCURRENT.awaitTermination();
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+    
+    private void syncPhaseTwo(List<chirptask.storage.Task> allTasks) throws 
+                                            UnknownHostException, IOException {
+        if (allTasks != null) {
+            Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
+            
+            while (iterate.hasNext()) {
+                chirptask.storage.Task currTask = iterate.next();
+                String currGoogleId = currTask.getGoogleId();
+                //boolean isDeleted = currTask.getDeleted();
+                
+                if (currGoogleId == null || "".equals(currGoogleId)) {
+                    removeTask(currTask);
+                }
+            }
+            
+            CONCURRENT.close();
+            try {
+                CONCURRENT.awaitTermination();
+            } catch (InterruptedException e) {
             }
         }
     }
