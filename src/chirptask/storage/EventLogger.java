@@ -14,7 +14,7 @@ import java.util.Date;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 
-public class EventLogger implements Storage {
+public class EventLogger implements IStorage {
     // @author A0111889W
     private static PrintStream fileWriter;
     private static EventLogger instance = null;

@@ -8,7 +8,7 @@ import chirptask.google.GoogleController;
 
 //For every action, return true, google service is up
 //Return false when google service is down
-public class GoogleStorage implements Storage {
+public class GoogleStorage implements IStorage {
     private static GoogleController _gController;
 
     public GoogleStorage() {
