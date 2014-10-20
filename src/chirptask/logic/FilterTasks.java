@@ -23,15 +23,18 @@ public class FilterTasks {
 	private static List<String> contextsList;
 	private static String currentFilter = "";
 	private static final int PARAM_FILTER = 1;
+
 	private static EventLogger log = new EventLogger();
+
 	static void filter(Task T, MainGui gui) {
+
 		currentFilter = T.getDescription();
 
 		List<Task> allTask = StorageHandler.getAllTasks();
 		// check 1st String to determine the type of filter
 
 		if (currentFilter.isEmpty()) {
-			
+
 			filteredTask = StorageHandler.getAllTasks();
 			filteredTask = hideDeleted(filteredTask);
 			DisplayView.showStatusToUser(StatusType.MESSAGE, gui, "");
@@ -45,22 +48,21 @@ public class FilterTasks {
 			populateContext(task);
 		}
 	}
-	
+
 	static List<Task> hideDeleted(List<Task> taskList) {
-	    List<Task> newList = new ArrayList<Task>();
-	    Iterator<Task> tasks = taskList.iterator();
-	    
-	    while (tasks.hasNext()) {
-	        Task currTask = tasks.next();
-	        if (!currTask.isDeleted()) {
-	            newList.add(currTask);
-	        }
-	    }
-	    
-	    return newList;
+		List<Task> newList = new ArrayList<Task>();
+		Iterator<Task> tasks = taskList.iterator();
+
+		while (tasks.hasNext()) {
+			Task currTask = tasks.next();
+			if (!currTask.isDeleted()) {
+				newList.add(currTask);
+			}
+		}
+
+		return newList;
 	}
 
-	
 	private static void processFilter(String filters, MainGui gui) {
 		String[] param = filters.split("\\s+");
 		List<Task> templist = new CopyOnWriteArrayList<Task>();
@@ -89,15 +91,19 @@ public class FilterTasks {
 			case "/date":
 				// Assuming input is 23/10
 				try {
-					Calendar filterdate = processFilterDateParam(param[i+1]);
+					Calendar filterdate = processFilterDateParam(param[i + 1]);
 					filterTaskByDate(templist, filterdate);
-					DisplayView.showStatusToUser(StatusType.MESSAGE, gui,param[i+1] );
-				}catch (ArrayIndexOutOfBoundsException e){
-					//log down invalid input
-					log.logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
+					DisplayView.showStatusToUser(StatusType.MESSAGE, gui,
+							param[i + 1]);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					// log down invalid input
+
+					StorageHandler
+							.logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
 					DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
 					templist = new ArrayList<Task>(StorageHandler.getAllTasks());
 					break;
+
 				}
 				i++;
 				break;
@@ -117,8 +123,8 @@ public class FilterTasks {
 		String[] temp = filter.split("/");
 		Calendar filterdate = Calendar.getInstance();
 		filterdate.set(filterdate.get(Calendar.YEAR),
-				Integer.parseInt(temp[0])-1, Integer.parseInt(temp[1]));
-		
+				Integer.parseInt(temp[0]) - 1, Integer.parseInt(temp[1]));
+
 		return filterdate;
 	}
 
@@ -130,24 +136,27 @@ public class FilterTasks {
 			populateDateList(tempList, filterdate);
 		}
 	}
+
 	/**
 	 * @author A0111930W
 	 * @param tempList
 	 * @param filterdate
 	 * 
-	 * This method will check the filter date with the list of fliteredtask if the filter date is after and equals to the Task date
-	 * add to the list.
+	 *            This method will check the filter date with the list of
+	 *            fliteredtask if the filter date is after and equals to the
+	 *            Task date add to the list.
 	 * 
 	 */
-	
+
 	private static void populateDateList(List<Task> tempList,
 			Calendar filterdate) {
 		for (Task T : filteredTask) {
-			//System.out.println(T.getDate().get(Calendar.DATE)+"/"+T.getDate().get(Calendar.MONTH));
-			//>= 0 means the current calendar is after or equals to the Task calendar
+			// System.out.println(T.getDate().get(Calendar.DATE)+"/"+T.getDate().get(Calendar.MONTH));
+			// >= 0 means the current calendar is after or equals to the Task
+			// calendar
 			if (filterdate.compareTo(T.getDate()) >= 0) {
-				//System.out.println(filterdate.get(Calendar.DATE));
-				tempList.add(T);		
+				// System.out.println(filterdate.get(Calendar.DATE));
+				tempList.add(T);
 			}
 		}
 
@@ -228,9 +237,9 @@ public class FilterTasks {
 
 			for (Task a : allTask) {
 				if (a.getDescription().equalsIgnoreCase(currentFilter)) {
-				    if (!a.isDeleted()) {
-				        filteredTask.add(a);
-				    }
+					if (!a.isDeleted()) {
+						filteredTask.add(a);
+					}
 				}
 			}
 

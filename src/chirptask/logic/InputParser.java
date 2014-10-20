@@ -406,11 +406,11 @@ public class InputParser {
 			for (int i = 0; i < word.length; i++) {
 				char firstChar = word[i].charAt(0);
 
-				if (firstChar == Settings.CONTEXT_STRING
+				if (firstChar == Settings.CONTEXT_CHAR
 						&& word[i].length() > 1) {
 					contexts.add(word[i].substring(1));
 				}
-				if (firstChar == Settings.CATEGORY_STRING
+				if (firstChar == Settings.CATEGORY_CHAR
 						&& word[i].length() > 1) {
 					categories.add(word[i].substring(1));
 				}

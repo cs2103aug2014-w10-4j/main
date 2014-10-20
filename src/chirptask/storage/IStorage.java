@@ -2,7 +2,7 @@ package chirptask.storage;
 
 import java.util.List;
 
-public interface Storage {
+public interface IStorage {
     //@author A0111889W
     boolean storeNewTask(Task T);
     

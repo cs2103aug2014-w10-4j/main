@@ -17,7 +17,6 @@ public class Logic {
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private MainGui _gui;
-	private EventLogger _logger;
 
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
@@ -25,7 +24,6 @@ public class Logic {
 		// _storageHandler.initCloudStorage();
 		_parser = new InputParser();
 		_gui = gui;
-		_logger = new EventLogger();
 		FilterTasks.filter();
 		DisplayView.updateTaskView(_gui);
 	}
@@ -108,7 +106,7 @@ public class Logic {
 	}
 
 	private void logErrorCommand() {
-		_logger.logError(String.format(Messages.LOG_MESSAGE_INVALID_COMMAND,
+		StorageHandler.logError(String.format(Messages.LOG_MESSAGE_INVALID_COMMAND,
 				Messages.LOG_MESSAGE_ERROR));
 	}
 
@@ -209,5 +207,6 @@ public class Logic {
 	public void setLastAction(Action lastAction) {
 		this._lastAction = lastAction;
 	}
+
 
 }
