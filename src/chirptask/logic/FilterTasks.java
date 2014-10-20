@@ -24,8 +24,6 @@ public class FilterTasks {
 	private static String currentFilter = "";
 	private static final int PARAM_FILTER = 1;
 
-	private static EventLogger log = new EventLogger();
-
 	static void filter(Task T, MainGui gui) {
 
 		currentFilter = T.getDescription();
