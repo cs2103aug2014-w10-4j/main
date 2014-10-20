@@ -133,7 +133,7 @@ public class StorageHandler {
     }
 
     //@author A0111840W
-    public static void sync() {
+    private static void sync() {
         if (isStorageInit()) {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
             List<Task> allTasks = getAllTasks();

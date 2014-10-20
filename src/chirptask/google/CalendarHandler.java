@@ -81,6 +81,11 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    static Event setDescription(Event eventToSet, String eventDescription) {
+        Event updatedEvent = eventToSet.setDescription(eventDescription);
+        return updatedEvent;
+    }
+    
     static Event setStart(Event eventToSet, Date startTime) {
         EventDateTime eventStartTime = new EventDateTime();
         DateTime googleDateTime = DateTimeHandler.getDateTime(startTime);
