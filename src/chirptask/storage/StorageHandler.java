@@ -107,7 +107,10 @@ public class StorageHandler {
     //@author A0111889W
     public synchronized boolean addTask(Task addedTask) {
         boolean isAdded = false;
+        
+        addedTask.setDeleted(false);
         _allTasks.add(addedTask);
+        
         for (IStorage individualStorage : _listOfStorages) {
             individualStorage.storeNewTask(addedTask);
         }
