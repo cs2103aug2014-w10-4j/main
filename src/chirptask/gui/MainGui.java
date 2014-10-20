@@ -92,7 +92,7 @@ public class MainGui extends Application {
 
         prepareScene(primaryStage, border, mainDisplay, trendingList);
         primaryStage.show();
-
+        
         _logic = new Logic(this);
     }
 
@@ -418,7 +418,7 @@ public class MainGui extends Application {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                //System.out.println(((Text) event.getSource()).getText());
+                // System.out.println(((Text) event.getSource()).getText());
             }
         };
     }
@@ -427,7 +427,7 @@ public class MainGui extends Application {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                //System.out.println(((Text) event.getSource()).getText());
+                // System.out.println(((Text) event.getSource()).getText());
             }
         };
     }
@@ -512,7 +512,7 @@ public class MainGui extends Application {
 
     public void addContextIntoList(String Context) {
         assert !Context.isEmpty();
-        Text contextText = new Text(Settings.CONTEXT_STRING + Context);
+        Text contextText = new Text(Settings.CONTEXT_CHAR + Context);
         contextText.getStyleClass().add("context-text");
         contextText.setOnMouseClicked(clickOnContext());
         _contextList.getChildren().add(contextText);
@@ -520,7 +520,7 @@ public class MainGui extends Application {
 
     public void addCategoryIntoList(String Category) {
         assert !Category.isEmpty();
-        Text categoryText = new Text(Settings.CATEGORY_STRING + Category);
+        Text categoryText = new Text(Settings.CATEGORY_CHAR + Category);
         categoryText.getStyleClass().add("category-text");
         categoryText.setOnMouseClicked(clickOnCategory());
         _categoryList.getChildren().add(categoryText);
@@ -555,12 +555,12 @@ public class MainGui extends Application {
             }
 
             bufferText = new Text(descSb.substring(0, index));
-            
-            if (descSb.charAt(0) == Settings.CONTEXT_STRING) {
+
+            if (descSb.charAt(0) == Settings.CONTEXT_CHAR) {
                 // Context
                 bufferText.getStyleClass().add("context-text");
                 bufferText.setOnMouseClicked(clickOnContext());
-            } else if (descSb.charAt(0) == Settings.CATEGORY_STRING) {
+            } else if (descSb.charAt(0) == Settings.CATEGORY_CHAR) {
                 // Category
                 bufferText.getStyleClass().add("category-text");
                 bufferText.setOnMouseClicked(clickOnCategory());
