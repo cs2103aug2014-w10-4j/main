@@ -10,7 +10,7 @@ public class StorageHandler {
     private static List<Storage> _listOfStorages = new ArrayList<Storage>();
     private static Storage localStorage;
     private static Storage googleStorage;
-    public static Storage eventStorage;
+    private static Storage eventStorage;
 
     public StorageHandler() {
         initStorages();
@@ -50,7 +50,7 @@ public class StorageHandler {
 
     private void addEventStorage() {
         if (!isEventStorageInit()) {
-            eventStorage = new EventLogger();
+            eventStorage = EventLogger.getInstance();
             _listOfStorages.add(eventStorage);
         }
     }
@@ -76,14 +76,19 @@ public class StorageHandler {
         _allTasks = allTasks;
     }
 
-    // @author A0111889W
+    //@author A0111889W
+    public synchronized static void logError(String error){
+        EventLogger.getInstance().logError(error);
+    }
+    
+    //@author A0111889W
     public void closeStorages() {
         for (Storage individualStorage : _listOfStorages) {
             individualStorage.close();
         }
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public synchronized boolean modifyTask(Task modifiedTask) {
         boolean isModified = false;
         if (_allTasks.contains(modifiedTask)) {
@@ -99,7 +104,7 @@ public class StorageHandler {
         return isModified;
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public synchronized boolean addTask(Task addedTask) {
         boolean isAdded = false;
         _allTasks.add(addedTask);
@@ -110,7 +115,7 @@ public class StorageHandler {
         return isAdded;
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public synchronized Task deleteTask(Task deletedTask) {
         boolean isDeleted = false;
         

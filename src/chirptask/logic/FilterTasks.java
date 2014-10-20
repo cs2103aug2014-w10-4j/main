@@ -21,7 +21,6 @@ public class FilterTasks {
 	private static List<String> contextsList;
 	private static String currentFilter = "";
 	private static final int PARAM_FILTER = 1;
-	private static EventLogger log = new EventLogger();
 	static void filter(Task T) {
 		currentFilter = T.getDescription();
 
@@ -89,8 +88,7 @@ public class FilterTasks {
 					filterTaskByDate(templist, filterdate);
 				}catch (ArrayIndexOutOfBoundsException e){
 					//log down invalid input
-					log.logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
-					
+				    StorageHandler.logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
 				}
 				i++;
 				break;
