@@ -15,7 +15,6 @@ public class EventLogger implements IStorage {
     private static PrintStream fileWriter;
     private static EventLogger instance = null;
 
-    // Suggestion: Convert to output stream instead
     private EventLogger() {
         try {
             fileWriter = new PrintStream(new BufferedOutputStream(
@@ -23,6 +22,11 @@ public class EventLogger implements IStorage {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    //allows to setStream to System.out for testing and other purposes.
+    public static void setStream(PrintStream output) {
+        fileWriter = output;
     }
 
     public static EventLogger getInstance() {
@@ -40,10 +44,9 @@ public class EventLogger implements IStorage {
     @Override
     public boolean storeNewTask(Task T) {
         try {
-            fileWriter
-                    .println(String.format(Messages.LOG_MESSAGE_ADD_TASK,
-                            new Date(), T.getDate().getTime(), T.getTaskId(),
-                            T.getDescription()));
+            fileWriter.println(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+                    new Date(), T.getDate().getTime(), T.getTaskId(),
+                    T.getDescription()));
             fileWriter.flush();
             return true;
         } catch (Exception e) {
@@ -54,10 +57,9 @@ public class EventLogger implements IStorage {
     @Override
     public Task removeTask(Task T) {
         try {
-            fileWriter
-                    .println(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
-                            new Date(), T.getDate().getTime(), T.getTaskId(),
-                            T.getDescription()));
+            fileWriter.println(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+                    new Date(), T.getDate().getTime(), T.getTaskId(),
+                    T.getDescription()));
             fileWriter.flush();
             return T;
         } catch (Exception e) {
@@ -68,10 +70,9 @@ public class EventLogger implements IStorage {
     @Override
     public boolean modifyTask(Task T) {
         try {
-            fileWriter
-                    .println(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
-                            new Date(), T.getDate().getTime(), T.getTaskId(),
-                            T.getDescription()));
+            fileWriter.println(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+                    new Date(), T.getDate().getTime(), T.getTaskId(),
+                    T.getDescription()));
             fileWriter.flush();
             return true;
         } catch (Exception e) {
