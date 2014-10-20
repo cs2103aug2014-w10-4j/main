@@ -248,9 +248,9 @@ public class DisplayView {
 			String filter) {
 		if (logMessageError == Messages.LOG_MESSAGE_ERROR) {
 			gui.setError(String.format(logMessageInvalidCommand));
-		}
-		else{
-			gui.setStatus(String.format(logMessageInvalidCommand, logMessageError, filter));
+		} else {
+			gui.setStatus(String.format(logMessageInvalidCommand,
+					logMessageError, filter));
 		}
 	}
 

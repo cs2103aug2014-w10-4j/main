@@ -16,7 +16,7 @@ public class Logic {
 	private Action _lastAction;
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
-	private MainGui _gui;
+	private static MainGui _gui;
 
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
@@ -28,7 +28,7 @@ public class Logic {
 		DisplayView.updateTaskView(_gui);
 	}
 
-	private void clearUi() {
+	private static void clearUi() {
 		_gui.clearTrendingList();
 		_gui.clearTaskView();
 	}
@@ -178,7 +178,13 @@ public class Logic {
 		isSuccess = _storageHandler.addTask(task);
 		filterAndDisplay(command, isSuccess);
 	}
-
+	
+	public static void refresh(){
+		clearUi();
+		FilterTasks.filter();
+		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+	}
+	
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		assert command != null;
 		// set lastAction

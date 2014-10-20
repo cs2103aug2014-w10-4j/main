@@ -4,9 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class TimedTask extends Task {
-    private static final String TASK_TIMED = "timedtask";
-    
-    //@author A0111889W
+	private static final String TASK_TIMED = "timedtask";
+
+	// @author A0111889W
 	Calendar _startTime;
 	Calendar _endTime;
 
@@ -16,9 +16,9 @@ public class TimedTask extends Task {
 		_startTime = startTime;
 		_endTime = endTime;
 	}
-	
+
 	public Calendar getDate() {
-	    return getStartTime();
+		return getStartTime();
 	}
 
 	public Calendar getStartTime() {
