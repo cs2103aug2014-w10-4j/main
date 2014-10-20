@@ -1,8 +1,6 @@
 package chirptask.logic;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+
 import java.util.List;
 
 import chirptask.storage.EventLogger;
@@ -14,22 +12,17 @@ import chirptask.storage.Task;
 
 //@author A0111930W
 public class Logic {
-	private static final String MESSAGE_NEW_COMMAND = "command: ";
-	private static final int ERROR_OPENING_STREAM = 57;
 
 	private Action _lastAction;
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private MainGui _gui;
 	private EventLogger _logger;
-	// For working ChirpTask
-	private BufferedReader commandBufferReader = new BufferedReader(
-			new InputStreamReader(System.in));
 
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
 		// This will enable auto login uncomment this to allow auto login
-		//_storageHandler.initCloudStorage();
+		// _storageHandler.initCloudStorage();
 		_parser = new InputParser();
 		_gui = gui;
 		_logger = new EventLogger();
@@ -158,7 +151,7 @@ public class Logic {
 		filterAndDisplay(command, isSuccess);
 	}
 
-	private void processDisplay(Action command ,Task task) {
+	private void processDisplay(Action command, Task task) {
 		assert task != null;
 		clearUi();
 		FilterTasks.filter(task);
