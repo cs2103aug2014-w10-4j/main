@@ -28,65 +28,13 @@ public class Logic {
 
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
+		// This will enable auto login
+		_storageHandler.initCloudStorage();
 		_parser = new InputParser();
 		_gui = gui;
 		_logger = new EventLogger();
 		FilterTasks.filter();
 		DisplayView.updateTaskView(_gui);
-	}
-
-	public Logic() {
-
-		_storageHandler = new StorageHandler();
-		_parser = new InputParser();
-		FilterTasks.filter();
-
-		// runUntilExitCommand(); //Temporary CLI code before full integration
-		// with GUI
-		// lastAction = new Action();
-
-	}
-
-	/**
-	 * Temporary CLI code before full integration with GUI
-	 */
-	private void runUntilExitCommand() {
-		while (true) {
-			issueNewCommandStatement();
-			String userInput = waitForUserCommand();
-			retrieveInputFromUI(userInput);
-		}
-	}
-
-	private void issueNewCommandStatement() {
-		displayToUser(MESSAGE_NEW_COMMAND);
-	}
-
-	private String waitForUserCommand() {
-		String userCommand = getUserCommand();
-		return userCommand;
-	}
-
-	private void displayToUser(String messageToDisplay) {
-		System.out.print(messageToDisplay);
-	}
-
-	private String getUserCommand() {
-		try {
-			String userInputCommand = commandBufferReader.readLine();
-			return userInputCommand;
-		} catch (IOException ioAccessError) {
-			exitChirpTask(ERROR_OPENING_STREAM);
-		}
-		return "INVALID";
-	}
-
-	/**
-	 * End temporary code
-	 */
-
-	private void exitChirpTask(int typeOfExit) {
-		System.exit(typeOfExit);
 	}
 
 	private void clearUi() {
