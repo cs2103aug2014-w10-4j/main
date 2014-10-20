@@ -1,5 +1,6 @@
 package chirptask.gui;
 
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -22,6 +23,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -78,6 +81,7 @@ public class MainGui extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
+
         BorderPane border = new BorderPane();
 
         BorderPane headerBar = generateHeaderBar();
@@ -91,7 +95,7 @@ public class MainGui extends Application {
 
         prepareScene(primaryStage, border, mainDisplay, trendingList);
         primaryStage.show();
-        
+
         _logic = new Logic(this);
     }
 
@@ -109,6 +113,8 @@ public class MainGui extends Application {
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setTitle(Messages.TITLE_SOFTWARE);
+
+        primaryStage.getIcons().add(new Image("file:chirptask_clear.png"));
 
         // scroll bar hack to beautify scroll bar
         makeScrollFadeable(mainDisplay.lookup(".address > .scroll-pane"));
@@ -134,6 +140,13 @@ public class MainGui extends Application {
      *            the command line arguments
      */
     public static void main(String[] args) {
+
+        com.apple.eawt.Application application = com.apple.eawt.Application
+                .getApplication();
+        java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
+                "chirptask_clear.png");
+        application.setDockIconImage(image);
+
         launch(args);
     }
 
@@ -148,6 +161,8 @@ public class MainGui extends Application {
 
         // Text settingsButton = new Text(Messages.TITLE_SETTINGS);
         // settingsButton.getStyleClass().add("header-title");
+        // ImageView imgView = new ImageView(new
+        // Image("file:chirptask_clear.png"));
 
         headerBar.setLeft(sceneTitle);
         // headerBar.setRight(settingsButton);
