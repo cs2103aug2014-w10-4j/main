@@ -84,7 +84,7 @@ public class StorageHandler {
     }
 
     // @author A0111889W
-    public boolean modifyTask(Task modifiedTask) {
+    public synchronized boolean modifyTask(Task modifiedTask) {
         boolean isModified = false;
         if (_allTasks.contains(modifiedTask)) {
             int indexOfTask = _allTasks.indexOf(modifiedTask);
@@ -100,7 +100,7 @@ public class StorageHandler {
     }
 
     // @author A0111889W
-    public boolean addTask(Task addedTask) {
+    public synchronized boolean addTask(Task addedTask) {
         boolean isAdded = false;
         _allTasks.add(addedTask);
         for (Storage individualStorage : _listOfStorages) {
@@ -111,7 +111,7 @@ public class StorageHandler {
     }
 
     // @author A0111889W
-    public Task deleteTask(Task deletedTask) {
+    public synchronized Task deleteTask(Task deletedTask) {
         boolean isDeleted = false;
         _allTasks.remove(deletedTask);
         for (Storage individualStorage : _listOfStorages) {
@@ -136,7 +136,7 @@ public class StorageHandler {
         }
     }
 
-    static void updateStorages(Task modifiedTask) {
+    static synchronized void updateStorages(Task modifiedTask) {
         if (isStorageInit()) {
             if (_allTasks.contains(modifiedTask)) {
                 int indexOfTask = _allTasks.indexOf(modifiedTask);
