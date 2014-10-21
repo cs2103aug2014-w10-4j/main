@@ -40,16 +40,5 @@ public class JUnitLogic {
 		
 		
 	}
-	@Test 
-	public void testAdd() {
-		Stage primaryStage = new Stage();
-		MainGui gui = new MainGui();
-		gui.start(primaryStage);
-		
-		Logic logic = new Logic(gui);
-		
-		logic.retrieveInputFromUI("delete all");
-		logic.retrieveInputFromUI("add hom nay em den truong");
-	}
 
 }

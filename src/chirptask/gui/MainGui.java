@@ -186,20 +186,7 @@ public class MainGui extends Application implements NativeKeyListener {
      *            the command line arguments
      */
     public static void main(String[] args) {
-<<<<<<< HEAD
-
-//        com.apple.eawt.Application application = com.apple.eawt.Application
-//                .getApplication();
-        java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
-                "chirptask_clear.png");
-
-//        application.setDockIconImage(image);
         macOsXInitialization();
-
-
-=======
-        macOsXInitialization();
->>>>>>> db30af4d41375274d29f0a2d2a7c54e2be3f3faa
         launch(args);
     }
 

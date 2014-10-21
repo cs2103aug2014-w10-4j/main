@@ -120,6 +120,25 @@ public class InputParserTest {
 		GroupAction group = groupActionAdd(toCompare);
 		assertTrue(compareGroup(group, parser.getActions()));
 	}
+	
+	@Test
+	public void testAddt2() {
+		parser.receiveInput("addt attend talk from code to product "
+				+ "from 3pm to 5pm @2103 @3204 01 nov");
+		Calendar cal1 = Calendar.getInstance();
+		cal1.set(2014, 10, 1, 15, 00);
+		Calendar cal2 = Calendar.getInstance();
+		cal2.set(2014, 10, 1, 17, 00);
+		List<String> categories = new ArrayList<String>();
+		categories.add("2103");
+		categories.add("3204");
+		
+		TimedTask toCompare = taskToCompareT("attend talk from code to product "
+				+ "from 3pm to 5pm @2103 @3204 01 nov", cal1, cal2);
+		toCompare.setCategories(categories);
+		GroupAction group = groupActionAdd(toCompare);
+		assertTrue(compareGroup(group, parser.getActions()));
+	}
 
 	@Test
 	public void testDelete() {
