@@ -1,5 +1,6 @@
 package chirptask.logic;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -92,18 +93,17 @@ public class DisplayView {
 	 */
 	private static String convertTaskDateToString(Task task) {
 		String dateToString;
+		SimpleDateFormat sdf = new SimpleDateFormat("kk:mm");
+		
 		if (task.getType() == "floating") {
 			dateToString = "all-day";
 		} else if (task.getType() == "deadline") {
 			DeadlineTask dTask = (DeadlineTask) task;
-			dateToString = "due by " + dTask.getDate().get(Calendar.HOUR) + ":"
-					+ dTask.getDate().get(Calendar.MINUTE);
+			dateToString = "due by " + sdf.format(dTask.getDate().getTime());
 		} else {
 			TimedTask tTask = (TimedTask) task;
-			dateToString = tTask.getStartTime().get(Calendar.HOUR) + ":"
-					+ tTask.getStartTime().get(Calendar.MINUTE) + " to "
-					+ tTask.getEndTime().get(Calendar.HOUR) + ":"
-					+ tTask.getEndTime().get(Calendar.MINUTE);
+			dateToString = sdf.format(tTask.getStartTime().getTime()) + " to "
+					+ sdf.format(tTask.getEndTime().getTime());
 		}
 		return dateToString;
 	}
