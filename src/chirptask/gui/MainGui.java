@@ -141,11 +141,11 @@ public class MainGui extends Application {
      */
     public static void main(String[] args) {
 
-//        com.apple.eawt.Application application = com.apple.eawt.Application
-//                .getApplication();
+        com.apple.eawt.Application application = com.apple.eawt.Application
+                .getApplication();
         java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
                 "chirptask_clear.png");
-//        application.setDockIconImage(image);
+        application.setDockIconImage(image);
 
         launch(args);
     }

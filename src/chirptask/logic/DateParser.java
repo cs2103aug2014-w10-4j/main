@@ -21,7 +21,7 @@ public class DateParser {
 	
 	public DateParser() {
 		parse = new Parser();
-//		parse.parse("21 oct"); start up natty (the first passing takes >3000 milliseconds
+		parse.parse("21 oct"); //start up natty (the first parsing takes >3000 milliseconds
 	}
 
 	public List<Calendar> parseDate(String toParse) {
