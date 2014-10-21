@@ -147,8 +147,24 @@ public class MainGui extends Application {
         java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
                 "chirptask_clear.png");
 //        application.setDockIconImage(image);
+        macOsXInitialization();
 
         launch(args);
+    }
+
+    public static void focusCLI() {
+        _commandLineInterface.requestFocus();
+    }
+
+    private static void macOsXInitialization() {
+        if (System.getProperty("os.name").equals("Mac OS X")) {
+            com.apple.eawt.Application application = com.apple.eawt.Application
+                    .getApplication();
+            java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
+                    "chirptask_clear.png");
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            application.setDockIconImage(image);
+        }
     }
 
     private BorderPane generateHeaderBar() {
