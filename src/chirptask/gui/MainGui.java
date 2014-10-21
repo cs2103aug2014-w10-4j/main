@@ -1,7 +1,6 @@
 package chirptask.gui;
 
 import java.awt.Toolkit;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -54,6 +53,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
+import chirptask.logic.DisplayView;
 import chirptask.logic.Logic;
 
 //@author A0111889W
@@ -195,7 +195,6 @@ public class MainGui extends Application implements NativeKeyListener {
         if (System.getProperty("os.name").equals("Mac OS X")) {
             com.apple.eawt.Application application = com.apple.eawt.Application
                     .getApplication();
-
             java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
                     getClass().getResource("images/chirptask_clear.png"));
             System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -467,8 +466,8 @@ public class MainGui extends Application implements NativeKeyListener {
         taskViewHeader.setLeft(dayLabel);
         taskViewHeader.setRight(dateLabel);
 
-        boolean isToday = convertDateToString(date).equals(
-                convertDateToString(Calendar.getInstance()));
+        boolean isToday = DisplayView.convertDateToString(date).equals(
+                DisplayView.convertDateToString(Calendar.getInstance()));
         if (isToday) {
             taskViewHeader.getStyleClass().add("taskView-header-today");
             formatTextLabel(dayLabel, "#CC6C6B");
@@ -489,14 +488,14 @@ public class MainGui extends Application implements NativeKeyListener {
     private HBox generateTaskDescription(String description, boolean done) {
         HBox descriptionBox = new HBox();
         descriptionBox.setPadding(new Insets(0, 8, 0, 8));
-        TextFlow taskDescription = parseDescriptionToTextFlow(description, done);
+        TextFlow taskDescription = DisplayView.parseDescriptionToTextFlow(description, done);
 
         descriptionBox.setAlignment(Pos.CENTER_LEFT);
         descriptionBox.getChildren().add(taskDescription);
         return descriptionBox;
     }
 
-    private static EventHandler<MouseEvent> clickOnContext() {
+    public static EventHandler<MouseEvent> clickOnContext() {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -505,7 +504,7 @@ public class MainGui extends Application implements NativeKeyListener {
         };
     }
 
-    private static EventHandler<MouseEvent> clickOnCategory() {
+    public static EventHandler<MouseEvent> clickOnCategory() {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -608,56 +607,9 @@ public class MainGui extends Application implements NativeKeyListener {
         _categoryList.getChildren().add(categoryText);
     }
 
-    /*
-     * Move this to logic (?)
-     */
-    public static String convertDateToString(Calendar date) {
-        assert date != null;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YY");
-        String parseDateToString = sdf.format(date.getTime());
-        return parseDateToString;
-    }
-
-    /*
-     * Move to logic(?)
-     */
-    public static TextFlow parseDescriptionToTextFlow(String description,
-            boolean done) {
-        TextFlow parsedDesc = new TextFlow();
-        StringBuilder descSb = new StringBuilder(description);
-        Text bufferText = new Text();
-
-        while (descSb.length() > 0) {
-            int index = descSb.length();
-            if (descSb.indexOf(" ") > 0) {
-                index = descSb.indexOf(" ");
-            } else if (descSb.indexOf(" ") == 0) {
-                index = 1;
-            }
-
-            bufferText = new Text(descSb.substring(0, index));
-
-            if (descSb.charAt(0) == Settings.CONTEXT_CHAR) {
-                // Context
-                bufferText.getStyleClass().add("context-text");
-                bufferText.setOnMouseClicked(clickOnContext());
-            } else if (descSb.charAt(0) == Settings.CATEGORY_CHAR) {
-                // Category
-                bufferText.getStyleClass().add("category-text");
-                bufferText.setOnMouseClicked(clickOnCategory());
-            }
-
-            descSb.delete(0, index);
-            bufferText.setStrikethrough(done);
-            parsedDesc.getChildren().add(bufferText);
-        }
-
-        return parsedDesc;
-    }
-
     public boolean addNewTaskViewDate(Calendar date) {
         assert date != null;
-        String parseDateToString = convertDateToString(date);
+        String parseDateToString = DisplayView.convertDateToString(date);
 
         if (_taskViewDateMap.containsKey(parseDateToString)) {
             return false;
@@ -704,7 +656,7 @@ public class MainGui extends Application implements NativeKeyListener {
         taskPane.setCenter(descriptionBox);
         taskPane.setRight(taskTime);
 
-        _taskViewDateMap.get(convertDateToString(date)).getChildren()
+        _taskViewDateMap.get(DisplayView.convertDateToString(date)).getChildren()
                 .add(taskPane);
 
         return true;
