@@ -87,12 +87,12 @@ public class DisplayView {
 	}
 
 	/**
-	 * 
+	 * Assuming there are only 3 type of task we need to handle
 	 * @param task
-	 * @return
+	 * @return String
 	 */
-	private static String convertTaskDateToString(Task task) {
-		String dateToString;
+	public static String convertTaskDateToString(Task task) {
+		String dateToString = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("kk:mm");
 		
 		if (task.getType() == "floating") {
@@ -100,10 +100,12 @@ public class DisplayView {
 		} else if (task.getType() == "deadline") {
 			DeadlineTask dTask = (DeadlineTask) task;
 			dateToString = "due by " + sdf.format(dTask.getDate().getTime());
-		} else {
+		} else if(task.getType() == "timedtask"){
 			TimedTask tTask = (TimedTask) task;
 			dateToString = sdf.format(tTask.getStartTime().getTime()) + " to "
 					+ sdf.format(tTask.getEndTime().getTime());
+		} else {
+			assert false;
 		}
 		return dateToString;
 	}

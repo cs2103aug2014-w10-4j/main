@@ -15,6 +15,7 @@ public class Logic {
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private static MainGui _gui;
+	
 
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
@@ -212,8 +213,6 @@ public class Logic {
 
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		assert command != null;
-		// set lastAction
-
 		clearUi();
 		FilterTasks.filter();
 		showStatusToUser(command, isSuccess);

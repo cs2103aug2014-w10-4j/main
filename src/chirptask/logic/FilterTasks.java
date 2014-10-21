@@ -44,7 +44,7 @@ public class FilterTasks {
 		}
 	}
 
-	static List<Task> hideDeleted(List<Task> taskList) {
+	public static List<Task> hideDeleted(List<Task> taskList) {
 		List<Task> newList = new ArrayList<Task>();
 		Iterator<Task> tasks = taskList.iterator();
 
@@ -86,10 +86,13 @@ public class FilterTasks {
 			case "/date":
 				// Assuming input is 23/10
 				try {
-					Calendar filterdate = processFilterDateParam(param[i + 1]);
-					filterTaskByDate(templist, filterdate);
-					DisplayView.showStatusToUser(StatusType.MESSAGE, gui,
-							param[i + 1]);
+					Calendar filterdate = processFilterDateParam(param[i + 1],
+							gui);
+					if (filterdate != null) {
+						filterTaskByDate(templist, filterdate);
+						DisplayView.showStatusToUser(StatusType.MESSAGE, gui,
+								param[i + 1]);
+					}
 				} catch (ArrayIndexOutOfBoundsException e) {
 					// log down invalid input
 
@@ -114,11 +117,18 @@ public class FilterTasks {
 
 	}
 
-	private static Calendar processFilterDateParam(String filter) {
+	public static Calendar processFilterDateParam(String filter, MainGui gui) {
 		String[] temp = filter.split("/");
 		Calendar filterdate = Calendar.getInstance();
-		filterdate.set(filterdate.get(Calendar.YEAR),
-				Integer.parseInt(temp[0]) - 1, Integer.parseInt(temp[1]));
+		if (temp.length > 1) {
+			filterdate.set(filterdate.get(Calendar.YEAR),
+					Integer.parseInt(temp[0]) - 1, Integer.parseInt(temp[1]));
+		} else {
+			// Exception should handle here show status to user
+			DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+			filterdate = null;
+			return filterdate;
+		}
 
 		return filterdate;
 	}
