@@ -140,16 +140,6 @@ public class InputParserTest {
 		assertTrue(compareGroup(group, parser.getActions()));
 	}
 
-	@Test
-	public void testDelete() {
-//		assertTrue(false);
-	}
-
-	@Test
-	public void test3() {
-		assertTrue(true);
-	}
-
 	// ignore task Id for now
 	private boolean compareTask(Task task1, Task task2) {
 		boolean isSameType = (task1.getType().equals(task2.getType()));
