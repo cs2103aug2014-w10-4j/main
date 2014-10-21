@@ -1,6 +1,7 @@
 package chirptask.gui;
 
 import java.awt.Toolkit;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -123,38 +124,51 @@ public class MainGui extends Application implements NativeKeyListener {
         _logic.retrieveInputFromUI("exit");
     }
 
-    private void prepareScene(Stage primaryStage) {
-
-        BorderPane border = new BorderPane();
+    private BorderPane generateRootPane() {
+        BorderPane rootPane = new BorderPane();
 
         BorderPane headerBar = generateHeaderBar();
-        border.setTop(headerBar);
+        rootPane.setTop(headerBar);
 
         BorderPane mainDisplay = generateMainDisplay();
-        border.setCenter(mainDisplay);
+        rootPane.setCenter(mainDisplay);
 
         VBox trendingList = generateTrendingList();
-        border.setRight(trendingList);
-
-        _primaryStage = primaryStage;
-
-        Scene scene = new Scene(border, STARTING_WIDTH, STARTING_HEIGHT);
-        scene.getStylesheets().add(
-                getClass().getResource("layoutStyle.css").toExternalForm());
-        primaryStage.setScene(scene);
-        primaryStage.setMinHeight(MIN_HEIGHT);
-        primaryStage.setMinWidth(MIN_WIDTH);
-        primaryStage.setTitle(Messages.TITLE_SOFTWARE);
-
-        primaryStage.getIcons().add(new Image("file:chirptask_clear.png"));
+        rootPane.setRight(trendingList);
 
         // scroll bar hack to beautify scroll bar
         makeScrollFadeable(mainDisplay.lookup(".address > .scroll-pane"));
         makeScrollFadeable(trendingList.lookup(".address > .scroll-pane"));
 
+        return rootPane;
+    }
+
+    private void prepareScene(Stage primaryStage) {
+
+        _primaryStage = primaryStage;
+
+        BorderPane rootPane = generateRootPane();
+        Scene scene = sceneSetUp(rootPane);
+        primaryStageSetUp(primaryStage, scene);
+
         // focus on CLI
         _commandLineInterface.requestFocus();
 
+    }
+
+    private Scene sceneSetUp(BorderPane rootPane) {
+        Scene scene = new Scene(rootPane, STARTING_WIDTH, STARTING_HEIGHT);
+        scene.getStylesheets().add(
+                getClass().getResource("layoutStyle.css").toExternalForm());
+        return scene;
+    }
+
+    private void primaryStageSetUp(Stage primaryStage, Scene scene) {
+        primaryStage.setScene(scene);
+        primaryStage.setMinHeight(MIN_HEIGHT);
+        primaryStage.setMinWidth(MIN_WIDTH);
+        primaryStage.setTitle(Messages.TITLE_SOFTWARE);
+        primaryStage.getIcons().add(new Image("file:chirptask_clear.png"));
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
                 guiClosing();
@@ -172,9 +186,7 @@ public class MainGui extends Application implements NativeKeyListener {
      *            the command line arguments
      */
     public static void main(String[] args) {
-
         macOsXInitialization();
-
         launch(args);
     }
 
@@ -198,8 +210,8 @@ public class MainGui extends Application implements NativeKeyListener {
         Text sceneTitle = new Text(Messages.TITLE_SOFTWARE);
         sceneTitle.getStyleClass().add("header-title");
 
-        // Text settingsButton = new Text(Messages.TITLE_SETTINGS);
-        // settingsButton.getStyleClass().add("header-title");
+        Text settingsButton = new Text(Messages.TITLE_SETTINGS);
+        settingsButton.getStyleClass().add("header-title");
         // ImageView imgView = new ImageView(new
         // Image("file:chirptask_clear.png"));
 
@@ -217,7 +229,7 @@ public class MainGui extends Application implements NativeKeyListener {
         HBox filterBox = generateFilterBox();
         mainDisplay.setTop(filterBox);
 
-        ScrollPane taskViewScrollPane = generateTaskView();
+        ScrollPane taskViewScrollPane = generateTasksView();
         mainDisplay.setCenter(taskViewScrollPane);
 
         VBox mainDisplayBottom = generateUserInputAndStatusBar();
@@ -355,6 +367,17 @@ public class MainGui extends Application implements NativeKeyListener {
             @Override
             public void handle(KeyEvent event) {
                 KeyCode keyPressed = ((KeyEvent) event).getCode();
+                cliKeyEnter(keyPressed);
+                cliKeyUp(keyPressed);
+            }
+
+            private void cliKeyUp(KeyCode keyPressed) {
+                if (keyPressed == KeyCode.UP) {
+                    // show previous command.
+                }
+            }
+
+            private void cliKeyEnter(KeyCode keyPressed) {
                 if (keyPressed == KeyCode.ENTER) {
                     _logic.retrieveInputFromUI(_commandLineInterface.getText());
                     _commandLineInterface.setText("");
@@ -363,7 +386,7 @@ public class MainGui extends Application implements NativeKeyListener {
         };
     }
 
-    private ScrollPane generateTaskView() {
+    private ScrollPane generateTasksView() {
         ScrollPane taskViewScrollPane = new ScrollPane();
         taskViewScrollPane.setPadding(new Insets(5));
         taskViewScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -387,40 +410,44 @@ public class MainGui extends Application implements NativeKeyListener {
         markTaskAsDone.setSelected(Done);
 
         markTaskAsDone.selectedProperty().addListener(
-                new ChangeListener<Boolean>() {
-                    public void changed(ObservableValue<? extends Boolean> ov,
-                            Boolean old_val, Boolean new_val) {
-
-                        HBox descriptionBox = (HBox) taskPane.getCenter();
-                        TextFlow desc = (TextFlow) descriptionBox.getChildren()
-                                .get(0);
-                        String index = ""
-                                + ((Text) desc.getChildren().get(0)).getText()
-                                        .split("\\.")[0];
-
-                        if (new_val) {
-                            _logic.retrieveInputFromUI("done " + index);
-                        } else {
-                            _logic.retrieveInputFromUI("undone " + index);
-                        }
-
-                        Iterator<Node> descChildIterator = desc.getChildren()
-                                .iterator();
-                        Text taskTime = (Text) taskPane.getRight();
-                        while (descChildIterator.hasNext()) {
-                            Text descChild = (Text) descChildIterator.next();
-                            descChild.setStrikethrough(new_val);
-                        }
-                        taskTime.setStrikethrough(new_val);
-
-                    }
-                });
+                listenerForTaskStatusChange(taskPane));
 
         Pane checkBoxPane = new Pane();
         checkBoxPane.setMaxWidth(20);
         checkBoxPane.getChildren().add(markTaskAsDone);
 
         return checkBoxPane;
+    }
+
+    private ChangeListener<Boolean> listenerForTaskStatusChange(
+            final BorderPane taskPane) {
+        return new ChangeListener<Boolean>() {
+            public void changed(ObservableValue<? extends Boolean> ov,
+                    Boolean old_val, Boolean new_val) {
+
+                HBox descriptionBox = (HBox) taskPane.getCenter();
+                TextFlow desc = (TextFlow) descriptionBox.getChildren().get(0);
+                String taskIndex = ""
+                        + ((Text) desc.getChildren().get(0)).getText().split(
+                                "\\.")[0];
+
+                if (new_val) {
+                    _logic.retrieveInputFromUI("done " + taskIndex);
+                } else {
+                    _logic.retrieveInputFromUI("undone " + taskIndex);
+                }
+
+                Iterator<Node> descChildIterator = desc.getChildren()
+                        .iterator();
+                Text taskTime = (Text) taskPane.getRight();
+                while (descChildIterator.hasNext()) {
+                    Text descChild = (Text) descChildIterator.next();
+                    descChild.setStrikethrough(new_val);
+                }
+                taskTime.setStrikethrough(new_val);
+
+            }
+        };
     }
 
     private BorderPane generateTaskViewHeader(Calendar date) {
@@ -584,8 +611,10 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public static String convertDateToString(Calendar date) {
         assert date != null;
-        String parseDateToString = date.get(Calendar.DAY_OF_MONTH) + "/"
-                + (date.get(Calendar.MONTH)) + "/" + date.get(Calendar.YEAR);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YY");
+        String parseDateToString = sdf.format(date.getTime());
+        convertDateToString(date);
 
         return parseDateToString;
     }
@@ -652,6 +681,7 @@ public class MainGui extends Application implements NativeKeyListener {
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
         assert date != null && !time.isEmpty() && taskId > -1;
+        
         if (_taskIndexToId.contains(taskId)) {
             return false;
         }
@@ -660,13 +690,15 @@ public class MainGui extends Application implements NativeKeyListener {
         String descriptionWithIndex = _taskIndexToId.size() + ". "
                 + description;
 
+        //pane that makes up task view
         BorderPane taskPane = new BorderPane();
 
         Pane checkBoxPane = generateTaskCheckBox(done, taskPane);
         HBox descriptionBox = generateTaskDescription(descriptionWithIndex,
                 done);
         Text taskTime = generateTaskTimeText(time, done);
-
+        
+        //formatting task view pane
         taskPane.setPadding(new Insets(10, 5, 8, 10));
         taskPane.getStyleClass().add("task-pane");
         taskPane.setLeft(checkBoxPane);
@@ -722,7 +754,6 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void hotKeyToHideStage(NativeKeyEvent e) {
-        int mod = e.getModifiers();
         if (e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE)
             Platform.runLater(new Runnable() {
                 @Override
