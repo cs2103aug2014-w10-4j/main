@@ -11,8 +11,15 @@ import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
+//@author A0111889W
 public class JUnitDisplayViewParserTest {
 
+    /*
+     * Tests only two methods under DisplayView.
+     * These two methods are used by GUI to parse certain object into strings.
+     * 
+     * ConvertDateToString method and ConvertTaskDateToDuration method
+     */
     @Test
     public void testConvertDateToString() {
 

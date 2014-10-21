@@ -81,7 +81,7 @@ public class DisplayView {
             }
 
             String dateToString = "";
-            dateToString = convertTaskDateToString(task);
+            dateToString = convertTaskDateToDurationString(task);
 
             gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
                     task.getDescription(), dateToString, task.isDone());
@@ -95,7 +95,7 @@ public class DisplayView {
      * @param task
      * @return String
      */
-    public static String convertTaskDateToString(Task task) {
+    public static String convertTaskDateToDurationString(Task task) {
         assert task != null && task.getDate() != null;
         String dateToString = "";
         SimpleDateFormat sdf = new SimpleDateFormat("kk:mm");

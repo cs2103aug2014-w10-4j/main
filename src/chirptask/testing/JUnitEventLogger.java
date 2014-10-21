@@ -32,6 +32,8 @@ public class JUnitEventLogger {
     PrintStream c;
 
     /*
+     * Tests the EventLogger Component
+     * 
      * Not much heuristics to be applied to eventlog testing, code is pretty
      * straightforward, no boundary cases, no equivalence partition either.
      */

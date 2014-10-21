@@ -56,7 +56,7 @@ public class JUnitLogic {
 		//test floating task
 		Task test1 = new Task();
 		test1.setType("floating");
-		assertEquals("all-day",DisplayView.convertTaskDateToString(test1));
+		assertEquals("all-day",DisplayView.convertTaskDateToDurationString(test1));
 		
 		//test Deadline task
 		Calendar date = Calendar.getInstance();
@@ -64,7 +64,7 @@ public class JUnitLogic {
 		date.set(Calendar.HOUR_OF_DAY, 23);
 		date.set(Calendar.MINUTE, 59);
 		Task test2 = new DeadlineTask(1, "test", date);
-		assertEquals("due by 23:59",DisplayView.convertTaskDateToString(test2));
+		assertEquals("due by 23:59",DisplayView.convertTaskDateToDurationString(test2));
 		
 		//test timedtask
 		Calendar startTime = Calendar.getInstance();
@@ -73,7 +73,7 @@ public class JUnitLogic {
 		endTime.set(2014, 9, 22, 14, 0);
 		Task timed = new TimedTask(2, "test2", startTime,
 				endTime);
-		assertEquals("12:00 to 14:00", DisplayView.convertTaskDateToString(timed));
+		assertEquals("12:00 to 14:00", DisplayView.convertTaskDateToDurationString(timed));
 		
 		//Boundary -- test a type of task that is not the 3 type 
 		//this should crash the program as this will never happen
