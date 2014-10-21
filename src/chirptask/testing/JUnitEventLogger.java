@@ -46,7 +46,9 @@ public class JUnitEventLogger {
 
         DeadlineTask dt = new DeadlineTask(111889,
                 "Deadline Task JUnit Testing", tomorrow);
-
+        
+        //Tests if logging is accurate for deadline tasks operations
+        //More importantly, tests if time and descriptions are accurately logged.
         assertTrue(logger.storeNewTask(dt));
         assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
@@ -86,6 +88,7 @@ public class JUnitEventLogger {
 
         Task dt = new Task(111840, "Floating Task JUnit Testing");
 
+        //Tests if logging is accurate for floating tasks operations
         assertTrue(logger.storeNewTask(dt));
         assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
@@ -123,7 +126,7 @@ public class JUnitEventLogger {
         c = new PrintStream(pout);
 
         EventLogger.setStream(c);
-
+        //Tests if logging is accurate for timed tasks operations
         TimedTask dt = new TimedTask(1337, "Timed Task JUnit Testing",
                 tomorrow, tomorrow);
 
@@ -168,7 +171,7 @@ public class JUnitEventLogger {
 
         Task dt = new TimedTask(1337, "Timed Task as Task JUnit Testing",
                 tomorrow, today);
-
+        //Tests if logging is accurate for timed tasks stored in task operations
         assertTrue(logger.storeNewTask(dt));
         assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
@@ -210,7 +213,7 @@ public class JUnitEventLogger {
 
         Task dt = new DeadlineTask(1337, "Deadline Task As Task JUnit Testing",
                 tomorrow);
-
+        //Tests if logging is accurate for deadline tasks stored as floating task operations
         assertTrue(logger.storeNewTask(dt));
         assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
