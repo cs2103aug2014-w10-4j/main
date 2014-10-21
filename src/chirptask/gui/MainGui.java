@@ -7,6 +7,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
+import org.jnativehook.NativeInputEvent;
+import org.jnativehook.keyboard.NativeKeyEvent;
+import org.jnativehook.keyboard.NativeKeyListener;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
@@ -25,7 +34,6 @@ import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -47,9 +55,8 @@ import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.logic.Logic;
 
-public class MainGui extends Application {
-
-    // @author A0111889W
+//@author A0111889W
+public class MainGui extends Application implements NativeKeyListener {
 
     private static final int STARTING_HEIGHT = 600;
     private static final int STARTING_WIDTH = 800;
@@ -73,6 +80,8 @@ public class MainGui extends Application {
     private final SortedMap<String, VBox> _taskViewDateMap = new TreeMap<>();
     private static final List<Integer> _taskIndexToId = new ArrayList<>();
 
+    private Stage _primaryStage;
+
     private Logic _logic;
 
     /*
@@ -82,6 +91,39 @@ public class MainGui extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
+
+        prepareScene(primaryStage);
+        primaryStage.show();
+
+        initJNativeHook();
+        _logic = new Logic(this);
+    }
+
+    private void initJNativeHook() {
+        try {
+            GlobalScreen.registerNativeHook();
+            // Gets the JNativeHook logger
+            Logger logger = Logger.getLogger(GlobalScreen.class.getPackage()
+                    .getName());
+            LogManager.getLogManager().reset();
+            logger.setLevel(Level.WARNING);
+
+        } catch (NativeHookException ex) {
+            System.err
+                    .println("There was a problem registering the native hook.");
+            // System.err.println(ex.getMessage());
+            // ex.printStackTrace();
+            // System.exit(1);
+        }
+        GlobalScreen.getInstance().addNativeKeyListener(this);
+    }
+
+    private void guiClosing() {
+        System.out.println("Stage is closing");
+        _logic.retrieveInputFromUI("exit");
+    }
+
+    private void prepareScene(Stage primaryStage) {
 
         BorderPane border = new BorderPane();
 
@@ -94,19 +136,8 @@ public class MainGui extends Application {
         VBox trendingList = generateTrendingList();
         border.setRight(trendingList);
 
-        prepareScene(primaryStage, border, mainDisplay, trendingList);
-        primaryStage.show();
+        _primaryStage = primaryStage;
 
-        _logic = new Logic(this);
-    }
-
-    private void guiClosing() {
-        System.out.println("Stage is closing");
-        _logic.retrieveInputFromUI("exit");
-    }
-
-    private void prepareScene(Stage primaryStage, BorderPane border,
-            BorderPane mainDisplay, VBox trendingList) {
         Scene scene = new Scene(border, STARTING_WIDTH, STARTING_HEIGHT);
         scene.getStylesheets().add(
                 getClass().getResource("layoutStyle.css").toExternalForm());
@@ -142,18 +173,9 @@ public class MainGui extends Application {
      */
     public static void main(String[] args) {
 
-//        com.apple.eawt.Application application = com.apple.eawt.Application
-//                .getApplication();
-        java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
-                "chirptask_clear.png");
-//        application.setDockIconImage(image);
         macOsXInitialization();
 
         launch(args);
-    }
-
-    public static void focusCLI() {
-        _commandLineInterface.requestFocus();
     }
 
     private static void macOsXInitialization() {
@@ -666,7 +688,7 @@ public class MainGui extends Application {
     public static List<Integer> getTaskIndexToId() {
         return _taskIndexToId;
     }
-    
+
     public void refreshUI() {
         Platform.runLater(new Runnable() {
             @Override
@@ -676,6 +698,69 @@ public class MainGui extends Application {
                 }
             }
         });
+    }
+
+    @Override
+    public void nativeKeyPressed(NativeKeyEvent e) {
+
+    }
+
+    @Override
+    public void nativeKeyReleased(NativeKeyEvent e) {
+        // System.out.println("Key Text "
+        // + NativeKeyEvent.getKeyText(e.getKeyCode()));
+        // System.out.println("Mod Text "
+        // + NativeKeyEvent.getModifiersText(e.getKeyCode()));
+        // System.out.println("Key Char " + e.getKeyChar());
+        // System.out.println("Key Code " + e.getKeyCode());
+        // System.out.println("Key Loc " + e.getKeyLocation());
+        // System.out.println("Raw Code " + e.getRawCode());
+        // System.out.println("Modifiers : " + e.getModifiers() + " : "
+        // + NativeInputEvent.getModifiersText(e.getModifiers()));
+        hotKeyToShowStage(e);
+        hotKeyToHideStage(e);
+    }
+
+    private void hotKeyToHideStage(NativeKeyEvent e) {
+        int mod = e.getModifiers();
+        if (e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE)
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (_primaryStage.isFocused()) {
+                        _primaryStage.setIconified(true);
+                    }
+                }
+            });
+    }
+
+    private void hotKeyToShowStage(NativeKeyEvent e) {
+        int mod = e.getModifiers();
+        if (e.getKeyCode() == Settings.HOTKEY_TOGGLE_SHOW
+                && (mod == NativeInputEvent.CTRL_L_MASK
+                        || mod == NativeInputEvent.CTRL_R_MASK
+                        || mod == NativeInputEvent.CTRL_MASK
+                        || mod == NativeInputEvent.META_L_MASK
+                        || mod == NativeInputEvent.META_R_MASK || mod == NativeInputEvent.META_MASK)) {
+            // focus on CLI
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (!_primaryStage.isFocused()) {
+                        _primaryStage.toFront();
+                        _primaryStage.setIconified(false);
+                        _primaryStage.requestFocus();
+                        _primaryStage.getScene().getRoot().requestFocus();
+                    }
+                    _commandLineInterface.requestFocus();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void nativeKeyTyped(NativeKeyEvent e) {
+
     }
 
 }

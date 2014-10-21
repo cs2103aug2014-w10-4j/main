@@ -1,5 +1,7 @@
 package chirptask.common;
 
+import org.jnativehook.keyboard.NativeKeyEvent;
+
 /**
  *
  * @author Yeo Quan Yang
@@ -16,11 +18,16 @@ public class Settings {
     public static final int EXIT_APPLICATION_NO = 0;
     public static final String CATEGORY = "@";
     public static final String CONTEXT = "#";
+
+    public static final int HOTKEY_TOGGLE_HIDE = NativeKeyEvent.VC_ESCAPE;
+    public static final int HOTKEY_TOGGLE_SHOW = NativeKeyEvent.VC_G;
+
     public enum CommandType {
-    	ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT
+        ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT
     }
+
     public enum StatusType {
-    	ERROR, MESSAGE
+        ERROR, MESSAGE
     }
 
 }
