@@ -10,6 +10,7 @@ import java.util.TreeMap;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -141,13 +142,31 @@ public class MainGui extends Application {
      */
     public static void main(String[] args) {
 
-        com.apple.eawt.Application application = com.apple.eawt.Application
-                .getApplication();
+//        com.apple.eawt.Application application = com.apple.eawt.Application
+//                .getApplication();
         java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
                 "chirptask_clear.png");
-        application.setDockIconImage(image);
+
+//        application.setDockIconImage(image);
+        macOsXInitialization();
+
 
         launch(args);
+    }
+
+    public static void focusCLI() {
+        _commandLineInterface.requestFocus();
+    }
+
+    private static void macOsXInitialization() {
+        if (System.getProperty("os.name").equals("Mac OS X")) {
+//            com.apple.eawt.Application application = com.apple.eawt.Application
+//                   .getApplication();
+            java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
+                    "chirptask_clear.png");
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+//            application.setDockIconImage(image);
+        }
     }
 
     private BorderPane generateHeaderBar() {
@@ -648,6 +667,17 @@ public class MainGui extends Application {
 
     public static List<Integer> getTaskIndexToId() {
         return _taskIndexToId;
+    }
+    
+    public void refreshUI() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (_logic != null) {
+                    _logic.refreshUi();
+                }
+            }
+        });
     }
 
 }

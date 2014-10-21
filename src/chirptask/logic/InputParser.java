@@ -400,7 +400,7 @@ public class InputParser {
 		return newTask;
 	}
 
-	private Task getTaskFromString(String parameter) {
+	public static Task getTaskFromString(String parameter) {
 		Task newTask = new Task();
 		newTask.setDescription(parameter);
 		
@@ -414,7 +414,10 @@ public class InputParser {
 			String[] word = parameter.split("\\s+");
 
 			for (int i = 0; i < word.length; i++) {
-				char firstChar = word[i].charAt(0);
+				char firstChar = ' ';
+				if (word[i].length() > 0) {
+				    firstChar = word[i].charAt(0);
+				}
 
 				if (firstChar == Settings.CONTEXT_CHAR
 						&& word[i].length() > 1) {

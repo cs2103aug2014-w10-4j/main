@@ -200,10 +200,14 @@ public class Logic {
 		filterAndDisplay(command, isSuccess);
 	}
 
-	public static void refresh() {
+	public synchronized void refreshUi() {
 		clearUi();
 		FilterTasks.filter();
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+	}
+	
+	public static void refresh() {
+	    _gui.refreshUI();
 	}
 
 	private void filterAndDisplay(Action command, boolean isSuccess) {
