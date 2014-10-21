@@ -92,7 +92,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     @Override
     public void start(Stage primaryStage) {
-
+        macOsXInitialization();
         prepareScene(primaryStage);
         primaryStage.show();
 
@@ -168,7 +168,9 @@ public class MainGui extends Application implements NativeKeyListener {
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setTitle(Messages.TITLE_SOFTWARE);
-        primaryStage.getIcons().add(new Image("file:chirptask_clear.png"));
+        primaryStage.getIcons().add(
+                new Image(getClass().getResourceAsStream(
+                        "images/chirptask_clear.png")));
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
                 guiClosing();
@@ -186,16 +188,21 @@ public class MainGui extends Application implements NativeKeyListener {
      *            the command line arguments
      */
     public static void main(String[] args) {
-        macOsXInitialization();
         launch(args);
     }
 
-    private static void macOsXInitialization() {
+    private void macOsXInitialization() {
         if (System.getProperty("os.name").equals("Mac OS X")) {
+<<<<<<< HEAD
 //            com.apple.eawt.Application application = com.apple.eawt.Application
 //                   .getApplication();
+=======
+            com.apple.eawt.Application application = com.apple.eawt.Application
+                    .getApplication();
+
+>>>>>>> 48d0eb45adb5071859dc6cee9ab6cbe06b96218a
             java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
-                    "chirptask_clear.png");
+                    getClass().getResource("images/chirptask_clear.png"));
             System.setProperty("apple.laf.useScreenMenuBar", "true");
 //            application.setDockIconImage(image);
         }
@@ -611,10 +618,8 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public static String convertDateToString(Calendar date) {
         assert date != null;
-
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YY");
         String parseDateToString = sdf.format(date.getTime());
-
         return parseDateToString;
     }
 
