@@ -1,12 +1,11 @@
 package chirptask.testing;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 
 import org.junit.Test;
 
@@ -17,37 +16,55 @@ import chirptask.storage.TimedTask;
 
 public class JUnitStorage {
 
+    //@author A0111840W
 	@Test
-	public void test() throws ParseException {
-		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+	public void testLocalStorage() {
+	    int taskIdA = 1;
+        int taskIdB = 2;
+        int taskIdC = 3;
+        Long millisB1 = 1412763010000L; //Wed Oct 08 18:10:10 SGT 2014 in Epoch Millis
+        Long millisB2 = 1412935810000L; //Fri Oct 10 18:10:10 SGT 2014 in Epoch Millis
+        Long millisC = 1413108610000L; //Sun Oct 12 18:10:10 SGT 2014 in Epoch Millis
+        String taskA = "Task A";
+        String taskB = "Task B";
+        String taskC = "Task C";
+
+        Calendar calB1 = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        calB1.setTimeInMillis(millisB1);
+        Calendar calB2 = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        calB2.setTimeInMillis(millisB2);
+        Calendar calC = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        calC.setTimeInMillis(millisC);
+        
+        Task floatingTask = new Task(taskIdA, taskA);
+        Task timedTask = new TimedTask(taskIdB, taskB, calB1, calB2);
+        Task deadlineTask = new DeadlineTask(taskIdC, taskC, calC);
+	    
 		LocalStorage local = new LocalStorage();
-		Task task1 = new Task(1, "task 1");
-		Task task2 = new DeadlineTask(2, "task 2", df.parse("9/27/14"));
-		task2.setContexts(new ArrayList<String>(Arrays.asList("context1", "context2")));
-		Task task3 = new TimedTask(3, "task3", df.parse("9/26/14 11:00"),
-				df.parse("9/26/14 12:00"));
-		Task task4 = new Task(4, "task 4");
-		Task task5 = new Task(3, "task 5");
-
-		ArrayList<Task> tasks = new ArrayList<Task>();
-		tasks.add(task1);
-		tasks.add(task2);
-		tasks.add(task3);
 		
-		assertTrue(local.storeNewTask(task1));
-		assertTrue(local.storeNewTask(task2));
-		assertTrue(local.storeNewTask(task3));
-//		assertEquals(tasks, local.getAllTasks());
+		//true if the task has been successfully stored
+		assertTrue(local.storeNewTask(floatingTask));
+		assertTrue(local.storeNewTask(timedTask));
+		assertTrue(local.storeNewTask(deadlineTask));
 
-		assertEquals(null, local.getTask(4));
-		assertEquals(task2, local.getTask(2));
+		assertEquals(floatingTask, local.getTask(taskIdA)); //Floating Task was set to taskIdA
 
-		assertEquals(null, local.removeTask(task4));
-//		assertEquals(task2, local.removeTask(task2));
+        /* This JUnit Test presents 2 boundary cases. */
+		//There is only Task ID 1-3 in storage
+		//4 and -1 should fail and return null.
+        assertEquals(null, local.getTask(4));  //Over the current limit value partition
+        assertEquals(null, local.getTask(-1)); //Negative value partition
+        
+        assertEquals(timedTask, local.removeTask(timedTask));
 
-		assertTrue(local.modifyTask(task5));
-		local.addGoogleId(3, "6");
+        Task task4 = new Task(-1, "");
+		assertEquals(null, local.removeTask(task4)); //Task 4 not in storage, should return null
+        assertFalse(local.modifyTask(task4)); //Task 4 not in storage, should return null
 
+		assertEquals(taskC, deadlineTask.getDescription());
+		deadlineTask.setDescription("");
+		assertTrue(local.modifyTask(deadlineTask));
+        assertNotEquals(taskC, deadlineTask.getDescription());
 	}
 
 }

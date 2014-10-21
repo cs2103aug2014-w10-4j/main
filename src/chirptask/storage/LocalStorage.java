@@ -260,7 +260,10 @@ public class LocalStorage implements IStorage {
 	 * This method deletes a task from XML file
 	 */
 	public Task removeTask(Task task) {
-		Node taskNode = getTaskNode(task.getTaskId());
+		if (task == null) {
+		    return null;
+		}
+	    Node taskNode = getTaskNode(task.getTaskId());
 		Task taskToReturn;
 
 		if (taskNode == null) {
@@ -295,10 +298,14 @@ public class LocalStorage implements IStorage {
 	 * back.
 	 */
 	public boolean modifyTask(Task T) {
+	    boolean isModified = false;
 		Task toDelete = getTask(T.getTaskId());
-		removeTask(toDelete);
-		storeNewTask(T);
-		return true;
+		Task removedTask = removeTask(toDelete);
+		isModified = storeNewTask(T);
+		if (removedTask == null) {
+		    isModified = false;
+		}
+		return isModified;
 	}
 
 	/**
@@ -309,6 +316,9 @@ public class LocalStorage implements IStorage {
 	 * @return task
 	 */
 	public Task getTask(int taskId) {
+	    if (taskId < 0) {
+	        return null;
+	    }
 		Node taskNode = getTaskNode(taskId);
 		if (taskNode == null) {
 			return null;
@@ -325,7 +335,10 @@ public class LocalStorage implements IStorage {
 	 * @return node
 	 */
 	private Node getTaskNode(int taskId) {
-		Node taskNode;
+	    if (taskId < 0) {
+	        return null;
+	    }
+		Node taskNode = null;
 		try {
 			localStorage = docBuilder.parse(local);
 			localStorage.getDocumentElement().normalize();
@@ -334,10 +347,8 @@ public class LocalStorage implements IStorage {
 			XPath xpath = xPathfactory.newXPath();
 			String expression = String.format(XPATH_EXPRESSION_ID,
 					String.valueOf(taskId));
-
 			taskNode = (Node) xpath.compile(expression).evaluate(localStorage,
 					XPathConstants.NODE);
-
 			if (taskNode == null) {
 				return null;
 			}
@@ -345,6 +356,7 @@ public class LocalStorage implements IStorage {
 			e.printStackTrace();
 			return null;
 		}
+		
 		return taskNode;
 	}
 
