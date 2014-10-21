@@ -172,9 +172,13 @@ public class StorageHandler {
                     int indexOfTask = _allTasks.indexOf(modifiedTask);
                     _allTasks.add(indexOfTask, modifiedTask);
                     _allTasks.remove(indexOfTask + 1);
+                    localStorage.modifyTask(modifiedTask);
+                    eventStorage.modifyTask(modifiedTask);
+                } else {
+                    _allTasks.add(modifiedTask);
+                    localStorage.storeNewTask(modifiedTask);
+                    eventStorage.storeNewTask(modifiedTask);
                 }
-                localStorage.modifyTask(modifiedTask);
-                eventStorage.modifyTask(modifiedTask);
             }
             Logic.refresh(); // need to update GUI
         }
