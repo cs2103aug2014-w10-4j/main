@@ -23,6 +23,7 @@ public class InputParserTest {
 	InputParser parser = new InputParser();
 
 	@Test
+	//Partition: floating task with categories and contexts
 	public void testAdd() {
 		parser.receiveInput("add task 1 @2103 @2101 #homework");
 
@@ -34,6 +35,7 @@ public class InputParserTest {
 	}
 	
 	@Test 
+	//Boundary: floating task with only categories and contexts
 	public void testAdd2() {
 		parser.receiveInput("add @2103 @2101 #homework");
 		Task toCompare = taskToCompareF();
@@ -44,6 +46,7 @@ public class InputParserTest {
 	}
 
 	@Test 
+	//Partition: floating task with no categories and contexts
 	public void testAdd3() {
 		parser.receiveInput("add task 1");
 		List<String> empty = new ArrayList<String>();
@@ -58,6 +61,7 @@ public class InputParserTest {
 	}
 	
 	@Test 
+	//Partition: deadline task, no categories/contexts, relative date
 	public void testAddd() {
 		parser.receiveInput("addd finish this by today");
 		Calendar cal = Calendar.getInstance();
@@ -72,6 +76,7 @@ public class InputParserTest {
 	}
 	
 	@Test 
+	//Partition: deadline task, has categories/contexts, relative date
 	public void testAddd2() {
 		parser.receiveInput("addd v0.2 by next week @2103");
 		Calendar cal = Calendar.getInstance();
@@ -88,6 +93,7 @@ public class InputParserTest {
 	}
 	
 	@Test 
+	//Partition: deadline task, no categories/contexts, absolute date
 	public void testAddd3() {
 		parser.receiveInput("addd watch goodbye tomorrow by 23 oct");
 		Calendar cal = Calendar.getInstance();
@@ -99,6 +105,8 @@ public class InputParserTest {
 	}
 	
 	@Test
+	//Partition: deadline task, no categories/contexts, absolute date mm/dd representation
+	//(plan to change to dd/mm representation)
 	public void testAddd4() {
 		parser.receiveInput("addd finish this by 10/23");
 		Calendar cal = Calendar.getInstance();
@@ -109,6 +117,7 @@ public class InputParserTest {
 	}
 	
 	@Test
+	//Partition: timed task, no categories/contexts, absolute date mm/dd representation
 	public void testAddt() {
 		parser.receiveInput("addt from 2pm to 4pm 10/23");
 		Calendar cal1 = Calendar.getInstance();
@@ -122,6 +131,8 @@ public class InputParserTest {
 	}
 	
 	@Test
+	//Partition: timed task, has categories/contexts, absolute date mm/dd representation
+	//has another pair from to with no date
 	public void testAddt2() {
 		parser.receiveInput("addt attend talk from code to product "
 				+ "from 3pm to 5pm @2103 @3204 01 nov");
