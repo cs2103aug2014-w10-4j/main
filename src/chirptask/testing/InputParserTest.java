@@ -43,20 +43,6 @@ public class InputParserTest {
 		assertTrue(compareGroup(group, parser.getActions()));
 	}
 
-	/**
-	 * @param toCompare
-	 * @return
-	 */
-	private GroupAction groupActionAdd(Task toCompare) {
-		Action toAdd = new Action(Settings.CommandType.ADD, toCompare);
-		Action negate = new Action(Settings.CommandType.DELETE, toCompare);
-		toAdd.setUndo(negate);
-
-		GroupAction group = new GroupAction();
-		group.addAction(toAdd);
-		return group;
-	}
-	
 	@Test 
 	public void testAdd3() {
 		parser.receiveInput("add task 1");
@@ -83,28 +69,61 @@ public class InputParserTest {
 		GroupAction group = groupActionAdd(toCompare);
 
 		assertTrue(compareGroup(group, parser.getActions()));
-		
-		parser.receiveInput("addd v0.2 by next week");
-		toCompare.setDescription("v0.2 by next week");
-		System.out.println(cal.getTime());
+	}
+	
+	@Test 
+	public void testAddd2() {
+		parser.receiveInput("addd v0.2 by next week @2103");
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
 		cal.add(Calendar.DAY_OF_MONTH, 7);
-		System.out.println(cal.getTime());
-		Calendar cal2 = parser.getActions().getActionList().get(0).getTask().getDate();
-		System.out.println(cal2.getTime());
+		DeadlineTask toCompare = taskToCompareD("v0.2 by next week @2103", cal);
+		List<String> categories = new ArrayList<String>();
+		categories.add("2103");
+		toCompare.setCategories(categories);
+		GroupAction group = groupActionAdd(toCompare);
 		assertTrue(compareGroup(group, parser.getActions()));
+	}
+	
+	@Test 
+	public void testAddd3() {
+		parser.receiveInput("addd watch goodbye tomorrow by 23 oct");
+		Calendar cal = Calendar.getInstance();
+		cal.set(2014, 9, 23, 23, 59);
+		DeadlineTask toCompare = taskToCompareD("watch goodbye tomorrow by 23 oct", cal);
+		GroupAction group = groupActionAdd(toCompare);
 		
-		parser.receiveInput("addd finish homework by 23 oct");
-		toCompare.setDescription("finish homework by 23 oct");
-		cal.set(Calendar.DAY_OF_MONTH, 23);
-		cal.set(Calendar.MONTH, Calendar.OCTOBER);
-		toCompare.setDate(cal);
+		assertTrue(compareGroup(group, parser.getActions()));
+	}
+	
+	@Test
+	public void testAddd4() {
+		parser.receiveInput("addd finish this by 10/23");
+		Calendar cal = Calendar.getInstance();
+		cal.set(2014, 9, 23, 23, 59);
+		DeadlineTask toCompare = taskToCompareD("finish this by 10/23", cal);
+		GroupAction group = groupActionAdd(toCompare);
+		assertTrue(compareGroup(group, parser.getActions()));
+	}
+	
+	@Test
+	public void testAddt() {
+		parser.receiveInput("addt from 2pm to 4pm 10/23");
+		Calendar cal1 = Calendar.getInstance();
+		cal1.set(2014, 9, 23, 14, 00);
+		Calendar cal2 = Calendar.getInstance();
+		cal2.set(2014, 9, 23, 16, 00);
 		
+		TimedTask toCompare = taskToCompareT("from 2pm to 4pm 10/23", cal1, cal2);
+		GroupAction group = groupActionAdd(toCompare);
 		assertTrue(compareGroup(group, parser.getActions()));
 	}
 
 	@Test
 	public void testDelete() {
-		assertTrue(false);
+//		assertTrue(false);
 	}
 
 	@Test
@@ -188,12 +207,33 @@ public class InputParserTest {
 		return toCompare;
 	}
 	
+	/**
+	 * @param toCompare
+	 * @return
+	 */
+	private GroupAction groupActionAdd(Task toCompare) {
+		Action toAdd = new Action(Settings.CommandType.ADD, toCompare);
+		Action negate = new Action(Settings.CommandType.DELETE, toCompare);
+		toAdd.setUndo(negate);
+	
+		GroupAction group = new GroupAction();
+		group.addAction(toAdd);
+		return group;
+	}
+
 	private DeadlineTask taskToCompareD(String desc, Calendar cal) {
 		DeadlineTask toCompare = new DeadlineTask(0, desc, cal);
 		List<String> empty = new ArrayList<String>();
 		toCompare.setCategories(empty);
 		toCompare.setContexts(empty);
-		toCompare.setDate(cal);
+		return toCompare;
+	}
+	
+	private TimedTask taskToCompareT(String desc, Calendar cal1, Calendar cal2) {
+		TimedTask toCompare = new TimedTask(0, desc, cal1, cal2);
+		List<String> empty = new ArrayList<String>();
+		toCompare.setCategories(empty);
+		toCompare.setContexts(empty);
 		return toCompare;
 	}
 
