@@ -416,7 +416,7 @@ public class InputParser {
 			for (int i = 0; i < word.length; i++) {
 				char firstChar = ' ';
 				if (word[i].length() > 0) {
-				    word[i].charAt(0);
+				    firstChar = word[i].charAt(0);
 				}
 
 				if (firstChar == Settings.CONTEXT_CHAR
