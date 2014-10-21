@@ -614,7 +614,6 @@ public class MainGui extends Application implements NativeKeyListener {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YY");
         String parseDateToString = sdf.format(date.getTime());
-        convertDateToString(date);
 
         return parseDateToString;
     }
@@ -681,7 +680,7 @@ public class MainGui extends Application implements NativeKeyListener {
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
         assert date != null && !time.isEmpty() && taskId > -1;
-        
+
         if (_taskIndexToId.contains(taskId)) {
             return false;
         }
@@ -690,15 +689,15 @@ public class MainGui extends Application implements NativeKeyListener {
         String descriptionWithIndex = _taskIndexToId.size() + ". "
                 + description;
 
-        //pane that makes up task view
+        // pane that makes up task view
         BorderPane taskPane = new BorderPane();
 
         Pane checkBoxPane = generateTaskCheckBox(done, taskPane);
         HBox descriptionBox = generateTaskDescription(descriptionWithIndex,
                 done);
         Text taskTime = generateTaskTimeText(time, done);
-        
-        //formatting task view pane
+
+        // formatting task view pane
         taskPane.setPadding(new Insets(10, 5, 8, 10));
         taskPane.getStyleClass().add("task-pane");
         taskPane.setLeft(checkBoxPane);
