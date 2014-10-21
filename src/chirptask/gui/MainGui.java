@@ -10,6 +10,7 @@ import java.util.TreeMap;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -648,6 +649,17 @@ public class MainGui extends Application {
 
     public static List<Integer> getTaskIndexToId() {
         return _taskIndexToId;
+    }
+    
+    public void refreshUI() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (_logic != null) {
+                    _logic.refreshUi();
+                }
+            }
+        });
     }
 
 }

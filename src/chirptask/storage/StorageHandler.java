@@ -3,6 +3,8 @@ package chirptask.storage;
 import java.util.ArrayList;
 import java.util.List;
 
+import chirptask.logic.Logic;
+
 public class StorageHandler {
     /** Global instance of ChirpTask's local copy. */
     private static List<Task> _allTasks;
@@ -165,8 +167,6 @@ public class StorageHandler {
                 for (IStorage individualStorage : _listOfStorages) {
                     individualStorage.removeTask(modifiedTask);
                 }
-                // need to update GUI
-                
             } else {
                 if (_allTasks.contains(modifiedTask)) {
                     int indexOfTask = _allTasks.indexOf(modifiedTask);
@@ -176,6 +176,7 @@ public class StorageHandler {
                 localStorage.modifyTask(modifiedTask);
                 eventStorage.modifyTask(modifiedTask);
             }
+            Logic.refresh(); // need to update GUI
         }
     }
 

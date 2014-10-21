@@ -237,7 +237,7 @@ public class FilterTasks {
 					}
 				}
 			}
-
+			filteredTask = hideDeleted(filteredTask);
 			categoriesList.clear();
 			contextsList.clear();
 			populateCategoryAndContext();

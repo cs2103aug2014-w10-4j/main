@@ -55,6 +55,9 @@ public class GoogleController implements Runnable {
     /** Constant instance of ConcurrentController. */
     private static final ConcurrentController CONCURRENT = new ConcurrentController();
 
+    private static final String STRING_DONE_TASK = "Completed";
+    private static final String STRING_DONE_EVENT = "[Done]";
+
     /** Global instance of the JSON factory. */
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -432,6 +435,11 @@ public class GoogleController implements Runnable {
         if (allTasks != null) {
             syncPhaseOne(allTasks);
             syncPhaseTwo(allTasks);
+            //syncPhaseThree(allTasks);
+            try {
+                CONCURRENT.awaitTermination();
+            } catch (InterruptedException e) {
+            }
         }
     }
 
@@ -439,10 +447,10 @@ public class GoogleController implements Runnable {
      * Phase one is a Google One-way synchronisation method.
      * 
      * Phase one adds local tasks without Google ID to Google; If the task has
-     * been deleted, it does not perform the add operation. 
-     * Phase one also deletes tasks with Google ID that are flagged 
-     * as deleted from the Google account.
-     * Phase one also modify tasks with Google ID that are flagged as modified
+     * been deleted, it does not perform the add operation. Phase one also
+     * deletes tasks with Google ID that are flagged as deleted from the Google
+     * account. Phase one also modify tasks with Google ID that are flagged as
+     * modified
      * 
      * @param allTasks
      *            The local list of all tasks
@@ -452,10 +460,10 @@ public class GoogleController implements Runnable {
      *             If transmission is interrupted
      */
     private void syncPhaseOne(List<chirptask.storage.Task> allTasks)
-                                    throws UnknownHostException, IOException {
+            throws UnknownHostException, IOException {
         if (allTasks != null) {
             Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
-            
+
             while (iterate.hasNext()) {
                 chirptask.storage.Task currTask = iterate.next();
                 String currGoogleId = currTask.getGoogleId();
@@ -480,30 +488,30 @@ public class GoogleController implements Runnable {
             CONCURRENT.close();
         }
     }
-    
+
     private void syncPhaseTwo(List<chirptask.storage.Task> allTasks)
-                                    throws UnknownHostException, IOException {
+            throws UnknownHostException, IOException {
         try {
             CONCURRENT.awaitTermination();
         } catch (InterruptedException e) {
         }
-        
+
         if (allTasks != null) {
             Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
             Map<String, chirptask.storage.Task> googleIdMap = new TreeMap<String, chirptask.storage.Task>();
             List<Event> events = _calendarController.getEvents();
             Tasks tasks = _tasksController.getTasks();
             List<Task> taskList = tasks.getItems();
-            
+
             while (iterate.hasNext()) {
                 chirptask.storage.Task currTask = iterate.next();
                 String googleId = currTask.getGoogleId();
-                
+
                 if (googleId != null || "".equals(googleId)) {
                     googleIdMap.put(googleId, currTask);
                 }
             }
-            
+
             for (Event currEvent : events) {
                 String gId = currEvent.getId();
                 if (googleIdMap.containsKey(gId)) {
@@ -512,20 +520,24 @@ public class GoogleController implements Runnable {
                     String localETag = currTask.getETag();
                     if (googleETag != null && localETag != null) {
                         if (!localETag.equals(googleETag)) {
-                            if (!currTask.isModified()) {  //push from remote to local
-                                String eventDescription = currEvent.getSummary();
+                            if (!currTask.isModified()) { // push from remote to
+                                                          // local
+                                String eventDescription = currEvent
+                                        .getSummary();
                                 EventDateTime start = currEvent.getStart();
                                 EventDateTime end = currEvent.getEnd();
-                                Calendar startDate = DateTimeHandler.getCalendar(start);
-                                Calendar endDate = DateTimeHandler.getCalendar(end);
+                                Calendar startDate = DateTimeHandler
+                                        .getCalendar(start);
+                                Calendar endDate = DateTimeHandler
+                                        .getCalendar(end);
                                 String doneString = currEvent.getDescription();
-                                
+
                                 boolean isDone = false;
-                                
-                                if ("[Done]".equals(doneString)) {
+
+                                if (STRING_DONE_EVENT.equals(doneString)) {
                                     isDone = true;
                                 }
-                                
+
                                 if (currTask instanceof chirptask.storage.TimedTask) {
                                     TimedTask timedTask = (TimedTask) currTask;
                                     timedTask.setDescription(eventDescription);
@@ -535,11 +547,11 @@ public class GoogleController implements Runnable {
                                     GoogleStorage.updateStorages(timedTask);
                                 }
                             }
-                        } 
+                        }
                     }
                 }
             }
-            
+
             for (Task currTask : taskList) {
                 String gId = currTask.getId();
                 if (googleIdMap.containsKey(gId)) {
@@ -548,41 +560,53 @@ public class GoogleController implements Runnable {
                     String localETag = chirpTask.getETag();
                     if (googleETag != null && localETag != null) {
                         if (!localETag.equals(googleETag)) {
-                            if (!chirpTask.isModified()) { //push from remote to local
-                                String eventDescription = currTask.getTitle();
-                                DateTime dueDate = currTask.getDue();
-                                
+                            if (!chirpTask.isModified()) { // push from remote
+                                                           // to local
+                                int taskId = chirpTask.getTaskId();
+                                List<String> contextList = chirpTask.getContexts();
+                                List<String> categoryList = chirpTask.getCategories();
                                 String doneString = currTask.getStatus();
-                                
+                                String eTag = googleETag;
+                                String googleId = gId;
+                                String taskDescription = currTask.getTitle();
+                                DateTime dueDate = currTask.getDue();
+
                                 boolean isDone = false;
-                                
-                                if ("Completed".equals(doneString)) {
+                                if (STRING_DONE_TASK.equals(doneString)) {
                                     isDone = true;
                                 }
-                                
-                                chirpTask.setDescription(eventDescription);
-                                chirpTask.setDone(isDone);
-                                
-                                if (chirpTask instanceof DeadlineTask) {
-                                    DeadlineTask deadlineTask = (DeadlineTask) chirpTask;
-                                    Calendar dueCalendar = null;
-                                    
-                                    if (dueDate != null) {
-                                        dueCalendar = DateTimeHandler.getDateFromDateTime(dueDate);
-                                    }
-                                    
-                                    deadlineTask.setDate(dueCalendar);
-                                    GoogleStorage.updateStorages(deadlineTask);
+
+                                if (dueDate != null) {
+                                    Calendar dueCalendar = DateTimeHandler
+                                            .getDateFromDateTime(dueDate);
+                                    DeadlineTask newDeadline = new DeadlineTask(
+                                            taskId, taskDescription,
+                                            dueCalendar);
+                                    newDeadline.setCategories(categoryList);
+                                    newDeadline.setContexts(contextList);
+                                    newDeadline.setDone(isDone);
+                                    newDeadline.setETag(eTag);
+                                    newDeadline.setGoogleId(googleId);
+                                    GoogleStorage.updateStorages(newDeadline);
                                 } else {
-                                    GoogleStorage.updateStorages(chirpTask);
+                                    chirptask.storage.Task newFloating = new chirptask.storage.Task(
+                                            taskId, taskDescription);
+                                    newFloating.setCategories(categoryList);
+                                    newFloating.setContexts(contextList);
+                                    newFloating.setDone(isDone);
+                                    newFloating.setETag(eTag);
+                                    newFloating.setGoogleId(googleId);
+                                    GoogleStorage.updateStorages(newFloating);
                                 }
                             }
-                        } 
+                        }
                     }
-                } 
+                }
             }
             CONCURRENT.close();
         }
     }
+    
+    
 
 }
