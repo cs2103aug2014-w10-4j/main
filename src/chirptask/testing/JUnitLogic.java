@@ -9,21 +9,28 @@ import java.util.List;
 import org.junit.Test;
 
 import chirptask.common.Settings;
+import chirptask.gui.MainGui;
 import chirptask.logic.Action;
 import chirptask.logic.DisplayView;
 import chirptask.logic.FilterTasks;
 import chirptask.logic.Logic;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
+
 import chirptask.storage.TimedTask;
 
-public class JUnitLogic {
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-	// @Test
+
+public class JUnitLogic {
+	
+	@Test
 	public void Displaytest() {
 		// Testing display logic with tag /undone /floating
-		// commend out the GUI portion for this to run.
-		Logic a = new Logic();
+		//commend out the GUI portion for this to run.
+		Logic a = new Logic(null);
+
 		Action act = new Action();
 		Task task = new Task();
 

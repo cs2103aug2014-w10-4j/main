@@ -191,18 +191,18 @@ public class InputParser {
 			for (String s : split) {
 				if (!(s.contains(Settings.CATEGORY) || s
 						.contains(Settings.CONTEXT))) {
-					toReturn = toReturn.concat(s);
+					toReturn = toReturn.concat(s).concat(" ");
 				}
 			}
 			
 		} else {
 			toReturn = parameter;
 		}
-		if (toReturn.contains("by")) {
-			String[] deadline = toReturn.split("by");
+		if (toReturn.contains("by ")) {
+			String[] deadline = toReturn.split("by ");
 			toReturn = deadline[deadline.length - 1];
-		} else if (toReturn.contains("from")) {
-			String[] timed = toReturn.split("from");
+		} else if (toReturn.contains("from ")) {
+			String[] timed = toReturn.split("from ");
 			toReturn = timed[timed.length - 1];
 		} else {
 			toReturn = "";

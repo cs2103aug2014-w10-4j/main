@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.common.Settings.CommandType;
@@ -66,7 +68,7 @@ public class DisplayView {
 	private static void processUpdateTaskView(List<Task> tasks, MainGui gui,
 			TreeMap<String, TasksByDate> map) {
 		for (Task task : tasks) {
-			String currDate = MainGui.convertDateToString(task.getDate());
+			String currDate = DisplayView.convertDateToString(task.getDate());
 
 			if (map.containsKey(currDate)) {
 				map.get(currDate).addToTaskList(task);
@@ -294,4 +296,47 @@ public class DisplayView {
 					.getDescription()));
 		}
 	}
+
+	//@author A0111889W
+    public static TextFlow parseDescriptionToTextFlow(String description,
+            boolean done) {
+        TextFlow parsedDesc = new TextFlow();
+        StringBuilder descSb = new StringBuilder(description);
+        Text bufferText = new Text();
+    
+        while (descSb.length() > 0) {
+            int index = descSb.length();
+            if (descSb.indexOf(" ") > 0) {
+                index = descSb.indexOf(" ");
+            } else if (descSb.indexOf(" ") == 0) {
+                index = 1;
+            }
+    
+            bufferText = new Text(descSb.substring(0, index));
+    
+            if (descSb.charAt(0) == Settings.CONTEXT_CHAR) {
+                // Context
+                bufferText.getStyleClass().add("context-text");
+                bufferText.setOnMouseClicked(MainGui.clickOnContext());
+            } else if (descSb.charAt(0) == Settings.CATEGORY_CHAR) {
+                // Category
+                bufferText.getStyleClass().add("category-text");
+                bufferText.setOnMouseClicked(MainGui.clickOnCategory());
+            }
+    
+            descSb.delete(0, index);
+            bufferText.setStrikethrough(done);
+            parsedDesc.getChildren().add(bufferText);
+        }
+    
+        return parsedDesc;
+    }
+
+//@author A0111889W
+    public static String convertDateToString(Calendar date) {
+        assert date != null;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YY");
+        String parseDateToString = sdf.format(date.getTime());
+        return parseDateToString;
+    }
 }

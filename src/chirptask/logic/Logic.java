@@ -2,6 +2,8 @@ package chirptask.logic;
 
 import java.util.List;
 
+import org.jnativehook.GlobalScreen;
+
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.gui.MainGui;
@@ -15,7 +17,6 @@ public class Logic {
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private static MainGui _gui;
-	
 
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
@@ -119,6 +120,8 @@ public class Logic {
 
 	private void processExit() {
 		// Add in GUI code to close, storage close
+		GlobalScreen.unregisterNativeHook();
+		System.runFinalization();
 		System.exit(Settings.EXIT_APPLICATION_NO);
 	}
 
@@ -157,9 +160,10 @@ public class Logic {
 				executeAction(action);
 			}
 
-		}else{
-			//showstatus
-			DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING, _gui);
+		} else {
+			// showstatus
+			DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING,
+					_gui);
 		}
 	}
 
@@ -206,13 +210,15 @@ public class Logic {
 		FilterTasks.filter();
 		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 	}
-	
+
 	public static void refresh() {
-	    _gui.refreshUI();
+		_gui.refreshUI();
 	}
 
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		assert command != null;
+		// set lastAction
+
 		clearUi();
 		FilterTasks.filter();
 		showStatusToUser(command, isSuccess);
