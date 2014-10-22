@@ -111,6 +111,20 @@ public class LocalStorage implements IStorage {
 			
 		}
 	}
+	
+	/** 
+	 * Test Stub Helper for JUnitStorage
+	 */
+    public void setUpJUnitTestXmlWriter() {
+        try {
+            local = new File("localJUnitTest.xml");
+            local.delete();
+            local.createNewFile();
+        }catch (IOException ioException) {
+            
+        }
+    }
+	
 
 	/**
 	 * returns latest ID stored as root attribute
@@ -264,7 +278,7 @@ public class LocalStorage implements IStorage {
 		    return null;
 		}
 	    Node taskNode = getTaskNode(task.getTaskId());
-		Task taskToReturn;
+		Task taskToReturn = null;
 
 		if (taskNode == null) {
 			return null;
@@ -301,9 +315,11 @@ public class LocalStorage implements IStorage {
 	    boolean isModified = false;
 		Task toDelete = getTask(T.getTaskId());
 		Task removedTask = removeTask(toDelete);
-		isModified = storeNewTask(T);
+		
 		if (removedTask == null) {
 		    isModified = false;
+		} else {
+	        isModified = storeNewTask(T);
 		}
 		return isModified;
 	}
@@ -323,7 +339,8 @@ public class LocalStorage implements IStorage {
 		if (taskNode == null) {
 			return null;
 		} else {
-			return retrieveTaskFromFile(taskNode);
+		    Task retrievedTask = retrieveTaskFromFile(taskNode);
+			return retrievedTask;
 		}
 
 	}
@@ -392,6 +409,11 @@ public class LocalStorage implements IStorage {
 			Element item = (Element) node;
 			try {
 				int taskId = Integer.parseInt(item.getAttribute("TaskId"));
+				
+				if (taskId < 0) {
+				    return null;
+				}
+				
 				String typeTask = getValues("type", item).get(0);
 				String description = getValues("description", item).get(0);
 				String googleId = getValues("googleId", item).get(0);

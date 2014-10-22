@@ -1,5 +1,6 @@
 package chirptask.logic;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -25,7 +26,6 @@ public class FilterTasks {
 
 		currentFilter = T.getDescription();
 
-		List<Task> allTask = StorageHandler.getAllTasks();
 		// check 1st String to determine the type of filter
 
 		if (currentFilter.isEmpty()) {
@@ -86,8 +86,7 @@ public class FilterTasks {
 			case "/date":
 				// Assuming input is 23/10
 				try {
-					Calendar filterdate = processFilterDateParam(param[i + 1],
-							gui);
+					Calendar filterdate = processFilterDateParam(param[i + 1]);
 					if (filterdate != null) {
 						filterTaskByDate(templist, filterdate);
 						DisplayView.showStatusToUser(StatusType.MESSAGE, gui,
@@ -102,6 +101,8 @@ public class FilterTasks {
 					templist = new ArrayList<Task>(StorageHandler.getAllTasks());
 					break;
 
+				} catch (InvalidParameterException invalidParameterException) {
+				    DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
 				}
 				i++;
 				break;
@@ -117,7 +118,8 @@ public class FilterTasks {
 
 	}
 
-	public static Calendar processFilterDateParam(String filter, MainGui gui) {
+	public static Calendar processFilterDateParam(String filter) 
+	                                        throws InvalidParameterException {
 		String[] temp = filter.split("/");
 		Calendar filterdate = Calendar.getInstance();
 		if (temp.length > 1) {
@@ -125,9 +127,7 @@ public class FilterTasks {
 					Integer.parseInt(temp[0]) - 1, Integer.parseInt(temp[1]));
 		} else {
 			// Exception should handle here show status to user
-			DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
-			filterdate = null;
-			return filterdate;
+		    throw new InvalidParameterException();
 		}
 
 		return filterdate;

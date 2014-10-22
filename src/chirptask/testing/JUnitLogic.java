@@ -1,7 +1,10 @@
 package chirptask.testing;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -16,16 +19,12 @@ import chirptask.logic.FilterTasks;
 import chirptask.logic.Logic;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
-
 import chirptask.storage.TimedTask;
-
-import javafx.application.Application;
-import javafx.stage.Stage;
 
 
 public class JUnitLogic {
 	
-	@Test
+	//@Test
 	public void Displaytest() {
 		// Testing display logic with tag /undone /floating
 		//commend out the GUI portion for this to run.
@@ -125,8 +124,15 @@ public class JUnitLogic {
 		String date1 = "10/22";
 		Calendar testParam = Calendar.getInstance();
 		testParam.set(testParam.get(Calendar.YEAR), 9, 22);
-		Calendar expected1 = FilterTasks.processFilterDateParam(date1);
 		
+		Calendar expected1 = null;
+		try {
+		    expected1 = FilterTasks.processFilterDateParam(date1);
+		} catch (InvalidParameterException invalidParameterException) {
+		    
+		}
+		
+		assertNotNull(expected1);
 		assertEquals(testParam.get(Calendar.YEAR), expected1.get(Calendar.YEAR));
 		assertEquals(testParam.get(Calendar.MONTH), expected1.get(Calendar.MONTH));
 		assertEquals(testParam.get(Calendar.DAY_OF_MONTH), expected1.get(Calendar.DAY_OF_MONTH));
@@ -134,12 +140,14 @@ public class JUnitLogic {
 		//wrong date format MM-DD
 		//Return a current Calendar object
 		String date2 = "10-22";
-		Calendar testParam1 = Calendar.getInstance();
-		Calendar expected2 = FilterTasks.processFilterDateParam(date2);
+		Calendar expected2 = null;
+		try {
+		    expected2 = FilterTasks.processFilterDateParam(date2);
+		} catch (InvalidParameterException invalidParameterException) {
+		    assertNotNull(invalidParameterException);
+		}
 		
-		assertEquals(testParam1.get(Calendar.YEAR), expected2.get(Calendar.YEAR));
-		assertEquals(testParam1.get(Calendar.MONTH), expected2.get(Calendar.MONTH));
-		assertEquals(testParam1.get(Calendar.DAY_OF_MONTH), expected2.get(Calendar.DAY_OF_MONTH));
+		assertNull(expected2);
 		//End of test for processFilterDateParam
 	}
 
