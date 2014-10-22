@@ -193,12 +193,12 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void macOsXInitialization() {
         if (System.getProperty("os.name").equals("Mac OS X")) {
-            com.apple.eawt.Application application = com.apple.eawt.Application
-                    .getApplication();
+           // com.apple.eawt.Application application = com.apple.eawt.Application
+           //         .getApplication();
             java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
                     getClass().getResource("images/chirptask_clear.png"));
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            application.setDockIconImage(image);
+          //  application.setDockIconImage(image);
         }
     }
 
