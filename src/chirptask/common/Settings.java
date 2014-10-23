@@ -23,7 +23,7 @@ public class Settings {
     public static final int HOTKEY_TOGGLE_SHOW = NativeKeyEvent.VC_G;
 
     public enum CommandType {
-        ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT
+        ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT, CLEAR
     }
 
     public enum StatusType {

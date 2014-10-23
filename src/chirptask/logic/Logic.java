@@ -6,6 +6,7 @@ import org.jnativehook.GlobalScreen;
 
 import chirptask.common.Messages;
 import chirptask.common.Settings;
+import chirptask.common.Settings.CommandType;
 import chirptask.gui.MainGui;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
@@ -17,7 +18,11 @@ public class Logic {
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private static MainGui _gui;
-
+	
+	//For testing purpose - commend out when product is done testing
+	public Logic(){
+		
+	}
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
 		// This will enable auto login uncomment this to allow auto login
@@ -91,6 +96,8 @@ public class Logic {
 		case EXIT:
 			processExit();
 			break;
+		case CLEAR:
+			processClear(StorageHandler.getAllTasks());
 		case INVALID:
 			processInvalid(command);
 			break;
@@ -100,6 +107,49 @@ public class Logic {
 			assert false;
 
 		}
+	}
+
+	public void processClear(List<Task> list ) {
+		for (Task T : list) {
+			if (T.isDone()) {
+				processDelete(Settings.CommandType.DELETE, T);
+			}
+		}
+
+	}
+
+	private void processDelete(CommandType delete, Task t) {
+		Task deletedTask;
+		boolean isSuccess;
+		t.setDeleted(true);
+		deletedTask = _storageHandler.deleteTask(t);
+		if (deletedTask == null) {
+			isSuccess = false;
+		} else {
+			isSuccess = true;
+
+		}
+		filterAndDisplay(delete, isSuccess);
+
+	}
+	
+	private void filterAndDisplay(CommandType delete, boolean isSuccess) {
+		clearUi();
+		FilterTasks.filter();
+		showStatusToUser(delete, isSuccess);
+		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);	
+
+	}
+
+	private void showStatusToUser(CommandType delete, boolean isSuccess) {
+		if (isSuccess == true) {
+			DisplayView.showStatusToUser(Settings.StatusType.MESSAGE, delete,
+					_gui);
+		} else {
+			DisplayView.showStatusToUser(Settings.StatusType.ERROR, delete,
+					_gui);
+		}
+		
 	}
 
 	private void processInvalid(Action command) {
@@ -217,7 +267,6 @@ public class Logic {
 
 	private void filterAndDisplay(Action command, boolean isSuccess) {
 		assert command != null;
-		// set lastAction
 
 		clearUi();
 		FilterTasks.filter();
