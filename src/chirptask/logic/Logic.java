@@ -1,5 +1,6 @@
 package chirptask.logic;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.jnativehook.GlobalScreen;
@@ -14,15 +15,17 @@ import chirptask.storage.Task;
 //@author A0111930W
 public class Logic {
 
+	private static final String FLOATING = "floating";
 	private GroupAction _lastAction;
 	private InputParser _parser;
 	private StorageHandler _storageHandler;
 	private static MainGui _gui;
-	
-	//For testing purpose - commend out when product is done testing
-	public Logic(){
-		
+
+	// For testing purpose - commend out when product is done testing
+	public Logic() {
+
 	}
+
 	public Logic(MainGui gui) {
 		_storageHandler = new StorageHandler();
 		// This will enable auto login uncomment this to allow auto login
@@ -109,7 +112,7 @@ public class Logic {
 		}
 	}
 
-	public void processClear(List<Task> list ) {
+	public void processClear(List<Task> list) {
 		for (Task T : list) {
 			if (T.isDone()) {
 				processDelete(Settings.CommandType.DELETE, T);
@@ -132,12 +135,12 @@ public class Logic {
 		filterAndDisplay(delete, isSuccess);
 
 	}
-	
+
 	private void filterAndDisplay(CommandType delete, boolean isSuccess) {
 		clearUi();
 		FilterTasks.filter();
 		showStatusToUser(delete, isSuccess);
-		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);	
+		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 
 	}
 
@@ -149,7 +152,7 @@ public class Logic {
 			DisplayView.showStatusToUser(Settings.StatusType.ERROR, delete,
 					_gui);
 		}
-		
+
 	}
 
 	private void processInvalid(Action command) {
@@ -184,12 +187,18 @@ public class Logic {
 
 	private void processDone(Action command, Task task) {
 		assert command != null && task != null;
+		if (task.getType().equalsIgnoreCase(FLOATING)) {
+			task.setDate();
+		}
 		task.setDone(true);
 		processEdit(command, task);
 	}
 
 	private void processUndone(Action command, Task task) {
 		assert command != null && task != null;
+		if (task.getType().equalsIgnoreCase(FLOATING)) {
+			task.removeDate();
+		}
 		task.setDone(false);
 		processEdit(command, task);
 	}

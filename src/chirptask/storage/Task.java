@@ -9,34 +9,33 @@ import java.util.List;
  */
 
 public class Task implements Comparable<Task> {
-    private static final String TASK_FLOATING = "floating";
-    
-    
-    //@author A0111889W
+	private static final String TASK_FLOATING = "floating";
+
+	// @author A0111889W
 	private List<String> _contexts;
 	private List<String> _categories;
-	
+
 	private int _taskId;
-	
+
 	private String _description;
-    private String _eTag;
-    private String _googleId;
+	private String _eTag;
+	private String _googleId;
 	private String _type;
-	
+
 	private boolean _isDone = false;
 	private boolean _isDeleted;
 	private boolean _isModified;
-	
-	private Calendar _cal = Calendar.getInstance();
-	
+
+	private Calendar _cal;
+
 	public Task() {
 		_contexts = new ArrayList<String>();
 		_categories = new ArrayList<String>();
 		_eTag = "";
 		_googleId = "";
-        _type = TASK_FLOATING;
-        _isDeleted = false;
-        _isModified = false;
+		_type = TASK_FLOATING;
+		_isDeleted = false;
+		_isModified = false;
 	}
 
 	public Task(int taskId, String description) {
@@ -44,13 +43,13 @@ public class Task implements Comparable<Task> {
 		_taskId = taskId;
 		_description = description;
 	}
-	
-    Task(int taskId, String description, String taskType) {
-        this();
-        _taskId = taskId;
-        _description = description;
-        _type = taskType;
-    }
+
+	Task(int taskId, String description, String taskType) {
+		this();
+		_taskId = taskId;
+		_description = description;
+		_type = taskType;
+	}
 
 	/*
 	 * Compare first by Date object then description
@@ -80,32 +79,32 @@ public class Task implements Comparable<Task> {
 		return _isDone;
 	}
 
-    public void setDone(boolean isDone) {
-        _isDone = isDone;
-    }
-	
+	public void setDone(boolean isDone) {
+		_isDone = isDone;
+	}
+
 	public boolean isDeleted() {
-	    return _isDeleted;
+		return _isDeleted;
 	}
-	
+
 	public void setDeleted(boolean isDeleted) {
-	    _isDeleted = isDeleted;
+		_isDeleted = isDeleted;
 	}
-	
+
 	public boolean isModified() {
-	    return _isModified;
+		return _isModified;
 	}
-	
+
 	public void setModified(boolean isModified) {
-	    _isModified = isModified;
+		_isModified = isModified;
 	}
-	
+
 	public String getETag() {
-	    return _eTag;
+		return _eTag;
 	}
-	
+
 	public void setETag(String eTag) {
-	    _eTag = eTag;
+		_eTag = eTag;
 	}
 
 	public int getTaskId() {
@@ -123,36 +122,39 @@ public class Task implements Comparable<Task> {
 	public void setDescription(String description) {
 		_description = description;
 	}
-	
+
 	public String getGoogleId() {
-	    return _googleId;
+		return _googleId;
 	}
-	
+
 	public void setGoogleId(String googleId) {
-	    _googleId = googleId;
+		_googleId = googleId;
 	}
-	
+
 	public String getType() {
-	    return _type;
+		return _type;
 	}
-	
+
 	public void setType(String type) {
-	    _type = type;
+		_type = type;
 	}
 
 	public Calendar getDate() {
-		Calendar today = Calendar.getInstance();
-		return today;
-	}
-	//@author A0111930W
-	public Calendar getCalendar(){
+		if (_cal == null) {
+			_cal = Calendar.getInstance();
+		}
 		return _cal;
 	}
-	//@author A0111930W
-	public void setCalendar(int month, int date){
-		_cal.set(_cal.get(Calendar.YEAR), month, date);
+
+	// @author A0111930W
+	public void setDate() {
+		_cal = Calendar.getInstance();
 	}
-	
+
+	public void removeDate() {
+		_cal = null;
+	}
+
 	public List<String> getContexts() {
 		return _contexts;
 	}
