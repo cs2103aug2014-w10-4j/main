@@ -372,13 +372,6 @@ public class MainGui extends Application implements NativeKeyListener {
             public void handle(KeyEvent event) {
                 KeyCode keyPressed = ((KeyEvent) event).getCode();
                 cliKeyEnter(keyPressed);
-                cliKeyUp(keyPressed);
-            }
-
-            private void cliKeyUp(KeyCode keyPressed) {
-                if (keyPressed == KeyCode.UP) {
-                    // show previous command.
-                }
             }
 
             private void cliKeyEnter(KeyCode keyPressed) {
@@ -492,27 +485,27 @@ public class MainGui extends Application implements NativeKeyListener {
         HBox descriptionBox = new HBox();
         descriptionBox.setPadding(new Insets(0, 8, 0, 8));
         TextFlow taskDescription = DisplayView.parseDescriptionToTextFlow(
-                description, done);
+                description, done, this);
 
         descriptionBox.setAlignment(Pos.CENTER_LEFT);
         descriptionBox.getChildren().add(taskDescription);
         return descriptionBox;
     }
 
-    public static EventHandler<MouseEvent> clickOnContext() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                // System.out.println(((Text) event.getSource()).getText());
-            }
-        };
+    public EventHandler<MouseEvent> clickOnContext() {
+        return onClickTrendingListText();
     }
 
-    public static EventHandler<MouseEvent> clickOnCategory() {
+    public EventHandler<MouseEvent> clickOnCategory() {
+        return onClickTrendingListText();
+    }
+
+    private EventHandler<MouseEvent> onClickTrendingListText() {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                // System.out.println(((Text) event.getSource()).getText());
+                setFilterText(((Text) event.getSource()).getText());
+                _logic.retrieveInputFromUI("display " + _filterField.getText());
             }
         };
     }

@@ -287,7 +287,7 @@ public class DisplayView {
 
     // @author A0111889W
     public static TextFlow parseDescriptionToTextFlow(String description,
-            boolean done) {
+            boolean done,MainGui _gui) {
         TextFlow parsedDesc = new TextFlow();
         StringBuilder descSb = new StringBuilder(description);
         Text bufferText = new Text();
@@ -309,11 +309,11 @@ public class DisplayView {
             if (descSb.charAt(0) == Settings.CONTEXT_CHAR) {
                 // Context
                 bufferText.getStyleClass().add("context-text");
-                bufferText.setOnMouseClicked(MainGui.clickOnContext());
+                bufferText.setOnMouseClicked(_gui.clickOnContext());
             } else if (descSb.charAt(0) == Settings.CATEGORY_CHAR) {
                 // Category
                 bufferText.getStyleClass().add("category-text");
-                bufferText.setOnMouseClicked(MainGui.clickOnCategory());
+                bufferText.setOnMouseClicked(_gui.clickOnCategory());
             }
 
             descSb.delete(0, index);
