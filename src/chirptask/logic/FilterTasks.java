@@ -34,7 +34,7 @@ public class FilterTasks {
         } else {
             processFilter(currentFilter, gui);
         }
-        
+
     }
 
     public static void hideDeleted(List<Task> taskList) {
@@ -50,20 +50,22 @@ public class FilterTasks {
 
     private static void processFilter(String filters, MainGui gui) {
         String[] param = filters.split("\\s+");
-        
+
         List<Task> templist = new CopyOnWriteArrayList<Task>();
+        templist.addAll(filteredTask);
+        
         
         for (int i = 0; i < param.length; i++) {
             String filter = param[i];
-
+            System.out.println(filter);
             switch (filter) {
                 case "/done" :
                     // search done task
-                    filterDone(templist, true);
+                    filterStatus(templist, true);
                     break;
                 case "/undone" :
                     // search undone task
-                    filterDone(templist, false);
+                    filterStatus(templist, false);
                     break;
                 case "/floating" :
                     filterTaskType(templist, "floating");
@@ -79,6 +81,8 @@ public class FilterTasks {
                     try {
                         Calendar filterdate = processFilterDateParam(param[i + 1]);
                         if (filterdate != null) {
+                            //add 1 so that the filter includes tasks of the same date.
+                            filterdate.add(Calendar.DAY_OF_MONTH, 1);
                             filterTaskByDate(templist, filterdate);
                             DisplayView.showStatusToUser(StatusType.MESSAGE,
                                     gui, param[i + 1]);
@@ -89,8 +93,10 @@ public class FilterTasks {
                         StorageHandler
                                 .logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
                         DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+
                         templist = new ArrayList<Task>(
                                 StorageHandler.getAllTasks());
+
                         break;
 
                     } catch (InvalidParameterException invalidParameterException) {
@@ -103,7 +109,6 @@ public class FilterTasks {
                     filterKeyword(templist, filter);
                     break;
             }
-
             filteredTask = new ArrayList<Task>(templist);
         }
 
@@ -150,9 +155,9 @@ public class FilterTasks {
             // System.out.println(T.getDate().get(Calendar.DATE)+"/"+T.getDate().get(Calendar.MONTH));
             // >= 0 means the current calendar is after or equals to the Task
             // calendar
-            if (filterdate.compareTo(T.getDate()) >= 0) {
+            if (filterdate.compareTo(T.getDate()) < 1) {
                 // System.out.println(filterdate.get(Calendar.DATE));
-                tempList.add(T);
+                tempList.remove(T);
             }
         }
 
@@ -168,30 +173,24 @@ public class FilterTasks {
 
     private static void populateStringList(List<Task> templist, String keywords) {
         for (Task T : filteredTask) {
-            if (T.getDescription().contains(keywords)) {
-                templist.add(T);
+            if (!T.getDescription().contains(keywords)) {
+                templist.remove(T);
             }
         }
     }
 
-    private static void filterDone(List<Task> tempList, boolean done) {
-        populateDoneList(tempList, done);
+    private static void filterStatus(List<Task> tempList, boolean done) {
+        populateStatusList(tempList, done);
         if (tempList.isEmpty()) {
             resetFilteredTask();
-            populateDoneList(tempList, done);
+            populateStatusList(tempList, done);
         }
     }
 
-    private static void populateDoneList(List<Task> tempList, boolean done) {
+    private static void populateStatusList(List<Task> tempList, boolean done) {
         for (Task T : filteredTask) {
-            if (done) {
-                if (T.isDone()) {
-                    tempList.add(T);
-                }
-            } else {
-                if (!T.isDone()) {
-                    tempList.add(T);
-                }
+            if (T.isDone() != done) {
+                tempList.remove(T);
             }
         }
     }
@@ -210,14 +209,11 @@ public class FilterTasks {
     }
 
     private static void populateTaskList(List<Task> tempList, String taskType) {
-
         for (Task T : filteredTask) {
-            if (T.getType().equalsIgnoreCase(taskType)) {
-                tempList.add(T);
-
+            if (!T.getType().equalsIgnoreCase(taskType)) {
+                tempList.remove(T);
             }
         }
-
     }
 
     static void filter() {
