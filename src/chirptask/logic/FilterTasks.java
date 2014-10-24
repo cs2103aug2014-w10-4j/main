@@ -53,11 +53,9 @@ public class FilterTasks {
 
         List<Task> templist = new CopyOnWriteArrayList<Task>();
         templist.addAll(filteredTask);
-        
-        
+
         for (int i = 0; i < param.length; i++) {
             String filter = param[i];
-            System.out.println(filter);
             switch (filter) {
                 case "/done" :
                     // search done task
@@ -81,7 +79,8 @@ public class FilterTasks {
                     try {
                         Calendar filterdate = processFilterDateParam(param[i + 1]);
                         if (filterdate != null) {
-                            //add 1 so that the filter includes tasks of the same date.
+                            // add 1 so that the filter includes tasks of the
+                            // same date.
                             filterdate.add(Calendar.DAY_OF_MONTH, 1);
                             filterTaskByDate(templist, filterdate);
                             DisplayView.showStatusToUser(StatusType.MESSAGE,
@@ -101,8 +100,9 @@ public class FilterTasks {
 
                     } catch (InvalidParameterException invalidParameterException) {
                         DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+                    } finally {
+                        i++;
                     }
-                    i++;
                     break;
                 default:
                     // Entire string keyword search
@@ -219,12 +219,12 @@ public class FilterTasks {
     static void filter() {
         categoriesList = new ArrayList<String>();
         contextsList = new ArrayList<String>();
-        if (currentFilter.isEmpty()) {
-            filteredTask = StorageHandler.getAllTasks();
-            hideDeleted(filteredTask);
-        } else {
-            List<Task> allTask = StorageHandler.getAllTasks();
-            Iterator<Task> iterateTask = allTask.iterator();
+        filteredTask = StorageHandler.getAllTasks();
+        hideDeleted(filteredTask);
+        populateCategoryAndContext();
+
+        if (!currentFilter.isEmpty()) {
+            Iterator<Task> iterateTask = filteredTask.iterator();
             while (iterateTask.hasNext()) {
                 Task nextTask = iterateTask.next();
                 if (nextTask.isDeleted()
@@ -234,7 +234,7 @@ public class FilterTasks {
                 }
             }
         }
-        populateCategoryAndContext();
+
     }
 
     private static void populateCategoryAndContext() {
