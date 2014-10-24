@@ -27,9 +27,8 @@ public class FilterTasks {
         currentFilter = T.getDescription();
 
         // check 1st String to determine the type of filter
-
+        filteredTask = StorageHandler.getAllTasks();
         if (currentFilter.isEmpty()) {
-            filteredTask = StorageHandler.getAllTasks();
             hideDeleted(filteredTask);
             DisplayView.showStatusToUser(StatusType.MESSAGE, gui, "");
         } else {
