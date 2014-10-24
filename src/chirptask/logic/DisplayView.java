@@ -36,7 +36,6 @@ public class DisplayView {
         processUpdateTaskView(tasks, gui);
 
         processUpdateContextAndCategoryView(gui);
-
         // Iterator<Map.Entry<Date, TasksByDate>> it =
         // map.entrySet().iterator();
         // TaskView view = new TaskView();

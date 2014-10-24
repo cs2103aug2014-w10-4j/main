@@ -97,9 +97,9 @@ public class MainGui extends Application implements NativeKeyListener {
         macOsXInitialization();
         prepareScene(primaryStage);
         primaryStage.show();
-
         initJNativeHook();
         _logic = new Logic(this);
+        this.scrollToToday();
     }
 
     private void initJNativeHook() {
@@ -611,6 +611,24 @@ public class MainGui extends Application implements NativeKeyListener {
         _categoryList.getChildren().add(categoryText);
     }
 
+    public void scrollToToday() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Calendar today = Calendar.getInstance();
+                today.set(Calendar.DAY_OF_MONTH, 29);
+                VBox Today = (VBox) _taskViewDateMap.get(DisplayView
+                        .convertDateToString(today));
+                if (Today != null) {
+                    _taskViewScrollPane.setVvalue((Today.getLayoutY())
+                            / (_taskViewByDate.getHeight() - _taskViewScrollPane
+                                    .getHeight()));
+                }
+            }
+        });
+
+    }
+
     public boolean addNewTaskViewDate(Calendar date) {
         assert date != null;
         String parseDateToString = DisplayView.convertDateToString(date);
@@ -662,7 +680,6 @@ public class MainGui extends Application implements NativeKeyListener {
 
         _taskViewDateMap.get(DisplayView.convertDateToString(date))
                 .getChildren().add(taskPane);
-
         return true;
     }
 
@@ -704,8 +721,21 @@ public class MainGui extends Application implements NativeKeyListener {
         // System.out.println("Raw Code " + e.getRawCode());
         // System.out.println("Modifiers : " + e.getModifiers() + " : "
         // + NativeInputEvent.getModifiersText(e.getModifiers()));
+        hotKeyToScrollToToday(e);
         hotKeyToShowStage(e);
         hotKeyToHideStage(e);
+    }
+
+    private void hotKeyToScrollToToday(NativeKeyEvent e) {
+        int mod = e.getModifiers();
+        if (e.getKeyCode() == NativeKeyEvent.VC_T
+                && (mod == NativeInputEvent.CTRL_L_MASK
+                        || mod == NativeInputEvent.CTRL_R_MASK
+                        || mod == NativeInputEvent.CTRL_MASK
+                        || mod == NativeInputEvent.META_L_MASK
+                        || mod == NativeInputEvent.META_R_MASK || mod == NativeInputEvent.META_MASK)) {
+            scrollToToday();
+        }
     }
 
     private void hotKeyToScrollTaskView(NativeKeyEvent e) {
