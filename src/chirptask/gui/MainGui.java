@@ -78,6 +78,8 @@ public class MainGui extends Application implements NativeKeyListener {
     private final VBox _contextList = new VBox();
     private final VBox _taskViewByDate = new VBox();
 
+    private ScrollPane _taskViewScrollPane = new ScrollPane();
+
     private final SortedMap<String, VBox> _taskViewDateMap = new TreeMap<>();
     private static final List<Integer> _taskIndexToId = new ArrayList<>();
 
@@ -193,12 +195,13 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void macOsXInitialization() {
         if (System.getProperty("os.name").equals("Mac OS X")) {
-           // com.apple.eawt.Application application = com.apple.eawt.Application
-           //         .getApplication();
+            // com.apple.eawt.Application application =
+            // com.apple.eawt.Application
+            // .getApplication();
             java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
                     getClass().getResource("images/chirptask_clear.png"));
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-          //  application.setDockIconImage(image);
+            // application.setDockIconImage(image);
         }
     }
 
@@ -230,8 +233,8 @@ public class MainGui extends Application implements NativeKeyListener {
         HBox filterBox = generateFilterBox();
         mainDisplay.setTop(filterBox);
 
-        ScrollPane taskViewScrollPane = generateTasksView();
-        mainDisplay.setCenter(taskViewScrollPane);
+        _taskViewScrollPane = generateTasksView();
+        mainDisplay.setCenter(_taskViewScrollPane);
 
         VBox mainDisplayBottom = generateUserInputAndStatusBar();
         mainDisplay.setBottom(mainDisplayBottom);
@@ -488,7 +491,8 @@ public class MainGui extends Application implements NativeKeyListener {
     private HBox generateTaskDescription(String description, boolean done) {
         HBox descriptionBox = new HBox();
         descriptionBox.setPadding(new Insets(0, 8, 0, 8));
-        TextFlow taskDescription = DisplayView.parseDescriptionToTextFlow(description, done);
+        TextFlow taskDescription = DisplayView.parseDescriptionToTextFlow(
+                description, done);
 
         descriptionBox.setAlignment(Pos.CENTER_LEFT);
         descriptionBox.getChildren().add(taskDescription);
@@ -656,8 +660,8 @@ public class MainGui extends Application implements NativeKeyListener {
         taskPane.setCenter(descriptionBox);
         taskPane.setRight(taskTime);
 
-        _taskViewDateMap.get(DisplayView.convertDateToString(date)).getChildren()
-                .add(taskPane);
+        _taskViewDateMap.get(DisplayView.convertDateToString(date))
+                .getChildren().add(taskPane);
 
         return true;
     }
@@ -685,7 +689,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     @Override
     public void nativeKeyPressed(NativeKeyEvent e) {
-
+        hotKeyToScrollTaskView(e);
     }
 
     @Override
@@ -704,8 +708,30 @@ public class MainGui extends Application implements NativeKeyListener {
         hotKeyToHideStage(e);
     }
 
+    private void hotKeyToScrollTaskView(NativeKeyEvent e) {
+        if (e.getKeyCode() == NativeKeyEvent.VC_UP) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    _taskViewScrollPane.setVvalue(_taskViewScrollPane
+                            .getVvalue() - 0.03);
+                }
+            });
+        }
+        if (e.getKeyCode() == NativeKeyEvent.VC_DOWN) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    _taskViewScrollPane.setVvalue(_taskViewScrollPane
+                            .getVvalue() + 0.03);
+                }
+            });
+        }
+
+    }
+
     private void hotKeyToHideStage(NativeKeyEvent e) {
-        if (e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE)
+        if (e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
@@ -714,6 +740,7 @@ public class MainGui extends Application implements NativeKeyListener {
                     }
                 }
             });
+        }
     }
 
     private void hotKeyToShowStage(NativeKeyEvent e) {
