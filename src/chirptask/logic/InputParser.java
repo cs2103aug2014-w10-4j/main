@@ -23,7 +23,6 @@ public class InputParser {
 	private GroupAction _actions;
 
 	public InputParser() {
-		_actions = new GroupAction();
 	}
 
 	public InputParser(String userInput) {

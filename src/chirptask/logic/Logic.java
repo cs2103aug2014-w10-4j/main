@@ -15,291 +15,291 @@ import chirptask.storage.Task;
 //@author A0111930W
 public class Logic {
 
-	private static final String FLOATING = "floating";
-	private GroupAction _lastAction;
-	private InputParser _parser;
-	private StorageHandler _storageHandler;
-	private static MainGui _gui;
+    private static final String FLOATING = "floating";
+    private GroupAction _lastAction;
+    private InputParser _parser = new InputParser();
+    private StorageHandler _storageHandler = new StorageHandler();
+    private static MainGui _gui;
 
-	// For testing purpose - commend out when product is done testing
-	public Logic() {
+    // For testing purpose - commend out when product is done testing
+    public Logic() {
 
-	}
+    }
 
-	public Logic(MainGui gui) {
-		_storageHandler = new StorageHandler();
-		// This will enable auto login uncomment this to allow auto login
-		// _storageHandler.initCloudStorage();
-		_parser = new InputParser();
-		_gui = gui;
-		FilterTasks.filter();
-		DisplayView.updateTaskView(_gui);
-	}
+    public Logic(MainGui gui) {
+        // This will enable auto login uncomment this to allow auto login
+        // _storageHandler.initCloudStorage();
+        _gui = gui;
 
-	private static void clearUi() {
-		_gui.clearTrendingList();
-		_gui.clearTaskView();
-	}
+        FilterTasks.filter();
+        DisplayView.updateTaskView(_gui);
 
-	public void retrieveInputFromUI(String input) {
-		_parser.receiveInput(input);
-		// Assuming there will always be GroupActions parse by InputParser every
-		// user input.
-		assert _parser.getActions() != null;
+    }
 
-		if (_parser.getActions().getActionList().get(0).getCommandType() != Settings.CommandType.UNDO) {
-			setLastGroupAction(_parser.getActions());
-		}
+    private static void clearUi() {
+        _gui.clearTrendingList();
+        _gui.clearTaskView();
+    }
 
-		processGroupAction(_parser.getActions().getActionList());
-	}
+    public void retrieveInputFromUI(String input) {
+        _parser.receiveInput(input);
+        // Assuming there will always be GroupActions parse by InputParser every
+        // user input.
+        assert _parser.getActions() != null;
 
-	public void processGroupAction(List<Action> list) {
+        if (_parser.getActions().getActionList().get(0).getCommandType() != Settings.CommandType.UNDO) {
+            setLastGroupAction(_parser.getActions());
+        }
 
-		for (Action a : list) {
-			// System.out.println("Hello");
-			executeAction(a);
+        processGroupAction(_parser.getActions().getActionList());
+    }
 
-		}
-	}
+    public void processGroupAction(List<Action> list) {
 
-	// Will take in Action object
-	public void executeAction(Action command) {
-		Settings.CommandType actionType = command.getCommandType();
-		assert actionType != null;
-		Task task = command.getTask();
+        for (Action a : list) {
+            // System.out.println("Hello");
+            executeAction(a);
 
-		switch (actionType) {
-		case ADD:
-			processAdd(command, task);
-			break;
-		case DELETE:
-			processDelete(command, task);
-			break;
-		case DISPLAY:
-			// now can only filter string
-			processDisplay(command, task);
-			break;
-		case EDIT:
-			processEdit(command, task);
-			break;
-		case UNDO:
-			// negate action and run excecuteAction again
-			processUndo();
-			break;
-		case DONE:
-			processDone(command, task);
-			break;
-		case UNDONE:
-			processUndone(command, task);
-			break;
-		case LOGIN:
-			processLogin(command);
-			break;
-		case EXIT:
-			processExit();
-			break;
-		case CLEAR:
-			processClear(StorageHandler.getAllTasks());
-		case INVALID:
-			processInvalid(command);
-			break;
-		default:
-			// Assuming InputParser will always pass a Action object
-			// code will never reach here.
-			assert false;
+        }
+    }
 
-		}
-	}
+    // Will take in Action object
+    public void executeAction(Action command) {
+        Settings.CommandType actionType = command.getCommandType();
+        assert actionType != null;
+        Task task = command.getTask();
 
-	public void processClear(List<Task> list) {
-		for (Task T : list) {
-			if (T.isDone()) {
-				processDelete(Settings.CommandType.DELETE, T);
-			}
-		}
+        switch (actionType) {
+            case ADD :
+                processAdd(command, task);
+                break;
+            case DELETE :
+                processDelete(command, task);
+                break;
+            case DISPLAY :
+                // now can only filter string
+                processDisplay(command, task);
+                break;
+            case EDIT :
+                processEdit(command, task);
+                break;
+            case UNDO :
+                // negate action and run excecuteAction again
+                processUndo();
+                break;
+            case DONE :
+                processDone(command, task);
+                break;
+            case UNDONE :
+                processUndone(command, task);
+                break;
+            case LOGIN :
+                processLogin(command);
+                break;
+            case EXIT :
+                processExit();
+                break;
+            case CLEAR :
+                processClear(StorageHandler.getAllTasks());
+            case INVALID :
+                processInvalid(command);
+                break;
+            default:
+                // Assuming InputParser will always pass a Action object
+                // code will never reach here.
+                assert false;
 
-	}
+        }
+    }
 
-	private void processDelete(CommandType delete, Task t) {
-		Task deletedTask;
-		boolean isSuccess;
-		t.setDeleted(true);
-		deletedTask = _storageHandler.deleteTask(t);
-		if (deletedTask == null) {
-			isSuccess = false;
-		} else {
-			isSuccess = true;
+    public void processClear(List<Task> list) {
+        for (Task T : list) {
+            if (T.isDone()) {
+                processDelete(Settings.CommandType.DELETE, T);
+            }
+        }
 
-		}
-		filterAndDisplay(delete, isSuccess);
+    }
 
-	}
+    private void processDelete(CommandType delete, Task t) {
+        Task deletedTask;
+        boolean isSuccess;
+        t.setDeleted(true);
+        deletedTask = _storageHandler.deleteTask(t);
+        if (deletedTask == null) {
+            isSuccess = false;
+        } else {
+            isSuccess = true;
 
-	private void filterAndDisplay(CommandType delete, boolean isSuccess) {
-		clearUi();
-		FilterTasks.filter();
-		showStatusToUser(delete, isSuccess);
-		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+        }
+        filterAndDisplay(delete, isSuccess);
 
-	}
+    }
 
-	private void showStatusToUser(CommandType delete, boolean isSuccess) {
-		if (isSuccess == true) {
-			DisplayView.showStatusToUser(Settings.StatusType.MESSAGE, delete,
-					_gui);
-		} else {
-			DisplayView.showStatusToUser(Settings.StatusType.ERROR, delete,
-					_gui);
-		}
+    private void filterAndDisplay(CommandType delete, boolean isSuccess) {
+        clearUi();
+        FilterTasks.filter();
+        showStatusToUser(delete, isSuccess);
+        DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 
-	}
+    }
 
-	private void processInvalid(Action command) {
-		// Check whether Action is a command, if is command call GUI to display
-		// on textbox
-		// showStatus to user
-		showStatusToUser(command, false);
-		// log down invalid input to log file
-		logErrorCommand();
+    private void showStatusToUser(CommandType delete, boolean isSuccess) {
+        if (isSuccess == true) {
+            DisplayView.showStatusToUser(Settings.StatusType.MESSAGE, delete,
+                    _gui);
+        } else {
+            DisplayView.showStatusToUser(Settings.StatusType.ERROR, delete,
+                    _gui);
+        }
 
-	}
+    }
 
-	private void logErrorCommand() {
-		StorageHandler.logError(String.format(
-				Messages.LOG_MESSAGE_INVALID_COMMAND,
-				Messages.LOG_MESSAGE_ERROR));
-	}
+    private void processInvalid(Action command) {
+        // Check whether Action is a command, if is command call GUI to display
+        // on textbox
+        // showStatus to user
+        showStatusToUser(command, false);
+        // log down invalid input to log file
+        logErrorCommand();
 
-	private void processExit() {
-		// Add in GUI code to close, storage close
-		GlobalScreen.unregisterNativeHook();
-		System.runFinalization();
-		System.exit(Settings.EXIT_APPLICATION_NO);
-	}
+    }
 
-	private void processLogin(Action command) {
-		assert command != null;
-		boolean isSuccess;
-		isSuccess = _storageHandler.initCloudStorage();
-		this.showStatusToUser(command, isSuccess);
-	}
+    private void logErrorCommand() {
+        StorageHandler.logError(String.format(
+                Messages.LOG_MESSAGE_INVALID_COMMAND,
+                Messages.LOG_MESSAGE_ERROR));
+    }
 
-	private void processDone(Action command, Task task) {
-		assert command != null && task != null;
-		if (task.getType().equalsIgnoreCase(FLOATING)) {
-			task.setDate();
-		}
-		task.setDone(true);
-		processEdit(command, task);
-	}
+    private void processExit() {
+        // Add in GUI code to close, storage close
+        GlobalScreen.unregisterNativeHook();
+        System.runFinalization();
+        System.exit(Settings.EXIT_APPLICATION_NO);
+    }
 
-	private void processUndone(Action command, Task task) {
-		assert command != null && task != null;
-		if (task.getType().equalsIgnoreCase(FLOATING)) {
-			task.removeDate();
-		}
-		task.setDone(false);
-		processEdit(command, task);
-	}
+    private void processLogin(Action command) {
+        assert command != null;
+        boolean isSuccess;
+        isSuccess = _storageHandler.initCloudStorage();
+        this.showStatusToUser(command, isSuccess);
+    }
 
-	private void processUndo() {
-		GroupAction lastAction = getLastGroupAction();
-		GroupAction tempGroupAction = new GroupAction();
-		if (lastAction != null) {
-			for (Action action : lastAction.getActionList()) {
-				Action undoAction = action.undo();
-				undoAction.setUndo(action);
-				tempGroupAction.addAction(undoAction);
+    private void processDone(Action command, Task task) {
+        assert command != null && task != null;
+        if (task.getType().equalsIgnoreCase(FLOATING)) {
+            task.setDate();
+        }
+        task.setDone(true);
+        processEdit(command, task);
+    }
 
-			}
-			setLastGroupAction(tempGroupAction);
-			lastAction = getLastGroupAction();
-			for (Action action : lastAction.getActionList()) {
-				executeAction(action);
-			}
+    private void processUndone(Action command, Task task) {
+        assert command != null && task != null;
+        if (task.getType().equalsIgnoreCase(FLOATING)) {
+            task.removeDate();
+        }
+        task.setDone(false);
+        processEdit(command, task);
+    }
 
-		} else {
-			// showstatus
-			DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING,
-					_gui);
-		}
-	}
+    private void processUndo() {
+        GroupAction lastAction = getLastGroupAction();
+        GroupAction tempGroupAction = new GroupAction();
+        if (lastAction != null) {
+            for (Action action : lastAction.getActionList()) {
+                Action undoAction = action.undo();
+                undoAction.setUndo(action);
+                tempGroupAction.addAction(undoAction);
 
-	private void processEdit(Action command, Task task) {
-		assert command != null && task != null;
-		boolean isSuccess;
-		task.setModified(true);
-		isSuccess = _storageHandler.modifyTask(task);
-		filterAndDisplay(command, isSuccess);
-	}
+            }
+            setLastGroupAction(tempGroupAction);
+            lastAction = getLastGroupAction();
+            for (Action action : lastAction.getActionList()) {
+                executeAction(action);
+            }
 
-	private void processDisplay(Action command, Task task) {
-		assert task != null;
-		clearUi();
-		FilterTasks.filter(task, _gui);
-		_gui.setFilterText(task.getDescription());
-		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
-	}
+        } else {
+            // showstatus
+            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING,
+                    _gui);
+        }
+    }
 
-	private void processDelete(Action command, Task task) {
-		assert command != null && task != null;
-		Task deletedTask;
-		boolean isSuccess;
-		task.setDeleted(true);
-		deletedTask = _storageHandler.deleteTask(task);
-		if (deletedTask == null) {
-			isSuccess = false;
-		} else {
-			isSuccess = true;
+    private void processEdit(Action command, Task task) {
+        assert command != null && task != null;
+        boolean isSuccess;
+        task.setModified(true);
+        isSuccess = _storageHandler.modifyTask(task);
+        filterAndDisplay(command, isSuccess);
+    }
 
-		}
-		filterAndDisplay(command, isSuccess);
-	}
+    private void processDisplay(Action command, Task task) {
+        assert task != null;
+        clearUi();
+        FilterTasks.filter(task, _gui);
+        _gui.setFilterText(task.getDescription());
+        DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+    }
 
-	private void processAdd(Action command, Task task) {
-		assert command != null && task != null;
-		boolean isSuccess;
-		isSuccess = _storageHandler.addTask(task);
-		filterAndDisplay(command, isSuccess);
-	}
+    private void processDelete(Action command, Task task) {
+        assert command != null && task != null;
+        Task deletedTask;
+        boolean isSuccess;
+        task.setDeleted(true);
+        deletedTask = _storageHandler.deleteTask(task);
+        if (deletedTask == null) {
+            isSuccess = false;
+        } else {
+            isSuccess = true;
 
-	public synchronized void refreshUi() {
-		clearUi();
-		FilterTasks.filter();
-		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
-	}
+        }
+        filterAndDisplay(command, isSuccess);
+    }
 
-	public static void refresh() {
-		_gui.refreshUI();
-	}
+    private void processAdd(Action command, Task task) {
+        assert command != null && task != null;
+        boolean isSuccess;
+        isSuccess = _storageHandler.addTask(task);
+        filterAndDisplay(command, isSuccess);
+    }
 
-	private void filterAndDisplay(Action command, boolean isSuccess) {
-		assert command != null;
+    public synchronized void refreshUi() {
+        clearUi();
+        FilterTasks.filter();
+        DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+    }
 
-		clearUi();
-		FilterTasks.filter();
-		showStatusToUser(command, isSuccess);
-		DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
-	}
+    public static void refresh() {
+        _gui.refreshUI();
+    }
 
-	private void showStatusToUser(Action command, boolean isSuccess) {
-		assert command != null;
-		if (isSuccess == true) {
-			DisplayView.showStatusToUser(Settings.StatusType.MESSAGE, command,
-					_gui);
-		} else {
-			DisplayView.showStatusToUser(Settings.StatusType.ERROR, command,
-					_gui);
-		}
-	}
+    private void filterAndDisplay(Action command, boolean isSuccess) {
+        assert command != null;
 
-	public GroupAction getLastGroupAction() {
-		return _lastAction;
-	}
+        clearUi();
+        FilterTasks.filter();
+        showStatusToUser(command, isSuccess);
+        DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+    }
 
-	public void setLastGroupAction(GroupAction lastAction) {
-		this._lastAction = lastAction;
-	}
+    private void showStatusToUser(Action command, boolean isSuccess) {
+        assert command != null;
+        if (isSuccess == true) {
+            DisplayView.showStatusToUser(Settings.StatusType.MESSAGE, command,
+                    _gui);
+        } else {
+            DisplayView.showStatusToUser(Settings.StatusType.ERROR, command,
+                    _gui);
+        }
+    }
+
+    public GroupAction getLastGroupAction() {
+        return _lastAction;
+    }
+
+    public void setLastGroupAction(GroupAction lastAction) {
+        this._lastAction = lastAction;
+    }
 
 }
