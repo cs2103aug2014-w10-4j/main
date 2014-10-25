@@ -101,9 +101,9 @@ public class JUnitTask {
         //These are the Calendar objects will be created by Task object (superclass)
         //These calendars should not be equal to the ones entered above
         //These calendars should be of the current instance time of the host machine
-        calA = deadlineA.getCalendar(); 
-        calB = deadlineB.getCalendar(); 
-        calC = deadlineC.getCalendar(); 
+        calA = deadlineA.getDate();
+        calB = deadlineB.getDate(); 
+        calC = deadlineC.getDate(); 
         
         assertNotEquals("should not equal", "Fri Oct 10 18:10:10 SGT 2014", calA.getTime().toString());
         assertNotEquals("should not equal", "Wed Oct 08 18:10:10 SGT 2014", calB.getTime().toString());

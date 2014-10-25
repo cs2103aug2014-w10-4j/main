@@ -23,134 +23,146 @@ import chirptask.storage.TimedTask;
 
 //@author A0111930W
 public class JUnitLogic {
-	
-	//@Test
-	public void Displaytest() {
-		// Testing display logic with tag /undone /floating
-		//commend out the GUI portion for this to run.
-		Logic a = new Logic(null);
 
-		Action act = new Action();
-		Task task = new Task();
+    // @Test
+    public void Displaytest() {
+        // Testing display logic with tag /undone /floating
+        // commend out the GUI portion for this to run.
+        Logic a = new Logic(null);
 
-		task.setTaskId(-1);
-		task.setDescription("/undone /floating");
-		act.setCommandType(Settings.CommandType.DISPLAY);
-		act.setTask(task);
-		act.setUndo(null);
+        Action act = new Action();
+        Task task = new Task();
 
-		List<Task> list = FilterTasks.getFilteredList();
+        task.setTaskId(-1);
+        task.setDescription("/undone /floating");
+        act.setCommandType(Settings.CommandType.DISPLAY);
+        act.setTask(task);
+        act.setUndo(null);
 
-		a.executeAction(act);
+        List<Task> list = FilterTasks.getFilteredList();
 
-		assertEquals(list, FilterTasks.getFilteredList());
+        a.executeAction(act);
 
-	}
+        assertEquals(list, FilterTasks.getFilteredList());
 
-	@Test
-	public void DisplayViewTest() {
-		
-		//Test method convertTaskDateToString
-		
-		//test floating task
-		Task test1 = new Task();
-		test1.setType("floating");
-		assertEquals("all-day",DisplayView.convertTaskDateToDurationString(test1));
-		
-		//test Deadline task
-		Calendar date = Calendar.getInstance();
-		date.set(2014, 9, 22);
-		date.set(Calendar.HOUR_OF_DAY, 23);
-		date.set(Calendar.MINUTE, 59);
-		Task test2 = new DeadlineTask(1, "test", date);
-		assertEquals("due by 23:59",DisplayView.convertTaskDateToDurationString(test2));
-		
-		//test timedtask
-		Calendar startTime = Calendar.getInstance();
-		Calendar endTime = Calendar.getInstance();
-		startTime.set(2014, 9, 22, 12, 0);
-		endTime.set(2014, 9, 22, 14, 0);
-		Task timed = new TimedTask(2, "test2", startTime,
-				endTime);
-		assertEquals("12:00 to 14:00", DisplayView.convertTaskDateToDurationString(timed));
-		
-		//Boundary -- test a type of task that is not the 3 type 
-		//this should crash the program as this will never happen
-		Task troll = new Task();
-		troll.setType("troll");
-		//DisplayView.convertTaskDateToString(troll);
-		
-		
-	}
-	@Test
-	public void testFilterTasks(){
-		//test Method hideDeleted
-		
-		//Create a list of all deleted task
-		//hideDeleted should return a emptylist
-		List<Task> list = new ArrayList<Task>();
-		List<Task> expected = new ArrayList<Task>();
-		Task A = new Task();
-		Task B = new Task();
-		Task C = new Task();
-		A.setDeleted(true);
-		B.setDeleted(true);
-		C.setDeleted(true);
-		
-		list.add(A);
-		list.add(B);
-		list.add(C);
-		
-		assertEquals(expected, FilterTasks.hideDeleted(list));
-		
-		//Set B to be deleted
-		//hideDeleted should return a list with Task B
-		B.setDeleted(false);
-		expected.add(B);
-		assertEquals(expected, FilterTasks.hideDeleted(list));
-		
-		//setDeleted false for all Tasks
-		//should return a list of all task
-		A.setDeleted(false);
-		C.setDeleted(false);
-		expected.add(A);
-		expected.add(B);
-		assertEquals(expected, FilterTasks.hideDeleted(list));
-		//End of test for hideDeleted
-		
-		//test for method processFilterDateParam
-		
-		//proper date format MM/DD
-		String date1 = "10/22";
-		Calendar testParam = Calendar.getInstance();
-		testParam.set(testParam.get(Calendar.YEAR), 9, 22);
-		
-		Calendar expected1 = null;
-		try {
-		    expected1 = FilterTasks.processFilterDateParam(date1);
-		} catch (InvalidParameterException invalidParameterException) {
-		    
-		}
-		
-		assertNotNull(expected1);
-		assertEquals(testParam.get(Calendar.YEAR), expected1.get(Calendar.YEAR));
-		assertEquals(testParam.get(Calendar.MONTH), expected1.get(Calendar.MONTH));
-		assertEquals(testParam.get(Calendar.DAY_OF_MONTH), expected1.get(Calendar.DAY_OF_MONTH));
-		
-		//wrong date format MM-DD
-		//Return a current Calendar object
-		String date2 = "10-22";
-		Calendar expected2 = null;
-		try {
-		    expected2 = FilterTasks.processFilterDateParam(date2);
-		} catch (InvalidParameterException invalidParameterException) {
-		    assertNotNull(invalidParameterException);
-		}
-		
-		assertNull(expected2);
-		//End of test for processFilterDateParam
-	}
-	
+    }
 
-	
+    @Test
+    public void DisplayViewTest() {
+
+        // Test method convertTaskDateToString
+
+        // test floating task
+        Task test1 = new Task();
+        test1.setType("floating");
+        assertEquals("all-day",
+                DisplayView.convertTaskDateToDurationString(test1));
+
+        // test Deadline task
+        Calendar date = Calendar.getInstance();
+        date.set(2014, 9, 22);
+        date.set(Calendar.HOUR_OF_DAY, 23);
+        date.set(Calendar.MINUTE, 59);
+        Task test2 = new DeadlineTask(1, "test", date);
+        assertEquals("due by 23:59",
+                DisplayView.convertTaskDateToDurationString(test2));
+
+        // test timedtask
+        Calendar startTime = Calendar.getInstance();
+        Calendar endTime = Calendar.getInstance();
+        startTime.set(2014, 9, 22, 12, 0);
+        endTime.set(2014, 9, 22, 14, 0);
+        Task timed = new TimedTask(2, "test2", startTime, endTime);
+        assertEquals("12:00 to 14:00",
+                DisplayView.convertTaskDateToDurationString(timed));
+
+        // Boundary -- test a type of task that is not the 3 type
+        // this should crash the program as this will never happen
+        Task troll = new Task();
+        troll.setType("troll");
+        // DisplayView.convertTaskDateToString(troll);
+
+    }
+
+    @Test
+    public void testFilterTasks() {
+        // test Method hideDeleted
+
+        // Create a list of all deleted task
+        // hideDeleted should return a emptylist
+        List<Task> list = new ArrayList<Task>();
+        List<Task> expected = new ArrayList<Task>();
+        Task A = new Task();
+        Task B = new Task();
+        Task C = new Task();
+        A.setDeleted(true);
+        B.setDeleted(true);
+        C.setDeleted(true);
+
+        list.add(A);
+        list.add(B);
+        list.add(C);
+
+        FilterTasks.hideDeleted(list);
+        assertEquals(expected, list);
+
+        // Set B to be deleted
+        // hideDeleted should return a list with Task B
+        B.setDeleted(false);
+        list.add(A);
+        list.add(B);
+        list.add(C);
+        expected.add(B);
+
+        FilterTasks.hideDeleted(list);
+        assertEquals(expected, list);
+
+        // setDeleted false for all Tasks
+        // should return a list of all task
+        A.setDeleted(false);
+        C.setDeleted(false);
+        list.add(A);
+        list.add(C);
+        expected.add(A);
+        expected.add(C);
+
+        FilterTasks.hideDeleted(list);
+        assertEquals(expected, list);
+        // End of test for hideDeleted
+
+        // test for method processFilterDateParam
+
+        // proper date format MM/DD
+        String date1 = "10/22";
+        Calendar testParam = Calendar.getInstance();
+        testParam.set(testParam.get(Calendar.YEAR), 9, 22);
+
+        Calendar expected1 = null;
+        try {
+            expected1 = FilterTasks.processFilterDateParam(date1);
+        } catch (InvalidParameterException invalidParameterException) {
+
+        }
+
+        assertNotNull(expected1);
+        assertEquals(testParam.get(Calendar.YEAR), expected1.get(Calendar.YEAR));
+        assertEquals(testParam.get(Calendar.MONTH),
+                expected1.get(Calendar.MONTH));
+        assertEquals(testParam.get(Calendar.DAY_OF_MONTH),
+                expected1.get(Calendar.DAY_OF_MONTH));
+
+        // wrong date format MM-DD
+        // Return a current Calendar object
+        String date2 = "10-22";
+        Calendar expected2 = null;
+        try {
+            expected2 = FilterTasks.processFilterDateParam(date2);
+        } catch (InvalidParameterException invalidParameterException) {
+            assertNotNull(invalidParameterException);
+        }
+
+        assertNull(expected2);
+        // End of test for processFilterDateParam
+    }
+
 }
