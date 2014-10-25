@@ -279,8 +279,8 @@ public class Logic {
 
         clearUi();
         FilterTasks.filter();
-        showStatusToUser(command, isSuccess);
         DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+        showStatusToUser(command, isSuccess);
     }
 
     private void showStatusToUser(Action command, boolean isSuccess) {
