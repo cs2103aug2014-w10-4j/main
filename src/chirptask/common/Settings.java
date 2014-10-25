@@ -1,6 +1,15 @@
 package chirptask.common;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.jnativehook.keyboard.NativeKeyEvent;
+
+import chirptask.storage.StorageHandler;
 
 /**
  *
@@ -30,4 +39,41 @@ public class Settings {
         ERROR, MESSAGE
     }
 
+    private static final String propertiesFile = "config.properties";
+    private static final File configFile = new File(propertiesFile);
+    private static final Properties props = new Properties();
+
+    public Settings() {
+        if (configFile.exists()) {
+            readPropertiesFromFile();
+        } else {
+            writeDefaultPropertiesToFile();
+        }
+    }
+
+    private void writeDefaultPropertiesToFile() {
+        try {
+            FileWriter writer = new FileWriter(configFile);
+
+            props.store(writer, "Default Settings");
+            writer.close();
+        } catch (IOException e) {
+            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+                    "while writing to file.\n" + e.getMessage()));
+        }
+    }
+
+    public void readPropertiesFromFile() {
+
+        try {
+            FileReader reader = new FileReader(configFile);
+            props.load(reader);
+            reader.close();
+        } catch (FileNotFoundException ex) {
+            writeDefaultPropertiesToFile();
+        } catch (IOException ex) {
+            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+                    "while reading from file.\n" + ex.getMessage()));
+        }
+    }
 }
