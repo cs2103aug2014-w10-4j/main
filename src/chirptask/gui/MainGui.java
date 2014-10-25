@@ -97,6 +97,7 @@ public class MainGui extends Application implements NativeKeyListener {
         macOsXInitialization();
         prepareScene(primaryStage);
         primaryStage.show();
+
         initJNativeHook();
         _logic = new Logic(this);
         this.scrollToToday();
@@ -604,14 +605,12 @@ public class MainGui extends Application implements NativeKeyListener {
         _categoryList.getChildren().add(categoryText);
     }
 
-    public void scrollToToday() {
+    private void scrollToToday() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                Calendar today = Calendar.getInstance();
-                today.set(Calendar.DAY_OF_MONTH, 29);
                 VBox Today = (VBox) _taskViewDateMap.get(DisplayView
-                        .convertDateToString(today));
+                        .convertDateToString(Calendar.getInstance()));
                 if (Today != null) {
                     _taskViewScrollPane.setVvalue((Today.getLayoutY())
                             / (_taskViewByDate.getHeight() - _taskViewScrollPane
