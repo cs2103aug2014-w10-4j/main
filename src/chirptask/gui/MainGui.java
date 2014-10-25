@@ -34,6 +34,7 @@ import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -47,6 +48,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -97,7 +99,6 @@ public class MainGui extends Application implements NativeKeyListener {
         macOsXInitialization();
         prepareScene(primaryStage);
         primaryStage.show();
-
         initJNativeHook();
         _logic = new Logic(this);
         this.scrollToToday();
@@ -208,22 +209,37 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private BorderPane generateHeaderBar() {
         BorderPane headerBar = new BorderPane();
-
         headerBar.setPadding(new Insets(13, 10, 8, 10));
         headerBar.getStyleClass().add("header-bar");
 
-        Text sceneTitle = new Text(Messages.TITLE_SOFTWARE);
-        sceneTitle.getStyleClass().add("header-title");
-
         Text settingsButton = new Text(Messages.TITLE_SETTINGS);
         settingsButton.getStyleClass().add("header-title");
-        // ImageView imgView = new ImageView(new
-        // Image("file:chirptask_clear.png"));
+        BorderPane.setAlignment(settingsButton, Pos.BOTTOM_RIGHT);
 
-        headerBar.setLeft(sceneTitle);
-        // headerBar.setRight(settingsButton);
+        HBox titleBox = generateTitleBox();
 
+        headerBar.setLeft(titleBox);
+        headerBar.setRight(settingsButton);
         return headerBar;
+    }
+
+    private HBox generateTitleBox() {
+        Text sceneTitle = new Text(Messages.TITLE_SOFTWARE);
+        sceneTitle.getStyleClass().add("header-title");
+        sceneTitle.setTextAlignment(TextAlignment.CENTER);
+
+        ImageView imgView = new ImageView(new Image(this.getClass()
+                .getResourceAsStream("images/chirptask_clear.png")));
+        imgView.setFitHeight(30);
+        imgView.setPreserveRatio(true);
+        imgView.setSmooth(true);
+        imgView.setCache(true);
+
+        HBox titleBox = new HBox();
+        titleBox.setSpacing(10);
+        titleBox.setAlignment(Pos.BOTTOM_LEFT);
+        titleBox.getChildren().addAll(imgView, sceneTitle);
+        return titleBox;
     }
 
     private BorderPane generateMainDisplay() {
@@ -318,55 +334,6 @@ public class MainGui extends Application implements NativeKeyListener {
         return filterBox;
     }
 
-    private EventHandler<KeyEvent> filterModified() {
-        return new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                // check difference
-                if (event.getCode() == KeyCode.ENTER) {
-                    _logic.retrieveInputFromUI("display "
-                            + _filterField.getText());
-                }
-            }
-        };
-    }
-
-    private VBox generateUserInputAndStatusBar() {
-        HBox.setHgrow(_commandLineInterface, Priority.ALWAYS);
-        _commandLineInterface.setOnKeyPressed(cliKeyPressHandler());
-
-        VBox mainDisplayBottom = new VBox();
-
-        HBox userInputBox = generateUserInputInterface();
-        VBox statusBar = generateStatusBarInterface();
-
-        mainDisplayBottom.getChildren().addAll(userInputBox, statusBar);
-
-        return mainDisplayBottom;
-    }
-
-    private VBox generateStatusBarInterface() {
-        _statusText.setTextOverrun(OverrunStyle.ELLIPSIS);
-        setStatus(Messages.DEFAULT_STATUS);
-
-        VBox statusBar = new VBox();
-        statusBar.getStyleClass().add("status-bar");
-        statusBar.setPadding(new Insets(5));
-        statusBar.getChildren().add(_statusText);
-        return statusBar;
-    }
-
-    private HBox generateUserInputInterface() {
-        Text userInputLabel = new Text("Input: ");
-
-        HBox userInputBox = new HBox();
-        userInputBox.setPadding(new Insets(5));
-        userInputBox.setAlignment(Pos.CENTER);
-        userInputBox.getChildren().add(userInputLabel);
-        userInputBox.getChildren().add(_commandLineInterface);
-        return userInputBox;
-    }
-
     private EventHandler<KeyEvent> cliKeyPressHandler() {
         return new EventHandler<KeyEvent>() {
             @Override
@@ -384,37 +351,17 @@ public class MainGui extends Application implements NativeKeyListener {
         };
     }
 
-    private ScrollPane generateTasksView() {
-        ScrollPane taskViewScrollPane = new ScrollPane();
-        taskViewScrollPane.setPadding(new Insets(5));
-        taskViewScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        taskViewScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
-        taskViewScrollPane.setContent(_taskViewByDate);
-        taskViewScrollPane.setFitToWidth(true);
-
-        return taskViewScrollPane;
-    }
-
-    private Text generateTaskTimeText(String time, boolean done) {
-        Text taskTime = new Text(time);
-        taskTime.getStyleClass().add("task-time");
-        taskTime.setStrikethrough(done);
-        return taskTime;
-    }
-
-    private Pane generateTaskCheckBox(boolean Done, final BorderPane taskPane) {
-        CheckBox markTaskAsDone = new CheckBox();
-        markTaskAsDone.setSelected(Done);
-
-        markTaskAsDone.selectedProperty().addListener(
-                listenerForTaskStatusChange(taskPane));
-
-        Pane checkBoxPane = new Pane();
-        checkBoxPane.setMaxWidth(20);
-        checkBoxPane.getChildren().add(markTaskAsDone);
-
-        return checkBoxPane;
+    private EventHandler<KeyEvent> filterModified() {
+        return new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                // check difference
+                if (event.getCode() == KeyCode.ENTER) {
+                    _logic.retrieveInputFromUI("display "
+                            + _filterField.getText());
+                }
+            }
+        };
     }
 
     private ChangeListener<Boolean> listenerForTaskStatusChange(
@@ -446,51 +393,6 @@ public class MainGui extends Application implements NativeKeyListener {
 
             }
         };
-    }
-
-    private BorderPane generateTaskViewHeader(Calendar date) {
-
-        Text dayLabel = new Text();
-        dayLabel.setText(DAY_OF_WEEK[date.get(Calendar.DAY_OF_WEEK) - 1]);
-
-        Text dateLabel = new Text();
-        dateLabel.setText(date.get(Calendar.DAY_OF_MONTH) + " "
-                + MONTH[date.get(Calendar.MONTH)] + ", "
-                + (date.get(Calendar.YEAR)));
-
-        BorderPane taskViewHeader = new BorderPane();
-        taskViewHeader.setPadding(new Insets(5, 5, 3, 5));
-        taskViewHeader.setLeft(dayLabel);
-        taskViewHeader.setRight(dateLabel);
-
-        boolean isToday = DisplayView.convertDateToString(date).equals(
-                DisplayView.convertDateToString(Calendar.getInstance()));
-        if (isToday) {
-            taskViewHeader.getStyleClass().add("taskView-header-today");
-            formatTextLabel(dayLabel, "#CC6C6B");
-            formatTextLabel(dateLabel, "#CC6C6B");
-        } else {
-            taskViewHeader.getStyleClass().add("taskView-header");
-            formatTextLabel(dayLabel, "#777");
-            formatTextLabel(dateLabel, "#777");
-        }
-        return taskViewHeader;
-    }
-
-    private void formatTextLabel(Text Label, String color) {
-        Label.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 12));
-        Label.setFill(Color.web(color));
-    }
-
-    private HBox generateTaskDescription(String description, boolean done) {
-        HBox descriptionBox = new HBox();
-        descriptionBox.setPadding(new Insets(0, 8, 0, 8));
-        TextFlow taskDescription = DisplayView.parseDescriptionToTextFlow(
-                description, done, this);
-
-        descriptionBox.setAlignment(Pos.CENTER_LEFT);
-        descriptionBox.getChildren().add(taskDescription);
-        return descriptionBox;
     }
 
     public EventHandler<MouseEvent> clickOnContext() {
@@ -548,6 +450,120 @@ public class MainGui extends Application implements NativeKeyListener {
                 }
             }
         });
+    }
+
+    private VBox generateUserInputAndStatusBar() {
+        HBox.setHgrow(_commandLineInterface, Priority.ALWAYS);
+        _commandLineInterface.setOnKeyPressed(cliKeyPressHandler());
+
+        VBox mainDisplayBottom = new VBox();
+
+        HBox userInputBox = generateUserInputInterface();
+        VBox statusBar = generateStatusBarInterface();
+
+        mainDisplayBottom.getChildren().addAll(userInputBox, statusBar);
+
+        return mainDisplayBottom;
+    }
+
+    private VBox generateStatusBarInterface() {
+        _statusText.setTextOverrun(OverrunStyle.ELLIPSIS);
+        setStatus(Messages.DEFAULT_STATUS);
+
+        VBox statusBar = new VBox();
+        statusBar.getStyleClass().add("status-bar");
+        statusBar.setPadding(new Insets(5));
+        statusBar.getChildren().add(_statusText);
+        return statusBar;
+    }
+
+    private HBox generateUserInputInterface() {
+        Text userInputLabel = new Text("Input: ");
+
+        HBox userInputBox = new HBox();
+        userInputBox.setPadding(new Insets(5));
+        userInputBox.setAlignment(Pos.CENTER);
+        userInputBox.getChildren().add(userInputLabel);
+        userInputBox.getChildren().add(_commandLineInterface);
+        return userInputBox;
+    }
+
+    private ScrollPane generateTasksView() {
+        ScrollPane taskViewScrollPane = new ScrollPane();
+        taskViewScrollPane.setPadding(new Insets(5));
+        taskViewScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        taskViewScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+        taskViewScrollPane.setContent(_taskViewByDate);
+        taskViewScrollPane.setFitToWidth(true);
+
+        return taskViewScrollPane;
+    }
+
+    private Text generateTaskTimeText(String time, boolean done) {
+        Text taskTime = new Text(time);
+        taskTime.getStyleClass().add("task-time");
+        taskTime.setStrikethrough(done);
+        return taskTime;
+    }
+
+    private Pane generateTaskCheckBox(boolean Done, final BorderPane taskPane) {
+        CheckBox markTaskAsDone = new CheckBox();
+        markTaskAsDone.setSelected(Done);
+
+        markTaskAsDone.selectedProperty().addListener(
+                listenerForTaskStatusChange(taskPane));
+
+        Pane checkBoxPane = new Pane();
+        checkBoxPane.setMaxWidth(20);
+        checkBoxPane.getChildren().add(markTaskAsDone);
+
+        return checkBoxPane;
+    }
+
+    private BorderPane generateTaskViewHeader(Calendar date) {
+
+        Text dayLabel = new Text();
+        dayLabel.setText(DAY_OF_WEEK[date.get(Calendar.DAY_OF_WEEK) - 1]);
+
+        Text dateLabel = new Text();
+        dateLabel.setText(date.get(Calendar.DAY_OF_MONTH) + " "
+                + MONTH[date.get(Calendar.MONTH)] + ", "
+                + (date.get(Calendar.YEAR)));
+
+        BorderPane taskViewHeader = new BorderPane();
+        taskViewHeader.setPadding(new Insets(5, 5, 3, 5));
+        taskViewHeader.setLeft(dayLabel);
+        taskViewHeader.setRight(dateLabel);
+
+        boolean isToday = DisplayView.convertDateToString(date).equals(
+                DisplayView.convertDateToString(Calendar.getInstance()));
+        if (isToday) {
+            taskViewHeader.getStyleClass().add("taskView-header-today");
+            formatTextLabel(dayLabel, "#CC6C6B");
+            formatTextLabel(dateLabel, "#CC6C6B");
+        } else {
+            taskViewHeader.getStyleClass().add("taskView-header");
+            formatTextLabel(dayLabel, "#777");
+            formatTextLabel(dateLabel, "#777");
+        }
+        return taskViewHeader;
+    }
+
+    private void formatTextLabel(Text Label, String color) {
+        Label.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 12));
+        Label.setFill(Color.web(color));
+    }
+
+    private HBox generateTaskDescription(String description, boolean done) {
+        HBox descriptionBox = new HBox();
+        descriptionBox.setPadding(new Insets(0, 8, 0, 8));
+        TextFlow taskDescription = DisplayView.parseDescriptionToTextFlow(
+                description, done, this);
+
+        descriptionBox.setAlignment(Pos.CENTER_LEFT);
+        descriptionBox.getChildren().add(taskDescription);
+        return descriptionBox;
     }
 
     public String getFilter() {

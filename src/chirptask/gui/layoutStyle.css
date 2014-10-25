@@ -14,7 +14,7 @@
 }
 
 .status-bar, .header-bar {
-    -fx-background-color: gainsboro;
+    -fx-background-color: rgb(241,241,241);
 }
 
 .status-message {
@@ -87,7 +87,7 @@
 }
 
 .task-pane:hover {
-	-fx-background-color: #E0EAF8;
+	-fx-background-color: rgb(229,234,238);
 	-fx-background-radius:5.0px;
 	-fx-border-width:0.0px;
 	-fx-background-insets:-2.0px -3.0px -2.0px -3.0px;
