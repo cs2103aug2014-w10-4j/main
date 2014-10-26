@@ -14,6 +14,7 @@ import java.util.Calendar;
 import org.junit.Test;
 
 import chirptask.common.Messages;
+import chirptask.common.Settings;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.EventLogger;
 import chirptask.storage.Task;
@@ -22,6 +23,7 @@ import chirptask.storage.TimedTask;
 //@author A0111889W
 public class JUnitEventLogger {
 
+    Settings settings = new Settings();
     Calendar today = Calendar.getInstance();
     Calendar tomorrow = Calendar.getInstance();
 

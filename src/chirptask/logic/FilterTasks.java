@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import chirptask.common.Messages;
+import chirptask.common.Settings;
 import chirptask.common.Settings.StatusType;
 import chirptask.gui.MainGui;
 import chirptask.storage.StorageHandler;
@@ -19,7 +20,7 @@ public class FilterTasks {
     private static List<Task> filteredTask;
     private static List<String> categoriesList;
     private static List<String> contextsList;
-    private static String currentFilter = "";
+    private static String currentFilter = Settings.DEFAULT_FILTER;
     private static final int PARAM_FILTER = 1;
 
     static void filter(Task T, MainGui gui) {
@@ -28,8 +29,8 @@ public class FilterTasks {
 
         // check 1st String to determine the type of filter
         filteredTask = StorageHandler.getAllTasks();
+        hideDeleted(filteredTask);
         if (currentFilter.isEmpty()) {
-            hideDeleted(filteredTask);
             DisplayView.showStatusToUser(StatusType.MESSAGE, gui, "");
         } else {
             processFilter(currentFilter, gui);
@@ -216,7 +217,7 @@ public class FilterTasks {
         }
     }
 
-    static void filter() {
+    static void filter(MainGui gui) {
         categoriesList = new ArrayList<String>();
         contextsList = new ArrayList<String>();
         filteredTask = StorageHandler.getAllTasks();
@@ -224,15 +225,7 @@ public class FilterTasks {
         populateCategoryAndContext();
 
         if (!currentFilter.isEmpty()) {
-            Iterator<Task> iterateTask = filteredTask.iterator();
-            while (iterateTask.hasNext()) {
-                Task nextTask = iterateTask.next();
-                if (nextTask.isDeleted()
-                        || !nextTask.getDescription().equalsIgnoreCase(
-                                currentFilter)) {
-                    iterateTask.remove();
-                }
-            }
+            processFilter(currentFilter, gui);
         }
 
     }

@@ -88,6 +88,7 @@ public class MainGui extends Application implements NativeKeyListener {
     private Stage _primaryStage;
 
     private Logic _logic;
+    private Settings _settings;
 
     /*
      * (non-Javadoc)
@@ -96,6 +97,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     @Override
     public void start(Stage primaryStage) {
+        _settings = new Settings();
         macOsXInitialization();
         prepareScene(primaryStage);
         primaryStage.show();
@@ -714,6 +716,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     @Override
     public void nativeKeyPressed(NativeKeyEvent e) {
+        hotKeyToFocusCLI(e);
         hotKeyToScrollTaskView(e);
     }
 
@@ -732,6 +735,22 @@ public class MainGui extends Application implements NativeKeyListener {
         hotKeyToScrollToToday(e);
         hotKeyToShowStage(e);
         hotKeyToHideStage(e);
+    }
+
+    @Override
+    public void nativeKeyTyped(NativeKeyEvent e) {
+
+    }
+
+    private void hotKeyToFocusCLI(NativeKeyEvent e) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (_primaryStage.isFocused() && !_filterField.isFocused()) {
+                    _commandLineInterface.requestFocus();
+                }
+            }
+        });
     }
 
     private void hotKeyToScrollToToday(NativeKeyEvent e) {
@@ -803,11 +822,6 @@ public class MainGui extends Application implements NativeKeyListener {
                 }
             });
         }
-    }
-
-    @Override
-    public void nativeKeyTyped(NativeKeyEvent e) {
-
     }
 
 }

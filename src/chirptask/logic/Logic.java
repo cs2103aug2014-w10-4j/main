@@ -31,7 +31,7 @@ public class Logic {
         // _storageHandler.initCloudStorage();
         _gui = gui;
 
-        FilterTasks.filter();
+        FilterTasks.filter(_gui);
         DisplayView.updateTaskView(_gui);
 
     }
@@ -138,7 +138,7 @@ public class Logic {
 
     private void filterAndDisplay(CommandType delete, boolean isSuccess) {
         clearUi();
-        FilterTasks.filter();
+        FilterTasks.filter(_gui);
         showStatusToUser(delete, isSuccess);
         DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
 
@@ -175,7 +175,7 @@ public class Logic {
         // Add in GUI code to close, storage close
         GlobalScreen.unregisterNativeHook();
         System.runFinalization();
-        System.exit(Settings.EXIT_APPLICATION_NO);
+        System.exit(Settings.SYSTEM_EXIT_NORMAL);
     }
 
     private void processLogin(Action command) {
@@ -266,7 +266,7 @@ public class Logic {
 
     public synchronized void refreshUi() {
         clearUi();
-        FilterTasks.filter();
+        FilterTasks.filter(_gui);
         DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
     }
 
@@ -278,7 +278,7 @@ public class Logic {
         assert command != null;
 
         clearUi();
-        FilterTasks.filter();
+        FilterTasks.filter(_gui);
         DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
         showStatusToUser(command, isSuccess);
     }
