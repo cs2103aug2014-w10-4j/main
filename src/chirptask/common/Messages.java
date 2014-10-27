@@ -14,7 +14,8 @@ public class Messages {
 	public static final String LOG_MESSAGE_GET_TASK = "%1$s Retrieved task with Id: %2$s.";
 	public static final String LOG_MESSAGE_GET_ALL_TASKS = "%1$s Retrieved all tasks.";
 	public static final String LOG_MESSAGE_INVALID_COMMAND = "Invalid command";
-	public static final String LOG_MESSAGE_LOGIN = "%1$s: Login";
+	public static final String LOG_MESSAGE_LOGIN = "%1$s Login";
+	public static final String LOG_MESSAGE_SYNC = "%1$s Sync to google";
 	public static final String LOG_MESSAGE_DONE = "%1$s: Done %2$s";
 	public static final String LOG_MESSAGE_UNDONE = "%1$s: Undone %2$s";
 	public static final String LOG_MESSAGE_DISPLAY = "%1$s Displayed %2$s.";

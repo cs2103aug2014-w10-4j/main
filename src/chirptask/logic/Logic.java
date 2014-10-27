@@ -101,6 +101,10 @@ public class Logic {
                 break;
             case CLEAR :
                 processClear(StorageHandler.getAllTasks());
+                break;
+            case SYNC:
+                processSync(command);
+                break;
             case INVALID :
                 processInvalid(command);
                 break;
@@ -110,6 +114,13 @@ public class Logic {
                 assert false;
 
         }
+    }
+
+    private void processSync(Action command) {
+        assert command != null;
+        boolean isSuccess;
+        isSuccess = _storageHandler.initCloudStorage();
+        this.showStatusToUser(command, isSuccess);
     }
 
     public void processClear(List<Task> list) {

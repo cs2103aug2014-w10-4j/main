@@ -193,7 +193,10 @@ public class DisplayView {
                 processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN,
                         Messages.LOG_MESSAGE_ERROR);
                 break;
-
+            case SYNC:
+                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC,
+                        Messages.LOG_MESSAGE_ERROR);
+                break;
             default:
                 processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
                         Messages.LOG_MESSAGE_ERROR, "");
@@ -232,6 +235,11 @@ public class DisplayView {
             case DISPLAY:
                 processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
                         Messages.LOG_MESSAGE_SUCCESS);
+                break;
+            case SYNC:
+                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC,
+                        Messages.LOG_MESSAGE_SUCCESS);
+                break;
             default:
 
                 break;
