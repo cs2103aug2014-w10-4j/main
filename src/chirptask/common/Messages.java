@@ -16,6 +16,7 @@ public class Messages {
 	public static final String LOG_MESSAGE_INVALID_COMMAND = "Invalid command";
 	public static final String LOG_MESSAGE_LOGIN = "%1$s Login";
 	public static final String LOG_MESSAGE_SYNC = "%1$s Sync to google";
+	public static final String LOG_MESSAGE_SYNC_FAIL = "%1$s Sync to google, Please login to enable sync";
 	public static final String LOG_MESSAGE_DONE = "%1$s: Done %2$s";
 	public static final String LOG_MESSAGE_UNDONE = "%1$s: Undone %2$s";
 	public static final String LOG_MESSAGE_DISPLAY = "%1$s Displayed %2$s.";
@@ -25,6 +26,7 @@ public class Messages {
 	public static final String LOG_MESSAGE_UNDO_NOTHING = "Nothing to undo";
 	public static final String LOG_MESSAGE_SUCCESS_OR_FAILURE = "%1$s execute %2$s";
 	public static final String LOG_MESSAGE_LOGOUT = "%1$s Logout";
+	public static final String LOG_MESSAGE_SYN_INIT = "Initiated";
 	
 	public static final String LABEL_FILTER = "Filter: ";
 	public static final String TITLE_SETTINGS = "Settings";

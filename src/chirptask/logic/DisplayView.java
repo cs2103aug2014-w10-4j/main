@@ -201,15 +201,15 @@ public class DisplayView {
                         Messages.LOG_MESSAGE_ERROR);
                 break;
             case LOGIN:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN,
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, false,
                         Messages.LOG_MESSAGE_ERROR);
                 break;
             case SYNC:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC,
-                        Messages.LOG_MESSAGE_ERROR);
+                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC_FAIL, false,
+                        Messages.LOG_MESSAGE_FAIL);
                 break;
             case LOGOUT:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT,
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT, false,
                         Messages.LOG_MESSAGE_ERROR);
                 break;
             default:
@@ -244,7 +244,7 @@ public class DisplayView {
                         Messages.LOG_MESSAGE_SUCCESS);
                 break;
             case LOGIN:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN,
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, true,
                         Messages.LOG_MESSAGE_SUCCESS);
                 break;
             case DISPLAY:
@@ -252,8 +252,8 @@ public class DisplayView {
                         Messages.LOG_MESSAGE_SUCCESS);
                 break;
             case SYNC:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC, true,
+                        Messages.LOG_MESSAGE_SYN_INIT);
                 break;
             default:
 
@@ -291,8 +291,8 @@ public class DisplayView {
      * @param result
      */
     private static void processGuiLogin(MainGui gui, String message,
-            String result) {
-        if (result.equalsIgnoreCase(Messages.LOG_MESSAGE_SUCCESS)) {
+            Boolean isSuccess, String result) {
+        if (isSuccess) {
             gui.setStatus(String.format(message, result));
         } else {
             gui.setError(String.format(message, result));

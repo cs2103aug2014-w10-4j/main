@@ -70,51 +70,51 @@ public class Logic {
         Task task = command.getTask();
 
         switch (actionType) {
-            case ADD :
-                processAdd(command, task);
-                break;
-            case DELETE :
-                processDelete(command, task);
-                break;
-            case DISPLAY :
-                // now can only filter string
-                processDisplay(command, task);
-                break;
-            case EDIT :
-                processEdit(command, task);
-                break;
-            case UNDO :
-                // negate action and run excecuteAction again
-                processUndo();
-                break;
-            case DONE :
-                processDone(command, task);
-                break;
-            case UNDONE :
-                processUndone(command, task);
-                break;
-            case LOGIN :
-                processLogin(command);
-                break;
-            case EXIT :
-                processExit();
-                break;
-            case CLEAR :
-                processClear(StorageHandler.getAllTasks());
-                break;
-            case SYNC:
-                processSync(command);
-                break;
-            case LOGOUT:
-                processLogout(command);
-                break;
-            case INVALID :
-                processInvalid(command);
-                break;
-            default:
-                // Assuming InputParser will always pass a Action object
-                // code will never reach here.
-                assert false;
+        case ADD:
+            processAdd(command, task);
+            break;
+        case DELETE:
+            processDelete(command, task);
+            break;
+        case DISPLAY:
+            // now can only filter string
+            processDisplay(command, task);
+            break;
+        case EDIT:
+            processEdit(command, task);
+            break;
+        case UNDO:
+            // negate action and run excecuteAction again
+            processUndo();
+            break;
+        case DONE:
+            processDone(command, task);
+            break;
+        case UNDONE:
+            processUndone(command, task);
+            break;
+        case LOGIN:
+            processLogin(command);
+            break;
+        case EXIT:
+            processExit();
+            break;
+        case CLEAR:
+            processClear(StorageHandler.getAllTasks());
+            break;
+        case SYNC:
+            processSync(command);
+            break;
+        case LOGOUT:
+            processLogout(command);
+            break;
+        case INVALID:
+            processInvalid(command);
+            break;
+        default:
+            // Assuming InputParser will always pass a Action object
+            // code will never reach here.
+            assert false;
 
         }
     }
@@ -122,18 +122,18 @@ public class Logic {
     private void processLogout(Action command) {
         assert command != null;
         boolean isSuccess;
-        //should return a boolean variable to state whether sync is successful
-       _storageHandler.logout();
-        this.showStatusToUser(command, true);
-        
+        // should return a boolean variable to state whether sync is successful
+        isSuccess = _storageHandler.logout();
+        this.showStatusToUser(command, isSuccess);
+
     }
 
     private void processSync(Action command) {
         assert command != null;
         boolean isSuccess;
-        //should return a boolean variable to state whether sync is successful
-        StorageHandler.sync();
-        this.showStatusToUser(command, true);
+        // should return a boolean variable to state whether sync is successful
+        isSuccess = StorageHandler.sync();
+        this.showStatusToUser(command, isSuccess);
     }
 
     public void processClear(List<Task> list) {
