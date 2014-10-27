@@ -89,7 +89,6 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private Logic _logic;
 
-
     /*
      * (non-Javadoc)
      * 
@@ -193,7 +192,9 @@ public class MainGui extends Application implements NativeKeyListener {
      *            the command line arguments
      */
     public static void main(String[] args) {
-        Settings _settings = new Settings();
+        while (!Settings.hasRead) {
+            Settings _settings = new Settings();
+        }
         launch(args);
     }
 

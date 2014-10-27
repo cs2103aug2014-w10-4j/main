@@ -37,6 +37,7 @@ public class Settings {
     private static final String propertiesFile = "config.properties";
     private static final File configFile = new File(propertiesFile);
     private static final Properties props = new Properties();
+    public static boolean hasRead = false;
 
     // Initialized at the start by logic
     public Settings() {
@@ -87,7 +88,7 @@ public class Settings {
                     "HOTKEY_TOGGLE_HIDE", "" + NativeKeyEvent.VC_ESCAPE));
             HOTKEY_TOGGLE_SHOW = Integer.parseInt(props.getProperty(
                     "HOTKEY_TOGGLE_SHOW", "" + NativeKeyEvent.VC_G));
-
+            hasRead = true;
             reader.close();
         } catch (FileNotFoundException ex) {
             writeDefaultPropertiesToFile();
