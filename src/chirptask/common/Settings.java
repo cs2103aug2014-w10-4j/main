@@ -18,6 +18,7 @@ public class Settings {
     public static String DEFAULT_FILTER = "";
     public static char CATEGORY_CHAR = '@';
     public static char CONTEXT_CHAR = '#';
+    public static boolean LOGIN_AUTO = false;
     public static int SYSTEM_EXIT_NORMAL = 0;
 
     public static String CATEGORY = CATEGORY_CHAR + "";
@@ -57,6 +58,7 @@ public class Settings {
             props.setProperty("DEFAULT_FILTER", "");
             props.setProperty("CATEGORY_CHAR", "@");
             props.setProperty("CONTEXT_CHAR", "#");
+            props.setProperty("LOGIN_AUTO", "false");
             props.setProperty("SYSTEM_EXIT_NORMAL", "0");
             props.setProperty("HOTKEY_TOGGLE_HIDE", ""
                     + NativeKeyEvent.VC_ESCAPE);
@@ -80,7 +82,7 @@ public class Settings {
             DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER");
             CATEGORY_CHAR = props.getProperty("CATEGORY_CHAR").charAt(0);
             CONTEXT_CHAR = props.getProperty("CONTEXT_CHAR").charAt(0);
-
+            LOGIN_AUTO = Boolean.parseBoolean(props.getProperty("LOGIN_AUTO"));
             SYSTEM_EXIT_NORMAL = Integer.parseInt(props
                     .getProperty("SYSTEM_EXIT_NORMAL"));
             HOTKEY_TOGGLE_HIDE = Integer.parseInt(props

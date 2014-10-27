@@ -3,6 +3,7 @@ package chirptask.storage;
 import java.util.ArrayList;
 import java.util.List;
 
+import chirptask.common.Settings;
 import chirptask.logic.Logic;
 
 public class StorageHandler {
@@ -13,18 +14,23 @@ public class StorageHandler {
     private static IStorage localStorage;
     private static IStorage googleStorage;
     private static IStorage eventStorage;
+    
+    private boolean isAutoLogin = false;
 
     public StorageHandler() {
+        isAutoLogin = readAutoLoginSettings();
         initStorages();
     }
     
     //@author A0111840W
     private void initStorages() {
-        //createStoragesList();
         addLocalList();
         addLocalStorage();
-        addEventStorage();
         addGoogleStorage();
+        addEventStorage();
+        if (isAutoLogin) {
+            initCloudStorage();
+        }
         setAllTasks(localStorage.getAllTasks());
     }
 
@@ -41,10 +47,6 @@ public class StorageHandler {
         isInit = true;
         return isInit;
     }
-
-    /*private void createStoragesList() {
-        _listOfStorages = new ArrayList<Storage>();
-    }*/
 
     private void addLocalList() {
         if (!isLocalListInit()) {
@@ -159,6 +161,13 @@ public class StorageHandler {
     }
 
     //@author A0111840W
+    private boolean readAutoLoginSettings() {
+        boolean isAutoLogin = false;
+        if (Settings.class != null) {
+            isAutoLogin = Settings.LOGIN_AUTO;
+        }
+        return isAutoLogin;
+    }
     public void logout() {
         if (isGoogleStorageInit()) {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
