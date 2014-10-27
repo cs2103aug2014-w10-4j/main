@@ -1,7 +1,5 @@
 package chirptask.storage;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import chirptask.google.GoogleController;
@@ -18,30 +16,16 @@ public class GoogleStorage implements IStorage {
     @Override
     public boolean storeNewTask(Task newTask) {
         boolean isAdded = false;
-        try {
-            _gController.add(newTask);
-            isAdded = true;
-        } catch (UnknownHostException unknownHost) {
-            //TODO for no access to Google services
-            // retry add with sleep timer
-        } catch (IOException ioError) {
-            
-        }
+        _gController.add(newTask);
+        isAdded = true;
         return isAdded;
     }
 
     @Override
     public Task removeTask(Task taskToRemove) {
         boolean isRemoved = false;
-        try {
-            _gController.removeTask(taskToRemove);
-            isRemoved = true;
-        } catch (UnknownHostException unknownHostException) {
-            //TODO for no access to Google services
-            // retry remove with sleep timer
-        } catch (IOException ioException) {
-            
-        }
+        _gController.removeTask(taskToRemove);
+        isRemoved = true;
         
         if (isRemoved) {
             return taskToRemove;
@@ -53,15 +37,8 @@ public class GoogleStorage implements IStorage {
     @Override
     public boolean modifyTask(Task modifiedTask) {
         boolean isModified = false;
-        try {
-            _gController.modifyTask(modifiedTask);
-            isModified = true;
-        } catch (UnknownHostException unknownHostException) {
-            //TODO for no access to Google services
-            // retry modify with sleep timer
-        } catch (IOException ioException) {
-            
-        }
+        _gController.modifyTask(modifiedTask);
+        isModified = true;
         return isModified;
     }
 
@@ -93,15 +70,9 @@ public class GoogleStorage implements IStorage {
         } 
     }
     
-    void sync(List<Task> allTasks) {
+    synchronized void sync(List<Task> allTasks) {
         if (allTasks != null) {
-            try {
-                _gController.sync(allTasks);
-            } catch (UnknownHostException unknownHostException) {
-                // retry sync with sleep timer
-            } catch (IOException ioException) {
-                
-            }
+            _gController.sync(allTasks);
         }
     }
     

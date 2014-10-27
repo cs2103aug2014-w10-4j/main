@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import chirptask.storage.StorageHandler;
+
 /**
  * IdHandler class provides static methods to read the relevant ID from file.
  * 
@@ -27,9 +29,9 @@ class IdHandler {
 				idFile))) {
 			id = idFileReader.readLine();
 		} catch (FileNotFoundException fileNotFoundError) {
-
+		    return null;
 		} catch (IOException accessFileError) {
-
+		    return null;
 		}
 
 		return id;
@@ -40,9 +42,9 @@ class IdHandler {
 				idFile))) {
 			idFileWriter.write(id);
 		} catch (FileNotFoundException fileNotFoundError) {
-
+            StorageHandler.logError("Failed to save ID to File");
 		} catch (IOException accessFileError) {
-
+		    StorageHandler.logError("Failed to save ID to File");
 		}
 	}
 

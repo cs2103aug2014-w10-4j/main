@@ -26,7 +26,6 @@ public class StorageHandler {
     private void initStorages() {
         addLocalList();
         addLocalStorage();
-        addGoogleStorage();
         addEventStorage();
         if (isAutoLogin) {
             initCloudStorage();
@@ -36,6 +35,7 @@ public class StorageHandler {
 
     public boolean initCloudStorage() {
         boolean isInit = false;
+        addGoogleStorage();
         if (isGoogleStorageInit()) {
             if (googleStorage instanceof GoogleStorage) {
                 GoogleStorage currentGStorage = (GoogleStorage) googleStorage;

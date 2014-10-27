@@ -7,6 +7,8 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
+import chirptask.storage.StorageHandler;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -39,19 +41,21 @@ public class CalendarController {
 
     // Constructor
     CalendarController(HttpTransport httpTransport, JsonFactory jsonFactory,
-            Credential credential, String applicationName) {
+            Credential credential, String applicationName) throws IOException {
         initializeHostFiles();
         initializeCalendarClient(httpTransport, jsonFactory, credential,
                 applicationName);
         initializeWorkingCalendar();
     }
     
-    private void initializeHostFiles() {
+    private void initializeHostFiles() throws IOException {
         try {
             TIMEDTASK_CALENDAR_ID_STORE_FILE.getParentFile().mkdirs();
             TIMEDTASK_CALENDAR_ID_STORE_FILE.createNewFile();
         } catch (IOException ioError) {
-
+            String event = "failed to initialize Google Calendar ID File on Host";
+            StorageHandler.logError(event);
+            throw new IOException();
         }
     }
 
@@ -64,19 +68,19 @@ public class CalendarController {
                 applicationName).build();
     }
     
-    private void initializeWorkingCalendar() {
+    private void initializeWorkingCalendar() throws IOException {
         String timedTaskCalendarId = retrieveId();
         Calendar retrievedCalendar = retrieveCalendar(timedTaskCalendarId);
         setWorkingCalendar(retrievedCalendar);
     }
     
-    private String retrieveId() {
+    private String retrieveId() throws IOException {
         String workingListId = retrieveIdFromFile();
         setCalendarId(workingListId);
         return workingListId;
     }
 
-    private String retrieveIdFromFile() {
+    private String retrieveIdFromFile() throws IOException {
         String retrievedId = IdHandler.getIdFromFile(TIMEDTASK_CALENDAR_ID_STORE_FILE);
         return retrievedId;
     }
@@ -103,9 +107,9 @@ public class CalendarController {
                 return foundCalendar;
             } catch (UnknownHostException unknownHost) {
                 // No internet
-                return null;
+                retrieveCalendar(calendarId);
             } catch (IOException ioError) {
-                ioError.printStackTrace();
+                retrieveCalendar(calendarId);
             } 
         }
         return null;
@@ -162,4 +166,5 @@ public class CalendarController {
     static com.google.api.services.calendar.Calendar getCalendarClient() {
         return _calendarClient;
     }
+    
 }

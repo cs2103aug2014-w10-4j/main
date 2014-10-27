@@ -82,6 +82,8 @@ public class GoogleController implements Runnable {
 
     /** Global instance of the TasksController. */
     private static TasksController _tasksController;
+    
+    private final int timeToSleep = 5000;
 
     public GoogleController() {
         initializeLocalComponents();
@@ -122,8 +124,13 @@ public class GoogleController implements Runnable {
             // initialize the Tasks Controller
             _tasksController = new TasksController(_httpTransport,
                     JSON_FACTORY, _credential, APPLICATION_NAME);
-        } catch (IOException ioError) {
+        } catch (Exception allExceptions) {
+            try {
+                Thread.sleep(timeToSleep);
+            } catch (InterruptedException interruptedException) {
+            }
             // This error can be thrown by authorize();
+            initializeRemoteComponents();
         }
     }
 
@@ -143,24 +150,21 @@ public class GoogleController implements Runnable {
      * @return
      * @throws IOException
      */
-    public void add(chirptask.storage.Task taskToAdd)
-            throws UnknownHostException, IOException {
+    public void add(chirptask.storage.Task taskToAdd) {
         if (isGoogleLoaded()) {
             ConcurrentAdd addTask = new ConcurrentAdd(taskToAdd);
             CONCURRENT.addToExecutor(addTask);
         }
     }
 
-    public void modifyTask(chirptask.storage.Task taskToModify)
-            throws UnknownHostException, IOException {
+    public void modifyTask(chirptask.storage.Task taskToModify) {
         if (isGoogleLoaded()) {
             ConcurrentModify modifyTask = new ConcurrentModify(taskToModify);
             CONCURRENT.addToExecutor(modifyTask);
         }
     }
 
-    public void removeTask(chirptask.storage.Task taskToRemove)
-            throws UnknownHostException, IOException {
+    public void removeTask(chirptask.storage.Task taskToRemove) {
         if (isGoogleLoaded()) {
             ConcurrentDelete deleteTask = new ConcurrentDelete(taskToRemove);
             CONCURRENT.addToExecutor(deleteTask);
@@ -432,19 +436,25 @@ public class GoogleController implements Runnable {
      * program to continue running normally in the mean time.
      */
     public void run() {
-        initializeRemoteComponents();
-        if (isGoogleLoaded()) {
-            GoogleStorage.hasBeenInitialized();
+        initializeRemoteComponents(); 
+        while (!isGoogleLoaded()) {
+            //wait for google to load
         }
+        GoogleStorage.hasBeenInitialized();
     }
 
-    public void sync(List<chirptask.storage.Task> allTasks)
-            throws UnknownHostException, IOException {
+    public synchronized void sync(List<chirptask.storage.Task> allTasks) {
         if (allTasks != null) {
-            syncPhaseOne(allTasks);
-            syncPhaseTwo(allTasks);
-            syncPhaseThree(allTasks);
             try {
+                syncPhaseOne(allTasks);
+                syncPhaseTwo(allTasks);
+                syncPhaseThree(allTasks);
+            } catch (Exception allException) {
+                //sync(allTasks);
+            }
+            
+            try {
+                CONCURRENT.close();
                 CONCURRENT.awaitTermination();
             } catch (InterruptedException e) {
             }
@@ -580,9 +590,9 @@ public class GoogleController implements Runnable {
                                 String googleId = gId;
                                 String taskDescription = currTask.getTitle();
                                 DateTime dueDate = currTask.getDue();
-
+                                
                                 boolean isDone = false;
-                                if (STRING_DONE_TASK.equals(doneString)) {
+                                if (STRING_DONE_TASK.equalsIgnoreCase(doneString)) {
                                     isDone = true;
                                 }
 
