@@ -20,6 +20,8 @@ import chirptask.storage.TimedTask;
 
 //@author A0111930W
 public class DisplayView {
+    private static final int START_LIST = 0;
+
     /**
      * This will take in a filtered list and update the taskview, sort to
      * date/time, store into List of tasks
@@ -57,6 +59,7 @@ public class DisplayView {
         updateContextView(gui);
     }
 
+    // @author A0111930W
     /**
      * This method will update the user GUI view. The GUI view will be sorted to
      * all tasks under a date.
@@ -69,14 +72,22 @@ public class DisplayView {
     private synchronized static void processUpdateTaskView(List<Task> tasks,
             MainGui gui) {
 
-        Iterator<Task> itr = tasks.iterator();
-        while (itr.hasNext()) {
-            Task T = itr.next();
+        for (int i = START_LIST; i < tasks.size(); i++) {
+            Task T = tasks.get(i);
             gui.addNewTaskViewDate(T.getDate());
             String dateToString = convertTaskDateToDurationString(T);
             gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
                     T.getDescription(), dateToString, T.isDone());
         }
+
+        // Iterator<Task> itr = tasks.iterator();
+        // while (itr.hasNext()) {
+        // Task T = itr.next();
+        // gui.addNewTaskViewDate(T.getDate());
+        // String dateToString = convertTaskDateToDurationString(T);
+        // gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
+        // T.getDescription(), dateToString, T.isDone());
+        // }
 
         // for (Task task : tasks) {
         // gui.addNewTaskViewDate(task.getDate());
