@@ -197,6 +197,10 @@ public class DisplayView {
                 processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC,
                         Messages.LOG_MESSAGE_ERROR);
                 break;
+            case LOGOUT:
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT,
+                        Messages.LOG_MESSAGE_ERROR);
+                break;
             default:
                 processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
                         Messages.LOG_MESSAGE_ERROR, "");

@@ -24,7 +24,8 @@ public class Messages {
 	public static final String LOG_MESSAGE_FAIL = "Fail to ";
 	public static final String LOG_MESSAGE_UNDO_NOTHING = "Nothing to undo";
 	public static final String LOG_MESSAGE_SUCCESS_OR_FAILURE = "%1$s execute %2$s";
-
+	public static final String LOG_MESSAGE_LOGOUT = "%1$s Logout";
+	
 	public static final String LABEL_FILTER = "Filter: ";
 	public static final String TITLE_SETTINGS = "Settings";
 	public static final String TITLE_SOFTWARE = "ChirpTask";
@@ -33,4 +34,5 @@ public class Messages {
 	public static final String ERROR = "%1$s: Error %2$s";
 	public static final String INVALID_INPUT = "Invalid input: %1$s.";
 	public static final String ERROR_LOCAL = "Local storage %2$s.";
+    
 }

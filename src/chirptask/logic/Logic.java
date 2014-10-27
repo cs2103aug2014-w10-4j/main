@@ -105,6 +105,9 @@ public class Logic {
             case SYNC:
                 processSync(command);
                 break;
+            case LOGOUT:
+                processLogout(command);
+                break;
             case INVALID :
                 processInvalid(command);
                 break;
@@ -116,11 +119,21 @@ public class Logic {
         }
     }
 
+    private void processLogout(Action command) {
+        assert command != null;
+        boolean isSuccess;
+        //should return a boolean variable to state whether sync is successful
+       _storageHandler.logout();
+        this.showStatusToUser(command, true);
+        
+    }
+
     private void processSync(Action command) {
         assert command != null;
         boolean isSuccess;
-        isSuccess = _storageHandler.initCloudStorage();
-        this.showStatusToUser(command, isSuccess);
+        //should return a boolean variable to state whether sync is successful
+        StorageHandler.sync();
+        this.showStatusToUser(command, true);
     }
 
     public void processClear(List<Task> list) {
