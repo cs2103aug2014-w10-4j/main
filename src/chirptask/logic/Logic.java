@@ -137,9 +137,9 @@ public class Logic {
     }
 
     public void processClear(List<Task> list) {
-        for (Task T : list) {
-            if (T.isDone()) {
-                processDelete(Settings.CommandType.DELETE, T);
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).isDone()) {
+                processDelete(Settings.CommandType.DELETE, list.get(i));
             }
         }
 
