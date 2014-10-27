@@ -14,17 +14,17 @@ import chirptask.storage.StorageHandler;
 //@author A0111889W
 public class Settings {
 
-    public static String EVENT_LOG_FILENAME;
-    public static String DEFAULT_FILTER;
-    public static char CATEGORY_CHAR;
-    public static char CONTEXT_CHAR;
-    public static int SYSTEM_EXIT_NORMAL;
+    public static String EVENT_LOG_FILENAME = "eventlogs.txt";
+    public static String DEFAULT_FILTER = "";
+    public static char CATEGORY_CHAR = '@';
+    public static char CONTEXT_CHAR = '#';
+    public static int SYSTEM_EXIT_NORMAL = 0;
 
     public static String CATEGORY = CATEGORY_CHAR + "";
     public static String CONTEXT = CONTEXT_CHAR + "";
 
-    public static int HOTKEY_TOGGLE_HIDE;
-    public static int HOTKEY_TOGGLE_SHOW;
+    public static int HOTKEY_TOGGLE_HIDE = NativeKeyEvent.VC_ESCAPE;
+    public static int HOTKEY_TOGGLE_SHOW = NativeKeyEvent.VC_G;
 
     public enum CommandType {
         ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT, CLEAR
@@ -37,6 +37,7 @@ public class Settings {
     private static final String propertiesFile = "config.properties";
     private static final File configFile = new File(propertiesFile);
     private static final Properties props = new Properties();
+    public static boolean hasRead = false;
 
     // Initialized at the start by logic
     public Settings() {
@@ -70,30 +71,36 @@ public class Settings {
     }
 
     public void readPropertiesFromFile() {
-
+        FileReader reader;
         try {
-            FileReader reader = new FileReader(configFile);
+            reader = new FileReader(configFile);
             props.load(reader);
+            
+            EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME");
+            DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER");
+            CATEGORY_CHAR = props.getProperty("CATEGORY_CHAR").charAt(0);
+            CONTEXT_CHAR = props.getProperty("CONTEXT_CHAR").charAt(0);
 
-            // read settings into variables
-            EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME",
-                    "eventlogs.txt");
-            DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER", "");
-            CATEGORY_CHAR = props.getProperty("CATEGORY_CHAR", "@").charAt(0);
-            CONTEXT_CHAR = props.getProperty("CONTEXT_CHAR", "#").charAt(0);
-            SYSTEM_EXIT_NORMAL = Integer.parseInt(props.getProperty(
-                    "SYSTEM_EXIT_NORMAL", "0"));
-            HOTKEY_TOGGLE_HIDE = Integer.parseInt(props.getProperty(
-                    "HOTKEY_TOGGLE_HIDE", "" + NativeKeyEvent.VC_ESCAPE));
-            HOTKEY_TOGGLE_SHOW = Integer.parseInt(props.getProperty(
-                    "HOTKEY_TOGGLE_SHOW", "" + NativeKeyEvent.VC_G));
-
+            SYSTEM_EXIT_NORMAL = Integer.parseInt(props
+                    .getProperty("SYSTEM_EXIT_NORMAL"));
+            HOTKEY_TOGGLE_HIDE = Integer.parseInt(props
+                    .getProperty("HOTKEY_TOGGLE_HIDE"));
+            HOTKEY_TOGGLE_SHOW = Integer.parseInt(props
+                    .getProperty("HOTKEY_TOGGLE_SHOW"));
+            hasRead = true;
+            
             reader.close();
         } catch (FileNotFoundException ex) {
             writeDefaultPropertiesToFile();
         } catch (IOException ex) {
             StorageHandler.logError(String.format(Messages.ERROR, "Settings",
                     "while reading from file.\n" + ex.getMessage()));
+        } catch (NumberFormatException NFE) {
+            // corrupted settings
+            writeDefaultPropertiesToFile();
+        } catch (IndexOutOfBoundsException OOB){
+            // corrupted settings
+            writeDefaultPropertiesToFile();
         }
     }
 }

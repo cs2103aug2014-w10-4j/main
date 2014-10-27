@@ -88,7 +88,6 @@ public class MainGui extends Application implements NativeKeyListener {
     private Stage _primaryStage;
 
     private Logic _logic;
-    private Settings _settings;
 
     /*
      * (non-Javadoc)
@@ -97,7 +96,6 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     @Override
     public void start(Stage primaryStage) {
-        _settings = new Settings();
         macOsXInitialization();
         prepareScene(primaryStage);
         primaryStage.show();
@@ -194,6 +192,9 @@ public class MainGui extends Application implements NativeKeyListener {
      *            the command line arguments
      */
     public static void main(String[] args) {
+        while (!Settings.hasRead) {
+            Settings _settings = new Settings();
+        }
         launch(args);
     }
 
