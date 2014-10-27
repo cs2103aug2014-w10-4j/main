@@ -71,12 +71,17 @@ public class Settings {
     }
 
     public void readPropertiesFromFile() {
-
+        FileReader reader;
         try {
-            FileReader reader = new FileReader(configFile);
+            reader = new FileReader(configFile);
             props.load(reader);
-
-            // read settings into variables
+            reader.close();
+        } catch (FileNotFoundException ex) {
+            writeDefaultPropertiesToFile();
+        } catch (IOException ex) {
+            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+                    "while reading from file.\n" + ex.getMessage()));
+        } finally {
             EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME",
                     "eventlogs.txt");
             DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER", "");
@@ -89,12 +94,6 @@ public class Settings {
             HOTKEY_TOGGLE_SHOW = Integer.parseInt(props.getProperty(
                     "HOTKEY_TOGGLE_SHOW", "" + NativeKeyEvent.VC_G));
             hasRead = true;
-            reader.close();
-        } catch (FileNotFoundException ex) {
-            writeDefaultPropertiesToFile();
-        } catch (IOException ex) {
-            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
-                    "while reading from file.\n" + ex.getMessage()));
         }
     }
 }
