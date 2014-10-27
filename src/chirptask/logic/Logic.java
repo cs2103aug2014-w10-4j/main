@@ -1,5 +1,6 @@
 package chirptask.logic;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -137,12 +138,17 @@ public class Logic {
     }
 
     public void processClear(List<Task> list) {
+        List<Task> clearList = new ArrayList<Task>();
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).isDone()) {
-                processDelete(Settings.CommandType.DELETE, list.get(i));
+            Task currentTask = list.get(i);
+            if (currentTask.isDone()) {
+                clearList.add(currentTask);
             }
         }
-
+        
+        for (int i = 0; i < clearList.size(); i++) {
+            processDelete(Settings.CommandType.DELETE, clearList.get(i));
+        }
     }
 
     private void processDelete(CommandType delete, Task t) {
