@@ -8,6 +8,7 @@ public class Action {
 //	private String _commandType;
 	private Task _task;
 	private Action _negateAction;
+	private String _userInput;
 
 	public Action() {
 		_commandType = Settings.CommandType.INVALID;
@@ -86,5 +87,13 @@ public class Action {
 		} else {
 			return false;
 		}
+	}
+	
+	public String getUserInput() {
+		return _userInput;
+	}
+	
+	public void setUserInput(String userInput) {
+		_userInput = userInput;
 	}
 }

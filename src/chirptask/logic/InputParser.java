@@ -60,11 +60,29 @@ public class InputParser {
 			return processLogin();
 		case "exit":
 			return processExit();
+		case "clear":
+			return processClear();
+		case "sync":
+			return processSync();
+		case "logout":
+			return processLogout();
 		default:
 			return processInvalid();
 		}
 	}
 
+	private GroupAction processLogout() {
+		return processWithNoTask(CommandType.LOGOUT);
+	}
+
+	private GroupAction processSync() {
+		return processWithNoTask(CommandType.SYNC);
+	}
+
+	private GroupAction processClear() {
+		return processWithNoTask(CommandType.CLEAR);
+	}
+	
 	private GroupAction processExit() {
 		return processWithNoTask(CommandType.EXIT);
 	}
@@ -173,6 +191,7 @@ public class InputParser {
 
 		action.setCommandType(Settings.CommandType.ADD);
 		action.setTask(toDo);
+		action.setUserInput(_userInput);
 		negate.setCommandType(Settings.CommandType.DELETE);
 		negate.setTask(toDo);
 		action.setUndo(negate);
@@ -323,6 +342,7 @@ public class InputParser {
 
 					action.setCommandType(Settings.CommandType.EDIT);
 					action.setTask(editedTask);
+					action.setUserInput(_userInput);
 					negate.setCommandType(Settings.CommandType.EDIT);
 					negate.setTask(oldTask);
 					action.setUndo(negate);
@@ -481,9 +501,8 @@ public class InputParser {
 	private GroupAction processInvalid() {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
-		Task invalidInput = new Task(TASK_ID_INVALID, _userInput);
 		action.setCommandType(Settings.CommandType.INVALID);
-		action.setTask(invalidInput);
+		action.setUserInput(_userInput);
 		actions.addAction(action);
 
 		return actions;
