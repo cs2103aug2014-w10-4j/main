@@ -102,6 +102,12 @@ public class GoogleController implements Runnable {
         }
     }
 
+    public void login() {
+        Thread initializeGoogleController = new Thread(this);
+        initializeGoogleController.setDaemon(true);
+        initializeGoogleController.start();
+    }
+    
     /**
      * Initialize the essential components to allow interaction with Google
      * Services - Google Calendar and Google Tasks.

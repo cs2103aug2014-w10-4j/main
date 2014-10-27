@@ -13,9 +13,6 @@ public class GoogleStorage implements IStorage {
 
     public GoogleStorage() {
         _gController = new GoogleController();
-        Thread initializeGoogleController = new Thread(_gController);
-        initializeGoogleController.setDaemon(true);
-        initializeGoogleController.start();
     }
     
     @Override
@@ -80,7 +77,9 @@ public class GoogleStorage implements IStorage {
 
     @Override
     public void close() {
-        _gController.close();
+        if (_gController != null) {
+            _gController.close();
+        }
     }
     
     public static void hasBeenInitialized() {
@@ -94,7 +93,7 @@ public class GoogleStorage implements IStorage {
         } 
     }
     
-    public void sync(List<Task> allTasks) {
+    void sync(List<Task> allTasks) {
         if (allTasks != null) {
             try {
                 _gController.sync(allTasks);
@@ -105,7 +104,11 @@ public class GoogleStorage implements IStorage {
             }
         }
     }
-
     
-
+    void login() {
+        if (_gController != null) {
+            _gController.login();
+        }
+    }
+    
 }

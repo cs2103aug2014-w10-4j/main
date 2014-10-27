@@ -17,18 +17,27 @@ public class StorageHandler {
     public StorageHandler() {
         initStorages();
     }
-
+    
+    //@author A0111840W
     private void initStorages() {
         //createStoragesList();
         addLocalList();
         addLocalStorage();
         addEventStorage();
+        addGoogleStorage();
         setAllTasks(localStorage.getAllTasks());
     }
 
     public boolean initCloudStorage() {
         boolean isInit = false;
-        addGoogleStorage();
+        if (isGoogleStorageInit()) {
+            if (googleStorage instanceof GoogleStorage) {
+                GoogleStorage currentGStorage = (GoogleStorage) googleStorage;
+                if (currentGStorage != null) { 
+                    currentGStorage.login(); 
+                }
+            }
+        }
         isInit = true;
         return isInit;
     }
@@ -150,7 +159,16 @@ public class StorageHandler {
     }
 
     //@author A0111840W
-    public static void sync() {
+    public void logout() {
+        if (isGoogleStorageInit()) {
+            GoogleStorage gStorage = (GoogleStorage) googleStorage;
+            gStorage.close();
+            _listOfStorages.remove(googleStorage);
+            googleStorage = null;
+        }
+    }
+    
+    public synchronized static void sync() {
         if (isStorageInit()) {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
             List<Task> allTasks = getAllTasks();
