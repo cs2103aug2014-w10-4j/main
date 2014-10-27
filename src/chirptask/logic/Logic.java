@@ -183,6 +183,8 @@ public class Logic {
         // Check whether Action is a command, if is command call GUI to display
         // on textbox
         // showStatus to user
+        //if(command.isCommandType){
+        _gui.setUserInputText(command.getUserInput());
         showStatusToUser(command, false);
         // log down invalid input to log file
         logErrorCommand();
