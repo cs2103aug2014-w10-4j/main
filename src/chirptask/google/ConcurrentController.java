@@ -30,7 +30,8 @@ class ConcurrentController {
         googleExecutor.shutdown();
     }
     
-    public void awaitTermination() throws InterruptedException {
-        googleExecutor.awaitTermination(180, TimeUnit.SECONDS);
+    public boolean awaitTermination() throws InterruptedException {
+        boolean isTerminated = googleExecutor.awaitTermination(1, TimeUnit.SECONDS);
+        return isTerminated;
     }
 }

@@ -447,7 +447,7 @@ public class GoogleController implements Runnable {
         GoogleStorage.hasBeenInitialized();
     }
 
-    public synchronized void sync(List<chirptask.storage.Task> allTasks) {
+    public void sync(List<chirptask.storage.Task> allTasks) {
         if (allTasks != null) {
             try {
                 syncPhaseOne(allTasks);
