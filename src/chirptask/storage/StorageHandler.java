@@ -177,14 +177,19 @@ public class StorageHandler {
         }
     }
     
-    public synchronized static void sync() {
+    public synchronized static boolean sync() {
+        boolean isSyncRunned = false;
+        
         if (isStorageInit()) {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
             List<Task> allTasks = getAllTasks();
             if (allTasks != null) {
                 gStorage.sync(allTasks);
+                isSyncRunned = true;
             }
         }
+        
+        return isSyncRunned;
     }
 
     static synchronized void updateStorages(Task modifiedTask) {
