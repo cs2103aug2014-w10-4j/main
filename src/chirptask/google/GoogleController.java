@@ -173,6 +173,10 @@ public class GoogleController implements Runnable {
 
     public void close() {
         CONCURRENT.close();
+        try {
+            CONCURRENT.awaitTermination();
+        } catch (InterruptedException e) {
+        }
     }
 
     /**

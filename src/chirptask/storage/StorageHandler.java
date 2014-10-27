@@ -14,14 +14,14 @@ public class StorageHandler {
     private static IStorage localStorage;
     private static IStorage googleStorage;
     private static IStorage eventStorage;
-    
+
     private boolean isAutoLogin = false;
 
     public StorageHandler() {
         isAutoLogin = readAutoLoginSettings();
         initStorages();
     }
-    
+
     //@author A0111840W
     private void initStorages() {
         addLocalList();
@@ -35,12 +35,14 @@ public class StorageHandler {
 
     public boolean initCloudStorage() {
         boolean isInit = false;
-        addGoogleStorage();
-        if (isGoogleStorageInit()) {
-            if (googleStorage instanceof GoogleStorage) {
-                GoogleStorage currentGStorage = (GoogleStorage) googleStorage;
-                if (currentGStorage != null) { 
-                    currentGStorage.login(); 
+        if (!isGoogleStorageInit()) {
+            addGoogleStorage();
+            if (isGoogleStorageInit()) {
+                if (googleStorage instanceof GoogleStorage) {
+                    GoogleStorage currentGStorage = (GoogleStorage) googleStorage;
+                    if (currentGStorage != null) {
+                        currentGStorage.login();
+                    }
                 }
             }
         }
@@ -84,16 +86,16 @@ public class StorageHandler {
     public static List<Task> getAllTasks() {
         return _allTasks;
     }
-    
+
     public void setAllTasks(List<Task> allTasks) {
         _allTasks = allTasks;
     }
 
     //@author A0111889W
-    public synchronized static void logError(String error){
+    public synchronized static void logError(String error) {
         EventLogger.getInstance().logError(error);
     }
-    
+
     //@author A0111889W
     public void closeStorages() {
         for (IStorage individualStorage : _listOfStorages) {
@@ -120,10 +122,10 @@ public class StorageHandler {
     //@author A0111889W
     public synchronized boolean addTask(Task addedTask) {
         boolean isAdded = false;
-        
+
         addedTask.setDeleted(false);
         _allTasks.add(addedTask);
-        
+
         for (IStorage individualStorage : _listOfStorages) {
             individualStorage.storeNewTask(addedTask);
         }
@@ -134,8 +136,8 @@ public class StorageHandler {
     //@author A0111889W
     public synchronized Task deleteTask(Task deletedTask) {
         boolean isDeleted = false;
-        
-        if ("".equals(deletedTask.getGoogleId())){
+
+        if ("".equals(deletedTask.getGoogleId())) {
             _allTasks.remove(deletedTask);
             for (IStorage individualStorage : _listOfStorages) {
                 individualStorage.removeTask(deletedTask);
@@ -150,13 +152,13 @@ public class StorageHandler {
                 }
             }
         }
-        
+
         isDeleted = true;
-        
-        if(isDeleted){
-        	return deletedTask;
-        } else{
-        	return null;
+
+        if (isDeleted) {
+            return deletedTask;
+        } else {
+            return null;
         }
     }
 
@@ -168,28 +170,39 @@ public class StorageHandler {
         }
         return isAutoLogin;
     }
-    public void logout() {
+
+    public boolean logout() {
+        boolean isRanLogout = false;
+        
         if (isGoogleStorageInit()) {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
             gStorage.close();
             _listOfStorages.remove(googleStorage);
             googleStorage = null;
+            isRanLogout = true;
         }
+        
+        return isRanLogout;
     }
-    
-    public synchronized static void sync() {
+
+    public synchronized static boolean sync() {
+        boolean isSyncRunned = false;
+
         if (isStorageInit()) {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
             List<Task> allTasks = getAllTasks();
             if (allTasks != null) {
                 gStorage.sync(allTasks);
+                isSyncRunned = true;
             }
         }
+
+        return isSyncRunned;
     }
 
     static synchronized void updateStorages(Task modifiedTask) {
         if (isStorageInit()) {
-            if ("".equals(modifiedTask.getGoogleId())){
+            if ("".equals(modifiedTask.getGoogleId())) {
                 _allTasks.remove(modifiedTask);
                 for (IStorage individualStorage : _listOfStorages) {
                     individualStorage.removeTask(modifiedTask);
@@ -220,21 +233,21 @@ public class StorageHandler {
         init = init && isGoogleStorageInit();
         return init;
     }
-    
+
     private static boolean isStoragesListInit() {
-        return (_listOfStorages != null); 
+        return (_listOfStorages != null);
     }
 
     private static boolean isLocalListInit() {
-        return (_allTasks != null); 
+        return (_allTasks != null);
     }
 
     private static boolean isLocalStorageInit() {
-        return (localStorage != null); 
+        return (localStorage != null);
     }
 
     private static boolean isEventStorageInit() {
-        return (eventStorage != null); 
+        return (eventStorage != null);
     }
 
     private static boolean isGoogleStorageInit() {
