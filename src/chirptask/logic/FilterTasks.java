@@ -174,7 +174,7 @@ public class FilterTasks {
 
     private static void populateStringList(List<Task> templist, String keywords) {
         for (Task T : filteredTask) {
-            if (!T.getDescription().contains(keywords)) {
+            if (!T.getDescription().toLowerCase().contains(keywords.toLowerCase())) {
                 templist.remove(T);
             }
         }
