@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -251,6 +253,10 @@ public class LocalStorage implements IStorage {
 			node.appendChild(getElement(doc, "type", "Deadline Task"));
 		} else if (taskToAdd.getType().equalsIgnoreCase("floating")) {
 			node.appendChild(getElement(doc, "type", "Floating Task"));
+			if (taskToAdd.isDone()) {
+	            node.appendChild(getElement(doc, "doneDate", 
+	                    taskToAdd.getDate().getTime().toString()));
+			}
 		}
 
 		return node;
@@ -422,15 +428,32 @@ public class LocalStorage implements IStorage {
                 String deleted = getValues("isDeleted", item).get(0);
                 String modified = getValues("isModified", item).get(0);
                 
+                boolean isDone = false;
                 boolean isDeleted = false;
                 boolean isModified = false;
                 
+                if (taskStatus != null) {
+                    if (taskStatus.equals("true")) {
+                        isDone = true;
+                    } else {
+                        isDone = false;
+                    }
+                }
+                
                 if (deleted != null) {
-                    isDeleted = Boolean.parseBoolean(deleted);
+                    if (deleted.equals("true")) {
+                        isDeleted = true;
+                    } else {
+                        isDeleted = false;
+                    }
                 }
                 
                 if (modified != null) {
-                    isModified = Boolean.parseBoolean(modified);
+                    if (modified.equals("true")) {
+                        isModified = true;
+                    } else {
+                        isModified = false;
+                    }
                 }
                 
 				SimpleDateFormat dateFormatter = new SimpleDateFormat(
@@ -452,6 +475,22 @@ public class LocalStorage implements IStorage {
 							endTime);
 				} else {
 					task = new Task(taskId, description);
+					if (isDone) {
+					    Calendar doneDate = Calendar.getInstance();
+					    String storedDateString = getValues("doneDate",
+					            item).get(0);
+					    if (storedDateString != null) {
+					        try { 
+					        Date storedDate = dateFormatter.parse(
+					                storedDateString);
+					        doneDate.setTime(storedDate);
+					        } catch (ParseException parseException) {
+					            //do nothing, just use today's date above.
+					            //support for older versions.
+					        }
+					    }
+					    task.setDate(doneDate);
+					}
 				}
 
 				task.setContexts(getValues("contexts", item));
@@ -460,13 +499,8 @@ public class LocalStorage implements IStorage {
 				task.setETag(googleETag);
 				task.setDeleted(isDeleted);
 				task.setModified(isModified);
-
-				// A0111930W
-				if (taskStatus.equalsIgnoreCase("true")) {
-					task.setDone(true);
-				} else {
-					task.setDone(false);
-				}
+				task.setDone(isDone);
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;

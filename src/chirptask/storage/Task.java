@@ -148,8 +148,8 @@ public class Task implements Comparable<Task> {
     }
 
     // @author A0111930W
-    public void setDate() {
-        _cal = Calendar.getInstance();
+    public void setDate(Calendar doneDate) {
+        _cal = doneDate;
     }
 
     public void removeDate() {

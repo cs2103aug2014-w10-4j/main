@@ -220,7 +220,8 @@ public class Logic {
     private void processDone(Action command, Task task) {
         assert command != null && task != null;
         if (task.getType().equalsIgnoreCase(FLOATING)) {
-            task.setDate();
+            Calendar doneDate = Calendar.getInstance();
+            task.setDate(doneDate);
         }
         task.setDone(true);
         processEdit(command, task);
