@@ -78,6 +78,7 @@ public class DisplayView {
 					T.getDescription(), dateToString, T.isDone());
 		}
 
+		
 		// for (Task task : tasks) {
 		// gui.addNewTaskViewDate(task.getDate());
 		// String dateToString = convertTaskDateToDurationString(task);
