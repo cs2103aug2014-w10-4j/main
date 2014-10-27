@@ -171,13 +171,18 @@ public class StorageHandler {
         return isAutoLogin;
     }
 
-    public void logout() {
+    public boolean logout() {
+        boolean isRanLogout = false;
+        
         if (isGoogleStorageInit()) {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
             gStorage.close();
             _listOfStorages.remove(googleStorage);
             googleStorage = null;
+            isRanLogout = true;
         }
+        
+        return isRanLogout;
     }
 
     public synchronized static boolean sync() {
