@@ -9,165 +9,166 @@ import java.util.List;
  */
 
 public class Task implements Comparable<Task> {
-	private static final String TASK_FLOATING = "floating";
+    private static final String TASK_FLOATING = "floating";
 
-	// @author A0111889W
-	private List<String> _contexts;
-	private List<String> _categories;
+    // @author A0111889W
+    private List<String> _contexts;
+    private List<String> _categories;
 
-	private int _taskId;
+    private int _taskId;
 
-	private String _description;
-	private String _eTag;
-	private String _googleId;
-	private String _type;
+    private String _description;
+    private String _eTag;
+    private String _googleId;
+    private String _type;
 
-	private boolean _isDone = false;
-	private boolean _isDeleted;
-	private boolean _isModified;
+    private boolean _isDone = false;
+    private boolean _isDeleted;
+    private boolean _isModified;
 
-	private Calendar _cal;
+    private Calendar _cal;
 
-	public Task() {
-		_contexts = new ArrayList<String>();
-		_categories = new ArrayList<String>();
-		_eTag = "";
-		_googleId = "";
-		_type = TASK_FLOATING;
-		_isDeleted = false;
-		_isModified = false;
-	}
+    public Task() {
+        _contexts = new ArrayList<String>();
+        _categories = new ArrayList<String>();
+        _eTag = "";
+        _googleId = "";
+        _type = TASK_FLOATING;
+        _isDeleted = false;
+        _isModified = false;
+        _cal = null;
+    }
 
-	public Task(int taskId, String description) {
-		this();
-		_taskId = taskId;
-		_description = description;
-	}
+    public Task(int taskId, String description) {
+        this();
+        _taskId = taskId;
+        _description = description;
+    }
 
-	Task(int taskId, String description, String taskType) {
-		this();
-		_taskId = taskId;
-		_description = description;
-		_type = taskType;
-	}
+    Task(int taskId, String description, String taskType) {
+        this();
+        _taskId = taskId;
+        _description = description;
+        _type = taskType;
+    }
 
-	/*
-	 * Compare first by Date object then description
-	 */
-	public int compareTo(Task b) {
-		boolean isSameDateAndTime = this.getDate().compareTo(b.getDate()) == 0;
+    /*
+     * Compare first by Date object then description
+     */
+    public int compareTo(Task b) {
+        boolean isSameDateAndTime = this.getDate().compareTo(b.getDate()) == 0;
 
-		if (isSameDateAndTime) {
-			// compare description
-			return this.getDescription().compareTo(b.getDescription());
-		} else {
-			return this.getDate().compareTo(b.getDate());
-		}
-	}
+        if (isSameDateAndTime) {
+            // compare description
+            return this.getDescription().compareTo(b.getDescription());
+        } else {
+            return this.getDate().compareTo(b.getDate());
+        }
+    }
 
-	public boolean equals(Object o) {
-		if (o instanceof Task) {
-			Task b = (Task) o;
-			if (this.getTaskId() == b.getTaskId()) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public boolean equals(Object o) {
+        if (o instanceof Task) {
+            Task b = (Task) o;
+            if (this.getTaskId() == b.getTaskId()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public boolean isDone() {
-		return _isDone;
-	}
+    public boolean isDone() {
+        return _isDone;
+    }
 
-	public void setDone(boolean isDone) {
-		_isDone = isDone;
-	}
+    public void setDone(boolean isDone) {
+        _isDone = isDone;
+    }
 
-	public boolean isDeleted() {
-		return _isDeleted;
-	}
+    public boolean isDeleted() {
+        return _isDeleted;
+    }
 
-	public void setDeleted(boolean isDeleted) {
-		_isDeleted = isDeleted;
-	}
+    public void setDeleted(boolean isDeleted) {
+        _isDeleted = isDeleted;
+    }
 
-	public boolean isModified() {
-		return _isModified;
-	}
+    public boolean isModified() {
+        return _isModified;
+    }
 
-	public void setModified(boolean isModified) {
-		_isModified = isModified;
-	}
+    public void setModified(boolean isModified) {
+        _isModified = isModified;
+    }
 
-	public String getETag() {
-		return _eTag;
-	}
+    public String getETag() {
+        return _eTag;
+    }
 
-	public void setETag(String eTag) {
-		_eTag = eTag;
-	}
+    public void setETag(String eTag) {
+        _eTag = eTag;
+    }
 
-	public int getTaskId() {
-		return _taskId;
-	}
+    public int getTaskId() {
+        return _taskId;
+    }
 
-	public void setTaskId(int taskId) {
-		_taskId = taskId;
-	}
+    public void setTaskId(int taskId) {
+        _taskId = taskId;
+    }
 
-	public String getDescription() {
-		return _description;
-	}
+    public String getDescription() {
+        return _description;
+    }
 
-	public void setDescription(String description) {
-		_description = description;
-	}
+    public void setDescription(String description) {
+        _description = description;
+    }
 
-	public String getGoogleId() {
-		return _googleId;
-	}
+    public String getGoogleId() {
+        return _googleId;
+    }
 
-	public void setGoogleId(String googleId) {
-		_googleId = googleId;
-	}
+    public void setGoogleId(String googleId) {
+        _googleId = googleId;
+    }
 
-	public String getType() {
-		return _type;
-	}
+    public String getType() {
+        return _type;
+    }
 
-	public void setType(String type) {
-		_type = type;
-	}
+    public void setType(String type) {
+        _type = type;
+    }
 
-	public Calendar getDate() {
-		if (_cal == null) {
-			_cal = Calendar.getInstance();
-		}
-		return _cal;
-	}
+    public Calendar getDate() {
+        if (_cal == null) {
+            _cal = Calendar.getInstance();
+        }
+        return _cal;
+    }
 
-	// @author A0111930W
-	public void setDate() {
-		_cal = Calendar.getInstance();
-	}
+    // @author A0111930W
+    public void setDate() {
+        _cal = Calendar.getInstance();
+    }
 
-	public void removeDate() {
-		_cal = null;
-	}
+    public void removeDate() {
+        _cal = null;
+    }
 
-	public List<String> getContexts() {
-		return _contexts;
-	}
+    public List<String> getContexts() {
+        return _contexts;
+    }
 
-	public void setContexts(List<String> _contexts) {
-		this._contexts = _contexts;
-	}
+    public void setContexts(List<String> _contexts) {
+        this._contexts = _contexts;
+    }
 
-	public List<String> getCategories() {
-		return _categories;
-	}
+    public List<String> getCategories() {
+        return _categories;
+    }
 
-	public void setCategories(List<String> _categories) {
-		this._categories = _categories;
-	}
+    public void setCategories(List<String> _categories) {
+        this._categories = _categories;
+    }
 }
