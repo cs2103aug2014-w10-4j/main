@@ -232,10 +232,14 @@ public class Logic {
         GroupAction tempGroupAction = new GroupAction();
         if (lastAction != null) {
             for (Action action : lastAction.getActionList()) {
-                Action undoAction = action.undo();
-                undoAction.setUndo(action);
-                tempGroupAction.addAction(undoAction);
-
+                if (action.undo() != null) {
+                    Action undoAction = action.undo();
+                    undoAction.setUndo(action);
+                    tempGroupAction.addAction(undoAction);
+                }else{
+                    DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING,
+                            _gui);
+                }
             }
             setLastGroupAction(tempGroupAction);
             lastAction = getLastGroupAction();

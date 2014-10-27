@@ -247,6 +247,10 @@ public class DisplayView {
                 processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, true,
                         Messages.LOG_MESSAGE_SUCCESS);
                 break;
+            case LOGOUT:
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT, true,
+                        Messages.LOG_MESSAGE_SUCCESS);
+                break;
             case DISPLAY:
                 processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
                         Messages.LOG_MESSAGE_SUCCESS);
