@@ -111,6 +111,7 @@ public class InputParser {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
 		action.setCommandType(command);
+		action.setUndo(null);
 		actions.addAction(action);
 		return actions;
 	}
@@ -503,6 +504,7 @@ public class InputParser {
 		Action action = new Action();
 		action.setCommandType(Settings.CommandType.INVALID);
 		action.setUserInput(_userInput);
+		action.setUndo(null);
 		actions.addAction(action);
 
 		return actions;
