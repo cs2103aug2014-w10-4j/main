@@ -236,9 +236,9 @@ public class Logic {
                     Action undoAction = action.undo();
                     undoAction.setUndo(action);
                     tempGroupAction.addAction(undoAction);
-                }else{
-                    DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING,
-                            _gui);
+                } else {
+                    DisplayView.showStatusToUser(
+                            Messages.LOG_MESSAGE_UNDO_NOTHING, _gui);
                 }
             }
             setLastGroupAction(tempGroupAction);
