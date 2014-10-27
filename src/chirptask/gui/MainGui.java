@@ -347,8 +347,9 @@ public class MainGui extends Application implements NativeKeyListener {
 
             private void cliKeyEnter(KeyCode keyPressed) {
                 if (keyPressed == KeyCode.ENTER) {
-                    _logic.retrieveInputFromUI(_commandLineInterface.getText());
+                    String input = _commandLineInterface.getText();
                     _commandLineInterface.setText("");
+                    _logic.retrieveInputFromUI(input);
                 }
             }
         };
