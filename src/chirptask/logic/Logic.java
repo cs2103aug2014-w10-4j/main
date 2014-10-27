@@ -137,7 +137,7 @@ public class Logic {
         this.showStatusToUser(command, isSuccess);
     }
 
-    public void processClear(List<Task> list) {
+    private void processClear(List<Task> list) {
         List<Task> clearList = new ArrayList<Task>();
         for (int i = 0; i < list.size(); i++) {
             Task currentTask = list.get(i);
