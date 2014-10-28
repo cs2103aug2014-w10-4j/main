@@ -712,6 +712,9 @@ public class GoogleController implements Runnable {
                     if (dueDate != null) {
                         Calendar dueCalendar = DateTimeHandler
                                 .getDateFromDateTime(dueDate);
+                        dueCalendar.set(Calendar.HOUR_OF_DAY, 23);
+                        dueCalendar.set(Calendar.MINUTE, 59);
+                        
                         DeadlineTask newDeadline = new DeadlineTask(taskId,
                                 description, dueCalendar);
                         newDeadline.setCategories(categoryList);
