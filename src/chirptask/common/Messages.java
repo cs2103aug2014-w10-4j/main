@@ -25,7 +25,7 @@ public class Messages {
 	public static final String LOG_MESSAGE_FAIL = "Fail to ";
 	public static final String LOG_MESSAGE_UNDO_NOTHING = "Nothing to undo";
 	public static final String LOG_MESSAGE_SUCCESS_OR_FAILURE = "%1$s execute %2$s";
-	public static final String LOG_MESSAGE_LOGOUT = "%1$s Logout";
+	public static final String LOG_MESSAGE_LOGOUT = "Please login before you can logout.";
 	public static final String LOG_MESSAGE_SYN_INIT = "Initiated";
 	
 	public static final String LABEL_FILTER = "Filter: ";
