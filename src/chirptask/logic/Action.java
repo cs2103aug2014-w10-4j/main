@@ -9,7 +9,8 @@ public class Action {
     private Task _task;
     private Action _negateAction;
     private String _userInput;
-    private boolean isCommandType;
+    private boolean _isCommandType;
+    private Settings.CommandType _invalidCommandType;
 
     public Action() {
         _commandType = Settings.CommandType.INVALID;
@@ -63,12 +64,22 @@ public class Action {
 
     //@author A0111930W
     public void setIsCommandType(boolean isCommand) {
-        this.isCommandType = isCommand;
+        this._isCommandType = isCommand;
     }
 
     //@author A0111930W
     public boolean getIsCommandType() {
-        return this.isCommandType;
+        return this._isCommandType;
+    }
+
+    //@author A0111930W
+    public void setInvalidCommandType(Settings.CommandType invalidType) {
+        this._invalidCommandType = invalidType;
+    }
+
+    //@author A0111930W
+    public Settings.CommandType getInvalidCommandType() {
+        return this._invalidCommandType;
     }
 
     public String toString() {
