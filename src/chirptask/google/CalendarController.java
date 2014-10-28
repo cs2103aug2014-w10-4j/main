@@ -20,7 +20,7 @@ import com.google.api.services.calendar.model.Event;
  * Calendar. It uses the Google Calendar v3 API to do such operations. 
  */
 public class CalendarController {
-    private final String DEFAULT_CALENDAR = "ChirpTaskv0.1";
+    private final String DEFAULT_CALENDAR = "ChirpTaskv0.3";
     
     /** Global instance of the TasksId file. */
     private static final File TIMEDTASK_CALENDAR_ID_STORE_FILE = new File(

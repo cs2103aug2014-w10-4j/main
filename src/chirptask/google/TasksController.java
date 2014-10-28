@@ -28,7 +28,7 @@ import com.google.api.services.tasks.model.Tasks;
  */
 public class TasksController {
     /** Constant name of the task list. */
-    private final String DEFAULT_TASKLIST = "ChirpTaskv0.1";
+    private final String DEFAULT_TASKLIST = "ChirpTaskv0.3";
 
     /** Global instance of the TasksId file. */
     private static final File TASKS_ID_STORE_FILE = new File(
