@@ -3,16 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="libs/google-api-services-calendar-v3-rev97-1.19.0.jar" sourcepath="libs-sources/google-api-services-calendar-v3-rev97-1.19.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/ChirpTask/libs-sources/javadoc/google-api-services-calendar-v3-rev97-1.19.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="libs/google-api-services-tasks-v1-rev36-1.19.0.jar" sourcepath="libs-sources/google-api-services-tasks-v1-rev36-1.19.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/ChirpTask/libs-sources/javadoc/google-api-services-tasks-v1-rev36-1.19.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="libs/google-api-client-1.19.0.jar" sourcepath="libs-sources/google-api-client-1.19.0-sources.jar"/>
 	<classpathentry kind="lib" path="libs/google-api-client-java6-1.19.0.jar" sourcepath="libs-sources/google-api-client-java6-1.19.0-sources.jar"/>
 	<classpathentry kind="lib" path="libs/google-oauth-client-1.19.0.jar" sourcepath="libs-sources/google-oauth-client-1.19.0-sources.jar"/>
@@ -35,5 +25,7 @@
 	<classpathentry kind="lib" path="libs/antlr-runtime-3.2.jar"/>
 	<classpathentry kind="lib" path="libs/ical4j-1.0.2.jar"/>
 	<classpathentry kind="lib" path="libs/JNativeHook.jar"/>
+	<classpathentry kind="lib" path="/Users/MingYi/Documents/Github/main/libs/google-api-services-calendar-v3-rev103-1.19.0.jar"/>
+	<classpathentry kind="lib" path="/Users/MingYi/Documents/Github/main/libs/google-api-services-tasks-v1-rev38-1.19.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
