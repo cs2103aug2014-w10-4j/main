@@ -14,7 +14,7 @@
 }
 
 .status-bar, .header-bar {
-    -fx-background-color: rgb(241,241,241);
+    -fx-background-color: rgb(241.0,241.0,241.0);
 }
 
 .status-message {
@@ -23,6 +23,18 @@
 
 .error-message {
 	-fx-text-fill:red;
+}
+
+.clear-button {
+    -fx-background-radius: 0.0;
+    -fx-background-insets: 0.0;
+    -fx-padding:3;
+	-fx-border-color: -fx-text-box-border;
+    -fx-border-width: 1.0 1.0 1.0 0.0;
+    -fx-focus-color: transparent;
+}
+.clear-button:hover {
+	-fx-cursor:hand;
 }
 
 .text-field {
@@ -87,7 +99,7 @@
 }
 
 .task-pane:hover {
-	-fx-background-color: rgb(229,234,238);
+	-fx-background-color: rgb(229.0,234.0,238.0);
 	-fx-background-radius:5.0px;
 	-fx-border-width:0.0px;
 	-fx-background-insets:-2.0px -3.0px -2.0px -3.0px;

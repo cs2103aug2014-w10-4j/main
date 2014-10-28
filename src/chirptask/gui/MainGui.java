@@ -28,6 +28,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
@@ -37,6 +38,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -60,7 +62,7 @@ import chirptask.logic.Logic;
 
 //@author A0111889W
 public class MainGui extends Application implements NativeKeyListener {
-    
+
     private static final double SCROLL_VALUE = 50;
     private static final int STARTING_HEIGHT = 600;
     private static final int STARTING_WIDTH = 800;
@@ -328,14 +330,32 @@ public class MainGui extends Application implements NativeKeyListener {
 
         Text filterLabel = new Text(Messages.LABEL_FILTER);
 
+        Button clearFilter = new Button();
+        clearFilter.setText("Clear");
+        clearFilter.getStyleClass().add("clear-button");
+        clearFilter.setOnMouseClicked(clearAll());
+
         HBox filterBox = new HBox();
         filterBox.setAlignment(Pos.CENTER);
         filterBox.setPadding(new Insets(5));
 
-        filterBox.getChildren().add(filterLabel);
-        filterBox.getChildren().add(_filterField);
+        filterBox.getChildren().addAll(filterLabel, _filterField, clearFilter);
 
         return filterBox;
+    }
+
+    private EventHandler<? super MouseEvent> clearAll() {
+        return new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    setFilterText("");
+                    filterModified().handle(
+                            new KeyEvent(null, null, null, KeyCode.ENTER,
+                                    false, false, false, false));
+                }
+            }
+        };
     }
 
     private EventHandler<KeyEvent> cliKeyPressHandler() {
