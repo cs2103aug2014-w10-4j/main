@@ -60,7 +60,8 @@ import chirptask.logic.Logic;
 
 //@author A0111889W
 public class MainGui extends Application implements NativeKeyListener {
-
+    
+    private static final double SCROLL_VALUE = 50;
     private static final int STARTING_HEIGHT = 600;
     private static final int STARTING_WIDTH = 800;
     private static final int MIN_WIDTH = 500;
@@ -759,7 +760,8 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void hotKeyToScrollToToday(NativeKeyEvent e) {
         int mod = e.getModifiers();
-        if (e.getKeyCode() == NativeKeyEvent.VC_T
+        if (_primaryStage.isFocused()
+                && e.getKeyCode() == NativeKeyEvent.VC_T
                 && (mod == NativeInputEvent.CTRL_L_MASK
                         || mod == NativeInputEvent.CTRL_R_MASK
                         || mod == NativeInputEvent.CTRL_MASK
@@ -770,21 +772,25 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void hotKeyToScrollTaskView(NativeKeyEvent e) {
-        if (e.getKeyCode() == NativeKeyEvent.VC_UP) {
+        if (_primaryStage.isFocused() && e.getKeyCode() == NativeKeyEvent.VC_UP) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     _taskViewScrollPane.setVvalue(_taskViewScrollPane
-                            .getVvalue() - 0.03);
+                            .getVvalue()
+                            - (SCROLL_VALUE / (_taskViewByDate.getHeight() - _taskViewScrollPane
+                                    .getHeight())));
                 }
             });
-        }
-        if (e.getKeyCode() == NativeKeyEvent.VC_DOWN) {
+        } else if (_primaryStage.isFocused()
+                && e.getKeyCode() == NativeKeyEvent.VC_DOWN) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     _taskViewScrollPane.setVvalue(_taskViewScrollPane
-                            .getVvalue() + 0.03);
+                            .getVvalue()
+                            + (SCROLL_VALUE / (_taskViewByDate.getHeight() - _taskViewScrollPane
+                                    .getHeight())));
                 }
             });
         }
@@ -792,13 +798,12 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void hotKeyToHideStage(NativeKeyEvent e) {
-        if (e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE) {
+        if (_primaryStage.isFocused()
+                && e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    if (_primaryStage.isFocused()) {
-                        _primaryStage.setIconified(true);
-                    }
+                    _primaryStage.setIconified(true);
                 }
             });
         }
