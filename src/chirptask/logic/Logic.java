@@ -206,54 +206,59 @@ public class Logic {
     private void processInvalidTypes(Settings.CommandType type) {
         switch (type) {
         case ADD:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_ADD_USAGE, _gui);
+            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_ADD_USAGE, _gui,
+                    false);
             break;
         case DELETE:
             DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DELETE_USAGE,
-                    _gui);
+                    _gui, false);
             break;
         case DISPLAY:
             DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DISPLAY_USAGE,
-                    _gui);
+                    _gui, false);
 
             break;
         case EDIT:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_EDIT_USAGE, _gui);
+            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_EDIT_USAGE, _gui,
+                    false);
 
             break;
         case UNDO:
             // negate action and run excecuteAction again
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_USAGE, _gui);
+            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_USAGE, _gui,
+                    false);
 
             break;
         case DONE:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DONE_USAGE, _gui);
+            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DONE_USAGE, _gui,
+                    false);
 
             break;
         case UNDONE:
             DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDONE_USAGE,
-                    _gui);
+                    _gui, false);
 
             break;
         case LOGIN:
-            DisplayView
-                    .showStatusToUser(Messages.LOG_MESSAGE_LOGIN_USAGE, _gui);
+            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGIN_USAGE,
+                    _gui, false);
             break;
         case CLEAR:
-            DisplayView
-                    .showStatusToUser(Messages.LOG_MESSAGE_CLEAR_USAGE, _gui);
+            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_CLEAR_USAGE,
+                    _gui, false);
 
             break;
         case SYNC:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_SYNC_USAGE, _gui);
+            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_SYNC_USAGE, _gui,
+                    false);
             break;
         case LOGOUT:
             DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGOUT_USAGE,
-                    _gui);
+                    _gui, false);
             break;
         case INVALID:
             DisplayView.showStatusToUser(Messages.LOG_MESSAGE_INVALID_COMMAND,
-                    _gui);
+                    _gui, false);
             break;
         default:
             assert false;
