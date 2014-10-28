@@ -341,14 +341,17 @@ public class MainGui extends Application implements NativeKeyListener {
         return new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                KeyCode keyPressed = ((KeyEvent) event).getCode();
+                KeyCode keyPressed = event.getCode();
                 cliKeyEnter(keyPressed);
             }
 
             private void cliKeyEnter(KeyCode keyPressed) {
                 if (keyPressed == KeyCode.ENTER) {
-                    _logic.retrieveInputFromUI(_commandLineInterface.getText());
-                    _commandLineInterface.setText("");
+                    String input = _commandLineInterface.getText();
+                    if (!input.trim().isEmpty()) {
+                        _commandLineInterface.setText("");
+                        _logic.retrieveInputFromUI(input);
+                    }
                 }
             }
         };

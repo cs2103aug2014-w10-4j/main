@@ -1,5 +1,6 @@
 package chirptask.logic;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -70,51 +71,51 @@ public class Logic {
         Task task = command.getTask();
 
         switch (actionType) {
-            case ADD :
-                processAdd(command, task);
-                break;
-            case DELETE :
-                processDelete(command, task);
-                break;
-            case DISPLAY :
-                // now can only filter string
-                processDisplay(command, task);
-                break;
-            case EDIT :
-                processEdit(command, task);
-                break;
-            case UNDO :
-                // negate action and run excecuteAction again
-                processUndo();
-                break;
-            case DONE :
-                processDone(command, task);
-                break;
-            case UNDONE :
-                processUndone(command, task);
-                break;
-            case LOGIN :
-                processLogin(command);
-                break;
-            case EXIT :
-                processExit();
-                break;
-            case CLEAR :
-                processClear(StorageHandler.getAllTasks());
-                break;
-            case SYNC:
-                processSync(command);
-                break;
-            case LOGOUT:
-                processLogout(command);
-                break;
-            case INVALID :
-                processInvalid(command);
-                break;
-            default:
-                // Assuming InputParser will always pass a Action object
-                // code will never reach here.
-                assert false;
+        case ADD:
+            processAdd(command, task);
+            break;
+        case DELETE:
+            processDelete(command, task);
+            break;
+        case DISPLAY:
+            // now can only filter string
+            processDisplay(command, task);
+            break;
+        case EDIT:
+            processEdit(command, task);
+            break;
+        case UNDO:
+            // negate action and run excecuteAction again
+            processUndo();
+            break;
+        case DONE:
+            processDone(command, task);
+            break;
+        case UNDONE:
+            processUndone(command, task);
+            break;
+        case LOGIN:
+            processLogin(command);
+            break;
+        case EXIT:
+            processExit();
+            break;
+        case CLEAR:
+            processClear(StorageHandler.getAllTasks());
+            break;
+        case SYNC:
+            processSync(command);
+            break;
+        case LOGOUT:
+            processLogout(command);
+            break;
+        case INVALID:
+            processInvalid(command);
+            break;
+        default:
+            // Assuming InputParser will always pass a Action object
+            // code will never reach here.
+            assert false;
 
         }
     }
@@ -122,27 +123,32 @@ public class Logic {
     private void processLogout(Action command) {
         assert command != null;
         boolean isSuccess;
-        //should return a boolean variable to state whether sync is successful
-       _storageHandler.logout();
-        this.showStatusToUser(command, true);
-        
+        // should return a boolean variable to state whether sync is successful
+        isSuccess = _storageHandler.logout();
+        this.showStatusToUser(command, isSuccess);
+
     }
 
     private void processSync(Action command) {
         assert command != null;
         boolean isSuccess;
-        //should return a boolean variable to state whether sync is successful
-        StorageHandler.sync();
-        this.showStatusToUser(command, true);
+        // should return a boolean variable to state whether sync is successful
+        isSuccess = StorageHandler.sync();
+        this.showStatusToUser(command, isSuccess);
     }
 
-    public void processClear(List<Task> list) {
+    private void processClear(List<Task> list) {
+        List<Task> clearList = new ArrayList<Task>();
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).isDone()) {
-                processDelete(Settings.CommandType.DELETE, list.get(i));
+            Task currentTask = list.get(i);
+            if (currentTask.isDone()) {
+                clearList.add(currentTask);
             }
         }
-
+        
+        for (int i = 0; i < clearList.size(); i++) {
+            processDelete(Settings.CommandType.DELETE, clearList.get(i));
+        }
     }
 
     private void processDelete(CommandType delete, Task t) {
@@ -183,6 +189,8 @@ public class Logic {
         // Check whether Action is a command, if is command call GUI to display
         // on textbox
         // showStatus to user
+        //if(command.isCommandType){
+        _gui.setUserInputText(command.getUserInput());
         showStatusToUser(command, false);
         // log down invalid input to log file
         logErrorCommand();
@@ -212,7 +220,8 @@ public class Logic {
     private void processDone(Action command, Task task) {
         assert command != null && task != null;
         if (task.getType().equalsIgnoreCase(FLOATING)) {
-            task.setDate();
+            Calendar doneDate = Calendar.getInstance();
+            task.setDate(doneDate);
         }
         task.setDone(true);
         processEdit(command, task);
@@ -232,10 +241,14 @@ public class Logic {
         GroupAction tempGroupAction = new GroupAction();
         if (lastAction != null) {
             for (Action action : lastAction.getActionList()) {
-                Action undoAction = action.undo();
-                undoAction.setUndo(action);
-                tempGroupAction.addAction(undoAction);
-
+                if (action.undo() != null) {
+                    Action undoAction = action.undo();
+                    undoAction.setUndo(action);
+                    tempGroupAction.addAction(undoAction);
+                } else {
+                    DisplayView.showStatusToUser(
+                            Messages.LOG_MESSAGE_UNDO_NOTHING, _gui);
+                }
             }
             setLastGroupAction(tempGroupAction);
             lastAction = getLastGroupAction();
