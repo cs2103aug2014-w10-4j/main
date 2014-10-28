@@ -209,7 +209,8 @@ public class DisplayView {
                         Messages.LOG_MESSAGE_FAIL);
                 break;
             case LOGOUT:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT, false, "");
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_ERROR, false,
+                        "");
                 break;
             default:
                 processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
@@ -247,8 +248,8 @@ public class DisplayView {
                         Messages.LOG_MESSAGE_SUCCESS);
                 break;
             case LOGOUT:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT, true,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS, true,
+                        "");
                 break;
             case DISPLAY:
                 processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,

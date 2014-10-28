@@ -191,7 +191,10 @@ public class Logic {
         // showStatus to user
         // if(command.isCommandType){
         _gui.setUserInputText(command.getUserInput());
+        //Show properuseage of command showStatusToUser()}
+        //else{
         showStatusToUser(command, false);
+        //}
         // log down invalid input to log file
         logErrorCommand();
 
