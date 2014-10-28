@@ -196,7 +196,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public static void main(String[] args) {
         while (!Settings.hasRead) {
-            Settings _settings = new Settings();
+            new Settings();
         }
         launch(args);
     }
