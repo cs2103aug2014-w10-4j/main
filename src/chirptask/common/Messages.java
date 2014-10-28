@@ -29,6 +29,19 @@ public class Messages {
 	public static final String LOG_MESSAGE_LOGOUT_SUCCESS = "Successfully logout.";
 	public static final String LOG_MESSAGE_SYN_INIT = "Initiated";
 	
+	public static final String LOG_MESSAGE_ADD_USAGE = "Usage: Add <Task> | Addd <Task> by MM/DD | Addt <Task> from HH to HH MM/DD";
+	public static final String LOG_MESSAGE_DELETE_USAGE = "Usage: delete <Task no> | delete <Task no>-<Task no>,<Task no>";
+	public static final String LOG_MESSAGE_DISPLAY_USAGE= "Usage: display <keyword> | display /<category>";
+	public static final String LOG_MESSAGE_EDIT_USAGE = "Usage: edit <Task no> <desc>";
+	public static final String LOG_MESSAGE_UNDO_USAGE = "Usage: undo";
+	public static final String LOG_MESSAGE_UNDONE_USAGE = "Usage: undone <Task no> | undone <Task no>-<Task no>";
+	public static final String LOG_MESSAGE_DONE_USAGE = "Usage: done <Task no> | done <Task no>-<Task no>";
+	public static final String LOG_MESSAGE_LOGIN_USAGE = "Usage: login";
+	public static final String LOG_MESSAGE_LOGOUT_USAGE = "Usage: logout";
+	public static final String LOG_MESSAGE_SYNC_USAGE = "Usage: sync";
+	public static final String LOG_MESSAGE_CLEAR_USAGE = "Usage: clear";
+    
+	
 	public static final String LABEL_FILTER = "Filter: ";
 	public static final String TITLE_SETTINGS = "Settings";
 	public static final String TITLE_SOFTWARE = "ChirpTask";

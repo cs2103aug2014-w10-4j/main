@@ -34,7 +34,8 @@ public class Logic {
 
         FilterTasks.filter(_gui);
         DisplayView.updateTaskView(_gui);
-        DisplayView.showStatusToUser(Messages.LOG_MESSAGE_INVALID_COMMAND, _gui);
+        DisplayView
+                .showStatusToUser(Messages.LOG_MESSAGE_INVALID_COMMAND, _gui);
     }
 
     private static void clearUi() {
@@ -71,51 +72,51 @@ public class Logic {
         Task task = command.getTask();
 
         switch (actionType) {
-            case ADD :
-                processAdd(command, task);
-                break;
-            case DELETE :
-                processDelete(command, task);
-                break;
-            case DISPLAY :
-                // now can only filter string
-                processDisplay(command, task);
-                break;
-            case EDIT :
-                processEdit(command, task);
-                break;
-            case UNDO :
-                // negate action and run excecuteAction again
-                processUndo();
-                break;
-            case DONE :
-                processDone(command, task);
-                break;
-            case UNDONE :
-                processUndone(command, task);
-                break;
-            case LOGIN :
-                processLogin(command);
-                break;
-            case EXIT :
-                processExit();
-                break;
-            case CLEAR :
-                processClear(StorageHandler.getAllTasks());
-                break;
-            case SYNC :
-                processSync(command);
-                break;
-            case LOGOUT :
-                processLogout(command);
-                break;
-            case INVALID :
-                processInvalid(command);
-                break;
-            default:
-                // Assuming InputParser will always pass a Action object
-                // code will never reach here.
-                assert false;
+        case ADD:
+            processAdd(command, task);
+            break;
+        case DELETE:
+            processDelete(command, task);
+            break;
+        case DISPLAY:
+            // now can only filter string
+            processDisplay(command, task);
+            break;
+        case EDIT:
+            processEdit(command, task);
+            break;
+        case UNDO:
+            // negate action and run excecuteAction again
+            processUndo();
+            break;
+        case DONE:
+            processDone(command, task);
+            break;
+        case UNDONE:
+            processUndone(command, task);
+            break;
+        case LOGIN:
+            processLogin(command);
+            break;
+        case EXIT:
+            processExit();
+            break;
+        case CLEAR:
+            processClear(StorageHandler.getAllTasks());
+            break;
+        case SYNC:
+            processSync(command);
+            break;
+        case LOGOUT:
+            processLogout(command);
+            break;
+        case INVALID:
+            processInvalid(command);
+            break;
+        default:
+            // Assuming InputParser will always pass a Action object
+            // code will never reach here.
+            assert false;
 
         }
     }
@@ -189,12 +190,70 @@ public class Logic {
         // Check whether Action is a command, if is command call GUI to display
         // on textbox
         // showStatus to user
-        // if(command.isCommandType){
-        _gui.setUserInputText(command.getUserInput());
-        //Show properuseage of command showStatusToUser()}
-        //else{
-        showStatusToUser(command, false);
-        //}
+        if (command.getIsCommandType()) {
+
+            Settings.CommandType type = command.getInvalidCommandType();
+            switch (type) {
+            case ADD:
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_ADD_USAGE,
+                        _gui);
+                break;
+            case DELETE:
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DELETE_USAGE,
+                        _gui);
+                break;
+            case DISPLAY:
+                DisplayView.showStatusToUser(
+                        Messages.LOG_MESSAGE_DISPLAY_USAGE, _gui);
+
+                break;
+            case EDIT:
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_EDIT_USAGE,
+                        _gui);
+
+                break;
+            case UNDO:
+                // negate action and run excecuteAction again
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_USAGE,
+                        _gui);
+
+                break;
+            case DONE:
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DONE_USAGE,
+                        _gui);
+
+                break;
+            case UNDONE:
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDONE_USAGE,
+                        _gui);
+
+                break;
+            case LOGIN:
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGIN_USAGE,
+                        _gui);
+                break;
+            case CLEAR:
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_CLEAR_USAGE,
+                        _gui);
+
+                break;
+            case SYNC:
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_SYNC_USAGE,
+                        _gui);
+                break;
+            case LOGOUT:
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGOUT_USAGE,
+                        _gui);
+                break;
+
+            }
+            _gui.setUserInputText(command.getUserInput());
+            // Show properuseage of command
+            // showStatusToUser()
+        } else {
+            showStatusToUser(command, false);
+
+        }
         // log down invalid input to log file
         logErrorCommand();
 
