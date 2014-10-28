@@ -31,7 +31,7 @@ class ConcurrentController {
     }
     
     public boolean awaitTermination() throws InterruptedException {
-        boolean isTerminated = googleExecutor.awaitTermination(1, TimeUnit.SECONDS);
+        boolean isTerminated = googleExecutor.awaitTermination(10, TimeUnit.SECONDS);
         return isTerminated;
     }
 }

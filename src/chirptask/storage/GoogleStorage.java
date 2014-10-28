@@ -63,11 +63,17 @@ public class GoogleStorage implements IStorage {
         StorageHandler.addGoogleStorageUponReady();
     }
     
-    public static void updateStorages(Task newTask) {
+    public synchronized static void updateStorages(Task newTask) {
         //Talk to storage handler to call add google id
         if (StorageHandler.isStorageInit()) {
             StorageHandler.updateStorages(newTask);
         } 
+    }
+    
+    public synchronized static void deleteFromLocalStorage(Task deleteTask) {
+        if (StorageHandler.isLocalChirpStorageInit()) {
+            StorageHandler.deleteFromStorage(deleteTask);
+        }
     }
     
     synchronized void sync(List<Task> allTasks) {

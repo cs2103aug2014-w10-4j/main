@@ -224,7 +224,29 @@ public class StorageHandler {
             Logic.refresh(); // need to update GUI
         }
     }
+    
+    static synchronized void deleteFromStorage(Task deletedTask) {
+        if (isLocalChirpStorageInit()) {
+            if (deletedTask != null) {
+                if (_allTasks.contains(deletedTask)) {
+                    _allTasks.remove(deletedTask);
+                    localStorage.removeTask(deletedTask);
+                    eventStorage.removeTask(deletedTask);
+                    Logic.refresh(); // need to update GUI
+                }
+            }
+        }
+    }
 
+    static boolean isLocalChirpStorageInit() {
+        boolean init = true;
+        init = init && isStoragesListInit();
+        init = init && isLocalListInit();
+        init = init && isLocalStorageInit();
+        init = init && isEventStorageInit();
+        return init;
+    }
+    
     static boolean isStorageInit() {
         boolean init = true;
         init = init && isStoragesListInit();
