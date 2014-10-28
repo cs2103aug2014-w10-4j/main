@@ -17,6 +17,7 @@ public class InputParser {
 	private static final int USER_INPUT_TO_ARRAYLIST = 1;
 	private static final int TASK_ID_DISPLAY = -1;
 	private static final int TASK_ID_INVALID = -2;
+	private static final int TASK_ID_PARSE_EXCEPTION = -3;
 	private final DateParser _dateParser = new DateParser();
 
 	private String _userInput;
@@ -271,6 +272,8 @@ public class InputParser {
 					actions.addAction(action);
 				}
 			}
+		} else {
+			return processInvalid();
 		}
 		return actions;
 	}
@@ -300,14 +303,14 @@ public class InputParser {
 						}
 					}
 				} catch (NumberFormatException e) {
-					// TODO handle invalid input
+					return null;
 				}
 			} else if (!split[i].equals("")) {
 				try {
 					taskIndex.add(Integer.parseInt(split[i]));
 
 				} catch (NumberFormatException e) {
-					// TODO Handle invalid input
+					return null;
 				}
 			}
 		}
@@ -460,6 +463,7 @@ public class InputParser {
 		try {
 			listId = Integer.parseInt(id);
 		} catch (Exception e) {
+			return TASK_ID_PARSE_EXCEPTION;
 		}
 		return listId;
 	}
