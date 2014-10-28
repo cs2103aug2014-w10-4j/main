@@ -350,11 +350,15 @@ public class InputParser {
 					negate.setCommandType(Settings.CommandType.EDIT);
 					negate.setTask(oldTask);
 					action.setUndo(negate);
+				} else {
+					return processInvalid();
 				}
 			} else {
 				return processInvalid();
 			}
 			actions.addAction(action);
+		} else {
+			return processInvalid();
 		}
 		return actions;
 	}
