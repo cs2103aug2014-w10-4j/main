@@ -38,3 +38,5 @@ ChirpTask.jar
 ChirpTask v0.2.jar
 
 local copy.xml
+
+*.jar
