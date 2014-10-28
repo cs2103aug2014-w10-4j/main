@@ -68,7 +68,7 @@ public class InputParser {
 		case "logout":
 			return processLogout();
 		default:
-			return processInvalid();
+			return processInvalid(CommandType.INVALID);
 		}
 	}
 
@@ -83,7 +83,7 @@ public class InputParser {
 	private GroupAction processClear() {
 		return processWithNoTask(CommandType.CLEAR);
 	}
-	
+
 	private GroupAction processExit() {
 		return processWithNoTask(CommandType.EXIT);
 	}
@@ -143,7 +143,7 @@ public class InputParser {
 		Action negate = new Action();
 
 		if (parameter == null) {
-			return processInvalid();
+			return processInvalid(CommandType.ADD);
 		}
 
 		Task toDo = getTaskFromString(parameter);
@@ -164,10 +164,11 @@ public class InputParser {
 			dateList = _dateParser.parseDate(toParse);
 			if (dateList.size() == 1) {
 				Calendar dueDate = dateList.get(0);
-				Task deadline = new DeadlineTask(taskIndex, description, dueDate);
+				Task deadline = new DeadlineTask(taskIndex, description,
+						dueDate);
 				toDo = deadline;
 			} else {
-				return processInvalid();
+				return processInvalid(CommandType.ADD);
 			}
 			break;
 		case "addt":
@@ -177,14 +178,14 @@ public class InputParser {
 				Calendar startTime = dateList.get(0);
 				Calendar endTime = dateList.get(1);
 				Task timed = new TimedTask(taskIndex, description, startTime,
-					endTime);
+						endTime);
 				toDo = timed;
 			} else {
-				return processInvalid();
+				return processInvalid(CommandType.ADD);
 			}
 			break;
 		default:
-			actions = processInvalid();
+			actions = processInvalid(CommandType.ADD);
 			return actions;
 		}
 
@@ -214,7 +215,7 @@ public class InputParser {
 					toReturn = toReturn.concat(s).concat(" ");
 				}
 			}
-			
+
 		} else {
 			toReturn = parameter;
 		}
@@ -227,7 +228,7 @@ public class InputParser {
 		} else {
 			toReturn = "";
 		}
-		
+
 		return toReturn;
 	}
 
@@ -235,9 +236,9 @@ public class InputParser {
 		GroupAction actions = new GroupAction();
 		Settings.CommandType reverse;
 		if (parameter == null) {
-			return processInvalid();
+			return processInvalid(command);
 		}
-		
+
 		switch (command) {
 		case DONE:
 			reverse = CommandType.UNDONE;
@@ -253,69 +254,65 @@ public class InputParser {
 			reverse = CommandType.INVALID;
 		}
 
-		List<Integer> list = getTaskIndexFromString(parameter);
-		if (list != null && list.size() != 0) {
+	
+		try {
+			List<Integer> list = getTaskIndexFromString(parameter);
 			List<Task> allTasks = FilterTasks.getFilteredList();
-			for (Integer i : list) {
-				Action action = new Action();
-				action.setCommandType(command);
-				int normalizedIndex = normalizeId(i);
-				if (isIndexInRange(normalizedIndex)) {
-					Task task = allTasks.get(normalizedIndex);
-					action.setTask(task);
+			if (allTasks != null && allTasks.size() != 0) {
+				for (Integer i : list) {
+					Action action = new Action();
+					action.setCommandType(command);
+					int normalizedIndex = normalizeId(i);
+					if (isIndexInRange(normalizedIndex)) {
+						Task task = allTasks.get(normalizedIndex);
+						action.setTask(task);
 
-					Action negate = new Action();
-					negate.setCommandType(reverse);
-					negate.setTask(task);
+						Action negate = new Action();
+						negate.setCommandType(reverse);
+						negate.setTask(task);
 
-					action.setUndo(negate);
-					actions.addAction(action);
+						action.setUndo(negate);
+						actions.addAction(action);
+					} else {
+						return processInvalid(command);
+					}
 				}
+			} else {
+				return processInvalid(command);
 			}
-		} else {
-			return processInvalid();
+		} catch (NumberFormatException e) {
+			return processInvalid(command);
 		}
 		return actions;
 	}
 
-	private List<Integer> getTaskIndexFromString(String parameter) {
+	private List<Integer> getTaskIndexFromString(String parameter)
+			throws NumberFormatException {
 		List<Integer> taskIndex = new ArrayList<Integer>();
 
-		if (parameter.equals("all")) {
-			int size = FilterTasks.getFilteredList().size();
-			for (int i = 1; i <= size; i++) {
-				taskIndex.add(i);
-			}
-		}
 		parameter = parameter.replaceAll("\\s+(?=-)", "").replaceAll(
 				"(?<=-)\\s+", "");
 		String[] split = parameter.trim().split("\\s+|,");
 		for (int i = 0; i < split.length; i++) {
 			if (!split[i].equals("") && split[i].contains("-")) {
 				String[] sequence = split[i].split("-");
-				try {
-					int size = sequence.length;
-					if (size == 2) {
-						int start = Integer.parseInt(sequence[0]);
-						int end = Integer.parseInt(sequence[1]);
-						for (int j = start; j <= end; j++) {
-							taskIndex.add(j);
-						}
+
+				int size = sequence.length;
+				if (size == 2) {
+					int start = Integer.parseInt(sequence[0]);
+					int end = Integer.parseInt(sequence[1]);
+					for (int j = start; j <= end; j++) {
+						taskIndex.add(j);
 					}
-				} catch (NumberFormatException e) {
-					return null;
+				} else {
+					Integer.parseInt(split[i]);
 				}
 			} else if (!split[i].equals("")) {
-				try {
-					taskIndex.add(Integer.parseInt(split[i]));
+				taskIndex.add(Integer.parseInt(split[i]));
+			} 
 
-				} catch (NumberFormatException e) {
-					return null;
-				}
-			}
 		}
 		return taskIndex;
-
 	}
 
 	private GroupAction processEdit(String parameter) {
@@ -324,41 +321,38 @@ public class InputParser {
 		Action negate = new Action();
 
 		if (parameter == null) {
-			actions = processInvalid();
+			actions = processInvalid(CommandType.EDIT);
 			return actions;
 		}
 
 		int taskIndex = getId(parameter);
-		if (taskIndex >= 1) {
-			List<Task> taskList = FilterTasks.getFilteredList();
-			int normalizedIndex = normalizeId(taskIndex);
 
-			if (isIndexInRange(normalizedIndex)) {
-				Task oldTask = taskList.get(normalizedIndex);
-				String[] parameters = parameter.trim().split("\\s+", 2);
-				if (parameters.length > 1) {
-					parameter = parameters[1];
-					String toParse = getStringToParseDate(parameter);
-					List<Calendar> dateList = _dateParser.parseDate(toParse);
+		List<Task> taskList = FilterTasks.getFilteredList();
+		int normalizedIndex = normalizeId(taskIndex);
 
-					Task editedTask = getTaskFromString(parameter);
-					editedTask = getEditedTask(oldTask, editedTask, dateList);
+		if (isIndexInRange(normalizedIndex)) {
+			Task oldTask = taskList.get(normalizedIndex);
+			String[] parameters = parameter.trim().split("\\s+", 2);
+			if (parameters.length > 1) {
+				parameter = parameters[1];
+				String toParse = getStringToParseDate(parameter);
+				List<Calendar> dateList = _dateParser.parseDate(toParse);
 
-					action.setCommandType(Settings.CommandType.EDIT);
-					action.setTask(editedTask);
-					action.setUserInput(_userInput);
-					negate.setCommandType(Settings.CommandType.EDIT);
-					negate.setTask(oldTask);
-					action.setUndo(negate);
-				} else {
-					return processInvalid();
-				}
+				Task editedTask = getTaskFromString(parameter);
+				editedTask = getEditedTask(oldTask, editedTask, dateList);
+
+				action.setCommandType(Settings.CommandType.EDIT);
+				action.setTask(editedTask);
+				action.setUserInput(_userInput);
+				negate.setCommandType(Settings.CommandType.EDIT);
+				negate.setTask(oldTask);
+				action.setUndo(negate);
 			} else {
-				return processInvalid();
+				return processInvalid(CommandType.EDIT);
 			}
 			actions.addAction(action);
 		} else {
-			return processInvalid();
+			return processInvalid(CommandType.EDIT);
 		}
 		return actions;
 	}
@@ -430,7 +424,7 @@ public class InputParser {
 	public static Task getTaskFromString(String parameter) {
 		Task newTask = new Task();
 		newTask.setDescription(parameter);
-		
+
 		parameter = parameter.trim();
 		String[] taskDesc = parameter.split("@|#", 2);
 
@@ -443,15 +437,13 @@ public class InputParser {
 			for (int i = 0; i < word.length; i++) {
 				char firstChar = ' ';
 				if (word[i].length() > 0) {
-				    firstChar = word[i].charAt(0);
+					firstChar = word[i].charAt(0);
 				}
 
-				if (firstChar == Settings.CONTEXT_CHAR
-						&& word[i].length() > 1) {
+				if (firstChar == Settings.CONTEXT_CHAR && word[i].length() > 1) {
 					contexts.add(word[i].substring(1));
 				}
-				if (firstChar == Settings.CATEGORY_CHAR
-						&& word[i].length() > 1) {
+				if (firstChar == Settings.CATEGORY_CHAR && word[i].length() > 1) {
 					categories.add(word[i].substring(1));
 				}
 			}
@@ -476,7 +468,8 @@ public class InputParser {
 		int normalizedId = id - USER_INPUT_TO_ARRAYLIST;
 		return normalizedId;
 	}
-	//@author A0113022
+
+	// @author A0113022
 	private String getCommandTypeString() {
 		return _userInput.trim().split("\\s+")[0].toLowerCase();
 	}
@@ -507,10 +500,11 @@ public class InputParser {
 		return isInRange;
 	}
 
-	private GroupAction processInvalid() {
+	private GroupAction processInvalid(CommandType command) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
 		action.setCommandType(Settings.CommandType.INVALID);
+		action.setInvalidCommandType(command);
 		action.setUserInput(_userInput);
 		action.setUndo(null);
 		actions.addAction(action);

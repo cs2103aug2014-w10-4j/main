@@ -150,6 +150,14 @@ public class DisplayView {
     public static void showStatusToUser(String Message, MainGui gui) {
         gui.setStatus(Message);
     }
+    
+    public static void showStatusToUser(String Message, MainGui gui, boolean success){
+           if(success){
+               gui.setStatus(Message);
+           }else{
+               gui.setError(Message);
+           }
+    }
 
     public static void showStatusToUser(Settings.StatusType type, MainGui gui,
             String filter) {

@@ -108,10 +108,10 @@ public class InputParserTest {
 	//Partition: deadline task, no categories/contexts, absolute date mm/dd representation
 	//(plan to change to dd/mm representation)
 	public void testAddd4() {
-		parser.receiveInput("addd finish this by 10/23");
+		parser.receiveInput("addd finish this by 23/10");
 		Calendar cal = Calendar.getInstance();
 		cal.set(2014, 9, 23, 23, 59);
-		DeadlineTask toCompare = taskToCompareD("finish this by 10/23", cal);
+		DeadlineTask toCompare = taskToCompareD("finish this by 23/10", cal);
 		GroupAction group = groupActionAdd(toCompare);
 		assertTrue(compareGroup(group, parser.getActions()));
 	}
@@ -119,13 +119,13 @@ public class InputParserTest {
 	@Test
 	//Partition: timed task, no categories/contexts, absolute date mm/dd representation
 	public void testAddt() {
-		parser.receiveInput("addt from 2pm to 4pm 10/23");
+		parser.receiveInput("addt from 2pm to 4pm 23/10");
 		Calendar cal1 = Calendar.getInstance();
 		cal1.set(2014, 9, 23, 14, 00);
 		Calendar cal2 = Calendar.getInstance();
 		cal2.set(2014, 9, 23, 16, 00);
 		
-		TimedTask toCompare = taskToCompareT("from 2pm to 4pm 10/23", cal1, cal2);
+		TimedTask toCompare = taskToCompareT("from 2pm to 4pm 23/10", cal1, cal2);
 		GroupAction group = groupActionAdd(toCompare);
 		assertTrue(compareGroup(group, parser.getActions()));
 	}
@@ -153,60 +153,42 @@ public class InputParserTest {
 
 	// ignore task Id for now
 	private boolean compareTask(Task task1, Task task2) {
-		boolean isSameType = (task1.getType().equals(task2.getType()));
-		boolean isSameDate = false;
-		if (isSameType) {
-			switch (task1.getType()) {
-			case "deadline":
-				isSameDate = Math.abs((((DeadlineTask) task1).getDate().getTimeInMillis() - 
-						((DeadlineTask) task2).getDate().getTimeInMillis())) < 60000;
-				break;
-			case "timed task":
-				boolean isSameStart = Math.abs((((TimedTask) task1).getDate().getTimeInMillis() - 
-						((TimedTask) task2).getDate().getTimeInMillis())) < 60000;
-				boolean isSameEnd = Math.abs((((TimedTask) task1).getEndTime().getTimeInMillis() - 
-						((TimedTask) task2).getEndTime().getTimeInMillis())) < 60000;
-				isSameDate = isSameStart && isSameEnd;
-			default:
-				isSameDate = true;
-			}
+		assertEquals(task1.getType(), task2.getType());
+		switch (task1.getType()) {
+		case "deadline":
+			compareTime(task1.getDate(), task2.getDate());
+			break;
+		case "timed task":
+			compareTime(task1.getDate(), task2.getDate());
+			compareTime(((TimedTask) task1).getEndTime(), ((TimedTask) task2).getEndTime()); 
+		default:
+				
 		}
-		boolean isSameDesc = task1.getDescription().equals(
-				task2.getDescription());
-		boolean isSameContexts = (task1.getContexts() == null && task2
-				.getContexts() == null)
-				|| (task1.getContexts().equals(task2.getContexts()));
-		boolean isSameCategories = (task1.getCategories() == null && task2
-				.getCategories() == null) ||
-				task1.getCategories().equals(task2.getCategories());
+		
+		assertEquals(task1.getDescription(), task2.getDescription());
+		assertEquals(task1.getContexts(), task2.getContexts());
+		assertEquals(task1.getCategories(), task2.getCategories());
 		// boolean isSameId = (task1.getTaskId() == task2.getTaskId());
-		return isSameType && isSameDate && isSameDesc && isSameContexts
-				&& isSameCategories;
+		return true;
 	}
 
 	private boolean compareAction(Action act1, Action act2) {
-		boolean isSameType = (act1.getCommandType().equals(act2
-				.getCommandType()));
+		assertEquals(act1.getCommandType(),act2.getCommandType());
 		boolean isSameTask = compareTask(act1.getTask(), act2.getTask());
-		boolean isSameNegateCommand = (act1.undo().getCommandType().equals(act2
-				.undo().getCommandType()));
+		assertEquals(act1.undo().getCommandType(),act2.undo().getCommandType());
 		boolean isSameNegateTask = compareTask(act1.undo().getTask(), act2
 				.undo().getTask());
-		return isSameType && isSameTask && isSameNegateCommand
-				&& isSameNegateTask;
+		return isSameTask && isSameNegateTask;
 	}
 
 	private boolean compareGroup(GroupAction gr1, GroupAction gr2) {
-		boolean isSameSize = gr1.getActionList().size() == gr2.getActionList()
-				.size();
-		boolean isSame = isSameSize;
-		if (isSameSize) {
-			int size = gr1.getActionList().size();
-			for (int i = 0; i < size; i++) {
-				boolean isSameAction = compareAction(gr1.getActionList()
+		assertEquals(gr1.getActionList().size(),gr2.getActionList().size());
+		boolean isSame = true;
+		int size = gr1.getActionList().size();
+		for (int i = 0; i < size; i++) {
+			boolean isSameAction = compareAction(gr1.getActionList()
 						.get(i), gr2.getActionList().get(i));
-				isSame = isSame && isSameAction;
-			}
+			isSame = isSame && isSameAction;
 		}
 		return isSame;
 	}
@@ -255,6 +237,22 @@ public class InputParserTest {
 		toCompare.setCategories(empty);
 		toCompare.setContexts(empty);
 		return toCompare;
+	}
+	//code reused from natty
+	private void validateDateTime(Calendar cal, int year, int month, int date, int hour, int minute) {
+		assertEquals(cal.get(Calendar.YEAR), year);
+		assertEquals(cal.get(Calendar.MONTH), month);
+		assertEquals(cal.get(Calendar.DAY_OF_MONTH), date);
+		assertEquals(cal.get(Calendar.HOUR), hour);
+		assertEquals(cal.get(Calendar.MINUTE), minute);
+	}
+	
+	private void compareTime(Calendar cal1, Calendar cal2) {
+		assertEquals(cal1.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
+		assertEquals(cal1.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
+		assertEquals(cal1.get(Calendar.DAY_OF_MONTH), cal2.get(Calendar.DAY_OF_MONTH));
+		assertEquals(cal1.get(Calendar.HOUR_OF_DAY), cal2.get(Calendar.HOUR_OF_DAY));
+		assertEquals(cal1.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
 	}
 
 }
