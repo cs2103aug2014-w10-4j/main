@@ -29,7 +29,7 @@ public class Messages {
 	public static final String LOG_MESSAGE_LOGOUT_SUCCESS = "Successfully logout.";
 	public static final String LOG_MESSAGE_SYN_INIT = "Initiated";
 	
-	public static final String LOG_MESSAGE_ADD_USAGE = "Usage: Add <Task> | Addd <Task> by MM/DD | Addt <Task> from HH to HH MM/DD";
+	public static final String LOG_MESSAGE_ADD_USAGE = "Usage: Add <Task> | Addd <Task> by MM/DD | Addt <Task> from HH to HH DD/MM";
 	public static final String LOG_MESSAGE_DELETE_USAGE = "Usage: delete <Task no> | delete <Task no>-<Task no>,<Task no>";
 	public static final String LOG_MESSAGE_DISPLAY_USAGE= "Usage: display <keyword> | display /<category>";
 	public static final String LOG_MESSAGE_EDIT_USAGE = "Usage: edit <Task no> <desc>";
