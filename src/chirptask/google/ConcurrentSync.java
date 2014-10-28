@@ -52,39 +52,110 @@ class ConcurrentSync implements Callable<Boolean> {
     }
 
     public Boolean call() throws UnknownHostException, IOException  {
-        boolean isSyncing = false;
+        boolean isSync = false;
         
         if (_taskList == null) {
-            isSyncing = false;
-            return isSyncing;
+            isSync = false;
+            return isSync;
         }
         
         try {
             sync(_taskList);
+            isSync = true;
         } catch (Exception allException) {
             
         }
         
-        return isSyncing;
+        return isSync;
     }
     
     private void sync(List<chirptask.storage.Task> allTasks) throws Exception {
         if (allTasks != null) {
             syncPhaseOne(_taskList);
             syncPhaseTwo(_taskList);
-            //weird bug happens here at phase three, isModified becomes false
-            syncPhaseThree(_taskList); 
-            syncPhaseFour(_taskList);
+            syncPhaseThree(_taskList);
+            syncPhaseFour(_taskList); 
+        }
+    }
+    
+    private void syncPhaseOne(List<chirptask.storage.Task> allTasks)
+            throws UnknownHostException, IOException {
+
+        if (allTasks != null) {
+            List<Event> events = _calendarController.getEvents();
+            Tasks tasks = _tasksController.getTasks();
+            List<Task> taskList = tasks.getItems();
+            List<chirptask.storage.Task> localList = new ArrayList<chirptask.storage.Task>();
+            
+            for (int i = 0; i < allTasks.size(); i++) {
+                chirptask.storage.Task currTask = allTasks.get(i);
+                localList.add(currTask);
+            }
+            
+            for (int i = 0; i < localList.size(); i++) {
+                chirptask.storage.Task currTask = localList.get(i);
+                String googleId = currTask.getGoogleId();
+                if (currTask == null || googleId == null || 
+                        googleId.equals("")) {
+                    continue;
+                }
+                
+                if (events == null) {
+                    break;
+                }
+                
+                boolean isStoredOnline = false;
+                
+                for (Event event : events) {
+                    String eventId = event.getId();
+                    if (eventId != null) {
+                        if (googleId.equals(eventId)) {
+                            isStoredOnline = true;
+                        }
+                    }
+                }
+                
+                if (taskList == null) {
+                    break;
+                }
+                
+                for (Task task : taskList) {
+                    String taskId = task.getId();
+                    if (taskId != null) {
+                        if (googleId.equals(taskId)) {
+                            isStoredOnline = true;
+                        }
+                    }
+                }
+                
+                if (isStoredOnline == false) { //Deleted online
+                    chirptask.storage.Task toDeleteLocally = currTask;
+                    if (toDeleteLocally != null) {
+                        // Local Task always takes precedence
+                        if (toDeleteLocally.isModified()) {
+                            // Set Google ID empty to remove in storages
+                            toDeleteLocally.setGoogleId(""); 
+                            toDeleteLocally.setModified(false);
+                            GoogleStorage.updateStorages(toDeleteLocally);
+                            // Push from local to Google
+                            _gController.add(toDeleteLocally);
+                        } else {
+                            GoogleStorage.deleteFromLocalStorage(toDeleteLocally);
+                        }
+                    }
+                }
+
+            }
         }
     }
     
     /**
-     * Phase one is a Google One-way synchronisation method.
+     * Phase two is a Google One-way synchronisation method.
      * 
-     * Phase one adds local tasks without Google ID to Google; If the task has
-     * been deleted, it does not perform the add operation. Phase one also
+     * Phase two adds local tasks without Google ID to Google; If the task has
+     * been deleted, it does not perform the add operation. Phase two also
      * deletes tasks with Google ID that are flagged as deleted from the Google
-     * account. Phase one also modify tasks with Google ID that are flagged as
+     * account. Phase two also modify tasks with Google ID that are flagged as
      * modified
      * 
      * @param allTasks
@@ -94,7 +165,7 @@ class ConcurrentSync implements Callable<Boolean> {
      * @throws IOException
      *             If transmission is interrupted
      */
-    private void syncPhaseOne(List<chirptask.storage.Task> allTasks)
+    private void syncPhaseTwo(List<chirptask.storage.Task> allTasks)
             throws UnknownHostException, IOException {
         
         if (allTasks != null) {
@@ -122,7 +193,7 @@ class ConcurrentSync implements Callable<Boolean> {
         }
     }
 
-    private void syncPhaseTwo(List<chirptask.storage.Task> allTasks)
+    private void syncPhaseThree(List<chirptask.storage.Task> allTasks)
             throws UnknownHostException, IOException {
 
         if (allTasks != null) {
@@ -236,7 +307,7 @@ class ConcurrentSync implements Callable<Boolean> {
         }
     }
 
-    private void syncPhaseThree(List<chirptask.storage.Task> allTasks)
+    private void syncPhaseFour(List<chirptask.storage.Task> allTasks)
             throws UnknownHostException, IOException {
 
         if (allTasks != null) {
@@ -342,72 +413,5 @@ class ConcurrentSync implements Callable<Boolean> {
         }
     }
     
-    private void syncPhaseFour(List<chirptask.storage.Task> allTasks)
-            throws UnknownHostException, IOException {
-
-        if (allTasks != null) {
-            List<Event> events = _calendarController.getEvents();
-            Tasks tasks = _tasksController.getTasks();
-            List<Task> taskList = tasks.getItems();
-            List<chirptask.storage.Task> localList = new ArrayList<chirptask.storage.Task>();
-            
-            for (int i = 0; i < allTasks.size(); i++) {
-                chirptask.storage.Task currTask = allTasks.get(i);
-                localList.add(currTask);
-            }
-            
-            for (int i = 0; i < localList.size(); i++) {
-                chirptask.storage.Task currTask = localList.get(i);
-                String googleId = currTask.getGoogleId();
-                if (currTask == null || googleId == null || 
-                        googleId.equals("")) {
-                    continue;
-                }
-                
-                if (events == null) {
-                    break;
-                }
-                
-                boolean isStoredOnline = false;
-                
-                for (Event event : events) {
-                    String eventId = event.getId();
-                    if (eventId != null) {
-                        if (googleId.equals(eventId)) {
-                            isStoredOnline = true;
-                        }
-                    }
-                }
-                
-                if (taskList == null) {
-                    break;
-                }
-                
-                for (Task task : taskList) {
-                    String taskId = task.getId();
-                    if (taskId != null) {
-                        if (googleId.equals(taskId)) {
-                            isStoredOnline = true;
-                        }
-                    }
-                }
-                
-                if (isStoredOnline == false) { //Deleted online
-                    chirptask.storage.Task toDeleteLocally = currTask;
-                    if (toDeleteLocally != null) {
-                        // Local Task always takes precedence
-                        if (toDeleteLocally.isModified()) {
-                            // Set Google ID empty to remove in storages
-                            //toDeleteLocally.setGoogleId(""); 
-                            //GoogleStorage.updateStorages(toDeleteLocally);
-                            // Push from local to Google
-                        } else {
-                            GoogleStorage.deleteFromLocalStorage(toDeleteLocally);
-                        }
-                    }
-                }
-
-            }
-        }
-    }
+    
 }
