@@ -40,8 +40,7 @@ public class Messages {
 	public static final String LOG_MESSAGE_LOGOUT_USAGE = "Usage: logout";
 	public static final String LOG_MESSAGE_SYNC_USAGE = "Usage: sync";
 	public static final String LOG_MESSAGE_CLEAR_USAGE = "Usage: clear";
-    
-	
+   	
 	public static final String LABEL_FILTER = "Filter: ";
 	public static final String TITLE_SETTINGS = "Settings";
 	public static final String TITLE_SOFTWARE = "ChirpTask";

@@ -18,14 +18,14 @@ public class JUnitSystemTesting {
 
         _logic.retrieveInputFromUI("delete 1-");
         assertEquals("delete 1-", _mainGui._userInput);
-        assertEquals("Invalid command", _mainGui._status);
+        assertEquals("Usage: delete <Task no> | delete <Task no>-<Task no>,<Task no>", _mainGui._status);
 
         _logic.retrieveInputFromUI("logout");
-        assertEquals("Please login before you can logout.", _mainGui._status);
+        assertEquals("You are not logged in.", _mainGui._status);
 
         _logic.retrieveInputFromUI("Invalid");
-        assertEquals("Invalid", _mainGui._userInput);
-        assertEquals("Invalid command", _mainGui._status);
+//      assertEquals("", _mainGui._userInput);
+        assertEquals("Valid commands: add addd addt edit delete done undone undo login logout sync", _mainGui._status);
     }
 
     @Test
