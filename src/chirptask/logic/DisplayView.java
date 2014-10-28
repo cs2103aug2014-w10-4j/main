@@ -209,7 +209,7 @@ public class DisplayView {
                         Messages.LOG_MESSAGE_FAIL);
                 break;
             case LOGOUT:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_ERROR, false,
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL, false,
                         "");
                 break;
             default:

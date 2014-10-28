@@ -34,7 +34,7 @@ public class Logic {
 
         FilterTasks.filter(_gui);
         DisplayView.updateTaskView(_gui);
-
+        DisplayView.showStatusToUser(Messages.LOG_MESSAGE_INVALID_COMMAND, _gui);
     }
 
     private static void clearUi() {
