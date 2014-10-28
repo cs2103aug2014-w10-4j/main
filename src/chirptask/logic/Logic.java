@@ -153,7 +153,7 @@ public class Logic {
 
     private void processDelete(CommandType delete, Task t) {
         Task deletedTask;
-        boolean isSuccess;
+        boolean isSuccess = false;
         t.setDeleted(true);
         deletedTask = _storageHandler.deleteTask(t);
         if (deletedTask == null) {
