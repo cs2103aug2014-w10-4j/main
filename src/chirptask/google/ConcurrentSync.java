@@ -54,7 +54,8 @@ class ConcurrentSync implements Callable<Boolean> {
     public Boolean call() throws UnknownHostException, IOException  {
         boolean isSync = false;
         
-        if (_taskList == null) {
+        if (_taskList == null || _gController == null || 
+                _calendarController == null || _tasksController == null) {
             isSync = false;
             return isSync;
         }
