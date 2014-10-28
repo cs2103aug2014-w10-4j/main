@@ -10,7 +10,7 @@ import chirptask.gui.MainGui;
 import chirptask.logic.DisplayView;
 
 /*
- * Stub for System Testing. Dependency Injection.
+ * Class for System Testing. Dependency Injection.
  */
 //@author A0111889W
 public class MainGui2 extends MainGui {
@@ -20,8 +20,8 @@ public class MainGui2 extends MainGui {
     public String _status = "";
     public List<String> _categoryList = new ArrayList<String>();
     public List<String> _contextList = new ArrayList<String>();
-    public final SortedMap<String, ArrayList<Integer>> _taskViewDateMap = new TreeMap<>();
-    public static final List<Integer> _taskIndexToId = new ArrayList<>();
+    public SortedMap<String, ArrayList<Integer>> _taskViewDateMap = new TreeMap<>();
+    public static List<Integer> _taskIndexToId = new ArrayList<>();
 
     public String getFilter() {
         return _filter;
