@@ -71,51 +71,51 @@ public class Logic {
         Task task = command.getTask();
 
         switch (actionType) {
-        case ADD:
-            processAdd(command, task);
-            break;
-        case DELETE:
-            processDelete(command, task);
-            break;
-        case DISPLAY:
-            // now can only filter string
-            processDisplay(command, task);
-            break;
-        case EDIT:
-            processEdit(command, task);
-            break;
-        case UNDO:
-            // negate action and run excecuteAction again
-            processUndo();
-            break;
-        case DONE:
-            processDone(command, task);
-            break;
-        case UNDONE:
-            processUndone(command, task);
-            break;
-        case LOGIN:
-            processLogin(command);
-            break;
-        case EXIT:
-            processExit();
-            break;
-        case CLEAR:
-            processClear(StorageHandler.getAllTasks());
-            break;
-        case SYNC:
-            processSync(command);
-            break;
-        case LOGOUT:
-            processLogout(command);
-            break;
-        case INVALID:
-            processInvalid(command);
-            break;
-        default:
-            // Assuming InputParser will always pass a Action object
-            // code will never reach here.
-            assert false;
+            case ADD :
+                processAdd(command, task);
+                break;
+            case DELETE :
+                processDelete(command, task);
+                break;
+            case DISPLAY :
+                // now can only filter string
+                processDisplay(command, task);
+                break;
+            case EDIT :
+                processEdit(command, task);
+                break;
+            case UNDO :
+                // negate action and run excecuteAction again
+                processUndo();
+                break;
+            case DONE :
+                processDone(command, task);
+                break;
+            case UNDONE :
+                processUndone(command, task);
+                break;
+            case LOGIN :
+                processLogin(command);
+                break;
+            case EXIT :
+                processExit();
+                break;
+            case CLEAR :
+                processClear(StorageHandler.getAllTasks());
+                break;
+            case SYNC :
+                processSync(command);
+                break;
+            case LOGOUT :
+                processLogout(command);
+                break;
+            case INVALID :
+                processInvalid(command);
+                break;
+            default:
+                // Assuming InputParser will always pass a Action object
+                // code will never reach here.
+                assert false;
 
         }
     }
@@ -145,7 +145,7 @@ public class Logic {
                 clearList.add(currentTask);
             }
         }
-        
+
         for (int i = 0; i < clearList.size(); i++) {
             processDelete(Settings.CommandType.DELETE, clearList.get(i));
         }
@@ -189,7 +189,7 @@ public class Logic {
         // Check whether Action is a command, if is command call GUI to display
         // on textbox
         // showStatus to user
-        //if(command.isCommandType){
+        // if(command.isCommandType){
         _gui.setUserInputText(command.getUserInput());
         showStatusToUser(command, false);
         // log down invalid input to log file

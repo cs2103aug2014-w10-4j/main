@@ -75,15 +75,15 @@ public class MainGui extends Application implements NativeKeyListener {
             "March", "April", "May", "June", "July", "August", "September",
             "October", "November", "December" };
 
-    private final TextField _commandLineInterface = new TextField();
-    private final TextField _filterField = new TextField();
-    private final Label _statusText = new Label();
+    private TextField _commandLineInterface;
+    private TextField _filterField;
+    private Label _statusText;
 
-    private final VBox _categoryList = new VBox();
-    private final VBox _contextList = new VBox();
-    private final VBox _taskViewByDate = new VBox();
+    private VBox _categoryList = new VBox();
+    private VBox _contextList = new VBox();
+    private VBox _taskViewByDate = new VBox();
 
-    private ScrollPane _taskViewScrollPane = new ScrollPane();
+    private ScrollPane _taskViewScrollPane;
 
     private final SortedMap<String, VBox> _taskViewDateMap = new TreeMap<>();
     private static final List<Integer> _taskIndexToId = new ArrayList<>();
@@ -256,6 +256,7 @@ public class MainGui extends Application implements NativeKeyListener {
         HBox filterBox = generateFilterBox();
         mainDisplay.setTop(filterBox);
 
+        _taskViewScrollPane = new ScrollPane();
         _taskViewScrollPane = generateTasksView();
         mainDisplay.setCenter(_taskViewScrollPane);
 
@@ -323,6 +324,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private HBox generateFilterBox() {
+        _filterField = new TextField();
         _filterField.setText(Settings.DEFAULT_FILTER);
         _filterField.setOnKeyReleased(filterModified());
 
@@ -480,6 +482,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private VBox generateUserInputAndStatusBar() {
+        _commandLineInterface = new TextField();
         HBox.setHgrow(_commandLineInterface, Priority.ALWAYS);
         _commandLineInterface.setOnKeyPressed(cliKeyPressHandler());
 
@@ -494,6 +497,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private VBox generateStatusBarInterface() {
+        _statusText = new Label();
         _statusText.setTextOverrun(OverrunStyle.ELLIPSIS);
         setStatus(Messages.DEFAULT_STATUS);
 
