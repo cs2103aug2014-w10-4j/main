@@ -132,7 +132,9 @@ class ConcurrentSync implements Callable<Boolean> {
                     chirptask.storage.Task toDeleteLocally = currTask;
                     if (toDeleteLocally != null) {
                         // Local Task always takes precedence
-                        if (toDeleteLocally.isModified()) {
+                        boolean isModified = toDeleteLocally.isModified();
+                        boolean isNotDeleted = !toDeleteLocally.isDeleted();
+                        if (isModified && isNotDeleted) {
                             // Set Google ID empty to remove in storages
                             toDeleteLocally.setGoogleId(""); 
                             toDeleteLocally.setModified(false);
