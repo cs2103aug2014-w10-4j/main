@@ -484,13 +484,11 @@ public class GoogleController implements Runnable {
     private void syncPhaseOne(List<chirptask.storage.Task> allTasks)
             throws UnknownHostException, IOException {
         if (allTasks != null) {
-            Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
-
-            while (iterate.hasNext()) {
-                chirptask.storage.Task currTask = iterate.next();
+            for (int i = 0; i < allTasks.size(); i++) {
+                chirptask.storage.Task currTask = allTasks.get(i);
                 String currGoogleId = currTask.getGoogleId();
                 boolean isDeleted = currTask.isDeleted();
-
+                
                 if (currGoogleId == null || "".equals(currGoogleId)) {
                     if (!isDeleted) {
                         currTask.setModified(false);
@@ -523,10 +521,9 @@ public class GoogleController implements Runnable {
             List<Event> events = _calendarController.getEvents();
             Tasks tasks = _tasksController.getTasks();
             List<Task> taskList = tasks.getItems();
-
-            Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
-            while (iterate.hasNext()) {
-                chirptask.storage.Task currTask = iterate.next();
+            
+            for (int i = 0; i < allTasks.size(); i++) {
+                chirptask.storage.Task currTask = allTasks.get(i);
                 String googleId = currTask.getGoogleId();
 
                 if (googleId != null || "".equals(googleId)) {
@@ -644,9 +641,8 @@ public class GoogleController implements Runnable {
             Tasks tasks = _tasksController.getTasks();
             List<Task> taskList = tasks.getItems();
 
-            Iterator<chirptask.storage.Task> iterate = allTasks.iterator();
-            while (iterate.hasNext()) {
-                chirptask.storage.Task currTask = iterate.next();
+            for (int i = 0; i < allTasks.size(); i++) {
+                chirptask.storage.Task currTask = allTasks.get(i);
                 String googleId = currTask.getGoogleId();
 
                 if (googleId != null || "".equals(googleId)) {

@@ -143,13 +143,14 @@ public class StorageHandler {
                 individualStorage.removeTask(deletedTask);
             }
         } else {
-            if (!isStorageInit()) {
-                modifyTask(deletedTask);
-            } else {
+            if (isStorageInit()) { //All storages init including Google
                 _allTasks.remove(deletedTask);
                 for (IStorage individualStorage : _listOfStorages) {
                     individualStorage.removeTask(deletedTask);
                 }
+            } else {
+                deletedTask.setDeleted(true);
+                modifyTask(deletedTask);
             }
         }
 

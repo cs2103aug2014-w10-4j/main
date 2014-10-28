@@ -29,7 +29,7 @@ public class FilterTasks {
 
         // check 1st String to determine the type of filter
         filteredTask = StorageHandler.getAllTasks();
-        hideDeleted(filteredTask);
+        filteredTask = hideDeleted(filteredTask);
         if (currentFilter.isEmpty()) {
             DisplayView.showStatusToUser(StatusType.MESSAGE, gui, "");
         } else {
@@ -38,15 +38,17 @@ public class FilterTasks {
 
     }
 
-    public static void hideDeleted(List<Task> taskList) {
-        Iterator<Task> tasks = taskList.iterator();
-
-        while (tasks.hasNext()) {
-            Task currTask = tasks.next();
-            if (currTask.isDeleted()) {
-                tasks.remove();
+    public static List<Task> hideDeleted(List<Task> taskList) {
+        List<Task> unhiddenList = new ArrayList<Task>();
+        
+        for (int i = 0; i < taskList.size(); i++) {
+            Task currTask = taskList.get(i);
+            if (!currTask.isDeleted()) {
+                unhiddenList.add(currTask);
             }
         }
+        
+        return unhiddenList;
     }
 
     private static void processFilter(String filters, MainGui gui) {
@@ -198,7 +200,7 @@ public class FilterTasks {
 
     private static void resetFilteredTask() {
         filteredTask = StorageHandler.getAllTasks();
-        hideDeleted(filteredTask);
+        filteredTask = hideDeleted(filteredTask);
     }
 
     private static void filterTaskType(List<Task> tempList, String taskType) {
@@ -221,7 +223,7 @@ public class FilterTasks {
         categoriesList = new ArrayList<String>();
         contextsList = new ArrayList<String>();
         filteredTask = StorageHandler.getAllTasks();
-        hideDeleted(filteredTask);
+        filteredTask = hideDeleted(filteredTask);
         populateCategoryAndContext();
 
         if (!currentFilter.isEmpty()) {
