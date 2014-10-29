@@ -38,16 +38,29 @@ public class FilterTasks {
 
     }
 
+    public static void editCli(int task, MainGui gui) {
+        assert gui != null;
+        if (task > 0) {
+            for (int i = 0; i < filteredTask.size(); i++) {
+                if (i == task) {
+                    gui.setUserInputText("edit " + i
+                            + filteredTask.get(i).getDescription());
+                    break;
+                }
+            }
+        }
+    }
+
     public static List<Task> hideDeleted(List<Task> taskList) {
         List<Task> unhiddenList = new ArrayList<Task>();
-        
+
         for (int i = 0; i < taskList.size(); i++) {
             Task currTask = taskList.get(i);
             if (!currTask.isDeleted()) {
                 unhiddenList.add(currTask);
             }
         }
-        
+
         return unhiddenList;
     }
 
@@ -60,57 +73,56 @@ public class FilterTasks {
         for (int i = 0; i < param.length; i++) {
             String filter = param[i];
             switch (filter) {
-                case "/done" :
-                    // search done task
-                    filterStatus(templist, true);
-                    break;
-                case "/undone" :
-                    // search undone task
-                    filterStatus(templist, false);
-                    break;
-                case "/floating" :
-                    filterTaskType(templist, "floating");
-                    break;
-                case "/timed" :
-                    filterTaskType(templist, "timedtask");
-                    break;
-                case "/deadline" :
-                    filterTaskType(templist, "deadline");
-                    break;
-                case "/date" :
-                    // Assuming input is 23/10
-                    try {
-                        Calendar filterdate = processFilterDateParam(param[i + 1]);
-                        if (filterdate != null) {
-                            // add 1 so that the filter includes tasks of the
-                            // same date.
-                            filterdate.add(Calendar.DAY_OF_MONTH, 1);
-                            filterTaskByDate(templist, filterdate);
-                            DisplayView.showStatusToUser(StatusType.MESSAGE,
-                                    gui, param[i + 1]);
-                        }
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        // log down invalid input
-
-                        StorageHandler
-                                .logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
-                        DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
-
-                        templist = new ArrayList<Task>(
-                                StorageHandler.getAllTasks());
-
-                        break;
-
-                    } catch (InvalidParameterException invalidParameterException) {
-                        DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
-                    } finally {
-                        i++;
+            case "/done":
+                // search done task
+                filterStatus(templist, true);
+                break;
+            case "/undone":
+                // search undone task
+                filterStatus(templist, false);
+                break;
+            case "/floating":
+                filterTaskType(templist, "floating");
+                break;
+            case "/timed":
+                filterTaskType(templist, "timedtask");
+                break;
+            case "/deadline":
+                filterTaskType(templist, "deadline");
+                break;
+            case "/date":
+                // Assuming input is 23/10
+                try {
+                    Calendar filterdate = processFilterDateParam(param[i + 1]);
+                    if (filterdate != null) {
+                        // add 1 so that the filter includes tasks of the
+                        // same date.
+                        filterdate.add(Calendar.DAY_OF_MONTH, 1);
+                        filterTaskByDate(templist, filterdate);
+                        DisplayView.showStatusToUser(StatusType.MESSAGE, gui,
+                                param[i + 1]);
                     }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // log down invalid input
+
+                    StorageHandler
+                            .logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
+                    DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+
+                    templist = new ArrayList<Task>(StorageHandler.getAllTasks());
+
                     break;
-                default:
-                    // Entire string keyword search
-                    filterKeyword(templist, filter);
-                    break;
+
+                } catch (InvalidParameterException invalidParameterException) {
+                    DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+                } finally {
+                    i++;
+                }
+                break;
+            default:
+                // Entire string keyword search
+                filterKeyword(templist, filter);
+                break;
             }
             filteredTask = new ArrayList<Task>(templist);
         }
@@ -176,7 +188,8 @@ public class FilterTasks {
 
     private static void populateStringList(List<Task> templist, String keywords) {
         for (Task T : filteredTask) {
-            if (!T.getDescription().toLowerCase().contains(keywords.toLowerCase())) {
+            if (!T.getDescription().toLowerCase()
+                    .contains(keywords.toLowerCase())) {
                 templist.remove(T);
             }
         }
