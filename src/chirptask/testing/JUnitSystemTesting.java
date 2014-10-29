@@ -25,7 +25,7 @@ public class JUnitSystemTesting {
 
         _logic.retrieveInputFromUI("Invalid");
 //      assertEquals("", _mainGui._userInput);
-        assertEquals("Valid commands: add addd addt edit delete done undone undo login logout sync", _mainGui._status);
+        assertEquals("Valid commands: add addd addt edit delete done undone clear undo login logout sync", _mainGui._status);
     }
 
     @Test
