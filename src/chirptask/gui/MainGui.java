@@ -1,4 +1,5 @@
 package chirptask.gui;
+
 // ChirpTask v0.3
 import java.awt.Toolkit;
 import java.util.ArrayList;
@@ -109,12 +110,13 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void initJNativeHook() {
         try {
-            GlobalScreen.registerNativeHook();
             // Gets the JNativeHook logger
-            Logger logger = Logger.getLogger(GlobalScreen.class.getPackage()
-                    .getName());
-            LogManager.getLogManager().reset();
-            logger.setLevel(Level.WARNING);
+            // Logger logger = Logger.getLogger(GlobalScreen.class.getPackage()
+            // .getName());
+            // LogManager.getLogManager().reset();
+            // logger.setLevel(Level.WARNING);
+
+            GlobalScreen.registerNativeHook();
 
         } catch (NativeHookException ex) {
             System.err
@@ -206,9 +208,9 @@ public class MainGui extends Application implements NativeKeyListener {
             // com.apple.eawt.Application application =
             // com.apple.eawt.Application
             // .getApplication();
-            java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
-                    getClass().getResource("images/chirptask_clear.png"));
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            // java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
+            // getClass().getResource("images/chirptask_clear.png"));
+            // System.setProperty("apple.laf.useScreenMenuBar", "true");
             // application.setDockIconImage(image);
         }
     }
@@ -218,14 +220,13 @@ public class MainGui extends Application implements NativeKeyListener {
         headerBar.setPadding(new Insets(13, 10, 8, 10));
         headerBar.getStyleClass().add("header-bar");
 
-        Text settingsButton = new Text(Messages.TITLE_SETTINGS);
-        settingsButton.getStyleClass().add("header-title");
-        BorderPane.setAlignment(settingsButton, Pos.BOTTOM_RIGHT);
+        // Text settingsButton = new Text(Messages.TITLE_SETTINGS);
+        // settingsButton.getStyleClass().add("header-title");
+        // BorderPane.setAlignment(settingsButton, Pos.BOTTOM_RIGHT);
 
         HBox titleBox = generateTitleBox();
 
         headerBar.setLeft(titleBox);
-        headerBar.setRight(settingsButton);
         return headerBar;
     }
 
