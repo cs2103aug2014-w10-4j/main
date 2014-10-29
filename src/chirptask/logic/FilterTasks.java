@@ -40,10 +40,12 @@ public class FilterTasks {
 
     public static void editCli(int task, MainGui gui) {
         assert gui != null;
-        if (task > 0) {
+        int oldtaskno = task;
+        task = task - 1;
+        if (task > -1 && task < filteredTask.size()) {
             for (int i = 0; i < filteredTask.size(); i++) {
                 if (i == task) {
-                    gui.setUserInputText("edit " + i
+                    gui.setUserInputText("edit " + oldtaskno + " "
                             + filteredTask.get(i).getDescription());
                     break;
                 }
