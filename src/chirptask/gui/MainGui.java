@@ -121,9 +121,9 @@ public class MainGui extends Application implements NativeKeyListener {
         } catch (NativeHookException ex) {
             System.err
                     .println("There was a problem registering the native hook.");
-            System.err.println(ex.getMessage());
-            ex.printStackTrace();
-            System.exit(1);
+            // System.err.println(ex.getMessage());
+            // ex.printStackTrace();
+            // System.exit(1);
         }
         GlobalScreen.getInstance().addNativeKeyListener(this);
     }
