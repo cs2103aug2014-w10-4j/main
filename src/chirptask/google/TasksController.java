@@ -1,17 +1,14 @@
 //@author A0111840W
 package chirptask.google;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Date;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.tasks.model.Task;
-import com.google.api.services.tasks.model.TaskList;
 import com.google.api.services.tasks.model.Tasks;
 
 
@@ -27,12 +24,8 @@ import com.google.api.services.tasks.model.Tasks;
  * calls such as insertTask, clear, delete, update.
  */
 public class TasksController {
-    /** Constant name of the task list. */
-    private final String DEFAULT_TASKLIST = "ChirpTaskv0.3";
-
-    /** Global instance of the TasksId file. */
-    private static final File TASKS_ID_STORE_FILE = new File(
-            "credentials/googletasks/TaskListID.txt");
+    /** Constant name of the default task list. */
+    private static final String DEFAULT_TASKLIST = "@default";
 
     /**
      * Global instance of the Google Tasks Service Client. 
@@ -40,28 +33,11 @@ public class TasksController {
      */
     static com.google.api.services.tasks.Tasks _tasksClient;
 
-    /** Global instance of the working Google TaskList */
-    private static TaskList _workingTaskList;
-
-    /** Global instance of the working Google TaskList ID */
-    private static String _taskListId;
-
     /** Constructor */
     TasksController(HttpTransport httpTransport, JsonFactory jsonFactory,
             Credential credential, String applicationName) {
-        initializeHostFiles();
         initializeTasksClient(httpTransport, jsonFactory, credential,
                 applicationName);
-        initializeWorkingTaskList();
-    }
-
-    private void initializeHostFiles() {
-        try {
-            TASKS_ID_STORE_FILE.getParentFile().mkdirs();
-            TASKS_ID_STORE_FILE.createNewFile();
-        } catch (IOException e) {
-
-        }
     }
 
     private void initializeTasksClient(HttpTransport httpTransport,
@@ -72,101 +48,13 @@ public class TasksController {
                 applicationName).build();
     }
 
-    private void initializeWorkingTaskList() {
-        String taskListId = retrieveId();
-        TaskList currentTaskList = retrieveTaskList(taskListId);
-        setWorkingTaskList(currentTaskList);
-    }
-
-    private String retrieveId() {
-        String workingListId = retrieveIdFromFile();
-        setTaskListId(workingListId); //May have to handle if workingListId is null
-        return workingListId;
-    }
-
     static String getTaskListId() {
-        return _taskListId;
+        return DEFAULT_TASKLIST;
     }
 
-    private String retrieveIdFromFile() {
-        String retrievedId = IdHandler.getIdFromFile(TASKS_ID_STORE_FILE);
-        return retrievedId;
-    }
-
-    private void setTaskListId(String newId) {
-        _taskListId = newId;
-    }
-
-    private TaskList retrieveTaskList(String taskListId) {
-        if (taskListId == null) { // If null ID, assume fresh install/run
-            TaskList newTaskList = null;
-            try {
-                newTaskList = createTaskList();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return newTaskList;
-        } else {
-            try {
-                TaskList foundTaskList = getTaskListById(taskListId);
-                if (TasksHandler.isNull(foundTaskList)) { // TaskList not found
-                    foundTaskList = createTaskList();
-                }
-                return foundTaskList;
-            } catch (UnknownHostException unknownHost) {
-                // No internet
-                return null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * To avoid null pointers, if a null taskList is given, 
-     * set working TaskList to be null.
-     * @param taskList
-     */
-    private void setWorkingTaskList(TaskList taskList) {
-        if (taskList == null) {
-            _workingTaskList = null;
-        } else {
-            _workingTaskList = taskList;
-        }
-    }
-
-    private TaskList createTaskList() throws IOException {
-        TaskList newTaskList = newTaskList(DEFAULT_TASKLIST);
-        String id = newTaskList.getId();
-        setTaskListId(id);
-        IdHandler.saveIdToFile(TASKS_ID_STORE_FILE, id);
-        return newTaskList;
-    }
-
-    private TaskList newTaskList(String listName) 
-            throws IOException, UnknownHostException {
-        TaskList newTaskList = TasksHandler.createTaskList(listName);
-        TaskList insertList = TasksHandler.insertTaskList(newTaskList);
-        return insertList;
-    }
-
-    private TaskList getTaskListById(String taskListId) throws UnknownHostException, IOException {
-        TaskList foundTaskList = null;
-
-        try {
-            foundTaskList = TasksHandler.getTaskListFromId(taskListId);
-        } catch (GoogleJsonResponseException gJsonResponseError) {
-            foundTaskList = createTaskList();
-        } catch (UnknownHostException unknownHost) {
-            foundTaskList = null;
-        }
-
-        return foundTaskList;
-    }
 
     Task getTask(String id) throws UnknownHostException, IOException {
-        Task result = TasksHandler.getTaskFromId(_taskListId, id);
+        Task result = TasksHandler.getTaskFromId(DEFAULT_TASKLIST, id);
         return result;
     }
 
@@ -195,7 +83,7 @@ public class TasksController {
 
     private Task insertTask(Task task) 
             throws UnknownHostException, IOException {
-        Task result = TasksHandler.insertTaskToList(_taskListId, task);
+        Task result = TasksHandler.insertTaskToList(DEFAULT_TASKLIST, task);
         return result;
     }
     
@@ -211,12 +99,12 @@ public class TasksController {
 
     boolean deleteTask(String taskId) {
         boolean isDeleted = false;
-        isDeleted = TasksHandler.deleteTaskWithId(_taskListId, taskId);
+        isDeleted = TasksHandler.deleteTaskWithId(DEFAULT_TASKLIST, taskId);
         return isDeleted;
     }
 
     Tasks getTasks() throws UnknownHostException, IOException {
-        Tasks tasks = TasksHandler.getTasksFromId(_taskListId);
+        Tasks tasks = TasksHandler.getTasksFromId(DEFAULT_TASKLIST);
         return tasks;
     }
 
@@ -232,7 +120,7 @@ public class TasksController {
     
     static Task updateTask(Task updatedTask) 
                             throws UnknownHostException, IOException {
-        updatedTask = TasksHandler.updateTask(_taskListId,
+        updatedTask = TasksHandler.updateTask(DEFAULT_TASKLIST,
                 updatedTask.getId(), updatedTask);
         return updatedTask;
     }

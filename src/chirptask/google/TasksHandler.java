@@ -86,9 +86,7 @@ class TasksHandler {
             		.execute();
             isDeleted = true;
         } catch (UnknownHostException unknownHostException) {
-            // TODO Auto-generated catch block
         } catch (IOException e) {
-            // TODO Auto-generated catch block
         }
 		
 		return isDeleted;
@@ -122,19 +120,13 @@ class TasksHandler {
 		return retrieveTasks;
 	}
 
-	static TaskList getTaskListFromId(String taskListId) 
-	        throws UnknownHostException, IOException {
-		TaskList retrieveTaskList = TasksController._tasksClient.tasklists()
-				.get(taskListId).execute();
-		return retrieveTaskList;
-	}
-
-	static TaskList insertTaskList(TaskList newTaskList) 
+	// Method provided to insert custom TaskList name
+	/*static TaskList insertTaskList(TaskList newTaskList) 
 	        throws UnknownHostException, IOException {
 		TaskList insertList = TasksController._tasksClient.tasklists()
 				.insert(newTaskList).execute();
 		return insertList;
-	}
+	}*/
 
 	static Task insertTaskToList(String taskListId, Task taskToInsert)
 			throws UnknownHostException, IOException {
