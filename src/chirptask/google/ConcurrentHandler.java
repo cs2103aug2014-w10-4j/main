@@ -11,8 +11,6 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.tasks.model.Task;
 
 class ConcurrentHandler {
-    private static final String STRING_DONE = "[Done]";
-    private static final String STRING_EMPTY = "";
     
     /**
      * General ChirpTask Task
@@ -153,25 +151,12 @@ class ConcurrentHandler {
 
         chirptask.storage.Task modifyTask = taskToModify;
 
-        boolean isDone = modifyTask.isDone();
         String newDescription = modifyTask.getDescription();
         String calendarId = CalendarController.getCalendarId();
-
         Event modifiedGoogleEvent = CalendarHandler.getEventFromId(calendarId,
                 googleId);
         
-        if (isDone) {
-            newDescription = setDoneDescription(newDescription);
-            modifiedGoogleEvent = CalendarHandler.setDescription(modifiedGoogleEvent, STRING_DONE);
-        } else {
-            if (newDescription.startsWith(STRING_DONE)) {
-                newDescription.replaceFirst(STRING_DONE, STRING_EMPTY);
-            }
-            modifiedGoogleEvent = CalendarHandler.setDescription(modifiedGoogleEvent, STRING_EMPTY);
-        }
-        
-        modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent,
-                newDescription);
+        modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent, newDescription);
 
         if (taskToModify instanceof TimedTask) { // Try type casting
             TimedTask modifyTimeTask = (TimedTask) modifyTask;
@@ -250,14 +235,6 @@ class ConcurrentHandler {
         eTag = googleEvent.getEtag();
 
         return eTag;
-    }
-    
-    static String setDoneDescription(String description) {
-        String newDescription = "";
-        if (description != null) {
-            newDescription = STRING_DONE + " " + description;
-        }
-        return newDescription;
     }
 
 }

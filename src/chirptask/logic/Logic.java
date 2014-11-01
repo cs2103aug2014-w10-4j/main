@@ -17,10 +17,13 @@ import chirptask.storage.Task;
 public class Logic {
 
     private static final String FLOATING = "floating";
+    private static final String STRING_DONE = "[Done]";
+    
     private GroupAction _lastAction;
     private InputParser _parser = new InputParser();
     private StorageHandler _storageHandler = new StorageHandler();
     private static MainGui _gui;
+    
 
     // For testing purpose - commend out when product is done testing
     public Logic() {
@@ -357,7 +360,7 @@ public class Logic {
         if (task.getDescription().length() > 6) {
             // [Done]
             if (task.getDescription().substring(0, 6)
-                    .equalsIgnoreCase("[Done]")) {
+                    .equalsIgnoreCase(STRING_DONE)) {
                 task.setDescription(task.getDescription().substring(7,
                         task.getDescription().length()));
             }
@@ -368,8 +371,8 @@ public class Logic {
         if (task.getDescription().length() > 6) {
             // [Done]
             if (!task.getDescription().substring(0, 6)
-                    .equalsIgnoreCase("[Done]")) {
-                task.setDescription("[Done]" + " "
+                    .equalsIgnoreCase(STRING_DONE)) {
+                task.setDescription(STRING_DONE + " "
                         + task.getDescription());
             }
         }
