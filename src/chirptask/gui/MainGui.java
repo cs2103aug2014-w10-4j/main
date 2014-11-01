@@ -109,23 +109,23 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void initJNativeHook() {
-       // try {
+        try {
             // Gets the JNativeHook logger
-            // Logger logger = Logger.getLogger(GlobalScreen.class.getPackage()
-            // .getName());
-            // LogManager.getLogManager().reset();
-            // logger.setLevel(Level.WARNING);
+            Logger logger = Logger.getLogger(GlobalScreen.class.getPackage()
+                    .getName());
+            LogManager.getLogManager().reset();
+            logger.setLevel(Level.WARNING);
 
-        //    GlobalScreen.registerNativeHook();
+            GlobalScreen.registerNativeHook();
 
-       // } catch (NativeHookException ex) {
+        } catch (NativeHookException ex) {
             System.err
                     .println("There was a problem registering the native hook.");
-            // System.err.println(ex.getMessage());
-            // ex.printStackTrace();
-            // System.exit(1);
-     //   }
-     //   GlobalScreen.getInstance().addNativeKeyListener(this);
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+            System.exit(1);
+        }
+        GlobalScreen.getInstance().addNativeKeyListener(this);
     }
 
     private void guiClosing() {
