@@ -183,7 +183,6 @@ public class InputParser {
 						endTime);
 				toDo = timed;
 			} else {
-				System.out.println(toParse);
 				return processInvalid(CommandType.ADD);
 			}
 			break;
