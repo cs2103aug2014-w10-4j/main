@@ -17,12 +17,12 @@ public class Settings {
     public static String EVENT_LOG_FILENAME = "eventlogs.txt";
     public static String DEFAULT_FILTER = "";
     public static char CATEGORY_CHAR = '@';
-    public static char CONTEXT_CHAR = '#';
+    public static char HASHTAG_CHAR = '#';
     public static boolean LOGIN_AUTO = false;
     public static int SYSTEM_EXIT_NORMAL = 0;
 
     public static String CATEGORY = CATEGORY_CHAR + "";
-    public static String CONTEXT = CONTEXT_CHAR + "";
+    public static String CONTEXT = HASHTAG_CHAR + "";
 
     public static int HOTKEY_TOGGLE_HIDE = NativeKeyEvent.VC_ESCAPE;
     public static int HOTKEY_TOGGLE_SHOW = NativeKeyEvent.VC_G;
@@ -81,7 +81,7 @@ public class Settings {
             EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME");
             DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER");
             CATEGORY_CHAR = props.getProperty("CATEGORY_CHAR").charAt(0);
-            CONTEXT_CHAR = props.getProperty("CONTEXT_CHAR").charAt(0);
+            HASHTAG_CHAR = props.getProperty("CONTEXT_CHAR").charAt(0);
             LOGIN_AUTO = Boolean.parseBoolean(props.getProperty("LOGIN_AUTO"));
             SYSTEM_EXIT_NORMAL = Integer.parseInt(props
                     .getProperty("SYSTEM_EXIT_NORMAL"));

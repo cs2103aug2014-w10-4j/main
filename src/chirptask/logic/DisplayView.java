@@ -143,7 +143,7 @@ public class DisplayView {
     public static void updateContextView(MainGui gui) {
         List<String> contexts = FilterTasks.getContextList();
         for (String context : contexts) {
-            gui.addContextIntoList(context);
+            gui.addHashtagIntoList(context);
         }
     }
 
@@ -352,10 +352,10 @@ public class DisplayView {
             // obtain description till first space
             bufferText = new Text(descSb.substring(0, index));
 
-            if (descSb.charAt(0) == Settings.CONTEXT_CHAR) {
+            if (descSb.charAt(0) == Settings.HASHTAG_CHAR) {
                 // Context
                 bufferText.getStyleClass().add("context-text");
-                bufferText.setOnMouseClicked(_gui.clickOnContext());
+                bufferText.setOnMouseClicked(_gui.clickOnHashtag());
             } else if (descSb.charAt(0) == Settings.CATEGORY_CHAR) {
                 // Category
                 bufferText.getStyleClass().add("category-text");

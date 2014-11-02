@@ -56,7 +56,7 @@ public class MainGui2 extends MainGui {
         _status = errorMessage;
     }
 
-    public void addContextIntoList(String Context) {
+    public void addHashtagIntoList(String Context) {
         _contextList.add(Context);
     }
 

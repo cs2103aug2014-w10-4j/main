@@ -81,7 +81,7 @@ public class MainGui extends Application implements NativeKeyListener {
     private Label _statusText;
 
     private VBox _categoryList = new VBox();
-    private VBox _contextList = new VBox();
+    private VBox _hashtagList = new VBox();
     private VBox _taskViewByDate = new VBox();
 
     private ScrollPane _taskViewScrollPane;
@@ -274,33 +274,33 @@ public class MainGui extends Application implements NativeKeyListener {
         trendingList.setMinWidth(180);
         trendingList.getStyleClass().addAll("trending-list", "address");
 
-        ScrollPane contextPane = generateContextList();
+        ScrollPane hashtagPane = generateHashtagList();
         ScrollPane categoryPane = generateCategoryList();
 
-        VBox.setVgrow(contextPane, Priority.ALWAYS);
+        VBox.setVgrow(hashtagPane, Priority.ALWAYS);
         VBox.setVgrow(categoryPane, Priority.ALWAYS);
-        contextPane.setMaxSize(Region.USE_COMPUTED_SIZE,
+        hashtagPane.setMaxSize(Region.USE_COMPUTED_SIZE,
                 Region.USE_COMPUTED_SIZE);
         categoryPane.setMaxSize(Region.USE_COMPUTED_SIZE,
                 Region.USE_COMPUTED_SIZE);
 
-        trendingList.getChildren().addAll(categoryPane, contextPane);
+        trendingList.getChildren().addAll(categoryPane, hashtagPane);
         return trendingList;
     }
 
-    private ScrollPane generateContextList() {
-        Text contextTitle = new Text("Context");
-        setTrendingListTitleFont(contextTitle);
+    private ScrollPane generateHashtagList() {
+        Text hashtagTitle = new Text("Hashtags (#)");
+        setTrendingListTitleFont(hashtagTitle);
 
-        _contextList.setPadding(new Insets(8));
-        _contextList.setSpacing(5);
-        _contextList.getChildren().add(contextTitle);
-        ScrollPane contextScrollPane = new ScrollPane();
-        contextScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        contextScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        contextScrollPane.setContent(_contextList);
+        _hashtagList.setPadding(new Insets(8));
+        _hashtagList.setSpacing(5);
+        _hashtagList.getChildren().add(hashtagTitle);
+        ScrollPane hashtagScrollPane = new ScrollPane();
+        hashtagScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        hashtagScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        hashtagScrollPane.setContent(_hashtagList);
 
-        return contextScrollPane;
+        return hashtagScrollPane;
     }
 
     private void setTrendingListTitleFont(Text titleText) {
@@ -308,7 +308,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private ScrollPane generateCategoryList() {
-        Text categoryTitle = new Text("Category");
+        Text categoryTitle = new Text("Category (@)");
         setTrendingListTitleFont(categoryTitle);
 
         _categoryList.setPadding(new Insets(8));
@@ -425,7 +425,7 @@ public class MainGui extends Application implements NativeKeyListener {
         };
     }
 
-    public EventHandler<MouseEvent> clickOnContext() {
+    public EventHandler<MouseEvent> clickOnHashtag() {
         return onClickTrendingListText();
     }
 
@@ -618,7 +618,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     public void clearTrendingList() {
-        _contextList.getChildren().clear();
+        _hashtagList.getChildren().clear();
         _categoryList.getChildren().clear();
         generateTrendingList();
     }
@@ -637,12 +637,12 @@ public class MainGui extends Application implements NativeKeyListener {
         _statusText.getStyleClass().add("error-message");
     }
 
-    public void addContextIntoList(String Context) {
-        assert !Context.isEmpty();
-        Text contextText = new Text(Settings.CONTEXT_CHAR + Context);
-        contextText.getStyleClass().add("context-text");
-        contextText.setOnMouseClicked(clickOnContext());
-        _contextList.getChildren().add(contextText);
+    public void addHashtagIntoList(String hashtag) {
+        assert !hashtag.isEmpty();
+        Text hashtagText = new Text(Settings.HASHTAG_CHAR + hashtag);
+        hashtagText.getStyleClass().add("hashtag-text");
+        hashtagText.setOnMouseClicked(clickOnHashtag());
+        _hashtagList.getChildren().add(hashtagText);
     }
 
     public void addCategoryIntoList(String Category) {
