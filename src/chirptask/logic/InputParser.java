@@ -408,7 +408,8 @@ public class InputParser {
 
 		List<Task> taskList = FilterTasks.getFilteredList();
 		int normalizedIndex = normalizeId(taskIndex);
-
+		actions = processInvalid(CommandType.EDIT);
+		
 		if (isIndexInRange(normalizedIndex)) {
 			Task oldTask = taskList.get(normalizedIndex);
 			String[] parameters = parameter.trim().split("\\s+", 2);
@@ -434,13 +435,9 @@ public class InputParser {
 				negate.setCommandType(Settings.CommandType.EDIT);
 				negate.setTask(oldTask);
 				action.setUndo(negate);
-			} else {
-				return processInvalid(CommandType.EDIT);
-			}
+			} 
 			actions.addAction(action);
-		} else {
-			return processInvalid(CommandType.EDIT);
-		}
+		} 
 		return actions;
 	}
 
@@ -453,7 +450,7 @@ public class InputParser {
 		String eTag = oldTask.getETag();
 		boolean isDeleted = oldTask.isDeleted();
 		boolean isModified = oldTask.isModified();
-
+		boolean isDone = oldTask.isDone();
 		String editedDescription = editedTask.getDescription();
 		List<String> editedCategoryList = editedTask.getCategories();
 		List<String> editedContextList = editedTask.getContexts();
@@ -506,6 +503,7 @@ public class InputParser {
 			newTask.setETag(eTag);
 			newTask.setDeleted(isDeleted);
 			newTask.setModified(isModified);
+			newTask.setDone(isDone);
 		}
 
 		return newTask;
