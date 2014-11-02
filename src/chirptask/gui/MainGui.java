@@ -59,6 +59,7 @@ import javafx.util.Duration;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.logic.DisplayView;
+import chirptask.logic.FilterTasks;
 import chirptask.logic.Logic;
 
 //@author A0111889W
@@ -92,6 +93,7 @@ public class MainGui extends Application implements NativeKeyListener {
     private Stage _primaryStage;
 
     private Logic _logic;
+    private MainGui _gui = this;
 
     /*
      * (non-Javadoc)
@@ -366,7 +368,21 @@ public class MainGui extends Application implements NativeKeyListener {
             @Override
             public void handle(KeyEvent event) {
                 KeyCode keyPressed = event.getCode();
+                cliKeyTab(event, keyPressed);
                 cliKeyEnter(keyPressed);
+            }
+
+            private void cliKeyTab(KeyEvent event, KeyCode keyPressed) {
+                if (keyPressed == KeyCode.TAB) {
+                    String input = _commandLineInterface.getText();
+                    if (input.toLowerCase().trim().startsWith("display")) {
+                        event.consume();
+                        setUserInputText("display " + getFilter());
+                    } else if (input.toLowerCase().trim().startsWith("edit")) {
+                        event.consume();
+                        FilterTasks.editCli(input, _gui);
+                    }
+                }
             }
 
             private void cliKeyEnter(KeyCode keyPressed) {
