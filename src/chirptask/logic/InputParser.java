@@ -534,7 +534,7 @@ public class InputParser {
 					firstChar = word[i].charAt(0);
 				}
 
-				if (firstChar == Settings.CONTEXT_CHAR && word[i].length() > 1) {
+				if (firstChar == Settings.HASHTAG_CHAR && word[i].length() > 1) {
 					contexts.add(word[i].substring(1));
 				}
 				if (firstChar == Settings.CATEGORY_CHAR && word[i].length() > 1) {

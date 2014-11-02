@@ -64,11 +64,11 @@
     -fx-border-color: transparent transparent #ddd transparent;
 }
 
-.context-text {
+.hashtag-text {
 	-fx-fill:rgba(14.0,97.0,185.0);
 }
 
-.context-text:hover, .category-text:hover {
+.hashtag-text:hover, .category-text:hover {
 	-fx-cursor:hand;
 	-fx-underline:true;
 }
