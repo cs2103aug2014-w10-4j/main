@@ -208,8 +208,7 @@ public class InputParser {
 
 	private String[] getStringToParseDate(String parameter, String type) {
 		String toDate = new String();
-		String taskDescNoDate = new String();
-		String hashAndAt = new String();
+		String taskDescNoDate = parameter;
 		String[] toReturns = new String[2];
 		if (parameter.contains(Settings.CATEGORY)
 				|| parameter.contains(Settings.CONTEXT)) {
@@ -218,14 +217,11 @@ public class InputParser {
 				if (!(s.contains(Settings.CATEGORY) || s
 						.contains(Settings.CONTEXT))) {
 					toDate = toDate.concat(s);
-				} else {
-					hashAndAt = hashAndAt.concat(" ").concat(s);
-				}
+				} 
 			}
 		} else {
 			toDate = parameter;
 		}
-		taskDescNoDate = toDate;
 		
 		boolean hasInterval = toDate.contains("from ")
 				&& (toDate.contains("to ") || toDate.contains("til ") || toDate
@@ -311,7 +307,7 @@ public class InputParser {
 		default:
 			toDate = "";
 		}
-		taskDescNoDate = taskDescNoDate.concat(hashAndAt);
+
 		toReturns[0] = toDate;
 		toReturns[1] = taskDescNoDate;
 		return toReturns;
