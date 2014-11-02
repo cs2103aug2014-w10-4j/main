@@ -19,7 +19,7 @@ public class FilterTasks {
 
     private static List<Task> filteredTask;
     private static List<String> categoriesList;
-    private static List<String> contextsList;
+    private static List<String> hashtagList;
     private static String currentFilter = Settings.DEFAULT_FILTER;
     private static final int PARAM_FILTER = 1;
 
@@ -50,12 +50,10 @@ public class FilterTasks {
         int oldtaskIndex = taskIndex;
         taskIndex = taskIndex - 1;
         if (taskIndex > -1 && taskIndex < filteredTask.size()) {
-            // for (int i = 0; i < filteredTask.size(); i++) {
-            // if (i == taskIndex) { <-- what is the purpose of this ?
+
             gui.setUserInputText("edit " + oldtaskIndex + " "
                     + filteredTask.get(taskIndex).getDescription());
-            // }
-            // }
+
         }
     }
 
@@ -81,57 +79,57 @@ public class FilterTasks {
         for (int i = 0; i < param.length; i++) {
             String filter = param[i];
             switch (filter) {
-                case "/done" :
-                    // search done task
-                    filterStatus(templist, true);
-                    break;
-                case "/undone" :
-                    // search undone task
-                    filterStatus(templist, false);
-                    break;
-                case "/floating" :
-                    filterTaskType(templist, "floating");
-                    break;
-                case "/timed" :
-                    filterTaskType(templist, "timedtask");
-                    break;
-                case "/deadline" :
-                    filterTaskType(templist, "deadline");
-                    break;
-                case "/date" :
-                    // Assuming input is 23/10
-                    try {
-                        Calendar filterdate = processFilterDateParam(param[i + 1]);
-                        if (filterdate != null) {
-                            // add 1 so that the filter includes tasks of the
-                            // same date.
-                            filterdate.add(Calendar.DAY_OF_MONTH, 1);
-                            filterTaskByDate(templist, filterdate);
-                            DisplayView.showStatusToUser(StatusType.MESSAGE,
-                                    gui, param[i + 1]);
-                        }
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        // log down invalid input
-
-                        StorageHandler
-                                .logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
-                        DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
-
-                        templist = new ArrayList<Task>(
-                                StorageHandler.getAllTasks());
-
-                        break;
-
-                    } catch (InvalidParameterException invalidParameterException) {
-                        DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
-                    } finally {
-                        i++;
+            case "/done":
+                // search done task
+                filterStatus(templist, true);
+                break;
+            case "/undone":
+                // search undone task
+                filterStatus(templist, false);
+                break;
+            case "/floating":
+                filterTaskType(templist, "floating");
+                break;
+            case "/timed":
+                filterTaskType(templist, "timedtask");
+                break;
+            case "/deadline":
+                filterTaskType(templist, "deadline");
+                break;
+            case "/date":
+                // Assuming input is 23/10
+                try {
+                    Calendar filterdate = processFilterDateParam(param[i
+                            + PARAM_FILTER]);
+                    if (filterdate != null) {
+                        // add 1 so that the filter includes tasks of the
+                        // same date.
+                        filterdate.add(Calendar.DAY_OF_MONTH, 1);
+                        filterTaskByDate(templist, filterdate);
+                        DisplayView.showStatusToUser(StatusType.MESSAGE, gui,
+                                param[i + PARAM_FILTER]);
                     }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // log down invalid input
+
+                    StorageHandler
+                            .logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
+                    DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+
+                    templist = new ArrayList<Task>(StorageHandler.getAllTasks());
+
                     break;
-                default:
-                    // Entire string keyword search
-                    filterKeyword(templist, filter);
-                    break;
+
+                } catch (InvalidParameterException invalidParameterException) {
+                    DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+                } finally {
+                    i++;
+                }
+                break;
+            default:
+                // Entire string keyword search
+                filterKeyword(templist, filter);
+                break;
             }
             filteredTask = new ArrayList<Task>(templist);
         }
@@ -243,10 +241,10 @@ public class FilterTasks {
 
     static void filter(MainGui gui) {
         categoriesList = new ArrayList<String>();
-        contextsList = new ArrayList<String>();
+        hashtagList = new ArrayList<String>();
         filteredTask = StorageHandler.getAllTasks();
         filteredTask = hideDeleted(filteredTask);
-        populateCategoryAndContext();
+        populateCategoryAndHashtag();
 
         if (!currentFilter.isEmpty()) {
             processFilter(currentFilter, gui);
@@ -254,9 +252,9 @@ public class FilterTasks {
 
     }
 
-    private static void populateCategoryAndContext() {
+    private static void populateCategoryAndHashtag() {
         for (Task task : StorageHandler.getAllTasks()) {
-            populateContext(task);
+            populateHashtag(task);
             populateCategory(task);
         }
     }
@@ -271,11 +269,11 @@ public class FilterTasks {
 
     }
 
-    private static void populateContext(Task task) {
+    private static void populateHashtag(Task task) {
 
         for (String context : task.getContexts()) {
-            if (!contextsList.contains(context.toLowerCase())) {
-                contextsList.add(context.toLowerCase());
+            if (!hashtagList.contains(context.toLowerCase())) {
+                hashtagList.add(context.toLowerCase());
             }
         }
 
@@ -286,7 +284,7 @@ public class FilterTasks {
     }
 
     public static List<String> getContextList() {
-        return contextsList;
+        return hashtagList;
     }
 
     public static List<String> getCategoryList() {

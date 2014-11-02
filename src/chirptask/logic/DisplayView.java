@@ -38,7 +38,7 @@ public class DisplayView {
 
         processUpdateTaskView(tasks, gui);
 
-        processUpdateContextAndCategoryView(gui);
+        processUpdateHashtagAndCategoryView(gui);
         // Iterator<Map.Entry<Date, TasksByDate>> it =
         // map.entrySet().iterator();
         // TaskView view = new TaskView();
@@ -54,9 +54,9 @@ public class DisplayView {
      * @author A0111930W
      * @param gui
      */
-    private static void processUpdateContextAndCategoryView(MainGui gui) {
+    private static void processUpdateHashtagAndCategoryView(MainGui gui) {
         updateCategoryView(gui);
-        updateContextView(gui);
+        updateHashtagView(gui);
     }
 
     // @author A0111930W
@@ -79,7 +79,7 @@ public class DisplayView {
             gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
                     T.getDescription(), dateToString, T.isDone());
         }
-
+       
         // Iterator<Task> itr = tasks.iterator();
         // while (itr.hasNext()) {
         // Task T = itr.next();
@@ -140,7 +140,7 @@ public class DisplayView {
         }
     }
 
-    public static void updateContextView(MainGui gui) {
+    public static void updateHashtagView(MainGui gui) {
         List<String> contexts = FilterTasks.getContextList();
         for (String context : contexts) {
             gui.addHashtagIntoList(context);
