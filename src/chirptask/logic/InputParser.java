@@ -57,6 +57,7 @@ public class InputParser {
 		case "undo":
 			return processUndo();
 		case "display":
+		case "filter":
 			return processDisplay(parameter);
 		case "login":
 			return processLogin();
