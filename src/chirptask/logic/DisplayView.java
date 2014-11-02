@@ -354,7 +354,7 @@ public class DisplayView {
 
             if (descSb.charAt(0) == Settings.HASHTAG_CHAR) {
                 // Context
-                bufferText.getStyleClass().add("context-text");
+                bufferText.getStyleClass().add("hashtag-text");
                 bufferText.setOnMouseClicked(_gui.clickOnHashtag());
             } else if (descSb.charAt(0) == Settings.CATEGORY_CHAR) {
                 // Category
