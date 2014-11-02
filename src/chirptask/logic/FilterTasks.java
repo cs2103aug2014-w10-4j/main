@@ -144,7 +144,7 @@ public class FilterTasks {
         Calendar filterdate = Calendar.getInstance();
         if (temp.length > 1) {
             filterdate.set(filterdate.get(Calendar.YEAR),
-                    Integer.parseInt(temp[0]) - 1, Integer.parseInt(temp[1]));
+                    Integer.parseInt(temp[1]) - 1, Integer.parseInt(temp[0]));
         } else {
             // Exception should handle here show status to user
             throw new InvalidParameterException();

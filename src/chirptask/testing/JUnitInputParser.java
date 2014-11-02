@@ -17,9 +17,13 @@ import chirptask.logic.InputParser;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
+import static org.junit.Assert.*;
 
-//@author A0113022
-public class InputParserTest {
+import org.junit.Test;
+
+// @author A0113022
+public class JUnitInputParser {
+
 	InputParser parser = new InputParser();
 
 	@Test
@@ -30,6 +34,14 @@ public class InputParserTest {
 		Task toCompare = taskToCompareF();
 
 		GroupAction group = groupActionAdd(toCompare);
+
+		compareGroup(group, parser.getActions());
+	}
+
+	@Test
+	public void testAddInvalid() {
+		parser.receiveInput("add");
+		GroupAction group = groupActionInvalid("add", Settings.CommandType.ADD);
 
 		compareGroup(group, parser.getActions());
 	}
@@ -164,12 +176,13 @@ public class InputParserTest {
 		GroupAction group = groupActionAdd(toCompare);
 		compareGroup(group, parser.getActions());
 	}
+
 	@Test
 	public void testAddt3() {
 		parser.receiveInput("addt do this from 2pm to 4pm 10/23");
-		GroupAction group = groupActionInvalid("addt do this from 2pm to 4pm 10/23",
-				Settings.CommandType.ADD);
-		compareGroup(group, parser.getActions());	
+		GroupAction group = groupActionInvalid(
+				"addt do this from 2pm to 4pm 10/23", Settings.CommandType.ADD);
+		compareGroup(group, parser.getActions());
 	}
 
 	// ignore task Id for now
@@ -193,7 +206,7 @@ public class InputParserTest {
 			assertEquals(task1.getDescription(), task2.getDescription());
 			assertEquals(task1.getContexts(), task2.getContexts());
 			assertEquals(task1.getCategories(), task2.getCategories());
-			// boolean isSameId = (task1.getTaskId() == task2.getTaskId());
+
 		}
 
 	}
@@ -213,8 +226,7 @@ public class InputParserTest {
 			} else {
 				assertEquals(act1.undo().getCommandType(), act2.undo()
 						.getCommandType());
-				compareTask(act1.undo().getTask(), act2
-						.undo().getTask());
+				compareTask(act1.undo().getTask(), act2.undo().getTask());
 			}
 		}
 	}
@@ -223,8 +235,8 @@ public class InputParserTest {
 		assertEquals(gr1.getActionList().size(), gr2.getActionList().size());
 		int size = gr1.getActionList().size();
 		for (int i = 0; i < size; i++) {
-			compareAction(gr1.getActionList().get(i),
-					gr2.getActionList().get(i));
+			compareAction(gr1.getActionList().get(i), gr2.getActionList()
+					.get(i));
 
 		}
 	}
@@ -284,16 +296,6 @@ public class InputParserTest {
 		toCompare.setCategories(empty);
 		toCompare.setContexts(empty);
 		return toCompare;
-	}
-
-	// code reused from natty
-	private void validateDateTime(Calendar cal, int year, int month, int date,
-			int hour, int minute) {
-		assertEquals(cal.get(Calendar.YEAR), year);
-		assertEquals(cal.get(Calendar.MONTH), month);
-		assertEquals(cal.get(Calendar.DAY_OF_MONTH), date);
-		assertEquals(cal.get(Calendar.HOUR), hour);
-		assertEquals(cal.get(Calendar.MINUTE), minute);
 	}
 
 	// @author A0113022
