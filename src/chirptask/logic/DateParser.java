@@ -10,16 +10,21 @@ import com.joestelmach.natty.Parser;
 
 /**
  * Acknowledgment: this code uses natty 0.9 (author joestelmach) 
- * note: the date format is mm/dd
  */
-//@author A0113022
+// @author A0113022
 public class DateParser {
 	private List<Calendar> list;
 	private Parser parse;
-	
+
+	private final static String[] patternsDate = { "dd/MM", "dd-MM", "dd.MM",
+			 "dd MMM", "MMM dd", "EEE" };
+	private final static String[] patternsTime = { "hh:mm", "hhmm'h'", "hh a", "hha",
+		"hhmma", "hhmm a", "hh", "hh:mm a", "hh:mma"
+		
+	};
+
 	public DateParser() {
 		parse = new Parser();
-		parse.parse("21 oct"); //start up natty (the first parsing takes >3000 milliseconds
 	}
 
 	public List<Calendar> parseDate(String toParse) {

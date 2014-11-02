@@ -26,6 +26,6 @@
 	<classpathentry kind="lib" path="libs/JNativeHook.jar"/>
 	<classpathentry kind="lib" path="libs/google-api-services-tasks-v1-rev38-1.19.0.jar"/>
 	<classpathentry kind="lib" path="libs/google-api-services-calendar-v3-rev103-1.19.0.jar"/>
-	<classpathentry kind="lib" path="libs/natty.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Linh/workspace/natty/natty.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
