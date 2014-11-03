@@ -13,12 +13,14 @@ import com.google.api.services.tasks.model.Task;
 class ConcurrentAdd implements Callable<Boolean> {
 
     private chirptask.storage.Task _taskToAdd;
+    private GoogleController _gController;
 
-    ConcurrentAdd(chirptask.storage.Task taskToAdd) {
-        if (ConcurrentHandler.isNull(taskToAdd)) {
+    ConcurrentAdd(chirptask.storage.Task taskToAdd, GoogleController gController) {
+        if (ConcurrentHandler.isNull(taskToAdd) || ConcurrentHandler.isNull(gController)) {
             _taskToAdd = null;
         } else {
             _taskToAdd = taskToAdd;
+            _gController = gController;
         }
     }
 
@@ -55,7 +57,7 @@ class ConcurrentAdd implements Callable<Boolean> {
         default:
             break;
         }
-
+        
         if (ConcurrentHandler.isNotNull(addedGoogleTask)) {
             ConcurrentHandler.addGoogleIdToStorage(addedGoogleTask, _taskToAdd);
             ConcurrentHandler.addETagToStorage(addedGoogleTask, _taskToAdd);
@@ -64,6 +66,11 @@ class ConcurrentAdd implements Callable<Boolean> {
             ConcurrentHandler.addGoogleIdToStorage(addedGoogleEvent, _taskToAdd);
             ConcurrentHandler.addETagToStorage(addedGoogleEvent, _taskToAdd);
             isAdded = true;
+        }
+
+        boolean isDone = _taskToAdd.isDone();
+        if (isDone) {
+            _gController.modifyTask(_taskToAdd);
         }
 
         return isAdded;
