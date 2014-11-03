@@ -1,7 +1,5 @@
 package chirptask.gui;
 
-// ChirpTask v0.3
-import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -11,12 +9,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-
-import org.jnativehook.GlobalScreen;
-import org.jnativehook.NativeHookException;
-import org.jnativehook.NativeInputEvent;
-import org.jnativehook.keyboard.NativeKeyEvent;
-import org.jnativehook.keyboard.NativeKeyListener;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
@@ -56,6 +48,13 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
+import org.jnativehook.NativeInputEvent;
+import org.jnativehook.keyboard.NativeKeyEvent;
+import org.jnativehook.keyboard.NativeKeyListener;
+
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.logic.DisplayView;
@@ -374,11 +373,15 @@ public class MainGui extends Application implements NativeKeyListener {
 
             private void cliKeyTab(KeyEvent event, KeyCode keyPressed) {
                 if (keyPressed == KeyCode.TAB) {
-                    String input = _commandLineInterface.getText();
-                    if (input.toLowerCase().trim().startsWith("display")) {
+                    String input = _commandLineInterface.getText()
+                            .toLowerCase().trim();
+                    if (input.startsWith("display")) {
                         event.consume();
                         setUserInputText("display " + getFilter());
-                    } else if (input.toLowerCase().trim().startsWith("edit")) {
+                    } else if (input.startsWith("filter")) {
+                        event.consume();
+                        setUserInputText("filter " + getFilter());
+                    } else if (input.startsWith("edit ")) {
                         event.consume();
                         FilterTasks.editCli(input, _gui);
                     }
