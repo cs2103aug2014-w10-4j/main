@@ -148,8 +148,9 @@ public class MainGui extends Application implements NativeKeyListener {
 
         // scroll bar hack to beautify scroll bar
         makeScrollFadeable(mainDisplay.lookup(".address > .scroll-pane"));
-        makeScrollFadeable(trendingList.lookup(".address > .scroll-pane"));
-
+        makeScrollFadeable(trendingList.getChildren().get(0));
+        makeScrollFadeable(trendingList.getChildren().get(1));
+        
         return rootPane;
     }
 
@@ -300,7 +301,8 @@ public class MainGui extends Application implements NativeKeyListener {
         hashtagScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         hashtagScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         hashtagScrollPane.setContent(_hashtagList);
-
+        hashtagScrollPane.getStyleClass().add("context-scroll");
+        
         return hashtagScrollPane;
     }
 
