@@ -20,9 +20,9 @@ public class DateParser {
 	private Parser parse;
 
 	private final static String[] patternsDate = { "dd/MM", "dd-MM", "dd.MM",
-			"MMM", "dd-MMM", "EEE" };
+			"MM/dd","MM-dd","MM.dd","MMM", "dd-MMM", "EEE" };
 	private final static String[] patternsTime = { "HH:mm", "HHmm", "HHmm'h'",
-			"HHmm'hr'", "hha", "hhmma", "hh:mma", "ha" };
+			"HHmm'hr'", "hha", "hhmma", "hh:mma", "ha", "hh'a'", "hh'p'" };
 	private final static String relativeKey = "next|from|last|this";
 	private final static String relativeKeyDate = "now|today|tomorrow|week|month|day";
 	private final static String relativeKeyTime = "am|pm|hour|hrs|min|minute";
@@ -36,6 +36,8 @@ public class DateParser {
 		boolean mayHas = false;
 		boolean isTimeSet = false;
 		boolean isDateSet = false;
+		int dateMatched = -1; 
+		int pos = -1;
 		Date date = null;
 		Date time = null;
 
@@ -46,15 +48,17 @@ public class DateParser {
 		for (int i = 0; i < patternsDate.length; i++) {
 			SimpleDateFormat dateParse = new SimpleDateFormat(patternsDate[i]);
 			dateParse.setLenient(false);
-			for (String s : splitSpace) {
+			for (int j=0; j < splitSpace.length; j++) {
 				try {
-					date = dateParse.parse(s);
+					date = dateParse.parse(splitSpace[j]);
 				} catch (ParseException e) {
 					date = null;
 				}
 				if (date != null) {
 					isDateSet = true;
 					success = true;
+					dateMatched = i;
+					pos = j;
 					break;
 				}
 			}
@@ -62,7 +66,19 @@ public class DateParser {
 			if (isDateSet) {
 				break;
 			}
-
+		}
+		if (dateMatched <= 5 && dateMatched >=3 && pos >= 0) {
+			String[] flip = splitSpace[pos].split("[/.-]");
+			String newDate;
+			if (flip.length == 2) {
+				newDate = flip[1] + "/" + flip[0];
+				toParse = toParse.replaceAll(splitSpace[pos], newDate);
+			} 
+		}
+		
+		if (dateMatched == 2 && pos >= 0) {
+			String newForm = splitSpace[pos].replace(".", "/");
+			toParse = toParse.replaceAll(splitSpace[pos], newForm);
 		}
 
 		for (int i = 0; i < patternsTime.length; i++) {
@@ -101,8 +117,8 @@ public class DateParser {
 				}
 			}
 		}
-//		System.out.printf("toParse: %s, success: %s, mayhas: %s\n", toParse,
-//				success, mayHas);
+		System.out.printf("toParse: %s, success: %s, mayhas: %s\n", toParse,
+				success, mayHas);
 		if (success || mayHas) {
 			Calendar today = Calendar.getInstance();
 			today.setTime(new Date());

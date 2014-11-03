@@ -20,8 +20,9 @@ public class JUnitDateParser {
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
 		
-		cals = parser.parseDate("10/23");
-		assertEquals(cals.size(), 0);
+		cals = parser.parseDate("10.23");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
 		
 		cals = parser.parseDate("from today 5pm to 6pm");
 		assertEquals(cals.size(), 2);
@@ -30,6 +31,21 @@ public class JUnitDateParser {
 		validateDateTime(cals.get(1), today.get(Calendar.YEAR), today.get(Calendar.MONTH),
 				today.get(Calendar.DAY_OF_MONTH), 18, 0);
 		
+		cals = parser.parseDate("by 12p tomorrow");
+		assertEquals(cals.size(), 1);
+		Calendar tomorrow = Calendar.getInstance();
+		tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+		validateDateTime(cals.get(0), tomorrow.get(Calendar.YEAR), tomorrow.get(Calendar.MONTH),
+				tomorrow.get(Calendar.DAY_OF_MONTH), 12, 0);
+		
+		cals = parser.parseDate("by 8a");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), today.get(Calendar.MONTH),
+				today.get(Calendar.DAY_OF_MONTH), 8, 0);
+		
+		cals = parser.parseDate("32/11");
+		assertEquals(cals.size(), 0);
+				
 		
 	}
 
