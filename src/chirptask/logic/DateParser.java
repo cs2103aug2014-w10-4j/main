@@ -41,6 +41,10 @@ public class DateParser {
 		Date date = null;
 		Date time = null;
 
+		if (toParse == null) {
+			return null;
+		}
+		
 		list = new ArrayList<Calendar>();
 		toParse = toParse.replaceAll("\\s+(?=-/.)", "").replaceAll(
 				"(?<=-/.)\\s+", "");
@@ -117,8 +121,8 @@ public class DateParser {
 				}
 			}
 		}
-		System.out.printf("toParse: %s, success: %s, mayhas: %s\n", toParse,
-				success, mayHas);
+//		System.out.printf("toParse: %s, success: %s, mayhas: %s\n", toParse,
+//				success, mayHas);
 		if (success || mayHas) {
 			Calendar today = Calendar.getInstance();
 			today.setTime(new Date());
