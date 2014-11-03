@@ -311,7 +311,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private ScrollPane generateCategoryList() {
-        Text categoryTitle = new Text("Category (@)");
+        Text categoryTitle = new Text("Categories (@)");
         setTrendingListTitleFont(categoryTitle);
 
         _categoryList.setPadding(new Insets(8));
