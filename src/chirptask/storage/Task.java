@@ -53,14 +53,16 @@ public class Task implements Comparable<Task> {
     }
 
     /*
-     * Compare first by Date object then description
+     * Compare first by Calendar object then description
      */
     public int compareTo(Task b) {
         boolean isSameDateAndTime = this.getDate().compareTo(b.getDate()) == 0;
-
         if (isSameDateAndTime) {
             // compare description
-            return this.getDescription().compareTo(b.getDescription());
+            if (this.getType().compareTo(b.getType()) == 0) {
+                return this.getDescription().compareTo(b.getDescription());
+            }
+            return this.getType().compareTo(b.getType());
         } else {
             return this.getDate().compareTo(b.getDate());
         }
@@ -143,6 +145,9 @@ public class Task implements Comparable<Task> {
     public Calendar getDate() {
         if (_cal == null) {
             _cal = Calendar.getInstance();
+            _cal.set(Calendar.HOUR_OF_DAY, 0);
+            _cal.set(Calendar.MINUTE, 0);
+            _cal.set(Calendar.SECOND, 0);
         }
         return _cal;
     }
@@ -150,6 +155,9 @@ public class Task implements Comparable<Task> {
     // @author A0111930W
     public void setDate(Calendar doneDate) {
         _cal = doneDate;
+        _cal.set(Calendar.HOUR_OF_DAY, 0);
+        _cal.set(Calendar.MINUTE, 0);
+        _cal.set(Calendar.SECOND, 0);
     }
 
     public void removeDate() {
