@@ -44,7 +44,9 @@ public class FilterTasks {
         try {
             taskIndex = Integer.parseInt(editInput.split(" ")[1]);
         } catch (NumberFormatException e) {
-            // do nothing, pretend nothing happened
+            //update status bar if required
+        } catch (ArrayIndexOutOfBoundsException e){
+            //update status bar if required
         }
 
         int oldtaskIndex = taskIndex;

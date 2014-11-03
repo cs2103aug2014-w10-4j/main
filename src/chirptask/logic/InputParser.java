@@ -408,7 +408,8 @@ public class InputParser {
 
 		List<Task> taskList = FilterTasks.getFilteredList();
 		int normalizedIndex = normalizeId(taskIndex);
-		actions = processInvalid(CommandType.EDIT);
+		// What is this processInvalid for? Remove this comment when verified.
+		//actions = processInvalid(CommandType.EDIT);
 		
 		if (isIndexInRange(normalizedIndex)) {
 			Task oldTask = taskList.get(normalizedIndex);
@@ -431,7 +432,7 @@ public class InputParser {
 
 				action.setCommandType(Settings.CommandType.EDIT);
 				action.setTask(editedTask);
-				action.setUserInput(_userInput);
+				//action.setUserInput(_userInput);
 				negate.setCommandType(Settings.CommandType.EDIT);
 				negate.setTask(oldTask);
 				action.setUndo(negate);
