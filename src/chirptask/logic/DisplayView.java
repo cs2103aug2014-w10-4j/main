@@ -107,7 +107,7 @@ public class DisplayView {
     public static String convertTaskDateToDurationString(Task task) {
         assert task != null && task.getDate() != null;
         String dateToString = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("kk:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
         if (task.getType() == "floating") {
             dateToString = "all-day";
