@@ -143,8 +143,12 @@ public class FilterTasks {
         String[] temp = filter.split("/");
         Calendar filterdate = Calendar.getInstance();
         if (temp.length > 1) {
+            try{
             filterdate.set(filterdate.get(Calendar.YEAR),
                     Integer.parseInt(temp[1]) - 1, Integer.parseInt(temp[0]));
+            }catch(NumberFormatException e){
+                
+            }
         } else {
             // Exception should handle here show status to user
             throw new InvalidParameterException();
