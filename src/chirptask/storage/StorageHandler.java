@@ -171,6 +171,47 @@ public class StorageHandler {
         }
         return isAutoLogin;
     }
+    
+    static void resetGoogleIdAndEtag(String googleService) {
+        if (googleService != null) {
+            switch (googleService) {
+            case "calendar" :
+                resetCalendarItems();
+                break;
+            case "tasks" :
+                resetTasksItems();
+                break;
+            default :
+                break;
+            }
+        }
+    }
+    
+    static void resetCalendarItems() {
+        List<Task> allLocalTasks = getAllTasks();
+        for (int i = 0; i < allLocalTasks.size(); i++) {
+            Task currentTask = allLocalTasks.get(i);
+            String taskType = currentTask.getType();
+            
+            if ("timedtask".equals(taskType)) {
+                currentTask.setGoogleId("");
+                currentTask.setETag("");
+            }
+        }
+    }
+    
+    static void resetTasksItems() {
+        List<Task> allLocalTasks = getAllTasks();
+        for (int i = 0; i < allLocalTasks.size(); i++) {
+            Task currentTask = allLocalTasks.get(i);
+            String taskType = currentTask.getType();
+            
+            if ("deadline".equals(taskType) || "floating".equals(taskType)) {
+                currentTask.setGoogleId("");
+                currentTask.setETag("");
+            }
+        }
+    }
 
     public boolean logout() {
         boolean isRanLogout = false;

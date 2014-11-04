@@ -10,6 +10,7 @@ import java.util.List;
 import chirptask.storage.StorageHandler;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.calendar.model.Calendar;
@@ -20,7 +21,10 @@ import com.google.api.services.calendar.model.Event;
  * Calendar. It uses the Google Calendar v3 API to do such operations. 
  */
 public class CalendarController {
+    private final int RESOURCE_NOT_FOUND = 404;
     private final String DEFAULT_CALENDAR = "ChirpTaskv0.3";
+    private final String SERVICE_NAME = "calendar";
+    private final String JSON_NOT_FOUND = "Not Found";
     
     /** Global instance of the TasksId file. */
     private static final File TIMEDTASK_CALENDAR_ID_STORE_FILE = new File(
@@ -108,6 +112,13 @@ public class CalendarController {
             } catch (UnknownHostException unknownHost) {
                 // No internet
                 retrieveCalendar(calendarId);
+            } catch (GoogleJsonResponseException jsonResponseException) {
+                int responseCode = jsonResponseException.getStatusCode();
+                String responseMessage = jsonResponseException.getStatusMessage();
+                if (responseCode == RESOURCE_NOT_FOUND && JSON_NOT_FOUND.equals(responseMessage)) {
+                    GoogleController.resetGoogleIdAndEtag(SERVICE_NAME);
+                    retrieveCalendar(null);
+                }
             } catch (IOException ioError) {
                 retrieveCalendar(calendarId);
             } 

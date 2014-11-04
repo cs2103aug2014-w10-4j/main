@@ -440,4 +440,8 @@ public class GoogleController implements Runnable {
         }
     }
     
+    static void resetGoogleIdAndEtag(String googleService) {
+        GoogleStorage.resetGoogleIdAndEtag(googleService);
+    }
+    
 }

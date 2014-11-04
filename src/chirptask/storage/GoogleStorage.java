@@ -88,4 +88,8 @@ public class GoogleStorage implements IStorage {
         }
     }
     
+    public static void resetGoogleIdAndEtag(String googleService) {
+        StorageHandler.resetGoogleIdAndEtag(googleService);
+    }
+    
 }
