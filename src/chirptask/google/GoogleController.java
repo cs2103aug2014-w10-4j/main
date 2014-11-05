@@ -135,7 +135,7 @@ public class GoogleController implements Runnable {
      * @return
      * @throws IOException
      */
-    public void add(chirptask.storage.Task taskToAdd) {
+    public void addTask(chirptask.storage.Task taskToAdd) {
         if (isGoogleLoaded()) {
             ConcurrentAdd addTask = new ConcurrentAdd(taskToAdd, this);
             CONCURRENT.addToExecutor(addTask);
