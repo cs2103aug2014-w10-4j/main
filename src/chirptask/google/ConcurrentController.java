@@ -6,6 +6,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 class ConcurrentController {
+    private final int DEFAULT_THREAD_POOL = 10;
+    private final int WAIT_TIME = 10;
+    
     private ExecutorService googleExecutor;
     
     ConcurrentController() {
@@ -13,7 +16,7 @@ class ConcurrentController {
     }
     
     private void initComponents() {
-        googleExecutor = Executors.newFixedThreadPool(10);
+        googleExecutor = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL);
     }
     
     void addToExecutor(Callable<Boolean> task) {
@@ -23,7 +26,7 @@ class ConcurrentController {
     
     private void startExecutorIfNotRunning() {
         if(googleExecutor.isShutdown()) {
-            googleExecutor = Executors.newFixedThreadPool(10);
+            googleExecutor = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL);
         }
     }
     public void close() {
@@ -31,7 +34,8 @@ class ConcurrentController {
     }
     
     public boolean awaitTermination() throws InterruptedException {
-        boolean isTerminated = googleExecutor.awaitTermination(10, TimeUnit.SECONDS);
+        boolean isTerminated = 
+                googleExecutor.awaitTermination(WAIT_TIME, TimeUnit.SECONDS);
         return isTerminated;
     }
 }
