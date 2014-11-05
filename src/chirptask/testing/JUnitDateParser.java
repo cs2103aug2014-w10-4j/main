@@ -14,6 +14,12 @@ public class JUnitDateParser {
 	
 	@Test
 	public void test() {
+		/*
+		 * recognized format:
+		 * dd/mm dd-mm dd.mm mm/dd mm-dd mm.dd (dd/mm format takes precedence over mm/dd)
+		 * relaxed month dd-MMM
+		 * relative date  
+		 */
 		Calendar today = Calendar.getInstance();
 		List<Calendar> cals;
 		cals = parser.parseDate("23/10");

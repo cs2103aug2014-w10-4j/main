@@ -174,11 +174,15 @@ public class InputParser {
 			}
 			break;
 		case "addt":
-			toParse = getStringToParseDate(parameter, "timedtask")[0];
+			String[] details = getStringToParseDate(parameter, "timedtask");
+			toParse = details[0];
 			dateList = _dateParser.parseDate(toParse);
 			if (dateList != null && dateList.size() == 2) {
 				Calendar startTime = dateList.get(0);
 				Calendar endTime = dateList.get(1);
+				if(details[1] != null && !details[1].equals("")) {
+					description = details[1];
+				}
 				Task timed = new TimedTask(taskIndex, description, startTime,
 						endTime);
 				toDo = timed;
@@ -517,25 +521,12 @@ public class InputParser {
 				if (testWrongType != null && testWrongType.size() != 0) {
 					return newTask;
 				}
-				String start = new SimpleDateFormat("HH:mm").format(startDate
-						.getTime());
-				String end = new SimpleDateFormat("HH:mm dd/MM").format(endDate
-						.getTime());
-				String startEnd = " from " + start + " to " + end;
-				editedDescription += startEnd;
-
 			} else if (!emptyParse && emptyDesc) {
 				if (editedDateList != null && editedDateList.size() == 2) {
 					startDate = editedDateList.get(0);
 					endDate = editedDateList.get(1);
 					editedDescription = getStringToParseDate(
 							oldTask.getDescription(), oldTask.getType())[1];
-					String start = new SimpleDateFormat("HH:mm").format(startDate
-							.getTime());
-					String end = new SimpleDateFormat("HH:mm dd/MM").format(endDate
-							.getTime());
-					String startEnd = " from " + start + " to " + end;
-					editedDescription += startEnd;
 				} else {
 					return newTask;
 				}
