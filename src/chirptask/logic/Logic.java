@@ -15,8 +15,6 @@ import chirptask.storage.Task;
 
 //@author A0111930W
 public class Logic {
-
-    private static final String FLOATING = "floating";
     private static final String STRING_DONE = "[Done]";
 
     private GroupAction _lastAction;
@@ -74,51 +72,51 @@ public class Logic {
         Task task = command.getTask();
 
         switch (actionType) {
-        case ADD:
-            processAdd(command, task);
-            break;
-        case DELETE:
-            processDelete(command, task);
-            break;
-        case DISPLAY:
-            // now can only filter string
-            processDisplay(command, task);
-            break;
-        case EDIT:
-            processEdit(command, task);
-            break;
-        case UNDO:
-            // negate action and run excecuteAction again
-            processUndo();
-            break;
-        case DONE:
-            processDone(command, task);
-            break;
-        case UNDONE:
-            processUndone(command, task);
-            break;
-        case LOGIN:
-            processLogin(command);
-            break;
-        case EXIT:
-            processExit();
-            break;
-        case CLEAR:
-            processClear(StorageHandler.getAllTasks());
-            break;
-        case SYNC:
-            processSync(command);
-            break;
-        case LOGOUT:
-            processLogout(command);
-            break;
-        case INVALID:
-            processInvalid(command);
-            break;
-        default:
-            // Assuming InputParser will always pass a Action object
-            // code will never reach here.
-            assert false;
+            case ADD :
+                processAdd(command, task);
+                break;
+            case DELETE :
+                processDelete(command, task);
+                break;
+            case DISPLAY :
+                // now can only filter string
+                processDisplay(command, task);
+                break;
+            case EDIT :
+                processEdit(command, task);
+                break;
+            case UNDO :
+                // negate action and run excecuteAction again
+                processUndo();
+                break;
+            case DONE :
+                processDone(command, task);
+                break;
+            case UNDONE :
+                processUndone(command, task);
+                break;
+            case LOGIN :
+                processLogin(command);
+                break;
+            case EXIT :
+                processExit();
+                break;
+            case CLEAR :
+                processClear(StorageHandler.getAllTasks());
+                break;
+            case SYNC :
+                processSync(command);
+                break;
+            case LOGOUT :
+                processLogout(command);
+                break;
+            case INVALID :
+                processInvalid(command);
+                break;
+            default:
+                // Assuming InputParser will always pass a Action object
+                // code will never reach here.
+                assert false;
 
         }
     }
@@ -129,7 +127,10 @@ public class Logic {
         // should return a boolean variable to state whether sync is successful
         isSuccess = _storageHandler.logout();
         this.showStatusToUser(command, isSuccess);
-
+        
+        if (isSuccess) {
+            setOnlineStatus(Messages.TITLE_OFFLINE);
+        }
     }
 
     private void processSync(Action command) {
@@ -207,64 +208,64 @@ public class Logic {
 
     private void processInvalidTypes(Settings.CommandType type) {
         switch (type) {
-        case ADD:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_ADD_USAGE, _gui,
-                    false);
-            break;
-        case DELETE:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DELETE_USAGE,
-                    _gui, false);
-            break;
-        case DISPLAY:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DISPLAY_USAGE,
-                    _gui, false);
+            case ADD :
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_ADD_USAGE,
+                        _gui, false);
+                break;
+            case DELETE :
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DELETE_USAGE,
+                        _gui, false);
+                break;
+            case DISPLAY :
+                DisplayView.showStatusToUser(
+                        Messages.LOG_MESSAGE_DISPLAY_USAGE, _gui, false);
 
-            break;
-        case EDIT:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_EDIT_USAGE, _gui,
-                    false);
+                break;
+            case EDIT :
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_EDIT_USAGE,
+                        _gui, false);
 
-            break;
-        case UNDO:
-            // negate action and run excecuteAction again
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_USAGE, _gui,
-                    false);
+                break;
+            case UNDO :
+                // negate action and run excecuteAction again
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_USAGE,
+                        _gui, false);
 
-            break;
-        case DONE:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DONE_USAGE, _gui,
-                    false);
+                break;
+            case DONE :
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DONE_USAGE,
+                        _gui, false);
 
-            break;
-        case UNDONE:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDONE_USAGE,
-                    _gui, false);
+                break;
+            case UNDONE :
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDONE_USAGE,
+                        _gui, false);
 
-            break;
-        case LOGIN:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGIN_USAGE,
-                    _gui, false);
-            break;
-        case CLEAR:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_CLEAR_USAGE,
-                    _gui, false);
+                break;
+            case LOGIN :
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGIN_USAGE,
+                        _gui, false);
+                break;
+            case CLEAR :
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_CLEAR_USAGE,
+                        _gui, false);
 
-            break;
-        case SYNC:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_SYNC_USAGE, _gui,
-                    false);
-            break;
-        case LOGOUT:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGOUT_USAGE,
-                    _gui, false);
-            break;
-        case INVALID:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_INVALID_COMMAND,
-                    _gui, false);
-            break;
-        default:
-            assert false;
-            break;
+                break;
+            case SYNC :
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_SYNC_USAGE,
+                        _gui, false);
+                break;
+            case LOGOUT :
+                DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGOUT_USAGE,
+                        _gui, false);
+                break;
+            case INVALID :
+                DisplayView.showStatusToUser(
+                        Messages.LOG_MESSAGE_INVALID_COMMAND, _gui, false);
+                break;
+            default:
+                assert false;
+                break;
         }
     }
 
@@ -275,10 +276,10 @@ public class Logic {
     }
 
     private void processExit() {
-        // Add in GUI code to close, storage close
         if (GlobalScreen.isNativeHookRegistered()) {
             GlobalScreen.unregisterNativeHook();
         }
+        _storageHandler.closeStorages();
         System.runFinalization();
         System.exit(Settings.SYSTEM_EXIT_NORMAL);
     }
@@ -297,7 +298,7 @@ public class Logic {
 
     private void processDone(Action command, Task task) {
         assert command != null && task != null;
-        if (task.getType().equalsIgnoreCase(FLOATING)) {
+        if (Task.TASK_FLOATING.equalsIgnoreCase(task.getType())) {
             Calendar doneDate = Calendar.getInstance();
             task.setDate(doneDate);
         }
@@ -307,7 +308,7 @@ public class Logic {
 
     private void processUndone(Action command, Task task) {
         assert command != null && task != null;
-        if (task.getType().equalsIgnoreCase(FLOATING)) {
+        if (Task.TASK_FLOATING.equalsIgnoreCase(task.getType())) {
             task.removeDate();
         }
 
@@ -350,10 +351,10 @@ public class Logic {
         assert command != null && task != null;
 
         if (!task.getGoogleId().isEmpty()) {
-            if (task.getType().equalsIgnoreCase("timedtask") && task.isDone()) {
+            if (Task.TASK_TIMED.equalsIgnoreCase(task.getType()) && task.isDone()) {
                 processEditDone(task);
 
-            } else if (task.getType().equalsIgnoreCase("timedtask")
+            } else if (Task.TASK_TIMED.equalsIgnoreCase(task.getType())
                     && !task.isDone()) {
                 processEditUndone(task);
             }
@@ -449,6 +450,12 @@ public class Logic {
         } else {
             DisplayView.showStatusToUser(Settings.StatusType.ERROR, command,
                     _gui);
+        }
+    }
+    
+    public static void setOnlineStatus(String status) {
+        if (status != null) {
+            _gui.setOnlineStatus(status);
         }
     }
 
