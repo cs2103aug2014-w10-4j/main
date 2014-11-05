@@ -3,7 +3,9 @@ package chirptask.storage;
 import java.util.ArrayList;
 import java.util.List;
 
+import chirptask.common.Messages;
 import chirptask.common.Settings;
+import chirptask.gui.MainGui;
 import chirptask.logic.Logic;
 
 public class StorageHandler {
@@ -41,11 +43,11 @@ public class StorageHandler {
                     GoogleStorage currentGStorage = (GoogleStorage) googleStorage;
                     if (currentGStorage != null) {
                         currentGStorage.login();
+                        isInit = true;
                     }
                 }
             }
         }
-        isInit = true;
         return isInit;
     }
     
@@ -79,6 +81,7 @@ public class StorageHandler {
     static void addGoogleStorageUponReady() {
         if (isStoragesListInit()) {
             _listOfStorages.add(googleStorage);
+            Logic.setOnlineStatus(Messages.TITLE_ONLINE);
             sync();
         }
     }

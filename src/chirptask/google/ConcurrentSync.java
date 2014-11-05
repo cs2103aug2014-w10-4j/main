@@ -9,7 +9,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
+import chirptask.common.Messages;
 import chirptask.logic.InputParser;
+import chirptask.logic.Logic;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.GoogleStorage;
 import chirptask.storage.LocalStorage;
@@ -64,7 +66,7 @@ class ConcurrentSync implements Callable<Boolean> {
             sync(_taskList);
             isSync = true;
         } catch (Exception allException) {
-            
+            Logic.setOnlineStatus(Messages.TITLE_SYNC_FAIL);
         }
         
         return isSync;
@@ -72,10 +74,12 @@ class ConcurrentSync implements Callable<Boolean> {
     
     private void sync(List<chirptask.storage.Task> allTasks) throws Exception {
         if (allTasks != null) {
+            Logic.setOnlineStatus(Messages.TITLE_SYNCING);
             syncPhaseOne(_taskList);
             syncPhaseTwo(_taskList);
             syncPhaseThree(_taskList);
             syncPhaseFour(_taskList); 
+            Logic.setOnlineStatus(Messages.TITLE_ONLINE);
         }
     }
     

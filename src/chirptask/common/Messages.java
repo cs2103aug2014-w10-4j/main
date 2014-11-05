@@ -43,9 +43,11 @@ public class Messages {
 
     public static final String TITLE_SETTINGS = "Settings";
     public static final String TITLE_SOFTWARE = "ChirpTask";
+    public static final String TITLE_LOGGING_IN = "Connecting";
     public static final String TITLE_OFFLINE = "Offline";
     public static final String TITLE_ONLINE = "Online";
     public static final String TITLE_SYNCING = "Syncing";
+    public static final String TITLE_SYNC_FAIL = "Sync failed";
 
     public static final String DEFAULT_STATUS = "Nothing is happening.";
 
