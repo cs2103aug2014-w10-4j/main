@@ -13,14 +13,28 @@ import com.google.api.services.tasks.model.Task;
 class ConcurrentAdd implements Callable<Boolean> {
 
     private chirptask.storage.Task _taskToAdd;
-    private GoogleController _gController;
+    private static GoogleController _gController;
+    private static TasksController _tasksController;
+    private static CalendarController _calendarController;
 
-    ConcurrentAdd(chirptask.storage.Task taskToAdd, GoogleController gController) {
-        if (ConcurrentHandler.isNull(taskToAdd) || ConcurrentHandler.isNull(gController)) {
+    ConcurrentAdd(chirptask.storage.Task taskToAdd, 
+            GoogleController gController, 
+            TasksController tasksController, 
+            CalendarController calController) {
+        
+        if (ConcurrentHandler.isNull(taskToAdd) || 
+                ConcurrentHandler.isNull(gController) ||
+                ConcurrentHandler.isNull(tasksController) ||
+                ConcurrentHandler.isNull(calController)) {
             _taskToAdd = null;
+            _gController = null;
+            _tasksController = null;
+            _calendarController = null;
         } else {
             _taskToAdd = taskToAdd;
             _gController = gController;
+            _tasksController = tasksController;
+            _calendarController = calController;
         }
     }
 
@@ -41,18 +55,18 @@ class ConcurrentAdd implements Callable<Boolean> {
         Event addedGoogleEvent = null;
 
         switch (type) {
-        case "floating":
-            addedGoogleTask = GoogleController.addFloatingTask(task);
+        case chirptask.storage.Task.TASK_FLOATING:
+            addedGoogleTask = addFloatingTask(task);
             break;
-        case "deadline":
+        case chirptask.storage.Task.TASK_DEADLINE:
             Date dueDate = _taskToAdd.getDate().getTime();
-            addedGoogleTask = GoogleController.addDeadlineTask(task, dueDate);
+            addedGoogleTask = addDeadlineTask(task, dueDate);
             break;
-        case "timedtask":
+        case chirptask.storage.Task.TASK_TIMED:
             TimedTask timedTask = (TimedTask) _taskToAdd;
             Date startTime = timedTask.getStartTime().getTime();
             Date endTime = timedTask.getEndTime().getTime();
-            addedGoogleEvent = GoogleController.addTimedTask(task, startTime, endTime);
+            addedGoogleEvent = addTimedTask(task, startTime, endTime);
             break;
         default:
             break;
@@ -74,6 +88,50 @@ class ConcurrentAdd implements Callable<Boolean> {
         }
 
         return isAdded;
+    }
+    
+ // Called by ConcurrentAdd
+    /**
+     * adds a floating task with the specified task title.
+     * 
+     * @param taskTitle
+     *            The floating task description
+     * @return The reference to the created Google Task object
+     * @throws UnknownHostException
+     *             If the host machine cannot reach Google.
+     * @throws IOException
+     *             If there are other errors when sending the request.
+     */
+    static Task addFloatingTask(String taskTitle) throws UnknownHostException,
+            IOException {
+        Task addedTask = _tasksController.addTask(taskTitle);
+        return addedTask;
+    }
+
+    /**
+     * adds a deadline task with the specified task title and due date.
+     * 
+     * @param taskTitle
+     *            The deadline task description
+     * @param date
+     *            The due date
+     * @return The reference to the created Google Task object
+     * @throws UnknownHostException
+     *             If the host machine cannot reach Google.
+     * @throws IOException
+     *             If there are other errors when sending the request.
+     */
+    static Task addDeadlineTask(String taskTitle, Date date)
+            throws UnknownHostException, IOException {
+        Task addedTask = _tasksController.addTask(taskTitle, date);
+        return addedTask;
+    }
+
+    static Event addTimedTask(String taskTitle, Date startTime, Date endTime)
+            throws UnknownHostException, IOException {
+        Event addedEvent = _calendarController.addTimedTask(taskTitle,
+                startTime, endTime);
+        return addedEvent;
     }
 }
 

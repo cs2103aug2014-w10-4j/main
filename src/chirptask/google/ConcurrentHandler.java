@@ -1,19 +1,33 @@
 package chirptask.google;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Date;
-
 import chirptask.storage.GoogleStorage;
-import chirptask.storage.TimedTask;
 
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.tasks.model.Task;
 
 class ConcurrentHandler {
     
+    /** 
+     * General Google Component Preconditions
+     */
     static boolean isNull(GoogleController gController) {
         if (gController == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    static boolean isNull(TasksController tController) {
+        if (tController == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    static boolean isNull(CalendarController cController) {
+        if (cController == null) {
             return true;
         } else {
             return false;
@@ -46,43 +60,6 @@ class ConcurrentHandler {
         } else {
             return false;
         }
-    }
-
-    static boolean modifyGoogleTask(chirptask.storage.Task taskToModify)
-            throws UnknownHostException, IOException {
-        boolean isModified = false;
-
-        // First check if Google ID exists
-        String googleId = taskToModify.getGoogleId();
-        String taskType = taskToModify.getType();
-
-        if (!GoogleController.isEntryExists(googleId, taskType)) {
-            isModified = false;
-            return isModified;
-        }
-        String taskListId = TasksController.getTaskListId();
-        Task modifiedGoogleTask = TasksHandler.getTaskFromId(taskListId,
-                googleId);
-
-        modifiedGoogleTask = GoogleController.toggleTasksDone(
-                modifiedGoogleTask, taskToModify);
-        modifiedGoogleTask = GoogleController.updateTasksDescription(
-                modifiedGoogleTask, taskToModify);
-        modifiedGoogleTask = GoogleController.updateDueDate(modifiedGoogleTask,
-                taskToModify);
-        modifiedGoogleTask = TasksController.updateTask(modifiedGoogleTask);
-
-        if (isNotNull(modifiedGoogleTask)) {
-            /*
-             * Possibly used to overwrite googleId in local storage, eg. change
-             * type from floating to timed. (GoogleTasks <-> GoogleCalendar)
-             * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask,
-             * taskToModify);
-             */
-            isModified = true;
-        }
-
-        return isModified;
     }
 
     static void addGoogleIdToStorage(Task googleTask,
@@ -143,60 +120,6 @@ class ConcurrentHandler {
             return false;
         }
     }
-
-    static boolean modifyGoogleEvent(chirptask.storage.Task taskToModify)
-            throws UnknownHostException, IOException {
-        boolean isModified = false;
-
-        // First check if Google ID exists
-        String googleId = taskToModify.getGoogleId();
-        String taskType = taskToModify.getType();
-
-        if (!GoogleController.isEntryExists(googleId, taskType)) {
-            isModified = false;
-            return isModified;
-        }
-
-        chirptask.storage.Task modifyTask = taskToModify;
-
-        String newDescription = modifyTask.getDescription();
-        String calendarId = CalendarController.getCalendarId();
-        Event modifiedGoogleEvent = CalendarHandler.getEventFromId(calendarId,
-                googleId);
-        
-        modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent, newDescription);
-
-        if (taskToModify instanceof TimedTask) { // Try type casting
-            TimedTask modifyTimeTask = (TimedTask) modifyTask;
-            Date newStartTime = modifyTimeTask.getStartTime().getTime();
-            Date newEndTime = modifyTimeTask.getEndTime().getTime();
-            modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent,
-                    newStartTime);
-            modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent,
-                    newEndTime);
-        }
-        
-        modifiedGoogleEvent = CalendarHandler.setColorAndLook(modifiedGoogleEvent, taskToModify.isDone());
-
-        modifiedGoogleEvent = CalendarHandler.updateEvent(calendarId, googleId,
-                modifiedGoogleEvent);
-
-        if (isNotNull(modifiedGoogleEvent)) {
-            /*
-             * Possibly used to overwrite googleId in local storage, eg. change
-             * type from floating to timed. (GoogleTasks <-> GoogleCalendar)
-             * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask,
-             * taskToModify);
-             */
-            isModified = true;
-        }
-
-        return isModified;
-    }
-
-    /*
-     * static Event getGoogleEventFromId(String googleId) { return null; }
-     */
 
     static void addGoogleIdToStorage(Event googleEvent,
             chirptask.storage.Task taskToModify) {

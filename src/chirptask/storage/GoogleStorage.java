@@ -16,7 +16,7 @@ public class GoogleStorage implements IStorage {
     @Override
     public boolean storeNewTask(Task newTask) {
         boolean isAdded = false;
-        _gController.add(newTask);
+        _gController.addTask(newTask);
         isAdded = true;
         return isAdded;
     }

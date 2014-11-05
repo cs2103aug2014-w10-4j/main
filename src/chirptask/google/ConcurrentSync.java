@@ -145,7 +145,7 @@ class ConcurrentSync implements Callable<Boolean> {
                             toDeleteLocally.setModified(false);
                             GoogleStorage.updateStorages(toDeleteLocally);
                             // Push from local to Google
-                            _gController.add(toDeleteLocally);
+                            _gController.addTask(toDeleteLocally);
                         } else {
                             GoogleStorage.deleteFromLocalStorage(toDeleteLocally);
                         }
@@ -184,7 +184,7 @@ class ConcurrentSync implements Callable<Boolean> {
                 if (currGoogleId == null || "".equals(currGoogleId)) {
                     if (!isDeleted) {
                         currTask.setModified(false);
-                        _gController.add(currTask);
+                        _gController.addTask(currTask);
                     }
                 } else {
                     if (isDeleted) {
