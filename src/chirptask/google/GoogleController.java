@@ -137,7 +137,10 @@ public class GoogleController implements Runnable {
      */
     public void addTask(chirptask.storage.Task taskToAdd) {
         if (isGoogleLoaded()) {
-            ConcurrentAdd addTask = new ConcurrentAdd(taskToAdd, this);
+            ConcurrentAdd addTask = new ConcurrentAdd(taskToAdd, 
+                    this, 
+                    _tasksController, 
+                    _calendarController);
             CONCURRENT.addToExecutor(addTask);
         }
     }
@@ -194,49 +197,7 @@ public class GoogleController implements Runnable {
         return isDeleted;
     }
 
-    // Called by ConcurrentAdd
-    /**
-     * adds a floating task with the specified task title.
-     * 
-     * @param taskTitle
-     *            The floating task description
-     * @return The reference to the created Google Task object
-     * @throws UnknownHostException
-     *             If the host machine cannot reach Google.
-     * @throws IOException
-     *             If there are other errors when sending the request.
-     */
-    static Task addFloatingTask(String taskTitle) throws UnknownHostException,
-            IOException {
-        Task addedTask = _tasksController.addTask(taskTitle);
-        return addedTask;
-    }
-
-    /**
-     * adds a deadline task with the specified task title and due date.
-     * 
-     * @param taskTitle
-     *            The deadline task description
-     * @param date
-     *            The due date
-     * @return The reference to the created Google Task object
-     * @throws UnknownHostException
-     *             If the host machine cannot reach Google.
-     * @throws IOException
-     *             If there are other errors when sending the request.
-     */
-    static Task addDeadlineTask(String taskTitle, Date date)
-            throws UnknownHostException, IOException {
-        Task addedTask = _tasksController.addTask(taskTitle, date);
-        return addedTask;
-    }
-
-    static Event addTimedTask(String taskTitle, Date startTime, Date endTime)
-            throws UnknownHostException, IOException {
-        Event addedEvent = _calendarController.addTimedTask(taskTitle,
-                startTime, endTime);
-        return addedEvent;
-    }
+    
 
     // Called by ConcurrentDelete
     static boolean deleteTask(chirptask.storage.Task taskToDelete)

@@ -20,6 +20,22 @@ class ConcurrentHandler {
         }
     }
     
+    static boolean isNull(TasksController tController) {
+        if (tController == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    static boolean isNull(CalendarController cController) {
+        if (cController == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * General ChirpTask Task
      */
