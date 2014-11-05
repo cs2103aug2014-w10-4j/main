@@ -38,10 +38,14 @@ public class Messages {
 	public static final String LABEL_FILTER = "Filter: ";
 	public static final String TITLE_SETTINGS = "Settings";
 	public static final String TITLE_SOFTWARE = "ChirpTask";
+    public static final String TITLE_OFFLINE = "Offline";
+    public static final String TITLE_ONLINE = "Online";
+    public static final String TITLE_SYNCING = "Syncing";
 	public static final String DEFAULT_STATUS = "Nothing is happening.";
 
 	public static final String ERROR = "%1$s: Error %2$s";
 	public static final String INVALID_INPUT = "Invalid input: %1$s.";
 	public static final String ERROR_LOCAL = "Local storage %2$s.";
+
     
 }
