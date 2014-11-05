@@ -67,11 +67,11 @@ public class ConcurrentDelete implements Callable<Boolean> {
         }
 
         switch (taskType) {
-        case "floating":
-        case "deadline":
+        case chirptask.storage.Task.TASK_FLOATING:
+        case chirptask.storage.Task.TASK_DEADLINE:
             isDeleted = deleteGoogleTask(googleId);
             break;
-        case "timedtask":
+        case chirptask.storage.Task.TASK_TIMED:
             isDeleted = deleteGoogleEvent(googleId);
             break;
         default:

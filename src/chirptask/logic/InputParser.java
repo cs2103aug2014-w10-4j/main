@@ -162,7 +162,7 @@ public class InputParser {
 			toDo = floating;
 			break;
 		case "addd":
-			toParse = getStringToParseDate(parameter, "deadline")[0];
+			toParse = getStringToParseDate(parameter, Task.TASK_DEADLINE)[0];
 			dateList = _dateParser.parseDate(toParse);
 			if (dateList != null && dateList.size() == 1) {
 				Calendar dueDate = dateList.get(0);
@@ -174,7 +174,7 @@ public class InputParser {
 			}
 			break;
 		case "addt":
-			toParse = getStringToParseDate(parameter, "timedtask")[0];
+			toParse = getStringToParseDate(parameter, Task.TASK_TIMED)[0];
 			dateList = _dateParser.parseDate(toParse);
 			if (dateList != null && dateList.size() == 2) {
 				Calendar startTime = dateList.get(0);
@@ -227,7 +227,7 @@ public class InputParser {
 						.contains("->"));
 
 		switch (type) {
-		case "deadline":
+		case Task.TASK_DEADLINE:
 			String inBetween;
 			String deadline[];
 			boolean hasBy = false;
@@ -267,7 +267,7 @@ public class InputParser {
 				toDate  = "";
 			}
 			break;
-		case "timedtask":
+		case Task.TASK_TIMED:
 			if (hasInterval) {
 				List<Integer> fromPos = new ArrayList<Integer>();
 				List<Integer> toPos = new ArrayList<Integer>();
@@ -471,12 +471,12 @@ public class InputParser {
 
 		Task newTask = null;
 		switch (taskType) {
-		case "deadline":
+		case Task.TASK_DEADLINE:
 			Calendar dueDate = oldTask.getDate();
 			if (emptyParse && emptyDesc) {
 				return newTask;
 			} else if (emptyParse && !emptyDesc) {
-				String wrongType = getStringToParseDate(newDesc, "timedtask")[0];
+				String wrongType = getStringToParseDate(newDesc, Task.TASK_TIMED)[0];
 				List<Calendar> testWrongType = _dateParser.parseDate(wrongType);
 				if (testWrongType != null && testWrongType.size() != 0) {
 					return newTask;
@@ -504,7 +504,7 @@ public class InputParser {
 			}
 			newTask = new DeadlineTask(taskId, editedDescription, dueDate);
 			break;
-		case "timedtask":
+		case Task.TASK_TIMED:
 			TimedTask timedTask = (TimedTask) oldTask;
 			Calendar startDate = timedTask.getStartTime();
 			Calendar endDate = timedTask.getEndTime();
@@ -512,7 +512,7 @@ public class InputParser {
 			if (emptyParse && emptyDesc) {
 				return newTask;
 			} else if (emptyParse && !emptyDesc) {
-				String wrongType = getStringToParseDate(newDesc, "deadline")[0];
+				String wrongType = getStringToParseDate(newDesc, Task.TASK_DEADLINE)[0];
 				List<Calendar> testWrongType = _dateParser.parseDate(wrongType);
 				if (testWrongType != null && testWrongType.size() != 0) {
 					return newTask;
@@ -551,7 +551,7 @@ public class InputParser {
 			newTask = new TimedTask(taskId, editedDescription, startDate,
 					endDate);
 			break;
-		case "floating":
+		case Task.TASK_FLOATING:
 			newTask = new Task(taskId, editedDescription);
 			break;
 		default:

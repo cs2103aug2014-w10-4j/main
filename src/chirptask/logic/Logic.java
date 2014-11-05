@@ -15,8 +15,6 @@ import chirptask.storage.Task;
 
 //@author A0111930W
 public class Logic {
-
-    private static final String FLOATING = "floating";
     private static final String STRING_DONE = "[Done]";
 
     private GroupAction _lastAction;
@@ -296,7 +294,7 @@ public class Logic {
 
     private void processDone(Action command, Task task) {
         assert command != null && task != null;
-        if (task.getType().equalsIgnoreCase(FLOATING)) {
+        if (Task.TASK_FLOATING.equalsIgnoreCase(task.getType())) {
             Calendar doneDate = Calendar.getInstance();
             task.setDate(doneDate);
         }
@@ -306,7 +304,7 @@ public class Logic {
 
     private void processUndone(Action command, Task task) {
         assert command != null && task != null;
-        if (task.getType().equalsIgnoreCase(FLOATING)) {
+        if (Task.TASK_FLOATING.equalsIgnoreCase(task.getType())) {
             task.removeDate();
         }
 
@@ -349,10 +347,10 @@ public class Logic {
         assert command != null && task != null;
 
         if (!task.getGoogleId().isEmpty()) {
-            if (task.getType().equalsIgnoreCase("timedtask") && task.isDone()) {
+            if (Task.TASK_TIMED.equalsIgnoreCase(task.getType()) && task.isDone()) {
                 processEditDone(task);
 
-            } else if (task.getType().equalsIgnoreCase("timedtask")
+            } else if (Task.TASK_TIMED.equalsIgnoreCase(task.getType())
                     && !task.isDone()) {
                 processEditUndone(task);
             }

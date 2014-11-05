@@ -55,14 +55,14 @@ class ConcurrentAdd implements Callable<Boolean> {
         Event addedGoogleEvent = null;
 
         switch (type) {
-        case "floating":
+        case chirptask.storage.Task.TASK_FLOATING:
             addedGoogleTask = addFloatingTask(task);
             break;
-        case "deadline":
+        case chirptask.storage.Task.TASK_DEADLINE:
             Date dueDate = _taskToAdd.getDate().getTime();
             addedGoogleTask = addDeadlineTask(task, dueDate);
             break;
-        case "timedtask":
+        case chirptask.storage.Task.TASK_TIMED:
             TimedTask timedTask = (TimedTask) _taskToAdd;
             Date startTime = timedTask.getStartTime().getTime();
             Date endTime = timedTask.getEndTime().getTime();

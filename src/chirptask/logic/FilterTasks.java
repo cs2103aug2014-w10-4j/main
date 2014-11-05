@@ -89,13 +89,13 @@ public class FilterTasks {
                     filterStatus(templist, false);
                     break;
                 case "/floating" :
-                    filterTaskType(templist, "floating");
+                    filterTaskType(templist, Task.TASK_FLOATING);
                     break;
                 case "/timed" :
-                    filterTaskType(templist, "timedtask");
+                    filterTaskType(templist, Task.TASK_TIMED);
                     break;
                 case "/deadline" :
-                    filterTaskType(templist, "deadline");
+                    filterTaskType(templist, Task.TASK_DEADLINE);
                     break;
                 case "/date" :
                     // Assuming input is 23/10

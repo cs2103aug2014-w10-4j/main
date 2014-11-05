@@ -204,15 +204,15 @@ public class GoogleController implements Runnable {
         String googleListId = "";
 
         switch (taskType) {
-        case "floating":
-        case "deadline":
+        case chirptask.storage.Task.TASK_FLOATING:
+        case chirptask.storage.Task.TASK_DEADLINE:
             googleListId = TasksController.getTaskListId();
             Task foundTask = TasksHandler.getTaskFromId(googleListId, googleId);
             if (foundTask != null) {
                 isExist = true;
             }
             break;
-        case "timedtask":
+        case chirptask.storage.Task.TASK_TIMED:
             googleListId = CalendarController.getCalendarId();
             Event foundEvent = CalendarHandler.getEventFromId(googleListId,
                     googleId);

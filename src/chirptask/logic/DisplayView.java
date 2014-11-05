@@ -107,12 +107,12 @@ public class DisplayView {
         String dateToString = "";
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-        if (task.getType().equals("floating")) {
+        if (Task.TASK_FLOATING.equals(task.getType())) {
             dateToString = "";
-        } else if (task.getType().equals("deadline")) {
+        } else if (Task.TASK_DEADLINE.equals(task.getType())) {
             DeadlineTask dTask = (DeadlineTask) task;
             dateToString = "due by " + sdf.format(dTask.getDate().getTime());
-        } else if (task.getType().equals("timedtask")) {
+        } else if (Task.TASK_TIMED.equals(task.getType())) {
             TimedTask tTask = (TimedTask) task;
             dateToString = sdf.format(tTask.getStartTime().getTime()) + " to "
                     + sdf.format(tTask.getEndTime().getTime());
