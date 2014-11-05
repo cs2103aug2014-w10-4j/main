@@ -162,10 +162,16 @@ public class InputParser {
 			toDo = floating;
 			break;
 		case "addd":
-			toParse = getStringToParseDate(parameter, "deadline")[0];
+			String[] parameters = getStringToParseDate(parameter, "deadline");
+			toParse = parameters[0];
 			dateList = _dateParser.parseDate(toParse);
 			if (dateList != null && dateList.size() == 1) {
 				Calendar dueDate = dateList.get(0);
+				if (parameters[1] != null && !parameters[1].equals("")) {
+					String deadline = new SimpleDateFormat("HH:mm dd/MM")
+						.format(dueDate.getTime());
+					description = parameters[1] + " by " + deadline;
+				}
 				Task deadline = new DeadlineTask(taskIndex, description,
 						dueDate);
 				toDo = deadline;
@@ -237,19 +243,36 @@ public class InputParser {
 			boolean hasBy = false;
 			boolean hasOn = false;
 			boolean hasAt = false;
-
+			int lastBy = -1;
+			int lastOn = -1;
+			int lastAt = -1;
+			
 			String[] splitSpaces = toDate.split("\\s+");
-			for (String s : splitSpaces) {
-				if (s.equals("by")) {
+			for (int i = 0; i < splitSpaces.length; i++) {
+				if (splitSpaces[i].equals("by")) {
 					hasBy = true;
-				} else if (s.equals("on")) {
+					lastBy = i; 
+				} else if (splitSpaces[i].equals("on")) {
 					hasOn = true;
-				} else if (s.equals("at")) {
+					lastOn = i;
+				} else if (splitSpaces[i].equals("at")) {
 					hasAt = true;
+					lastAt = i;
 				}
 			}
 			if (hasBy || hasOn || hasAt) {
 				taskDescNoDate = "";
+				if (lastBy > lastOn && lastBy > lastAt) {
+					hasOn = false;
+					hasAt = false;
+				} else if (lastOn > lastBy && lastOn > lastAt) {
+					hasBy = false;
+					hasAt = false;
+				} else if (lastAt > lastBy && lastAt > lastOn) {
+					hasBy = false;
+					hasOn = false;
+				}
+				
 				if (hasBy) {
 					deadline = toDate.split("by ");
 					inBetween = "by ";

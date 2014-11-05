@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import chirptask.logic.DateParser;
-
+//@author A0113022
 public class JUnitDateParser {
 	DateParser parser = new DateParser();
 	
@@ -17,8 +17,12 @@ public class JUnitDateParser {
 		/*
 		 * recognized format:
 		 * dd/mm dd-mm dd.mm mm/dd mm-dd mm.dd (dd/mm format takes precedence over mm/dd)
-		 * relaxed month dd-MMM
-		 * relative date  
+		 * relaxed month dd-MMM, MMM
+		 * specific time HH:mm, HHmm, HHmm'h', 
+		 * HHmm'hr', hhmm+am/pm, hh:mm+am/pm, h+am/pm, hh'a', hh'p'
+		 * relaxed day of week
+		 * relative date now, today, tomorrow, (next/this/last/from) week, month, day,
+		 * hour, hrs, minute, min 
 		 */
 		Calendar today = Calendar.getInstance();
 		List<Calendar> cals;
@@ -26,9 +30,29 @@ public class JUnitDateParser {
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
 		
+		cals = parser.parseDate("23-10");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
+		
+		cals = parser.parseDate("23.10");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
+		
 		cals = parser.parseDate("10.23");
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
+		
+		cals = parser.parseDate("10-23");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
+		
+		cals = parser.parseDate("10/23");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
+		
+		cals = parser.parseDate("11.3");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 2, 11, 23, 59);
 		
 		cals = parser.parseDate("from today 5pm to 6pm");
 		assertEquals(cals.size(), 2);
@@ -52,7 +76,6 @@ public class JUnitDateParser {
 		cals = parser.parseDate("32/11");
 		assertEquals(cals.size(), 0);
 				
-		
 	}
 
 	// code reused from natty

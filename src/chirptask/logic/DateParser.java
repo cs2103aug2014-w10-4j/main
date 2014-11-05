@@ -23,8 +23,8 @@ public class DateParser {
 	private final static String[] patternsTime = { "HH:mm", "HHmm", "HHmm'h'",
 			"HHmm'hr'", "hha", "hhmma", "hh:mma", "ha", "hh'a'", "hh'p'" };
 	private final static String relativeKey = "next|from|last|this";
-	private final static String relativeKeyDate = "now|today|tomorrow|week|month|day";
-	private final static String relativeKeyTime = "am|pm|hour|hrs|min|minute";
+	private final static String relativeKeyDate = "now|today|tomorrow|week|month|day|yesterday|weeks|months|days";
+	private final static String relativeKeyTime = "am|pm|hour|hours|hrs|min|minute|mins|minutes";
 
 	public DateParser() {
 		parse = new Parser();
