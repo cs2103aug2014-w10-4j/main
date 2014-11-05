@@ -79,7 +79,7 @@ public class DisplayView {
             gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
                     T.getDescription(), dateToString, T.isDone());
         }
-       
+
         // Iterator<Task> itr = tasks.iterator();
         // while (itr.hasNext()) {
         // Task T = itr.next();
@@ -109,12 +109,12 @@ public class DisplayView {
         String dateToString = "";
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-        if (task.getType() == "floating") {
-            dateToString = "all-day";
-        } else if (task.getType() == "deadline") {
+        if (task.getType().equals("floating")) {
+            dateToString = "";
+        } else if (task.getType().equals("deadline")) {
             DeadlineTask dTask = (DeadlineTask) task;
             dateToString = "due by " + sdf.format(dTask.getDate().getTime());
-        } else if (task.getType() == "timedtask") {
+        } else if (task.getType().equals("timedtask")) {
             TimedTask tTask = (TimedTask) task;
             dateToString = sdf.format(tTask.getStartTime().getTime()) + " to "
                     + sdf.format(tTask.getEndTime().getTime());
@@ -150,13 +150,14 @@ public class DisplayView {
     public static void showStatusToUser(String Message, MainGui gui) {
         gui.setStatus(Message);
     }
-    
-    public static void showStatusToUser(String Message, MainGui gui, boolean success){
-           if(success){
-               gui.setStatus(Message);
-           }else{
-               gui.setError(Message);
-           }
+
+    public static void showStatusToUser(String Message, MainGui gui,
+            boolean success) {
+        if (success) {
+            gui.setStatus(Message);
+        } else {
+            gui.setError(Message);
+        }
     }
 
     public static void showStatusToUser(Settings.StatusType type, MainGui gui,
@@ -186,90 +187,90 @@ public class DisplayView {
         CommandType command = action.getCommandType();
         if (type == Settings.StatusType.ERROR) {
             switch (command) {
-            case ADD:
-                processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
-            case DELETE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
+                case ADD :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
+                case DELETE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
 
-            case EDIT:
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
+                case EDIT :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                            Messages.LOG_MESSAGE_ERROR);
 
-                break;
-            case DONE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
-            case UNDONE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
-            case LOGIN:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, false,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
-            case SYNC:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC_FAIL, false,
-                        Messages.LOG_MESSAGE_FAIL);
-                break;
-            case LOGOUT:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL, false,
-                        "");
-                break;
-            default:
-                processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
-                        Messages.LOG_MESSAGE_ERROR, "");
-                break;
+                    break;
+                case DONE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
+                case UNDONE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
+                case LOGIN :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, false,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
+                case SYNC :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC_FAIL, false,
+                            Messages.LOG_MESSAGE_FAIL);
+                    break;
+                case LOGOUT :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL,
+                            false, "");
+                    break;
+                default:
+                    processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
+                            Messages.LOG_MESSAGE_ERROR, "");
+                    break;
             }
         } else {
             switch (command) {
-            case ADD:
-                processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                case ADD :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
+                            Messages.LOG_MESSAGE_SUCCESS);
 
-                break;
-            case DELETE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
-                break;
+                    break;
+                case DELETE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
+                            Messages.LOG_MESSAGE_SUCCESS);
+                    break;
 
-            case EDIT:
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                case EDIT :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                            Messages.LOG_MESSAGE_SUCCESS);
 
-                break;
-            case DONE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                    break;
+                case DONE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
+                            Messages.LOG_MESSAGE_SUCCESS);
 
-                break;
-            case UNDONE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
-                break;
-            case LOGIN:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, true,
-                        Messages.LOG_MESSAGE_SUCCESS);
-                break;
-            case LOGOUT:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS, true,
-                        "");
-                break;
-            case DISPLAY:
-                processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
-                        Messages.LOG_MESSAGE_SUCCESS);
-                break;
-            case SYNC:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC, true,
-                        Messages.LOG_MESSAGE_SYN_INIT);
-                break;
-            default:
+                    break;
+                case UNDONE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                            Messages.LOG_MESSAGE_SUCCESS);
+                    break;
+                case LOGIN :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, true,
+                            Messages.LOG_MESSAGE_SUCCESS);
+                    break;
+                case LOGOUT :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS,
+                            true, "");
+                    break;
+                case DISPLAY :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
+                            Messages.LOG_MESSAGE_SUCCESS);
+                    break;
+                case SYNC :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC, true,
+                            Messages.LOG_MESSAGE_SYN_INIT);
+                    break;
+                default:
 
-                break;
+                    break;
             }
         }
     }
