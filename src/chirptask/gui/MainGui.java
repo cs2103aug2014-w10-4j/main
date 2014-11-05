@@ -64,7 +64,6 @@ import chirptask.logic.Logic;
 
 public class MainGui extends Application implements NativeKeyListener {
 
-    private static BorderPane _headerBar;
     private static List<Integer> _taskIndexToId = new ArrayList<>();
     private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
             "Monday", "Tuesday", "Wednesday", "Thusday", "Friday", "Saturday" };
@@ -80,6 +79,7 @@ public class MainGui extends Application implements NativeKeyListener {
     private static final int STARTING_HEIGHT = 600;
     private static final int STARTING_WIDTH = 800;
 
+    private BorderPane _headerBar;
     private VBox _categoryList = new VBox();
     private TextField _commandLineInterface;
     private TextField _filterField;
@@ -117,7 +117,7 @@ public class MainGui extends Application implements NativeKeyListener {
         launch(args);
     }
 
-    public static void setOnlineStatus(String Status) {
+    public void setOnlineStatus(String Status) {
         Text onlineStatus = new Text(Status);
         onlineStatus.getStyleClass().add("header-title");
         BorderPane.setAlignment(onlineStatus, Pos.BOTTOM_RIGHT);
