@@ -148,6 +148,16 @@ public class MainGui extends Application implements NativeKeyListener {
             return false;
         }
 
+        // Task View Date contains all tasks of that date
+        VBox taskViewDateBox = generateTaskViewDate(date);
+
+        _taskViewDateMap.put(parseDateToString, taskViewDateBox);
+        _taskViewByDate.getChildren().add(taskViewDateBox);
+
+        return true;
+    }
+
+    private VBox generateTaskViewDate(Calendar date) {
         // Box to contain all tasks of that date
         VBox taskViewDateBox = new VBox();
         taskViewDateBox.setPadding(new Insets(0, 5, 10, 5));
@@ -155,11 +165,7 @@ public class MainGui extends Application implements NativeKeyListener {
         // header that shows day of the week and date
         BorderPane taskViewHeader = generateTaskViewHeader(date);
         taskViewDateBox.getChildren().add(taskViewHeader);
-
-        _taskViewDateMap.put(parseDateToString, taskViewDateBox);
-        _taskViewByDate.getChildren().add(taskViewDateBox);
-
-        return true;
+        return taskViewDateBox;
     }
 
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
@@ -171,9 +177,19 @@ public class MainGui extends Application implements NativeKeyListener {
         }
 
         _taskIndexToId.add(taskId);
+
         String descriptionWithIndex = _taskIndexToId.size() + ". "
                 + description;
 
+        BorderPane taskPane = generateTaskView(time, done, descriptionWithIndex);
+
+        _taskViewDateMap.get(DisplayView.convertDateToString(date))
+                .getChildren().add(taskPane);
+        return true;
+    }
+
+    private BorderPane generateTaskView(String time, boolean done,
+            String descriptionWithIndex) {
         // pane that makes up task view
         BorderPane taskPane = new BorderPane();
 
@@ -183,15 +199,17 @@ public class MainGui extends Application implements NativeKeyListener {
         Text taskTime = generateTaskTimeText(time, done);
 
         // formatting task view pane
+        formatTaskView(taskPane, checkBoxPane, descriptionBox, taskTime);
+        return taskPane;
+    }
+
+    private void formatTaskView(BorderPane taskPane, Pane checkBoxPane,
+            HBox descriptionBox, Text taskTime) {
         taskPane.setPadding(new Insets(10, 5, 8, 10));
         taskPane.getStyleClass().add("task-pane");
         taskPane.setLeft(checkBoxPane);
         taskPane.setCenter(descriptionBox);
         taskPane.setRight(taskTime);
-
-        _taskViewDateMap.get(DisplayView.convertDateToString(date))
-                .getChildren().add(taskPane);
-        return true;
     }
 
     public void clearTaskView() {
@@ -230,16 +248,6 @@ public class MainGui extends Application implements NativeKeyListener {
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent e) {
-        // System.out.println("Key Text "
-        // + NativeKeyEvent.getKeyText(e.getKeyCode()));
-        // System.out.println("Mod Text "
-        // + NativeKeyEvent.getModifiersText(e.getKeyCode()));
-        // System.out.println("Key Char " + e.getKeyChar());
-        // System.out.println("Key Code " + e.getKeyCode());
-        // System.out.println("Key Loc " + e.getKeyLocation());
-        // System.out.println("Raw Code " + e.getRawCode());
-        // System.out.println("Modifiers : " + e.getModifiers() + " : "
-        // + NativeInputEvent.getModifiersText(e.getModifiers()));
         hotKeyToScrollToToday(e);
         hotKeyToShowStage(e);
         hotKeyToHideStage(e);
@@ -263,7 +271,9 @@ public class MainGui extends Application implements NativeKeyListener {
 
     public void setError(String errorMessage) {
         assert !errorMessage.isEmpty();
-        _statusText.setText("Error: " + errorMessage);
+
+        String Status = String.format(Messages.STATUS_ERROR, errorMessage);
+        _statusText.setText(Status);
         _statusText.getStyleClass().clear();
         _statusText.getStyleClass().add("error-message");
     }
@@ -276,7 +286,9 @@ public class MainGui extends Application implements NativeKeyListener {
 
     public void setStatus(String message) {
         assert !message.isEmpty();
-        _statusText.setText("Status: " + message);
+
+        String Status = String.format(Messages.STATUS_NORMAL, message);
+        _statusText.setText(Status);
         _statusText.getStyleClass().clear();
         _statusText.getStyleClass().add("status-message");
     }
@@ -287,6 +299,12 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     @Override
+    /*
+     * Actual starting point of application
+     * (non-Javadoc)
+     * 
+     * @see javafx.application.Application#start(javafx.stage.Stage)
+     */
     public void start(Stage primaryStage) {
         macOsXInitialization();
         prepareScene(primaryStage);
@@ -632,7 +650,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private HBox generateUserInputInterface() {
-        Text userInputLabel = new Text("Input: ");
+        Text userInputLabel = new Text(Messages.LABEL_USERINPUT);
 
         HBox userInputBox = new HBox();
         userInputBox.setPadding(new Insets(5));
