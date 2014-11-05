@@ -1,3 +1,4 @@
+//@author A0111889W
 package chirptask.common;
 
 import java.io.File;
@@ -11,7 +12,6 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 
 import chirptask.storage.StorageHandler;
 
-//@author A0111889W
 public class Settings {
 
     public static String EVENT_LOG_FILENAME = "eventlogs.txt";
@@ -41,7 +41,7 @@ public class Settings {
     private static final Properties props = new Properties();
     public static boolean hasRead = false;
 
-    // Initialized at the start by logic
+    // Initialized at the start by UI
     public Settings() {
         if (configFile.exists()) {
             readPropertiesFromFile();

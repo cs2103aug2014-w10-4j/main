@@ -266,6 +266,7 @@ public class StorageHandler {
         }
     }
     
+    //@author A0111889W
     static synchronized void deleteFromStorage(Task deletedTask) {
         if (isLocalChirpStorageInit()) {
             if (deletedTask != null) {

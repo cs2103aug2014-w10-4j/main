@@ -1,3 +1,4 @@
+//@author A0111889W
 package chirptask.testing;
 
 import static org.junit.Assert.*;
@@ -11,7 +12,6 @@ import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
-//@author A0111889W
 public class JUnitDisplayViewParserTest {
 
     /*
@@ -47,7 +47,7 @@ public class JUnitDisplayViewParserTest {
         // test for valid input
         date.set(2014, 9, 22, 21, 30, 00);
         Task floating = new Task(0, "Floating Task");
-        assertEquals("all-day",
+        assertEquals("",
                 DisplayView.convertTaskDateToDurationString(floating));
 
         // checks if method verifies type of task as deadline task

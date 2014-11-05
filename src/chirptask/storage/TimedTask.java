@@ -1,8 +1,8 @@
+//@author A0111889W
 package chirptask.storage;
 
 import java.util.Calendar;
 
-//@author A0111889W
 public class TimedTask extends Task {
     private static final String TASK_TIMED = "timedtask";
 
