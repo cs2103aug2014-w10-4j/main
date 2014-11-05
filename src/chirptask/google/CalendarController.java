@@ -7,8 +7,6 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
-import chirptask.storage.StorageHandler;
-
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -22,14 +20,12 @@ import com.google.api.services.calendar.model.Event;
  */
 public class CalendarController {
     private final int RESOURCE_NOT_FOUND = 404;
+    
     private final boolean DEFAULT_DONE_STATUS = false;
-    private final String DEFAULT_CALENDAR = "ChirpTaskv0.4";
+    
+    private final String DEFAULT_CALENDAR = "ChirpTaskv0.5";
     private final String SERVICE_NAME = "calendar";
     private final String JSON_NOT_FOUND = "Not Found";
-    
-    /** Global instance of the TasksId file. */
-    private static final File TIMEDTASK_CALENDAR_ID_STORE_FILE = new File(
-            "credentials/googlecalendar/ChirpTaskTimedTaskCalendarID.txt");
     
     /**
      * Global instance of the Google Calendar Service Client. Calendar
@@ -47,13 +43,15 @@ public class CalendarController {
     // Constructor
     CalendarController(HttpTransport httpTransport, JsonFactory jsonFactory,
             Credential credential, String applicationName) throws IOException {
-        initializeHostFiles();
         initializeCalendarClient(httpTransport, jsonFactory, credential,
                 applicationName);
         initializeWorkingCalendar();
     }
     
-    private void initializeHostFiles() throws IOException {
+    //@author A0111840W-unused 
+    // Code is unused because we remove the need for this additional file
+    // Now we store Google Calendar ID in the Settings, config.properties file
+    /*private void initializeHostFiles() throws IOException {
         try {
             TIMEDTASK_CALENDAR_ID_STORE_FILE.getParentFile().mkdirs();
             TIMEDTASK_CALENDAR_ID_STORE_FILE.createNewFile();
@@ -62,8 +60,9 @@ public class CalendarController {
             StorageHandler.logError(event);
             throw new IOException();
         }
-    }
+    }*/
 
+    //@author A0111840W
     private void initializeCalendarClient(HttpTransport httpTransport,
             JsonFactory jsonFactory, Credential credential,
             String applicationName) {
@@ -86,7 +85,7 @@ public class CalendarController {
     }
 
     private String retrieveIdFromFile() throws IOException {
-        String retrievedId = IdHandler.getIdFromFile(TIMEDTASK_CALENDAR_ID_STORE_FILE);
+        String retrievedId = IdHandler.getIdFromSettings();
         return retrievedId;
     }
 
@@ -135,7 +134,7 @@ public class CalendarController {
         Calendar newCalendar = CalendarHandler.addCalendar(DEFAULT_CALENDAR);
         setCalendarId(newCalendar);
         String calendarId = getCalendarId();
-        IdHandler.saveIdToFile(TIMEDTASK_CALENDAR_ID_STORE_FILE, calendarId);
+        IdHandler.saveIdToSettings(calendarId);
         return newCalendar;
     }
     
