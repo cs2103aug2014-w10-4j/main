@@ -3,9 +3,7 @@ package chirptask.logic;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;

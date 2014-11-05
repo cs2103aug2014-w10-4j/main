@@ -117,11 +117,16 @@ public class MainGui extends Application implements NativeKeyListener {
         launch(args);
     }
 
-    public void setOnlineStatus(String Status) {
-        Text onlineStatus = new Text(Status);
-        onlineStatus.getStyleClass().add("header-title");
-        BorderPane.setAlignment(onlineStatus, Pos.BOTTOM_RIGHT);
-        _headerBar.setRight(onlineStatus);
+    public void setOnlineStatus(final String Status) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Text onlineStatus = new Text(Status);
+                onlineStatus.getStyleClass().add("header-title");
+                BorderPane.setAlignment(onlineStatus, Pos.BOTTOM_RIGHT);
+                _headerBar.setRight(onlineStatus);
+            }
+        });
     }
 
     public void addCategoryIntoList(String Category) {
