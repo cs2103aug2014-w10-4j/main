@@ -11,7 +11,7 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.tasks.model.Task;
 
 class ConcurrentHandler {
-
+    
     static boolean isNull(GoogleController gController) {
         if (gController == null) {
             return true;
@@ -175,6 +175,8 @@ class ConcurrentHandler {
             modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent,
                     newEndTime);
         }
+        
+        modifiedGoogleEvent = CalendarHandler.setColorAndLook(modifiedGoogleEvent, taskToModify.isDone());
 
         modifiedGoogleEvent = CalendarHandler.updateEvent(calendarId, googleId,
                 modifiedGoogleEvent);

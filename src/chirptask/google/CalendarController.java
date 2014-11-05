@@ -22,7 +22,8 @@ import com.google.api.services.calendar.model.Event;
  */
 public class CalendarController {
     private final int RESOURCE_NOT_FOUND = 404;
-    private final String DEFAULT_CALENDAR = "ChirpTaskv0.3";
+    private final boolean DEFAULT_DONE_STATUS = false;
+    private final String DEFAULT_CALENDAR = "ChirpTaskv0.4";
     private final String SERVICE_NAME = "calendar";
     private final String JSON_NOT_FOUND = "Not Found";
     
@@ -157,6 +158,7 @@ public class CalendarController {
         Event newTimedTask = CalendarHandler.createEvent(taskTitle);
         newTimedTask = CalendarHandler.setStart(newTimedTask, startTime);
         newTimedTask = CalendarHandler.setEnd(newTimedTask, endTime);
+        newTimedTask = CalendarHandler.setColorAndLook(newTimedTask, DEFAULT_DONE_STATUS);
         Event addedEvent = insertEvent(newTimedTask);
         return addedEvent;
     }

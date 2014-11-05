@@ -13,7 +13,12 @@ import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 
 public class CalendarHandler {
+
+    private static final String COLOR_ID_DONE = "8";
+    private static final String COLOR_ID_UNDONE = "2";
     private static final String DEFAULT_TIME_ZONE = "Asia/Singapore";
+    private static final String EVENT_DONE = "transparent";
+    private static final String EVENT_UNDONE = "opaque";
     
     static boolean isNull(Calendar calendar) {
         if (calendar == null) {
@@ -129,6 +134,24 @@ public class CalendarHandler {
         eventEndTime.setDateTime(googleDateTime);
         
         Event updatedEvent = eventToSet.setEnd(eventEndTime);
+        
+        return updatedEvent;
+    }
+    
+    static Event setColorAndLook(Event eventToSet, boolean isDone) {
+        Event updatedEvent = eventToSet;
+        
+        if (updatedEvent == null) {
+            return null;
+        }
+        
+        if (isDone) {
+            updatedEvent.setColorId(COLOR_ID_DONE);
+            updatedEvent.setTransparency(EVENT_DONE);
+        } else {
+            updatedEvent.setColorId(COLOR_ID_UNDONE);
+            updatedEvent.setTransparency(EVENT_UNDONE);
+        }
         
         return updatedEvent;
     }
