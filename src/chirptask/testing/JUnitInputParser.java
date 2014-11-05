@@ -17,9 +17,6 @@ import chirptask.logic.InputParser;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
-import static org.junit.Assert.*;
-
-import org.junit.Test;
 
 // @author A0113022
 public class JUnitInputParser {

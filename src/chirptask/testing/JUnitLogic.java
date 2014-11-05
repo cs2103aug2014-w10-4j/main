@@ -12,7 +12,6 @@ import java.util.List;
 import org.junit.Test;
 
 import chirptask.common.Settings;
-import chirptask.gui.MainGui;
 import chirptask.logic.Action;
 import chirptask.logic.DisplayView;
 import chirptask.logic.FilterTasks;

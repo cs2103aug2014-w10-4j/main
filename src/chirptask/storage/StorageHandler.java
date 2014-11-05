@@ -5,7 +5,6 @@ import java.util.List;
 
 import chirptask.common.Messages;
 import chirptask.common.Settings;
-import chirptask.gui.MainGui;
 import chirptask.logic.Logic;
 
 public class StorageHandler {
