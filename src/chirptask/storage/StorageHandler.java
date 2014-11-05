@@ -7,13 +7,12 @@ import chirptask.common.Settings;
 import chirptask.logic.Logic;
 
 public class StorageHandler {
-    /** Global instance of ChirpTask's local copy. */
-    private static List<Task> _allTasks;
 
     private static List<IStorage> _listOfStorages = new ArrayList<IStorage>();
-    private static IStorage localStorage;
-    private static IStorage googleStorage;
     private static IStorage eventStorage;
+    private static IStorage googleStorage;
+    private static IStorage localStorage;
+    private static IStorage sessionStorage;
 
     private boolean isAutoLogin = false;
 
@@ -24,7 +23,7 @@ public class StorageHandler {
 
     //@author A0111840W
     private void initStorages() {
-        addLocalList();
+        addSessionStorage();
         addLocalStorage();
         addEventStorage();
         if (isAutoLogin) {
@@ -49,10 +48,11 @@ public class StorageHandler {
         isInit = true;
         return isInit;
     }
-
-    private void addLocalList() {
-        if (!isLocalListInit()) {
-            _allTasks = new ArrayList<Task>();
+    
+    private static void addSessionStorage() {
+        if (!isSessionStorageInit()) {
+            sessionStorage = new SessionStorage();
+            _listOfStorages.add(sessionStorage);
         }
     }
 
@@ -84,11 +84,23 @@ public class StorageHandler {
     }
 
     public static List<Task> getAllTasks() {
-        return _allTasks;
+        if (isSessionStorageInit()) {
+            return sessionStorage.getAllTasks();
+        } else {
+            addSessionStorage();
+            setAllTasks(localStorage.getAllTasks());
+            return getAllTasks();
+        }
     }
 
-    public void setAllTasks(List<Task> allTasks) {
-        _allTasks = allTasks;
+    private static void setAllTasks(List<Task> allTasks) {
+        try {
+            SessionStorage sStorage = (SessionStorage) sessionStorage;
+            sStorage.setTaskList(allTasks);
+        } catch (ClassCastException exception) {
+            logError(exception.getLocalizedMessage());
+            assert false;
+        }
     }
 
     //@author A0111889W
@@ -106,11 +118,6 @@ public class StorageHandler {
     //@author A0111889W
     public synchronized boolean modifyTask(Task modifiedTask) {
         boolean isModified = false;
-        if (_allTasks.contains(modifiedTask)) {
-            int indexOfTask = _allTasks.indexOf(modifiedTask);
-            _allTasks.add(indexOfTask, modifiedTask);
-            _allTasks.remove(indexOfTask + 1);
-        }
 
         for (IStorage individualStorage : _listOfStorages) {
             individualStorage.modifyTask(modifiedTask);
@@ -123,12 +130,10 @@ public class StorageHandler {
     public synchronized boolean addTask(Task addedTask) {
         boolean isAdded = false;
 
-        addedTask.setDeleted(false);
-        _allTasks.add(addedTask);
-
         for (IStorage individualStorage : _listOfStorages) {
             individualStorage.storeNewTask(addedTask);
         }
+        
         isAdded = true;
         return isAdded;
     }
@@ -138,13 +143,11 @@ public class StorageHandler {
         boolean isDeleted = false;
 
         if ("".equals(deletedTask.getGoogleId())) {
-            _allTasks.remove(deletedTask);
             for (IStorage individualStorage : _listOfStorages) {
                 individualStorage.removeTask(deletedTask);
             }
         } else {
             if (isStorageInit()) { //All storages init including Google
-                _allTasks.remove(deletedTask);
                 for (IStorage individualStorage : _listOfStorages) {
                     individualStorage.removeTask(deletedTask);
                 }
@@ -245,19 +248,18 @@ public class StorageHandler {
     static synchronized void updateStorages(Task modifiedTask) {
         if (isStorageInit()) {
             if ("".equals(modifiedTask.getGoogleId())) {
-                _allTasks.remove(modifiedTask);
                 for (IStorage individualStorage : _listOfStorages) {
                     individualStorage.removeTask(modifiedTask);
                 }
             } else {
-                if (_allTasks.contains(modifiedTask)) {
-                    int indexOfTask = _allTasks.indexOf(modifiedTask);
-                    _allTasks.add(indexOfTask, modifiedTask);
-                    _allTasks.remove(indexOfTask + 1);
+                List<Task> allTasks = sessionStorage.getAllTasks();
+                
+                if (allTasks.contains(modifiedTask)) {
+                    sessionStorage.modifyTask(modifiedTask);
                     localStorage.modifyTask(modifiedTask);
                     eventStorage.modifyTask(modifiedTask);
                 } else {
-                    _allTasks.add(modifiedTask);
+                    sessionStorage.storeNewTask(modifiedTask);
                     localStorage.storeNewTask(modifiedTask);
                     eventStorage.storeNewTask(modifiedTask);
                 }
@@ -270,8 +272,10 @@ public class StorageHandler {
     static synchronized void deleteFromStorage(Task deletedTask) {
         if (isLocalChirpStorageInit()) {
             if (deletedTask != null) {
-                if (_allTasks.contains(deletedTask)) {
-                    _allTasks.remove(deletedTask);
+                List<Task> allTasks = sessionStorage.getAllTasks();
+                
+                if (allTasks.contains(deletedTask)) {
+                    sessionStorage.removeTask(deletedTask);
                     localStorage.removeTask(deletedTask);
                     eventStorage.removeTask(deletedTask);
                     Logic.refresh(); // need to update GUI
@@ -283,7 +287,7 @@ public class StorageHandler {
     static boolean isLocalChirpStorageInit() {
         boolean init = true;
         init = init && isStoragesListInit();
-        init = init && isLocalListInit();
+        init = init && isSessionStorageInit();
         init = init && isLocalStorageInit();
         init = init && isEventStorageInit();
         return init;
@@ -292,7 +296,7 @@ public class StorageHandler {
     static boolean isStorageInit() {
         boolean init = true;
         init = init && isStoragesListInit();
-        init = init && isLocalListInit();
+        init = init && isSessionStorageInit();
         init = init && isLocalStorageInit();
         init = init && isEventStorageInit();
         init = init && isGoogleStorageInit();
@@ -302,9 +306,9 @@ public class StorageHandler {
     private static boolean isStoragesListInit() {
         return (_listOfStorages != null);
     }
-
-    private static boolean isLocalListInit() {
-        return (_allTasks != null);
+    
+    private static boolean isSessionStorageInit() {
+        return (sessionStorage != null);
     }
 
     private static boolean isLocalStorageInit() {
