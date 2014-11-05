@@ -93,6 +93,19 @@ public class GoogleController implements Runnable {
         initializeGoogleController.setDaemon(true);
         initializeGoogleController.start();
     }
+
+    // Method below is for threading.
+    /**
+     * To make Google Login/Authentication run in the background. It allows the
+     * program to continue running normally in the mean time.
+     */
+    public void run() {
+        initializeRemoteComponents(); 
+        while (!isGoogleLoaded()) {
+            //wait for google to load
+        }
+        GoogleStorage.hasBeenInitialized();
+    }
     
     /**
      * Initialize the essential components to allow interaction with Google
@@ -117,9 +130,66 @@ public class GoogleController implements Runnable {
             initializeRemoteComponents();
         }
     }
+    
+    /**
+     * Provides a checker if the required Google components loaded.
+     * 
+     * @return true if all required components has been loaded; false if at
+     *         least one component has not been loaded.
+     */
+    public static boolean isGoogleLoaded() {
+        boolean isLoaded = true;
+        isLoaded = isLoaded && isHttpTransportLoaded();
+        isLoaded = isLoaded && isDataStoreFactoryLoaded();
+        isLoaded = isLoaded && isCredentialLoaded();
+        isLoaded = isLoaded && isHttpTransportLoaded();
+        isLoaded = isLoaded && isCalendarLoaded();
+        isLoaded = isLoaded && isTasksLoaded();
+        return isLoaded;
+    }
+
+    private static boolean isHttpTransportLoaded() {
+        if (_httpTransport != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isDataStoreFactoryLoaded() {
+        if (_dataStoreFactory != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isCredentialLoaded() {
+        if (_credential != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isCalendarLoaded() {
+        if (_calendarController != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isTasksLoaded() {
+        if (_tasksController != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
-     * Methods below are made to be called by the StorageHandler for the
+     * Methods below are made to be called by the GoogleStorage for the
      * GoogleIntegration component of ChirpTask.
      */
     // Called by GoogleStorage
@@ -181,7 +251,7 @@ public class GoogleController implements Runnable {
         GoogleStorage.resetGoogleIdAndEtag(googleService);
     }
     
-    // Code from here onwards are methods to aid checking.
+    // Method(s) to aid checking for add/modify.
     /**
      * Checks if the specified task's Google ID exists in the client's Google
      * account.
@@ -208,6 +278,7 @@ public class GoogleController implements Runnable {
         case chirptask.storage.Task.TASK_DEADLINE:
             googleListId = TasksController.getTaskListId();
             Task foundTask = TasksHandler.getTaskFromId(googleListId, googleId);
+            
             if (foundTask != null) {
                 isExist = true;
             }
@@ -216,6 +287,7 @@ public class GoogleController implements Runnable {
             googleListId = CalendarController.getCalendarId();
             Event foundEvent = CalendarHandler.getEventFromId(googleListId,
                     googleId);
+            
             if (foundEvent != null) {
                 isExist = true;
             }
@@ -227,75 +299,4 @@ public class GoogleController implements Runnable {
         return isExist;
     }
 
-    /**
-     * Provides a checker if the required Google components loaded.
-     * 
-     * @return true if all required components has been loaded; false if at
-     *         least one component has not been loaded.
-     */
-    public static boolean isGoogleLoaded() {
-        boolean isLoaded = true;
-        isLoaded = isLoaded && isHttpTransportLoaded();
-        isLoaded = isLoaded && isDataStoreFactoryLoaded();
-        isLoaded = isLoaded && isCredentialLoaded();
-        isLoaded = isLoaded && isHttpTransportLoaded();
-        isLoaded = isLoaded && isCalendarLoaded();
-        isLoaded = isLoaded && isTasksLoaded();
-        return isLoaded;
-    }
-
-    private static boolean isHttpTransportLoaded() {
-        if (_httpTransport != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private static boolean isDataStoreFactoryLoaded() {
-        if (_dataStoreFactory != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private static boolean isCredentialLoaded() {
-        if (_credential != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private static boolean isCalendarLoaded() {
-        if (_calendarController != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private static boolean isTasksLoaded() {
-        if (_tasksController != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // Method below is for threading.
-    /**
-     * To make Google Login/Authentication run in the background. It allows the
-     * program to continue running normally in the mean time.
-     */
-    public void run() {
-        initializeRemoteComponents(); 
-        while (!isGoogleLoaded()) {
-            //wait for google to load
-        }
-        GoogleStorage.hasBeenInitialized();
-    }
-
-    
 }
