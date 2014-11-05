@@ -1,3 +1,4 @@
+//@author A0111889W
 package chirptask.testing;
 
 import static org.junit.Assert.*;
@@ -18,14 +19,17 @@ public class JUnitSystemTesting {
 
         _logic.retrieveInputFromUI("delete 1-");
         assertEquals("delete 1-", _mainGui._userInput);
-        assertEquals("Usage: delete <Task no> | delete <Task no>-<Task no>,<Task no>", _mainGui._status);
+        assertEquals(
+                "Usage: delete <Task no> | delete <Task no>-<Task no>,<Task no>",
+                _mainGui._status);
 
         _logic.retrieveInputFromUI("logout");
         assertEquals("You are not logged in.", _mainGui._status);
 
         _logic.retrieveInputFromUI("Invalid");
-//      assertEquals("", _mainGui._userInput);
-        assertEquals("Valid commands: add addd addt edit delete done undone clear undo login logout sync", _mainGui._status);
+        assertEquals(
+                "Valid commands: add addd addt edit delete done undone display filter clear undo login logout sync",
+                _mainGui._status);
     }
 
     @Test
@@ -35,6 +39,7 @@ public class JUnitSystemTesting {
         int currentTaskListSize = MainGui2._taskIndexToId.size();
 
         _logic.retrieveInputFromUI("delete 1-" + currentTaskListSize);
+
         _logic.retrieveInputFromUI("add normal floating task");
 
         assertEquals("Successfully Added new task normal floating task.",
@@ -105,7 +110,7 @@ public class JUnitSystemTesting {
 
         _logic.retrieveInputFromUI("display #Junit @Testing2");
         assertEquals(1, MainGui2._taskIndexToId.size());
-        
+
         _logic.retrieveInputFromUI("display");
         assertEquals(2, MainGui2._taskIndexToId.size());
 
@@ -120,7 +125,3 @@ public class JUnitSystemTesting {
 
     }
 }
-
-
-
-
