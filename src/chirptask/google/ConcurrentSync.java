@@ -515,8 +515,9 @@ class ConcurrentSync implements Callable<Boolean> {
             if (!googleIdMap.containsKey(gId)) {
                 int taskId = LocalStorage.generateId();
                 String description = currEvent.getSummary();
-                chirptask.storage.Task newTask = InputParser
-                        .getTaskFromString(description);
+                
+                chirptask.storage.Task newTask = 
+                        InputParser.getTaskFromString(description);
 
                 String googleId = gId;
                 String googleETag = currEvent.getEtag();
@@ -532,8 +533,8 @@ class ConcurrentSync implements Callable<Boolean> {
                     }
                 }
 
-                TimedTask newTimed = new TimedTask(taskId, description,
-                        startDate, endDate);
+                TimedTask newTimed = 
+                        new TimedTask(taskId, description,startDate, endDate);
                 setMiscTaskDetails(newTimed, 
                         categoryList, 
                         hashtagList, 
@@ -568,54 +569,25 @@ class ConcurrentSync implements Callable<Boolean> {
      */
     private void addFromNewGoogleTask(List<Task> taskList, 
             Map<String, chirptask.storage.Task> googleIdMap) {
+        
         for (Task currTask : taskList) {
             String gId = currTask.getId();
+            
             if (!googleIdMap.containsKey(gId)) {
                 int taskId = LocalStorage.generateId();
-                String description = currTask.getTitle();
+                String taskDesc = currTask.getTitle();
                 
-                if (description.trim().isEmpty()) {
+                if (taskDesc.trim().isEmpty()) {
                     continue;
                 }
                 
                 chirptask.storage.Task newTask = InputParser
-                        .getTaskFromString(description);
-                List<String> hashtagList = newTask.getContexts();
-                List<String> categoryList = newTask.getCategories();
-                String doneStatus = currTask.getStatus();
-                String googleId = currTask.getId();
-                String googleETag = currTask.getEtag();
-
-                boolean isDone = false;
-                if (STRING_DONE_TASK.equals(doneStatus)) {
-                    isDone = true;
-                }
-
-                DateTime dueDate = currTask.getDue();
-                if (dueDate != null) {
-                    Calendar dueCalendar = 
-                            DateTimeHandler.getDateFromDateTime(dueDate);
-                    
-                    DeadlineTask newDeadline = 
-                            new DeadlineTask(taskId,description, dueCalendar);
-                    setMiscTaskDetails(newDeadline, 
-                            categoryList, 
-                            hashtagList, 
-                            isDone, 
-                            googleETag, 
-                            googleId);
-                    GoogleStorage.updateStorages(newDeadline);
-                } else {
-                    chirptask.storage.Task newFloating = 
-                            new chirptask.storage.Task(taskId, description);
-                    setMiscTaskDetails(newFloating, 
-                            categoryList, 
-                            hashtagList, 
-                            isDone, 
-                            googleETag, 
-                            googleId);
-                    GoogleStorage.updateStorages(newFloating);
-                }
+                        .getTaskFromString(taskDesc);
+                newTask.setTaskId(taskId);
+                //Set ETag allows reuse of updateLocalGTask(Task,Task)
+                newTask.setETag(currTask.getEtag()); 
+                
+                updateLocalGTasks(newTask, currTask);
             }
         }
     }
