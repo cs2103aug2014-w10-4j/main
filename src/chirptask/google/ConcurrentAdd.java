@@ -18,8 +18,8 @@ class ConcurrentAdd implements Callable<Boolean> {
     private static CalendarController _calendarController;
 
     ConcurrentAdd(chirptask.storage.Task taskToAdd, 
-            GoogleController gController
-            , TasksController tasksController, 
+            GoogleController gController, 
+            TasksController tasksController, 
             CalendarController calController) {
         
         if (ConcurrentHandler.isNull(taskToAdd) || 

@@ -153,7 +153,9 @@ public class GoogleController implements Runnable {
 
     public void removeTask(chirptask.storage.Task taskToRemove) {
         if (isGoogleLoaded()) {
-            ConcurrentDelete deleteTask = new ConcurrentDelete(taskToRemove);
+            ConcurrentDelete deleteTask = new ConcurrentDelete(taskToRemove, 
+                    _tasksController, 
+                    _calendarController);
             CONCURRENT.addToExecutor(deleteTask);
         }
     }
@@ -166,68 +168,19 @@ public class GoogleController implements Runnable {
         }
     }
 
-    /**
-     * deletes a specific task in Google Tasks by its ID
-     * 
-     * @param taskId
-     *            to be passed in, should read in from localStorage
-     */
-    private static boolean deleteGoogleTask(String taskId) {
-        boolean isDeleted = false;
-
-        if (isGoogleLoaded()) {
-            isDeleted = _tasksController.deleteTask(taskId);
+    // Methods below are general methods to perform other actions
+    public void sync(List<chirptask.storage.Task> allTasks) {
+        if (isGoogleLoaded() && allTasks != null) {
+            ConcurrentSync concurrentSync = new ConcurrentSync(allTasks, this, 
+                    _calendarController, _tasksController);
+            CONCURRENT.addToExecutor(concurrentSync);
         }
-
-        return isDeleted;
     }
-
-    /**
-     * deletes a specific task in Google Calendar by its ID
-     * 
-     * @param taskId
-     *            to be passed in, should read in from localStorage
-     */
-    private static boolean deleteGoogleEvent(String taskId) {
-        boolean isDeleted = false;
-        if (isGoogleLoaded()) {
-            isDeleted = _calendarController.deleteEvent(taskId);
-        }
-        return isDeleted;
-    }
-
     
-
-    // Called by ConcurrentDelete
-    static boolean deleteTask(chirptask.storage.Task taskToDelete)
-            throws UnknownHostException, IOException {
-        boolean isDeleted = false;
-        String googleId = taskToDelete.getGoogleId();
-        String taskType = taskToDelete.getType();
-
-        if (googleId == null || googleId == "") {
-            isDeleted = false;
-            return isDeleted;
-        } else if (!isEntryExists(googleId, taskType)) {
-            isDeleted = false;
-            return isDeleted;
-        }
-
-        switch (taskType) {
-        case "floating":
-        case "deadline":
-            isDeleted = deleteGoogleTask(googleId);
-            break;
-        case "timedtask":
-            isDeleted = deleteGoogleEvent(googleId);
-            break;
-        default:
-            break;
-        }
-
-        return isDeleted;
+    static void resetGoogleIdAndEtag(String googleService) {
+        GoogleStorage.resetGoogleIdAndEtag(googleService);
     }
-
+    
     // Code from here onwards are methods to aid checking.
     /**
      * Checks if the specified task's Google ID exists in the client's Google
@@ -344,16 +297,5 @@ public class GoogleController implements Runnable {
         GoogleStorage.hasBeenInitialized();
     }
 
-    public void sync(List<chirptask.storage.Task> allTasks) {
-        if (isGoogleLoaded() && allTasks != null) {
-            ConcurrentSync concurrentSync = new ConcurrentSync(allTasks, this, 
-                    _calendarController, _tasksController);
-            CONCURRENT.addToExecutor(concurrentSync);
-        }
-    }
-    
-    static void resetGoogleIdAndEtag(String googleService) {
-        GoogleStorage.resetGoogleIdAndEtag(googleService);
-    }
     
 }
