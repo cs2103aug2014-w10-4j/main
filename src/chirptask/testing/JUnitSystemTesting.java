@@ -93,16 +93,16 @@ public class JUnitSystemTesting {
 
         _logic.retrieveInputFromUI("undone 1");
         assertEquals(
-                "Successfully Modified task #Junit @Testing2 by 12pm today .",
+                "Successfully Modified task #Junit @Testing2 by 12pm today.",
                 _mainGui._status);
 
         _logic.retrieveInputFromUI("Edit 1 nothing by 1pm today");
-        assertEquals("Successfully Modified task nothing by 1pm today .",
+        assertEquals("Successfully Modified task nothing by 1pm today.",
                 _mainGui._status);
 
         _logic.retrieveInputFromUI("undo");
         assertEquals(
-                "Successfully Modified task #Junit @Testing2 by 12pm today .",
+                "Successfully Modified task #Junit @Testing2 by 12pm today.",
                 _mainGui._status);
 
         _logic.retrieveInputFromUI("display #Junit");

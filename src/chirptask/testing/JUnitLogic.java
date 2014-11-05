@@ -55,7 +55,7 @@ public class JUnitLogic {
         // test floating task
         Task test1 = new Task();
         test1.setType("floating");
-        assertEquals("all-day",
+        assertEquals("",
                 DisplayView.convertTaskDateToDurationString(test1));
 
         // test Deadline task
