@@ -34,6 +34,22 @@ class ConcurrentHandler {
         }
     }
     
+    static void setNull(chirptask.storage.Task task) {
+        task = null;
+    }
+    
+    static void setNull(GoogleController gController) {
+        gController = null;
+    }
+    
+    static void setNull(TasksController tController) {
+        tController = null;
+    }
+    
+    static void setNull(CalendarController cController) {
+        cController = null;
+    }
+    
     /**
      * General ChirpTask Task
      */

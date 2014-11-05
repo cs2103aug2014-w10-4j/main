@@ -43,8 +43,8 @@ public class CalendarHandler {
         return createdCalendar;
     }
     
-    private static void setCalendarName(Calendar editCalendar, String newName) {
-        editCalendar.setSummary(newName);
+    private static void setCalendarName(Calendar editCalendar, String desc) {
+        editCalendar.setSummary(desc);
     }
     
     private static void setTimeZone(Calendar editCalendar, String timeZone) {
@@ -86,7 +86,10 @@ public class CalendarHandler {
         List<Event> allEvents = new ArrayList<Event>();
         
         do {
-            Events retrievedEvents = calendarClient.events().list(calendarId).setPageToken(pageToken).execute();
+            Events retrievedEvents = calendarClient.events()
+                    .list(calendarId)
+                    .setPageToken(pageToken)
+                    .execute();
             List<Event> currentPageEvents = retrievedEvents.getItems();
             
             for (Event currentEvent : currentPageEvents) {
@@ -175,7 +178,9 @@ public class CalendarHandler {
         com.google.api.services.calendar.Calendar calendarClient = 
                 CalendarController.getCalendarClient();
         
-        Event updatedEvent = calendarClient.events().update(calendarId, eventId, newEvent).execute();
+        Event updatedEvent = calendarClient.events()
+                .update(calendarId, eventId, newEvent)
+                .execute();
         
         return updatedEvent;
     }

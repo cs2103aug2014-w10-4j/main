@@ -23,7 +23,7 @@ public class CalendarController {
     private final boolean DEFAULT_DONE_STATUS = false;
     
     private final String DEFAULT_CALENDAR = "ChirpTaskv0.5";
-    private final String SERVICE_NAME = "calendar";
+    private final String GOOGLE_SERVICE_NAME = "calendar";
     private final String JSON_NOT_FOUND = "Not Found";
     
     /**
@@ -68,19 +68,14 @@ public class CalendarController {
                 applicationName).build();
     }
     
-    private void initializeCalendarId() throws IOException {
+    private void initializeCalendarId() {
         String timedTaskCalendarId = retrieveId();
         setCalendarId(timedTaskCalendarId);
     }
     
-    private String retrieveId() throws IOException {
-        String workingListId = retrieveIdFromFile();
+    private String retrieveId() {
+        String workingListId = IdHandler.getIdFromSettings();
         return workingListId;
-    }
-
-    private String retrieveIdFromFile() throws IOException {
-        String retrievedId = IdHandler.getIdFromSettings();
-        return retrievedId;
     }
 
     private void setCalendarId(String newId) {
@@ -109,12 +104,13 @@ public class CalendarController {
                 // No internet
                 initializeCalendar(calendarId);
                 
-            } catch (GoogleJsonResponseException jsonResponseException) {
-                int responseCode = jsonResponseException.getStatusCode();
-                String responseMessage = jsonResponseException.getStatusMessage();
+            } catch (GoogleJsonResponseException jsonResponseEx) {
+                int responseCode = jsonResponseEx.getStatusCode();
+                String responseMessage = jsonResponseEx.getStatusMessage();
                 
-                if (responseCode == RESOURCE_NOT_FOUND && JSON_NOT_FOUND.equals(responseMessage)) {
-                    GoogleController.resetGoogleIdAndEtag(SERVICE_NAME);
+                if (responseCode == RESOURCE_NOT_FOUND && 
+                        JSON_NOT_FOUND.equals(responseMessage)) {
+                    GoogleController.resetGoogleIdAndEtag(GOOGLE_SERVICE_NAME);
                     initializeCalendar(null);
                 }
                 
@@ -152,7 +148,8 @@ public class CalendarController {
         Event newTimedTask = CalendarHandler.createEvent(taskTitle);
         newTimedTask = CalendarHandler.setStart(newTimedTask, startTime);
         newTimedTask = CalendarHandler.setEnd(newTimedTask, endTime);
-        newTimedTask = CalendarHandler.setColorAndLook(newTimedTask, DEFAULT_DONE_STATUS);
+        newTimedTask = CalendarHandler.setColorAndLook(newTimedTask, 
+                DEFAULT_DONE_STATUS);
         Event addedEvent = insertEvent(newTimedTask);
         return addedEvent;
     }
@@ -160,7 +157,8 @@ public class CalendarController {
     private Event insertEvent(Event timedTask)
                                 throws UnknownHostException, IOException {
         String calendarId = getCalendarId();
-        Event insertedEvent = CalendarHandler.insertToCalendar(calendarId, timedTask);
+        Event insertedEvent = CalendarHandler.insertToCalendar(calendarId, 
+                timedTask);
         return insertedEvent;
     }
     

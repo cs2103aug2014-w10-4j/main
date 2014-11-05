@@ -16,14 +16,24 @@ public class ConcurrentDelete implements Callable<Boolean> {
         if (ConcurrentHandler.isNull(taskToDelete) ||
                 ConcurrentHandler.isNull(tasksController) ||
                 ConcurrentHandler.isNull(calController)) {
-            _taskToDelete = null;
-            _tasksController = null;
-            _calendarController = null;
+            setAllNull();
         } else {
-            _taskToDelete = taskToDelete;
-            _tasksController = tasksController;
-            _calendarController = calController;
+            setAllVars(taskToDelete, tasksController, calController);
         }
+    }
+
+    private void setAllNull() {
+        ConcurrentHandler.setNull(_taskToDelete);
+        ConcurrentHandler.setNull(_calendarController);
+        ConcurrentHandler.setNull(_tasksController);
+    }
+    
+    private void setAllVars(chirptask.storage.Task task, 
+            TasksController tController,
+            CalendarController cController) {
+        _taskToDelete = task;
+        _tasksController = tController;
+        _calendarController = cController;
     }
 
     public Boolean call() throws UnknownHostException, IOException {

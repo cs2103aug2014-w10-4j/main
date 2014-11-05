@@ -9,6 +9,9 @@ import chirptask.logic.Logic;
 
 public class StorageHandler {
 
+    private static final String GOOGLE_SERVICE_CALENDAR = "calendar";
+    private static final String GOOGLE_SERVICE_TASKS = "tasks";
+    
     private static List<IStorage> _listOfStorages = new ArrayList<IStorage>();
     private static IStorage eventStorage;
     private static IStorage googleStorage;
@@ -180,10 +183,10 @@ public class StorageHandler {
     static void resetGoogleIdAndEtag(String googleService) {
         if (googleService != null) {
             switch (googleService) {
-            case "calendar" :
+            case GOOGLE_SERVICE_CALENDAR :
                 resetCalendarItems();
                 break;
-            case "tasks" :
+            case GOOGLE_SERVICE_TASKS :
                 resetTasksItems();
                 break;
             default :
@@ -198,7 +201,7 @@ public class StorageHandler {
             Task currentTask = allLocalTasks.get(i);
             String taskType = currentTask.getType();
             
-            if ("timedtask".equals(taskType)) {
+            if (Task.TASK_TIMED.equals(taskType)) {
                 currentTask.setGoogleId("");
                 currentTask.setETag("");
             }
@@ -211,7 +214,8 @@ public class StorageHandler {
             Task currentTask = allLocalTasks.get(i);
             String taskType = currentTask.getType();
             
-            if ("deadline".equals(taskType) || "floating".equals(taskType)) {
+            if (Task.TASK_DEADLINE.equals(taskType) || 
+                    Task.TASK_FLOATING.equals(taskType)) {
                 currentTask.setGoogleId("");
                 currentTask.setETag("");
             }

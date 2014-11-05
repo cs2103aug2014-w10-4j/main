@@ -18,27 +18,26 @@ class ConcurrentModify implements Callable<Boolean> {
     private chirptask.storage.Task _taskToModify;
     private static TasksController _tasksController;
 
-    ConcurrentModify(chirptask.storage.Task taskToModify, 
-            GoogleController gController
-            , TasksController tasksController, 
-            CalendarController calController) {
+    ConcurrentModify(chirptask.storage.Task taskToModify,
+            TasksController tasksController) {
         
         if (ConcurrentHandler.isNull(taskToModify) || 
                 ConcurrentHandler.isNull(tasksController)){
-            taskToModify = null;
-            _tasksController = null;
+            setAllNull();
         } else {
-            _taskToModify = taskToModify;
-            _tasksController = tasksController;
+            setAllVars(taskToModify, tasksController);
         }
     }
+    
+    private void setAllNull() {
+        ConcurrentHandler.setNull(_taskToModify);
+        ConcurrentHandler.setNull(_tasksController);
+    }
 
-    ConcurrentModify(chirptask.storage.Task taskToModify) {
-        if (ConcurrentHandler.isNull(taskToModify)) {
-            _taskToModify = null;
-        } else {
-            _taskToModify = taskToModify;
-        }
+    private void setAllVars(chirptask.storage.Task task, 
+            TasksController tController) {
+        _taskToModify = task;
+        _tasksController = tController;
     }
 
     public Boolean call() throws UnknownHostException, IOException {

@@ -26,24 +26,35 @@ class ConcurrentAdd implements Callable<Boolean> {
                 ConcurrentHandler.isNull(gController) ||
                 ConcurrentHandler.isNull(tasksController) ||
                 ConcurrentHandler.isNull(calController)) {
-            _taskToAdd = null;
-            _gController = null;
-            _tasksController = null;
-            _calendarController = null;
+            setAllNull();
         } else {
-            _taskToAdd = taskToAdd;
-            _gController = gController;
-            _tasksController = tasksController;
-            _calendarController = calController;
+            setAllVars(taskToAdd, gController, tasksController, calController);
         }
+    }
+    
+    private void setAllNull() {
+        ConcurrentHandler.setNull(_taskToAdd);
+        ConcurrentHandler.setNull(_gController);
+        ConcurrentHandler.setNull(_calendarController);
+        ConcurrentHandler.setNull(_tasksController);
+    }
+    
+    private void setAllVars(chirptask.storage.Task task, 
+            GoogleController gController,
+            TasksController tController,
+            CalendarController cController) {
+        _taskToAdd = task;
+        _gController = gController;
+        _tasksController = tController;
+        _calendarController = cController;
     }
 
     public Boolean call() throws UnknownHostException, IOException  {
         Boolean isAdded = false;
+        System.out.println("hello");
         if (ConcurrentHandler.isNull(_taskToAdd)) {
             return isAdded;
         }
-
         while (GoogleController.isGoogleLoaded() == false) {
             // wait until google is loaded in background
         }

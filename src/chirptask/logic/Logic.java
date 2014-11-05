@@ -287,8 +287,12 @@ public class Logic {
     private void processLogin(Action command) {
         assert command != null;
         boolean isSuccess;
-        setOnlineStatus(Messages.TITLE_LOGGING_IN);
         isSuccess = _storageHandler.initCloudStorage();
+        
+        if (isSuccess) {
+            setOnlineStatus(Messages.TITLE_LOGGING_IN);
+        }
+        
         this.showStatusToUser(command, isSuccess);
     }
 
