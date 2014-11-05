@@ -64,9 +64,41 @@ import chirptask.logic.Logic;
 
 public class MainGui extends Application implements NativeKeyListener {
 
+    private static BorderPane _headerBar;
+    private static List<Integer> _taskIndexToId = new ArrayList<>();
+    private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
+            "Monday", "Tuesday", "Wednesday", "Thusday", "Friday", "Saturday" };
+
+    private static final int MIN_HEIGHT = 300;
+    private static final int MIN_WIDTH = 500;
+
+    private static final String[] MONTH = new String[] { "January", "February",
+            "March", "April", "May", "June", "July", "August", "September",
+            "October", "November", "December" };
+    private static final double SCROLL_VALUE = 50;
+
+    private static final int STARTING_HEIGHT = 600;
+    private static final int STARTING_WIDTH = 800;
+
+    private VBox _categoryList = new VBox();
+    private TextField _commandLineInterface;
+    private TextField _filterField;
+    private MainGui _gui = this;
+    private VBox _hashtagList = new VBox();
+    private Logic _logic;
+    private Stage _primaryStage;
+    private Label _statusText;
+
+    private VBox _taskViewByDate = new VBox();
+
+    private SortedMap<String, VBox> _taskViewDateMap = new TreeMap<>();
+
+    private ScrollPane _taskViewScrollPane;
+
     public static List<Integer> getTaskIndexToId() {
         return _taskIndexToId;
     }
+
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
      * main() serves only as fallback in case the application can not be
@@ -77,43 +109,20 @@ public class MainGui extends Application implements NativeKeyListener {
      *            the command line arguments
      */
     public static void main(String[] args) {
+
+        // ensures that settings has been initialized before continuing.
         while (!Settings.hasRead) {
             new Settings();
         }
         launch(args);
     }
-    private static final double SCROLL_VALUE = 50;
-    private static final int STARTING_HEIGHT = 600;
-    private static final int STARTING_WIDTH = 800;
 
-    private static final int MIN_WIDTH = 500;
-    private static final int MIN_HEIGHT = 300;
-
-    private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
-            "Monday", "Tuesday", "Wednesday", "Thusday", "Friday", "Saturday" };
-    private static final String[] MONTH = new String[] { "January", "February",
-            "March", "April", "May", "June", "July", "August", "September",
-            "October", "November", "December" };
-    private TextField _commandLineInterface;
-    private TextField _filterField;
-
-    private Label _statusText;
-    private BorderPane _headerBar;
-    private VBox _categoryList = new VBox();
-
-    private VBox _hashtagList = new VBox();
-
-    private VBox _taskViewByDate = new VBox();
-    private ScrollPane _taskViewScrollPane;
-
-    private final SortedMap<String, VBox> _taskViewDateMap = new TreeMap<>();
-
-    private static final List<Integer> _taskIndexToId = new ArrayList<>();
-    private Stage _primaryStage;
-
-    private Logic _logic;
-
-    private MainGui _gui = this;
+    public static void setOnlineStatus(String Status) {
+        Text onlineStatus = new Text(Status);
+        onlineStatus.getStyleClass().add("header-title");
+        BorderPane.setAlignment(onlineStatus, Pos.BOTTOM_RIGHT);
+        _headerBar.setRight(onlineStatus);
+    }
 
     public void addCategoryIntoList(String Category) {
         assert !Category.isEmpty();
@@ -263,13 +272,6 @@ public class MainGui extends Application implements NativeKeyListener {
         int caretPosition = _filterField.getCaretPosition();
         _filterField.setText(text);
         _filterField.positionCaret(caretPosition);
-    }
-
-    public void setOnlineStatus(String Status) {
-        Text onlineStatus = new Text(Status);
-        onlineStatus.getStyleClass().add("header-title");
-        BorderPane.setAlignment(onlineStatus, Pos.BOTTOM_RIGHT);
-        _headerBar.setRight(onlineStatus);
     }
 
     public void setStatus(String message) {
