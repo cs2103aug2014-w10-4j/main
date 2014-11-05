@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.concurrent.Callable;
 
 import chirptask.common.Messages;
+import chirptask.google.GoogleController.Status;
 import chirptask.storage.EventLogger;
 import chirptask.storage.TimedTask;
 
@@ -107,6 +108,9 @@ class ConcurrentModify implements Callable<Boolean> {
 
         if (ConcurrentHandler.isNotNull(modifiedGoogleTask)) {
             isModified = true;
+        } else {
+            isModified = false;
+            GoogleController.setOnlineStatus(Status.SYNC_FAIL);
         }
 
         return isModified;
@@ -151,6 +155,9 @@ class ConcurrentModify implements Callable<Boolean> {
 
         if (ConcurrentHandler.isNotNull(modifiedGoogleEvent)) {
             isModified = true;
+        } else {
+            isModified = false;
+            GoogleController.setOnlineStatus(Status.SYNC_FAIL);
         }
 
         return isModified;

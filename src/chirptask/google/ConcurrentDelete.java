@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 
+import chirptask.google.GoogleController.Status;
+
 public class ConcurrentDelete implements Callable<Boolean> {
 
     private chirptask.storage.Task _taskToDelete;
@@ -56,7 +58,7 @@ public class ConcurrentDelete implements Callable<Boolean> {
         if (isDeleted) {
             setDeleted(_taskToDelete);
             ConcurrentHandler.modifyLocalStorage(_taskToDelete);
-        }
+        } 
 
         return isDeleted;
     }
@@ -102,6 +104,9 @@ public class ConcurrentDelete implements Callable<Boolean> {
 
         if (GoogleController.isGoogleLoaded()) {
             isDeleted = _tasksController.deleteTask(taskId);
+            if (!isDeleted) {
+                GoogleController.setOnlineStatus(Status.SYNC_FAIL);
+            }
         }
 
         return isDeleted;
@@ -117,6 +122,9 @@ public class ConcurrentDelete implements Callable<Boolean> {
         boolean isDeleted = false;
         if (GoogleController.isGoogleLoaded()) {
             isDeleted = _calendarController.deleteEvent(taskId);
+            if (!isDeleted) {
+                GoogleController.setOnlineStatus(Status.SYNC_FAIL);
+            }
         }
         return isDeleted;
     }

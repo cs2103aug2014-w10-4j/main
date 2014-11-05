@@ -127,10 +127,6 @@ public class Logic {
         // should return a boolean variable to state whether sync is successful
         isSuccess = _storageHandler.logout();
         this.showStatusToUser(command, isSuccess);
-        
-        if (isSuccess) {
-            setOnlineStatus(Messages.TITLE_OFFLINE);
-        }
     }
 
     private void processSync(Action command) {
@@ -288,11 +284,6 @@ public class Logic {
         assert command != null;
         boolean isSuccess;
         isSuccess = _storageHandler.initCloudStorage();
-        
-        if (isSuccess) {
-            setOnlineStatus(Messages.TITLE_LOGGING_IN);
-        }
-        
         this.showStatusToUser(command, isSuccess);
     }
 
@@ -454,7 +445,7 @@ public class Logic {
     }
     
     public static void setOnlineStatus(String status) {
-        if (status != null) {
+        if (status != null && _gui != null) {
             _gui.setOnlineStatus(status);
         }
     }

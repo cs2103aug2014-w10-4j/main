@@ -1,5 +1,7 @@
 package chirptask.google;
 
+import java.util.List;
+
 import chirptask.storage.GoogleStorage;
 
 import com.google.api.services.calendar.model.Event;
@@ -36,6 +38,10 @@ class ConcurrentHandler {
     
     static void setNull(chirptask.storage.Task task) {
         task = null;
+    }
+    
+    static void setNull(List<chirptask.storage.Task> taskList) {
+        taskList = null;
     }
     
     static void setNull(GoogleController gController) {

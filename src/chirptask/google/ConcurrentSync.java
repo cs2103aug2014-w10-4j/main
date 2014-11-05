@@ -9,9 +9,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
-import chirptask.common.Messages;
+import chirptask.google.GoogleController.Status;
 import chirptask.logic.InputParser;
-import chirptask.logic.Logic;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.GoogleStorage;
 import chirptask.storage.LocalStorage;
@@ -38,19 +37,30 @@ class ConcurrentSync implements Callable<Boolean> {
             GoogleController gController, 
             CalendarController calController, 
             TasksController tasksController) {
-        if (allTasks != null && gController != null && 
-                tasksController != null &&
-                calController != null) {
-            _taskList = allTasks;
-            _gController = gController;
-            _calendarController = calController;
-            _tasksController = tasksController;
+        if (allTasks == null && gController == null && 
+                tasksController == null &&
+                calController == null) {
+            setAllNull();
         } else {
-            _taskList = null;
-            _gController = null;
-            _calendarController = null;
-            _tasksController = null;
+            setAllVars(allTasks, gController, tasksController, calController);
         }
+    }
+    
+    private void setAllNull() {
+        ConcurrentHandler.setNull(_taskList);
+        ConcurrentHandler.setNull(_gController);
+        ConcurrentHandler.setNull(_calendarController);
+        ConcurrentHandler.setNull(_tasksController);
+    }
+    
+    private void setAllVars(List<chirptask.storage.Task> taskList, 
+            GoogleController gController,
+            TasksController tController,
+            CalendarController cController) {
+        _taskList = taskList;
+        _gController = gController;
+        _tasksController = tController;
+        _calendarController = cController;
     }
 
     public Boolean call() throws UnknownHostException, IOException  {
@@ -66,7 +76,7 @@ class ConcurrentSync implements Callable<Boolean> {
             sync(_taskList);
             isSync = true;
         } catch (Exception allException) {
-            Logic.setOnlineStatus(Messages.TITLE_SYNC_FAIL);
+            GoogleController.setOnlineStatus(Status.SYNC_FAIL);
         }
         
         return isSync;
@@ -74,12 +84,12 @@ class ConcurrentSync implements Callable<Boolean> {
     
     private void sync(List<chirptask.storage.Task> allTasks) throws Exception {
         if (allTasks != null) {
-            Logic.setOnlineStatus(Messages.TITLE_SYNCING);
+            GoogleController.setOnlineStatus(Status.SYNC);
             syncPhaseOne(_taskList);
             syncPhaseTwo(_taskList);
             syncPhaseThree(_taskList);
             syncPhaseFour(_taskList); 
-            Logic.setOnlineStatus(Messages.TITLE_ONLINE);
+            GoogleController.setOnlineStatus(Status.ONLINE);
         }
     }
     

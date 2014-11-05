@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+
+import chirptask.common.Messages;
+import chirptask.logic.Logic;
+import chirptask.storage.EventLogger;
 import chirptask.storage.GoogleStorage;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -34,6 +38,11 @@ import com.google.api.services.tasks.model.Task;
  */
 
 public class GoogleController implements Runnable {
+
+    public enum Status {
+        ONLINE, OFFLINE, SYNC, SYNC_FAIL, LOGIN
+    }
+    
     /** Constant instance of the application name. */
     private static final String APPLICATION_NAME = "ChirpTask-GoogleIntegration/0.1";
 
@@ -89,6 +98,7 @@ public class GoogleController implements Runnable {
     }
 
     public void login() {
+        setOnlineStatus(Status.LOGIN);
         Thread initializeGoogleController = new Thread(this);
         initializeGoogleController.setDaemon(true);
         initializeGoogleController.start();
@@ -298,6 +308,34 @@ public class GoogleController implements Runnable {
         }
 
         return isExist;
+    }
+    
+    // Methods below is made as an interface for Google Components to call
+    // to change the MainGui Online Status.
+    public static void setOnlineStatus(Status newStatus) {
+        if (newStatus != null) {
+            switch (newStatus) {
+            case ONLINE :
+                Logic.setOnlineStatus(Messages.TITLE_ONLINE);
+                break;
+            case OFFLINE :
+            Logic.setOnlineStatus(Messages.TITLE_OFFLINE);
+            break;
+            case SYNC :
+                Logic.setOnlineStatus(Messages.TITLE_SYNCING);
+                break;
+            case SYNC_FAIL :
+                Logic.setOnlineStatus(Messages.TITLE_SYNC_FAIL);
+                break;
+            case LOGIN :
+                Logic.setOnlineStatus(Messages.TITLE_LOGGING_IN);
+                break;
+            default :
+                EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+                assert false;
+                break;
+            }
+        }
     }
 
 }

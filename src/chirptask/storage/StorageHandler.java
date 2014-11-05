@@ -3,8 +3,9 @@ package chirptask.storage;
 import java.util.ArrayList;
 import java.util.List;
 
-import chirptask.common.Messages;
 import chirptask.common.Settings;
+import chirptask.google.GoogleController;
+import chirptask.google.GoogleController.Status;
 import chirptask.logic.Logic;
 
 public class StorageHandler {
@@ -49,6 +50,8 @@ public class StorageHandler {
                     }
                 }
             }
+        } else if (googleStorage instanceof GoogleStorage) {
+            GoogleController.setOnlineStatus(Status.LOGIN);
         }
         return isInit;
     }
@@ -83,7 +86,7 @@ public class StorageHandler {
     static void addGoogleStorageUponReady() {
         if (isStoragesListInit()) {
             _listOfStorages.add(googleStorage);
-            Logic.setOnlineStatus(Messages.TITLE_ONLINE);
+            GoogleController.setOnlineStatus(Status.ONLINE);
             sync();
         }
     }
@@ -230,6 +233,7 @@ public class StorageHandler {
             gStorage.close();
             _listOfStorages.remove(googleStorage);
             googleStorage = null;
+            GoogleController.setOnlineStatus(Status.OFFLINE);
             isRanLogout = true;
         }
         

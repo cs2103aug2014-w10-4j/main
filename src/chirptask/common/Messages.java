@@ -23,6 +23,7 @@ public class Messages {
     public static final String LOG_MESSAGE_LOGOUT_FAIL = "You are not logged in.";
     public static final String LOG_MESSAGE_LOGOUT_SUCCESS = "Successfully logout.";
     public static final String LOG_MESSAGE_SYN_INIT = "Initiated";
+    public static final String LOG_MESSAGE_UNEXPECTED = "Unexpected behaviour encountered.";
 
     public static final String LOG_MESSAGE_ADD_USAGE = "Usage: Add <Task> | Addd <Task> by MM/DD | Addt <Task> from HH to HH DD/MM";
     public static final String LOG_MESSAGE_DELETE_USAGE = "Usage: delete <Task no> | delete <Task no>-<Task no>,<Task no>";

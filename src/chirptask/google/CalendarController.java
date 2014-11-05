@@ -87,8 +87,11 @@ public class CalendarController {
             Calendar newCalendar = null;
             try {
                 newCalendar = createCalendar();
+            } catch (UnknownHostException unknownHost) {
+                
+                initializeCalendar(null); 
             } catch (IOException e) {
-                e.printStackTrace();
+                initializeCalendar(null);            
             }
             return newCalendar;
         } else {

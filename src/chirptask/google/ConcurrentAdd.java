@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
+import chirptask.google.GoogleController.Status;
 import chirptask.storage.TimedTask;
 
 import com.google.api.services.calendar.model.Event;
@@ -51,7 +52,6 @@ class ConcurrentAdd implements Callable<Boolean> {
 
     public Boolean call() throws UnknownHostException, IOException  {
         Boolean isAdded = false;
-        System.out.println("hello");
         if (ConcurrentHandler.isNull(_taskToAdd)) {
             return isAdded;
         }
@@ -91,6 +91,8 @@ class ConcurrentAdd implements Callable<Boolean> {
             ConcurrentHandler.addGoogleIdToStorage(addedGoogleEvent, _taskToAdd);
             ConcurrentHandler.addETagToStorage(addedGoogleEvent, _taskToAdd);
             isAdded = true;
+        } else {
+            GoogleController.setOnlineStatus(Status.SYNC_FAIL);
         }
 
         boolean isDone = _taskToAdd.isDone();
