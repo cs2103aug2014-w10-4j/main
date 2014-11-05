@@ -1,9 +1,9 @@
+//@author A0111889W
 package chirptask.storage;
 
 import java.util.List;
 
 public interface IStorage {
-    //@author A0111889W
     boolean storeNewTask(Task T);
     
     Task removeTask(Task T);

@@ -97,7 +97,7 @@ public class DisplayView {
         // }
     }
 
-    // @author A0111889W
+    //@author A0111889W
     /**
      * Assuming there are only 3 type of task we need to handle
      * 
@@ -332,38 +332,39 @@ public class DisplayView {
         }
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public static TextFlow parseDescriptionToTextFlow(String description,
             boolean done, MainGui _gui) {
         TextFlow parsedDesc = new TextFlow();
-        StringBuilder descSb = new StringBuilder(description);
+        StringBuilder descStringBuilder = new StringBuilder(description);
         Text bufferText = new Text();
 
-        while (descSb.length() > 0) {
-            int index = descSb.length();
+        while (descStringBuilder.length() > 0) {
+            int index = descStringBuilder.length();
 
-            boolean hasSpaceInDesc = descSb.indexOf(" ") > 0;
+            boolean hasSpaceCharInDesc = descStringBuilder.indexOf(" ") > 0;
 
-            if (hasSpaceInDesc) {
-                index = descSb.indexOf(" ");
-            } else if (descSb.indexOf(" ") == 0) {
+            if (hasSpaceCharInDesc) {
+                index = descStringBuilder.indexOf(" ");
+            } else if (descStringBuilder.indexOf(" ") == 0) {
                 index = 1;
             }
 
-            // obtain description till first space
-            bufferText = new Text(descSb.substring(0, index));
+            // obtain description until the first space
+            bufferText = new Text(descStringBuilder.substring(0, index));
 
-            if (descSb.charAt(0) == Settings.HASHTAG_CHAR) {
+            if (descStringBuilder.charAt(0) == Settings.HASHTAG_CHAR) {
                 // Context
                 bufferText.getStyleClass().add("hashtag-text");
                 bufferText.setOnMouseClicked(_gui.clickOnHashtag());
-            } else if (descSb.charAt(0) == Settings.CATEGORY_CHAR) {
+            } else if (descStringBuilder.charAt(0) == Settings.CATEGORY_CHAR) {
                 // Category
                 bufferText.getStyleClass().add("category-text");
                 bufferText.setOnMouseClicked(_gui.clickOnCategory());
             }
-
-            descSb.delete(0, index);
+            
+            // delete parsed text
+            descStringBuilder.delete(0, index);
             bufferText.setStrikethrough(done);
             parsedDesc.getChildren().add(bufferText);
         }
@@ -371,7 +372,7 @@ public class DisplayView {
         return parsedDesc;
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public static String convertDateToString(Calendar date) {
         assert date != null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");

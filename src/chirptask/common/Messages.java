@@ -1,16 +1,10 @@
+//@author A0111889W
 package chirptask.common;
-
-/**
- *
- * @author Yeo Quan Yang
- * @MatricNo A0111889W
- * 
- */
 
 public class Messages {
 	public static final String LOG_MESSAGE_ADD_TASK = "%1$s Added new task %2$s.";
 	public static final String LOG_MESSAGE_REMOVE_TASK = "%1$s Removed task %2$s.";
-	public static final String LOG_MESSAGE_MODIFY_TASK = "%1$s Modified task %2$s .";
+	public static final String LOG_MESSAGE_MODIFY_TASK = "%1$s Modified task %2$s.";
 	public static final String LOG_MESSAGE_GET_TASK = "%1$s Retrieved task with Id: %2$s.";
 	public static final String LOG_MESSAGE_GET_ALL_TASKS = "%1$s Retrieved all tasks.";
 	public static final String LOG_MESSAGE_INVALID_COMMAND = "Valid commands: add addd addt edit delete done undone display filter clear undo login logout sync";

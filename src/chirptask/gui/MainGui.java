@@ -1,3 +1,4 @@
+//@author A0111889W
 package chirptask.gui;
 
 import java.util.ArrayList;
@@ -61,7 +62,6 @@ import chirptask.logic.DisplayView;
 import chirptask.logic.FilterTasks;
 import chirptask.logic.Logic;
 
-//@author A0111889W
 public class MainGui extends Application implements NativeKeyListener {
 
     private static final double SCROLL_VALUE = 50;
@@ -94,19 +94,20 @@ public class MainGui extends Application implements NativeKeyListener {
     private Logic _logic;
     private MainGui _gui = this;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javafx.application.Application#start(javafx.stage.Stage)
-     */
     @Override
     public void start(Stage primaryStage) {
         macOsXInitialization();
         prepareScene(primaryStage);
+
+        /*
+         * Try to have lesser stuff loading before .show().
+         * Too much processing will cause the GUI to take awhile to load.
+         */
         primaryStage.show();
+
         initJNativeHook();
         _logic = new Logic(this);
-        this.scrollToToday();
+        scrollToToday();
     }
 
     private void initJNativeHook() {
@@ -115,22 +116,23 @@ public class MainGui extends Application implements NativeKeyListener {
             Logger logger = Logger.getLogger(GlobalScreen.class.getPackage()
                     .getName());
             LogManager.getLogManager().reset();
+            // Set level to off before V0.5.
             logger.setLevel(Level.WARNING);
 
             GlobalScreen.registerNativeHook();
 
         } catch (NativeHookException ex) {
+            // Occasionally the hook will fail, this issue is with the library,
+            // we are unable to solve it.
             System.err
                     .println("There was a problem registering the native hook.");
-            // System.err.println(ex.getMessage());
-            // ex.printStackTrace();
-            // System.exit(1);
         }
         GlobalScreen.getInstance().addNativeKeyListener(this);
     }
 
-    private void guiClosing() {
-        System.out.println("Stage is closing");
+    private void guiClosing(WindowEvent we) {
+        // consume the closing request, let logic handle
+        we.consume();
         _logic.retrieveInputFromUI("exit");
     }
 
@@ -150,7 +152,7 @@ public class MainGui extends Application implements NativeKeyListener {
         makeScrollFadeable(mainDisplay.lookup(".address > .scroll-pane"));
         makeScrollFadeable(trendingList.getChildren().get(0));
         makeScrollFadeable(trendingList.getChildren().get(1));
-        
+
         return rootPane;
     }
 
@@ -184,7 +186,7 @@ public class MainGui extends Application implements NativeKeyListener {
                         "images/chirptask_clear.png")));
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
-                guiClosing();
+                guiClosing(we);
             }
         });
     }
@@ -302,7 +304,7 @@ public class MainGui extends Application implements NativeKeyListener {
         hashtagScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         hashtagScrollPane.setContent(_hashtagList);
         hashtagScrollPane.getStyleClass().add("context-scroll");
-        
+
         return hashtagScrollPane;
     }
 
