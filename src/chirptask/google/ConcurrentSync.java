@@ -93,6 +93,15 @@ class ConcurrentSync implements Callable<Boolean> {
         }
     }
     
+    /**
+     * Phase One is to check if user deleted task from Google
+     * @param allTasks 
+     *              ChirpTask's local task list
+     * @throws UnknownHostException 
+     *              If Google's servers cannot be reached
+     * @throws IOException
+     *              If wrong response or transmission is interrupted
+     */
     private void syncPhaseOne(List<chirptask.storage.Task> allTasks)
             throws UnknownHostException, IOException {
 
@@ -100,68 +109,115 @@ class ConcurrentSync implements Callable<Boolean> {
             List<Event> events = _calendarController.getEvents();
             Tasks tasks = _tasksController.getTasks();
             List<Task> taskList = tasks.getItems();
-            List<chirptask.storage.Task> localList = new ArrayList<chirptask.storage.Task>();
             
-            for (int i = 0; i < allTasks.size(); i++) {
-                chirptask.storage.Task currTask = allTasks.get(i);
-                localList.add(currTask);
-            }
+            List<chirptask.storage.Task> localList = cloneTaskList(allTasks);
             
             for (int i = 0; i < localList.size(); i++) {
                 chirptask.storage.Task currTask = localList.get(i);
                 String googleId = currTask.getGoogleId();
+                
                 if (currTask == null || googleId == null || 
                         googleId.equals("")) {
                     continue;
                 }
                 
+                boolean isStoredOnline = false;
+                
                 if (events == null) {
                     break;
                 }
-                
-                boolean isStoredOnline = false;
-                
-                for (Event event : events) {
-                    String eventId = event.getId();
-                    if (eventId != null) {
-                        if (googleId.equals(eventId)) {
-                            isStoredOnline = true;
-                        }
-                    }
-                }
+                isStoredOnline = checkEventsOnline(googleId, events);
                 
                 if (taskList == null) {
                     break;
                 }
-                
-                for (Task task : taskList) {
-                    String taskId = task.getId();
-                    if (taskId != null) {
-                        if (googleId.equals(taskId)) {
-                            isStoredOnline = true;
-                        }
-                    }
-                }
+                isStoredOnline = checkTasksOnline(googleId, taskList);
                 
                 if (isStoredOnline == false) { //Deleted online
-                    chirptask.storage.Task toDeleteLocally = currTask;
-                    if (toDeleteLocally != null) {
-                        // Local Task always takes precedence
-                        boolean isModified = toDeleteLocally.isModified();
-                        boolean isNotDeleted = !toDeleteLocally.isDeleted();
-                        if (isModified && isNotDeleted) {
-                            // Set Google ID empty to remove in storages
-                            toDeleteLocally.setGoogleId(""); 
-                            toDeleteLocally.setModified(false);
-                            GoogleStorage.updateStorages(toDeleteLocally);
-                            // Push from local to Google
-                            _gController.addTask(toDeleteLocally);
-                        } else {
-                            GoogleStorage.deleteFromLocalStorage(toDeleteLocally);
-                        }
-                    }
+                    deleteTaskLocally(currTask);
                 }
+            }
+        }
+    }
+    
+    /**
+     * To preserve the list of tasks to be processed
+     * @param toClone List to be preserved
+     * @return The preserved list
+     */
+    private List<chirptask.storage.Task> cloneTaskList(
+                        List<chirptask.storage.Task> toClone) {
+        List<chirptask.storage.Task> clonedList = 
+                new ArrayList<chirptask.storage.Task>();
+            for (int i = 0; i < toClone.size(); i++) {
+                chirptask.storage.Task currTask = toClone.get(i);
+                clonedList.add(currTask);
+            }
+            return clonedList;
+        }
+    
+    /**
+     * Checks if the timed task can be found online
+     * @param googleId The stored ID Locally
+     * @param events The Google Tasks' List
+     * @return True if found, false otherwise.
+     */
+    private boolean checkEventsOnline(String googleId, List<Event> events) {
+        boolean isStoredOnline = false;
+        
+        for (Event event : events) {
+            String eventId = event.getId();
+            if (eventId != null) {
+                if (googleId.equals(eventId)) {
+                    isStoredOnline = true;
+                }
+            }
+        }
+        
+        return isStoredOnline;
+    }
+    
+    /**
+     * Checks if the floating or deadline task can be found online
+     * @param googleId The stored ID locally
+     * @param taskList The Google Tasks' List
+     * @return True if found, false otherwise.
+     */
+    private boolean checkTasksOnline(String googleId, List<Task> taskList) {
+        boolean isStoredOnline = false;
 
+        for (Task task : taskList) {
+            String taskId = task.getId();
+            if (taskId != null) {
+                if (googleId.equals(taskId)) {
+                    isStoredOnline = true;
+                }
+            }
+        }
+        
+        return isStoredOnline;
+    }
+    
+    /**
+     * Local Task always takes precedence. If the task was modified locally,
+     * and the task is deleted remotely, it will push from Local to Remote.
+     * @param taskToDelete The task to be deleted from ChirpTask
+     */
+    private void deleteTaskLocally(chirptask.storage.Task taskToDelete) {
+        if (taskToDelete != null) {
+            boolean isModified = taskToDelete.isModified();
+            boolean isNotDeleted = !taskToDelete.isDeleted();
+            
+            // Local Task always takes precedence
+            if (isModified && isNotDeleted) { 
+                // Set Google ID empty to remove in storages
+                taskToDelete.setGoogleId(""); 
+                taskToDelete.setModified(false);
+                GoogleStorage.updateStorages(taskToDelete);
+                // Push from local to Google
+                _gController.addTask(taskToDelete);
+            } else {
+                GoogleStorage.deleteFromLocalStorage(taskToDelete);
             }
         }
     }
@@ -178,7 +234,7 @@ class ConcurrentSync implements Callable<Boolean> {
      * @param allTasks
      *            The local list of all tasks
      * @throws UnknownHostException
-     *             If Google's servers cannot be reachable
+     *             If Google's servers cannot be reached
      * @throws IOException
      *             If transmission is interrupted
      */
@@ -210,120 +266,200 @@ class ConcurrentSync implements Callable<Boolean> {
         }
     }
 
+    /**
+     * Phase Three checks for modifications from Google
+     * Local Tasks will always take precedence.
+     * 
+     * If Local Task and Google's task are both modified, 
+     *  do nothing in this phase.
+     * @param allTasks 
+     *              ChirpTask's local task list
+     * @throws UnknownHostException 
+     *              If Google's servers cannot be reached
+     * @throws IOException
+     *              If wrong response or transmission is interrupted
+     */
     private void syncPhaseThree(List<chirptask.storage.Task> allTasks)
             throws UnknownHostException, IOException {
 
         if (allTasks != null) {
-            Map<String, chirptask.storage.Task> googleIdMap = new TreeMap<String, chirptask.storage.Task>();
+            Map<String, chirptask.storage.Task> googleIdMap = createMap(allTasks);
             List<Event> events = _calendarController.getEvents();
             Tasks tasks = _tasksController.getTasks();
             List<Task> taskList = tasks.getItems();
+
+            checkAllEventsEdit(events, googleIdMap);
+            checkAllTasksEdit(taskList, googleIdMap);
+
             
-            for (int i = 0; i < allTasks.size(); i++) {
-                chirptask.storage.Task currTask = allTasks.get(i);
-                String googleId = currTask.getGoogleId();
+        }
+    }
+    
+    private Map<String, chirptask.storage.Task> createMap(
+                                List<chirptask.storage.Task> allTasks) {
+        Map<String, chirptask.storage.Task> googleIdMap = 
+                new TreeMap<String, chirptask.storage.Task>();
+        
+        for (int i = 0; i < allTasks.size(); i++) {
+            chirptask.storage.Task currTask = allTasks.get(i);
+            String googleId = currTask.getGoogleId();
 
-                if (googleId != null || "".equals(googleId)) {
-                    googleIdMap.put(googleId, currTask);
-                }
+            if (googleId != null || "".equals(googleId)) {
+                googleIdMap.put(googleId, currTask);
             }
-
-            for (Event currEvent : events) {
-                String gId = currEvent.getId();
-                if (googleIdMap.containsKey(gId)) {
-                    chirptask.storage.Task currTask = googleIdMap.get(gId);
-                    String googleETag = currEvent.getEtag();
-                    String localETag = currTask.getETag();
-                    if (googleETag != null && localETag != null) {
-                        if (!localETag.equals(googleETag)) {
-                            if (!currTask.isModified()) { // push from remote to
-                                                          // local
-                                String eventDescription = currEvent
-                                        .getSummary();
-                                EventDateTime start = currEvent.getStart();
-                                EventDateTime end = currEvent.getEnd();
-                                Calendar startDate = DateTimeHandler
-                                        .getCalendar(start);
-                                Calendar endDate = DateTimeHandler
-                                        .getCalendar(end);
-
-                                boolean isDone = false;
-                                if (eventDescription != null) {
-                                    if (eventDescription.startsWith(STRING_DONE_EVENT)) {
-                                        isDone = true;
-                                    }
-                                }
-
-                                if (currTask instanceof chirptask.storage.TimedTask) {
-                                    TimedTask timedTask = (TimedTask) currTask;
-                                    timedTask.setDescription(eventDescription);
-                                    timedTask.setStartTime(startDate);
-                                    timedTask.setEndTime(endDate);
-                                    timedTask.setDone(isDone);
-                                    GoogleStorage.updateStorages(timedTask);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            for (Task currTask : taskList) {
-                String gId = currTask.getId();
-                if (googleIdMap.containsKey(gId)) {
-                    chirptask.storage.Task chirpTask = googleIdMap.get(gId);
-                    String googleETag = currTask.getEtag();
-                    String localETag = chirpTask.getETag();
-                    if (googleETag != null && localETag != null) {
-                        if (!localETag.equals(googleETag)) {
-                            if (!chirpTask.isModified()) { // push from remote
-                                                           // to local
-                                int taskId = chirpTask.getTaskId();
-                                List<String> contextList = chirpTask
-                                        .getContexts();
-                                List<String> categoryList = chirpTask
-                                        .getCategories();
-                                String doneString = currTask.getStatus();
-                                String eTag = googleETag;
-                                String googleId = gId;
-                                String taskDescription = currTask.getTitle();
-                                DateTime dueDate = currTask.getDue();
-                                
-                                boolean isDone = false;
-                                if (STRING_DONE_TASK.equalsIgnoreCase(doneString)) {
-                                    isDone = true;
-                                }
-
-                                if (dueDate != null) {
-                                    Calendar dueCalendar = DateTimeHandler
-                                            .getDateFromDateTime(dueDate);
-                                    DeadlineTask newDeadline = new DeadlineTask(
-                                            taskId, taskDescription,
-                                            dueCalendar);
-                                    newDeadline.setCategories(categoryList);
-                                    newDeadline.setContexts(contextList);
-                                    newDeadline.setDone(isDone);
-                                    newDeadline.setETag(eTag);
-                                    newDeadline.setGoogleId(googleId);
-                                    GoogleStorage.updateStorages(newDeadline);
-                                } else {
-                                    chirptask.storage.Task newFloating = new chirptask.storage.Task(
-                                            taskId, taskDescription);
-                                    newFloating.setCategories(categoryList);
-                                    newFloating.setContexts(contextList);
-                                    newFloating.setDone(isDone);
-                                    newFloating.setETag(eTag);
-                                    newFloating.setGoogleId(googleId);
-                                    GoogleStorage.updateStorages(newFloating);
-                                }
-                            }
-                        }
-                    }
+        }
+        
+        return googleIdMap;
+    }
+    
+    private void checkAllEventsEdit(List<Event> events,
+                        Map<String, chirptask.storage.Task> googleIdMap ) {
+        for (Event currEvent : events) {
+            String gId = currEvent.getId();
+            if (googleIdMap.containsKey(gId)) {
+                chirptask.storage.Task currTask = googleIdMap.get(gId);
+                String googleETag = currEvent.getEtag();
+                String localETag = currTask.getETag();
+                
+                if(checkIfRequireEdit(googleETag, localETag, currTask)) {
+                    // Pull from remote to local
+                    updateLocalEvents(currTask, currEvent);
                 }
             }
         }
     }
+    
+    private boolean checkIfRequireEdit(String googleETag, 
+                                        String localETag, 
+                                        chirptask.storage.Task currTask) {
+        boolean isRequired = false;
+        
+        if (googleETag != null && localETag != null) {
+            if (!localETag.equals(googleETag)) {
+                if (!currTask.isModified()) { 
+                    isRequired = true;
+                }
+            }
+        }
+        return isRequired;
+    }
+    private void updateLocalEvents(chirptask.storage.Task currTask, 
+                                                    Event currEvent) {
+        String eventDescription = currEvent
+                .getSummary();
+        EventDateTime start = currEvent.getStart();
+        EventDateTime end = currEvent.getEnd();
+        Calendar startDate = DateTimeHandler
+                .getCalendar(start);
+        Calendar endDate = DateTimeHandler
+                .getCalendar(end);
 
+        boolean isDone = false;
+        if (eventDescription != null) {
+            if (eventDescription.startsWith(STRING_DONE_EVENT)) {
+                isDone = true;
+            }
+        }
+
+        if (currTask instanceof chirptask.storage.TimedTask) {
+            TimedTask timedTask = (TimedTask) currTask;
+            timedTask.setDescription(eventDescription);
+            timedTask.setStartTime(startDate);
+            timedTask.setEndTime(endDate);
+            timedTask.setDone(isDone);
+            GoogleStorage.updateStorages(timedTask);
+        }
+    }
+    
+    private void checkAllTasksEdit(List<Task> taskList, 
+                        Map<String, chirptask.storage.Task> googleIdMap) {
+        for (Task currTask : taskList) {
+            String gId = currTask.getId();
+            if (googleIdMap.containsKey(gId)) {
+                chirptask.storage.Task chirpTask = googleIdMap.get(gId);
+                String googleETag = currTask.getEtag();
+                String localETag = chirpTask.getETag();
+                
+                if (checkIfRequireEdit(googleETag, localETag, chirpTask)) { 
+                    updateLocalGTasks(chirpTask, currTask);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Update Local deadline or floating task from Google.
+     * This method is more complex than updateLocalEvents because 
+     * we allow the user to edit from deadline to floating and vice versa
+     * from Google Tasks.
+     * @param chirpTask The local task
+     * @param currTask The Google Task
+     */
+    private void updateLocalGTasks(chirptask.storage.Task chirpTask, Task currTask) {
+        // push from remote to local
+        int taskId = chirpTask.getTaskId();
+        List<String> hashtagList = chirpTask.getContexts();
+        List<String> categoryList = chirpTask.getCategories();
+        String doneString = currTask.getStatus();
+        String eTag = chirpTask.getETag();
+        String googleId = currTask.getId();
+        String taskDesc = currTask.getTitle();
+        DateTime dueDate = currTask.getDue();
+                
+        boolean isDone = false;
+                if (STRING_DONE_TASK.equalsIgnoreCase(doneString)) {
+                    isDone = true;
+                }
+                
+                chirptask.storage.Task newTask = null;
+                
+                if (dueDate != null) {
+                    Calendar dueCalendar = DateTimeHandler
+                            .getDateFromDateTime(dueDate);
+                    DeadlineTask newDeadline = 
+                            new DeadlineTask(taskId, taskDesc, dueCalendar);
+                    setMiscTaskDetails(newDeadline, categoryList, hashtagList,
+                            isDone, eTag, googleId);
+                    newTask = newDeadline;
+                } else {
+                    chirptask.storage.Task newFloating = 
+                                new chirptask.storage.Task(taskId, taskDesc);
+                    setMiscTaskDetails(newFloating, 
+                                        categoryList, 
+                                        hashtagList,
+                                        isDone, 
+                                        eTag, 
+                                        googleId);
+                    newTask = newFloating;
+                }
+                
+                if (newTask != null) {
+                    GoogleStorage.updateStorages(newTask);
+                }
+    }
+    
+    private void setMiscTaskDetails(chirptask.storage.Task taskToSet, 
+            List<String> categoryList, 
+            List<String> hashtagList, 
+            boolean isDone, 
+            String eTag, 
+            String googleId) {
+        taskToSet.setCategories(categoryList);
+        taskToSet.setContexts(hashtagList);
+        taskToSet.setDone(isDone);
+        taskToSet.setETag(eTag);
+        taskToSet.setGoogleId(googleId);
+    }
+
+    /**
+     * Phase four updates Google with modified Local Tasks
+     * @param allTasks 
+     *              ChirpTask's local task list
+     * @throws UnknownHostException 
+     *              If Google's servers cannot be reached
+     * @throws IOException
+     *              If wrong response or transmission is interrupted
+     */
     private void syncPhaseFour(List<chirptask.storage.Task> allTasks)
             throws UnknownHostException, IOException {
 
