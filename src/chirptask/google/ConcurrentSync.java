@@ -435,6 +435,11 @@ class ConcurrentSync implements Callable<Boolean> {
                 
         if (dueDate != null) {
             Calendar dueCalendar = DateTimeHandler.getDateFromDateTime(dueDate);
+            
+            Calendar chirpDate = chirpTask.getDate();
+            dueCalendar.set(Calendar.HOUR_OF_DAY, chirpDate.get(Calendar.HOUR_OF_DAY));
+            dueCalendar.set(Calendar.MINUTE, chirpDate.get(Calendar.MINUTE));
+            
             DeadlineTask newDeadline = 
                             new DeadlineTask(taskId, taskDesc, dueCalendar);
             setMiscTaskDetails(newDeadline, categoryList, hashtagList,
