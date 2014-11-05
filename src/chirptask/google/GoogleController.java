@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
-import java.util.Date;
 import java.util.List;
 import chirptask.storage.GoogleStorage;
 
@@ -227,54 +226,6 @@ public class GoogleController implements Runnable {
         }
 
         return isDeleted;
-    }
-
-    // Called by ConcurrentModify
-    static Task toggleTasksDone(Task googleTask,
-            chirptask.storage.Task toggleTask) {
-
-        boolean isDone = toggleTask.isDone();
-        Task toggledTask = _tasksController.toggleTaskDone(googleTask, isDone);
-
-        if (toggledTask != null) {
-            return toggledTask;
-        } else {
-            return null;
-        }
-    }
-
-    static Task updateDueDate(Task taskToUpdate,
-            chirptask.storage.Task updatedTask) {
-        String taskType = updatedTask.getType();
-
-        if (taskType.equals("deadline")) { // magic string, must solve this.
-            Date newDueDate = updatedTask.getDate().getTime();
-
-            Task updatedGoogleTask = _tasksController.updateDueDate(
-                    taskToUpdate, newDueDate);
-
-            if (updatedGoogleTask != null) {
-                return updatedGoogleTask;
-            } else {
-                return taskToUpdate;
-            }
-        } else { // Is a floating task
-            return taskToUpdate;
-        }
-    }
-
-    static Task updateTasksDescription(Task taskToUpdate,
-            chirptask.storage.Task updatedTask) {
-
-        String updatedDescription = updatedTask.getDescription();
-        Task updatedGoogleTask = _tasksController.updateDescription(
-                taskToUpdate, updatedDescription);
-
-        if (updatedGoogleTask != null) {
-            return updatedGoogleTask;
-        } else {
-            return null;
-        }
     }
 
     // Code from here onwards are methods to aid checking.

@@ -8,6 +8,7 @@ public class Messages {
     public static final String LOG_MESSAGE_GET_TASK = "%1$s Retrieved task with Id: %2$s.";
     public static final String LOG_MESSAGE_GET_ALL_TASKS = "%1$s Retrieved all tasks.";
     public static final String LOG_MESSAGE_INVALID_COMMAND = "Valid commands: add addd addt edit delete done undone display filter clear undo login logout sync";
+    public static final String LOG_MESSAGE_INVALID_TASK_TYPE = "Invalid Task Type.";
     public static final String LOG_MESSAGE_LOGIN = "%1$s Login";
     public static final String LOG_MESSAGE_SYNC = "%1$s Sync to google";
     public static final String LOG_MESSAGE_SYNC_FAIL = "%1$s Sync to google, Please login to enable sync";

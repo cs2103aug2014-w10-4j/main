@@ -10,7 +10,9 @@ import java.util.List;
  */
 
 public class Task implements Comparable<Task> {
-    private static final String TASK_FLOATING = "floating";
+    public static final String TASK_FLOATING = "floating";
+    public static final String TASK_DEADLINE = "deadline";
+    public static final String TASK_TIMED = "timedtask";
 
     private List<String> _contexts;
     private List<String> _categories;
