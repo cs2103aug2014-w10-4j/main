@@ -53,7 +53,6 @@ public class Task implements Comparable<Task> {
     }
 
     /*
-     * Compare first by Calendar object then description
      * Compare by Time then Type then Description (Lexicographically)
      */
     public int compareTo(Task b) {
