@@ -251,7 +251,7 @@ public class FilterTasks {
         filteredTask = StorageHandler.getAllTasks();
         filteredTask = hideDeleted(filteredTask);
         populateCategoryAndHashtag();
-
+        
         if (!currentFilter.isEmpty()) {
             processFilter(currentFilter, gui);
         }

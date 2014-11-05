@@ -314,10 +314,13 @@ public class Logic {
     private void processUndo() {
         GroupAction lastAction = getLastGroupAction();
         GroupAction tempGroupAction = new GroupAction();
+        
         if (lastAction != null) {
-            for (Action action : lastAction.getActionList()) {
+            for (int i = 0; i < lastAction.getActionList().size(); i++) {
+                Action action = lastAction.getActionList().get(i);
+                
                 if (action.undo() != null) {
-                    Action undoAction = action.undo();
+                    Action undoAction = action.undo();                    
                     undoAction.setUndo(action);
                     tempGroupAction.addAction(undoAction);
                 } else {
@@ -327,7 +330,8 @@ public class Logic {
             }
             setLastGroupAction(tempGroupAction);
             lastAction = getLastGroupAction();
-            for (Action action : lastAction.getActionList()) {
+            for (int i = 0; i < lastAction.getActionList().size(); i++) {
+                Action action = lastAction.getActionList().get(i);
                 executeAction(action);
             }
 
@@ -403,8 +407,15 @@ public class Logic {
 
     private void processAdd(Action command, Task task) {
         assert command != null && task != null;
-        boolean isSuccess;
-        isSuccess = _storageHandler.addTask(task);
+        boolean isSuccess = true;
+        
+        if ("".equals(task.getGoogleId())) {
+            isSuccess = _storageHandler.addTask(task);
+        } else {
+            task.setDeleted(false);
+            _storageHandler.modifyTask(task);
+        }
+
         filterAndDisplay(command, isSuccess);
     }
 
