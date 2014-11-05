@@ -84,7 +84,12 @@ public class DateTimeHandler {
 	    return eventDateTime;
         
 	}
-	
+	/**
+	 * For Google Calendar's Events, we will parse EventDateTime
+	 * to Calendar (ChirpTask's "native" date object)
+	 * @param eventDateTime From a Google Calendar Event object
+	 * @return The converted Calendar object
+	 */
 	static Calendar getCalendar(EventDateTime eventDateTime) {
 	    Long eventLong = eventDateTime.getDateTime().getValue();
         Calendar calendar = Calendar.getInstance();
@@ -92,10 +97,18 @@ public class DateTimeHandler {
 	    return calendar;
 	}
 	
+	/**
+	 * For Google Tasks, DateTime is passed in,
+	 * we will convert it to 23:59 by default, after setting the day.
+	 * @param dateTime From a Google Task object
+	 * @return The converted Calendar object
+	 */
 	static Calendar getDateFromDateTime(DateTime dateTime) {
 	    Long dateLong = dateTime.getValue();
 	    Calendar calendar = Calendar.getInstance();
 	    calendar.setTimeInMillis(dateLong);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
 	    return calendar;
 	}
 

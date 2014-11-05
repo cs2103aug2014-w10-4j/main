@@ -226,9 +226,12 @@ class ConcurrentSync implements Callable<Boolean> {
      * Phase two is a Google One-way synchronisation method.
      * 
      * Phase two adds local tasks without Google ID to Google; If the task has
-     * been deleted, it does not perform the add operation. Phase two also
-     * deletes tasks with Google ID that are flagged as deleted from the Google
-     * account. Phase two also modify tasks with Google ID that are flagged as
+     * been deleted, it does not perform the add operation. 
+     * 
+     * Phase two also deletes tasks with Google ID that are flagged as deleted 
+     * from the Google account. 
+     * 
+     * Phase two also modify tasks with Google ID that are flagged as
      * modified
      * 
      * @param allTasks
@@ -283,20 +286,25 @@ class ConcurrentSync implements Callable<Boolean> {
             throws UnknownHostException, IOException {
 
         if (allTasks != null) {
-            Map<String, chirptask.storage.Task> googleIdMap = createMap(allTasks);
+            Map<String, chirptask.storage.Task> googleIdMap = 
+                                        createMap(allTasks);
             List<Event> events = _calendarController.getEvents();
             Tasks tasks = _tasksController.getTasks();
             List<Task> taskList = tasks.getItems();
 
             checkAllEventsEdit(events, googleIdMap);
             checkAllTasksEdit(taskList, googleIdMap);
-
-            
         }
     }
     
+    /**
+     * This method will create a Map that provides easy lookup if a Google ID
+     * is known and stored locally. The value of the Map is a ChirpTask object
+     * @param allTasks All local ChirpTask used to populate the Google ID list
+     * @return A Map that contains Google ID as key, ChirpTask as value
+     */
     private Map<String, chirptask.storage.Task> createMap(
-                                List<chirptask.storage.Task> allTasks) {
+                                       List<chirptask.storage.Task> allTasks) {
         Map<String, chirptask.storage.Task> googleIdMap = 
                 new TreeMap<String, chirptask.storage.Task>();
         
@@ -311,7 +319,13 @@ class ConcurrentSync implements Callable<Boolean> {
         
         return googleIdMap;
     }
-    
+
+    /**
+     * This method checks if there are any events in Google Calendar
+     * that are modified and if we require to update our local task.
+     * @param events A list of Google Calendar Events 
+     * @param googleIdMap ChirpTask list of known Google ID
+     */
     private void checkAllEventsEdit(List<Event> events,
                         Map<String, chirptask.storage.Task> googleIdMap ) {
         for (Event currEvent : events) {
@@ -371,6 +385,12 @@ class ConcurrentSync implements Callable<Boolean> {
         }
     }
     
+    /**
+     * This method checks if there are any tasks in Google Tasks
+     * that are modified and if we require to update our local task.
+     * @param taskList A list of Google Tasks 
+     * @param googleIdMap ChirpTask list of known Google ID
+     */
     private void checkAllTasksEdit(List<Task> taskList, 
                         Map<String, chirptask.storage.Task> googleIdMap) {
         for (Task currTask : taskList) {
@@ -407,37 +427,45 @@ class ConcurrentSync implements Callable<Boolean> {
         DateTime dueDate = currTask.getDue();
                 
         boolean isDone = false;
-                if (STRING_DONE_TASK.equalsIgnoreCase(doneString)) {
-                    isDone = true;
-                }
+        if (STRING_DONE_TASK.equalsIgnoreCase(doneString)) {
+            isDone = true;
+        }
                 
-                chirptask.storage.Task newTask = null;
+        chirptask.storage.Task newTask = null;
                 
-                if (dueDate != null) {
-                    Calendar dueCalendar = DateTimeHandler
-                            .getDateFromDateTime(dueDate);
-                    DeadlineTask newDeadline = 
+        if (dueDate != null) {
+            Calendar dueCalendar = DateTimeHandler.getDateFromDateTime(dueDate);
+            DeadlineTask newDeadline = 
                             new DeadlineTask(taskId, taskDesc, dueCalendar);
-                    setMiscTaskDetails(newDeadline, categoryList, hashtagList,
+            setMiscTaskDetails(newDeadline, categoryList, hashtagList,
                             isDone, eTag, googleId);
-                    newTask = newDeadline;
-                } else {
-                    chirptask.storage.Task newFloating = 
-                                new chirptask.storage.Task(taskId, taskDesc);
-                    setMiscTaskDetails(newFloating, 
-                                        categoryList, 
-                                        hashtagList,
-                                        isDone, 
-                                        eTag, 
-                                        googleId);
-                    newTask = newFloating;
-                }
+            newTask = newDeadline;
+        } else {
+            chirptask.storage.Task newFloating = 
+                            new chirptask.storage.Task(taskId, taskDesc);
+            setMiscTaskDetails(newFloating, 
+                               categoryList, 
+                               hashtagList,
+                               isDone, 
+                               eTag, 
+                               googleId);
+            newTask = newFloating;
+        }
                 
-                if (newTask != null) {
-                    GoogleStorage.updateStorages(newTask);
-                }
+        if (newTask != null) {
+            GoogleStorage.updateStorages(newTask);
+        }
     }
     
+    /**
+     * This method adds the miscellaneous properties to the ChirpTask Task
+     * @param taskToSet The ChirpTask Task
+     * @param categoryList The list of categories
+     * @param hashtagList The list of hashtags
+     * @param isDone The flag if the task is done
+     * @param eTag The locally stored ETag
+     * @param googleId The locally stored Google ID
+     */
     private void setMiscTaskDetails(chirptask.storage.Task taskToSet, 
             List<String> categoryList, 
             List<String> hashtagList, 
@@ -452,7 +480,7 @@ class ConcurrentSync implements Callable<Boolean> {
     }
 
     /**
-     * Phase four updates Google with modified Local Tasks
+     * Phase four adds new tasks from Google
      * @param allTasks 
      *              ChirpTask's local task list
      * @throws UnknownHostException 
@@ -464,103 +492,129 @@ class ConcurrentSync implements Callable<Boolean> {
             throws UnknownHostException, IOException {
 
         if (allTasks != null) {
-            Map<String, chirptask.storage.Task> googleIdMap = new TreeMap<String, chirptask.storage.Task>();
+            Map<String, chirptask.storage.Task> googleIdMap = createMap(allTasks);
             List<Event> events = _calendarController.getEvents();
             Tasks tasks = _tasksController.getTasks();
             List<Task> taskList = tasks.getItems();
 
-            for (int i = 0; i < allTasks.size(); i++) {
-                chirptask.storage.Task currTask = allTasks.get(i);
-                String googleId = currTask.getGoogleId();
+            addFromNewGoogleEvent(events, googleIdMap);
+            addFromNewGoogleTask(taskList, googleIdMap);
+        }
+    }
 
-                if (googleId != null || "".equals(googleId)) {
-                    googleIdMap.put(googleId, currTask);
-                }
-            }
+    /**
+     * This method adds from a new, unknown, Google Calendar Event,
+     * only if the Google ID from the Google Calendar Event is new and unknown
+     * @param Events from Google Calendar
+     * @param googleIdMap ChirpTask List of known Google ID
+     */
+    private void addFromNewGoogleEvent(List<Event> events, 
+            Map<String, chirptask.storage.Task> googleIdMap) {
+        for (Event currEvent : events) {
+            String gId = currEvent.getId();
+            if (!googleIdMap.containsKey(gId)) {
+                int taskId = LocalStorage.generateId();
+                String description = currEvent.getSummary();
+                chirptask.storage.Task newTask = InputParser
+                        .getTaskFromString(description);
 
-            for (Event currEvent : events) {
-                String gId = currEvent.getId();
-                if (!googleIdMap.containsKey(gId)) {
-                    int taskId = LocalStorage.generateId();
-                    String description = currEvent.getSummary();
-                    chirptask.storage.Task newTask = InputParser
-                            .getTaskFromString(description);
+                String googleId = gId;
+                String googleETag = currEvent.getEtag();
+                List<String> hashtagList = newTask.getContexts();
+                List<String> categoryList = newTask.getCategories();
+                Calendar startDate = getCalendarFromEvent(currEvent.getStart());
+                Calendar endDate = getCalendarFromEvent(currEvent.getEnd());
 
-                    String googleId = gId;
-                    String googleETag = currEvent.getEtag();
-                    List<String> contextList = newTask.getContexts();
-                    List<String> categoryList = newTask.getCategories();
-                    EventDateTime start = currEvent.getStart();
-                    EventDateTime end = currEvent.getEnd();
-                    Calendar startDate = DateTimeHandler.getCalendar(start);
-                    Calendar endDate = DateTimeHandler.getCalendar(end);
-
-                    boolean isDone = false;
-                    if (description != null) {
-                        if (description.startsWith(STRING_DONE_EVENT)) {
-                            isDone = true;
-                        }
-                    }
-
-                    TimedTask newTimed = new TimedTask(taskId, description,
-                            startDate, endDate);
-                    newTimed.setContexts(contextList);
-                    newTimed.setCategories(categoryList);
-                    newTimed.setGoogleId(googleId);
-                    newTimed.setETag(googleETag);
-                    newTimed.setDone(isDone);
-                    GoogleStorage.updateStorages(newTimed);
-                }
-            }
-
-            for (Task currTask : taskList) {
-                String gId = currTask.getId();
-                if (!googleIdMap.containsKey(gId)) {
-                    int taskId = LocalStorage.generateId();
-                    String description = currTask.getTitle();
-                    
-                    if (description.trim().isEmpty()) {
-                        continue;
-                    }
-                    
-                    chirptask.storage.Task newTask = InputParser
-                            .getTaskFromString(description);
-                    List<String> contextList = newTask.getContexts();
-                    List<String> categoryList = newTask.getCategories();
-                    String doneStatus = currTask.getStatus();
-                    String googleId = currTask.getId();
-                    String googleETag = currTask.getEtag();
-
-                    boolean isDone = false;
-                    if (STRING_DONE_TASK.equals(doneStatus)) {
+                boolean isDone = false;
+                if (description != null) {
+                    if (description.startsWith(STRING_DONE_EVENT)) {
                         isDone = true;
                     }
+                }
 
-                    DateTime dueDate = currTask.getDue();
-                    if (dueDate != null) {
-                        Calendar dueCalendar = DateTimeHandler
-                                .getDateFromDateTime(dueDate);
-                        dueCalendar.set(Calendar.HOUR_OF_DAY, 23);
-                        dueCalendar.set(Calendar.MINUTE, 59);
-                        
-                        DeadlineTask newDeadline = new DeadlineTask(taskId,
-                                description, dueCalendar);
-                        newDeadline.setCategories(categoryList);
-                        newDeadline.setContexts(contextList);
-                        newDeadline.setDone(isDone);
-                        newDeadline.setETag(googleETag);
-                        newDeadline.setGoogleId(googleId);
-                        GoogleStorage.updateStorages(newDeadline);
-                    } else {
-                        chirptask.storage.Task newFloating = new chirptask.storage.Task(
-                                taskId, description);
-                        newFloating.setCategories(categoryList);
-                        newFloating.setContexts(contextList);
-                        newFloating.setDone(isDone);
-                        newFloating.setETag(googleETag);
-                        newFloating.setGoogleId(googleId);
-                        GoogleStorage.updateStorages(newFloating);
-                    }
+                TimedTask newTimed = new TimedTask(taskId, description,
+                        startDate, endDate);
+                setMiscTaskDetails(newTimed, 
+                        categoryList, 
+                        hashtagList, 
+                        isDone, 
+                        googleETag, 
+                        googleId);
+                GoogleStorage.updateStorages(newTimed);
+            }
+        }
+    }
+    
+    /**
+     * This method retrieves a Calendar object from the given 
+     * EventDateTime object which is found in a Google Calendar Event object.
+     * @param eventDateTime The Google Calendar Event DateTime object 
+     * @return A Calendar object of the same interpretation
+     */
+    private Calendar getCalendarFromEvent(EventDateTime eventDateTime) {
+        if (eventDateTime != null) {
+            Calendar newCalendar = DateTimeHandler.getCalendar(eventDateTime);
+            return newCalendar;
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * This method adds from a new, unknown, Google Task task,
+     * only if the Google ID from the Google Task task is new and unknown
+     * @param taskList Google Tasks' List
+     * @param googleIdMap ChirpTask List of known Google ID
+     */
+    private void addFromNewGoogleTask(List<Task> taskList, 
+            Map<String, chirptask.storage.Task> googleIdMap) {
+        for (Task currTask : taskList) {
+            String gId = currTask.getId();
+            if (!googleIdMap.containsKey(gId)) {
+                int taskId = LocalStorage.generateId();
+                String description = currTask.getTitle();
+                
+                if (description.trim().isEmpty()) {
+                    continue;
+                }
+                
+                chirptask.storage.Task newTask = InputParser
+                        .getTaskFromString(description);
+                List<String> hashtagList = newTask.getContexts();
+                List<String> categoryList = newTask.getCategories();
+                String doneStatus = currTask.getStatus();
+                String googleId = currTask.getId();
+                String googleETag = currTask.getEtag();
+
+                boolean isDone = false;
+                if (STRING_DONE_TASK.equals(doneStatus)) {
+                    isDone = true;
+                }
+
+                DateTime dueDate = currTask.getDue();
+                if (dueDate != null) {
+                    Calendar dueCalendar = 
+                            DateTimeHandler.getDateFromDateTime(dueDate);
+                    
+                    DeadlineTask newDeadline = 
+                            new DeadlineTask(taskId,description, dueCalendar);
+                    setMiscTaskDetails(newDeadline, 
+                            categoryList, 
+                            hashtagList, 
+                            isDone, 
+                            googleETag, 
+                            googleId);
+                    GoogleStorage.updateStorages(newDeadline);
+                } else {
+                    chirptask.storage.Task newFloating = 
+                            new chirptask.storage.Task(taskId, description);
+                    setMiscTaskDetails(newFloating, 
+                            categoryList, 
+                            hashtagList, 
+                            isDone, 
+                            googleETag, 
+                            googleId);
+                    GoogleStorage.updateStorages(newFloating);
                 }
             }
         }
