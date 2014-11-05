@@ -1,7 +1,6 @@
 //@author A0111840W
 package chirptask.google;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -33,19 +32,16 @@ public class CalendarController {
      */
     private static com.google.api.services.calendar.Calendar _calendarClient;
     
-    /** Global instance of the working Google Calendar */
-    private static Calendar _workingCalendar;
-    
     /** Global instance of the working Google Calendar ID */
     private static String _calendarId;
 
 
-    // Constructor
     CalendarController(HttpTransport httpTransport, JsonFactory jsonFactory,
             Credential credential, String applicationName) throws IOException {
         initializeCalendarClient(httpTransport, jsonFactory, credential,
                 applicationName);
-        initializeWorkingCalendar();
+        initializeCalendarId();
+        initializeCalendar(getCalendarId());
     }
     
     //@author A0111840W-unused 
@@ -72,15 +68,13 @@ public class CalendarController {
                 applicationName).build();
     }
     
-    private void initializeWorkingCalendar() throws IOException {
+    private void initializeCalendarId() throws IOException {
         String timedTaskCalendarId = retrieveId();
-        Calendar retrievedCalendar = retrieveCalendar(timedTaskCalendarId);
-        setWorkingCalendar(retrievedCalendar);
+        setCalendarId(timedTaskCalendarId);
     }
     
     private String retrieveId() throws IOException {
         String workingListId = retrieveIdFromFile();
-        setCalendarId(workingListId);
         return workingListId;
     }
 
@@ -93,7 +87,7 @@ public class CalendarController {
         _calendarId = newId;
     }
 
-    private Calendar retrieveCalendar(String calendarId) {
+    private Calendar initializeCalendar(String calendarId) {
         if (calendarId == null) { // If null ID, assume fresh install/run
             Calendar newCalendar = null;
             try {
@@ -105,29 +99,30 @@ public class CalendarController {
         } else {
             try {
                 Calendar foundCalendar = CalendarHandler.retrieveCalendarById(calendarId);
+                
                 if (CalendarHandler.isNull(foundCalendar)) { // TaskList not found
                     foundCalendar = createCalendar();
                 }
                 return foundCalendar;
+                
             } catch (UnknownHostException unknownHost) {
                 // No internet
-                retrieveCalendar(calendarId);
+                initializeCalendar(calendarId);
+                
             } catch (GoogleJsonResponseException jsonResponseException) {
                 int responseCode = jsonResponseException.getStatusCode();
                 String responseMessage = jsonResponseException.getStatusMessage();
+                
                 if (responseCode == RESOURCE_NOT_FOUND && JSON_NOT_FOUND.equals(responseMessage)) {
                     GoogleController.resetGoogleIdAndEtag(SERVICE_NAME);
-                    retrieveCalendar(null);
+                    initializeCalendar(null);
                 }
-            } catch (IOException ioError) {
-                retrieveCalendar(calendarId);
+                
+            } catch (IOException ioError) { // Error during transmission
+                initializeCalendar(calendarId);
             } 
         }
         return null;
-    }
-
-    private void setWorkingCalendar(Calendar calendar) {
-        _workingCalendar = calendar;
     }
 
     private Calendar createCalendar() throws UnknownHostException, IOException {
