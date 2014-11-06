@@ -55,8 +55,8 @@ public class StorageHandler {
     private static boolean isGStorageValid() {
         boolean isValid = false;
         if (isGoogleStorageInit()) {
-            if (googleStorage instanceof GoogleStorage) {
-                if (googleStorage != null) {
+            if (googleStorage != null) {
+                if (googleStorage instanceof GoogleStorage) {
                     isValid = true;
                 }
             }
@@ -110,6 +110,10 @@ public class StorageHandler {
     }
 
     private static void setAllTasks(List<Task> allTasks) {
+        if (allTasks == null) {
+            return;
+        }
+        
         try {
             SessionStorage sStorage = (SessionStorage) sessionStorage;
             sStorage.setTaskList(allTasks);
@@ -121,6 +125,9 @@ public class StorageHandler {
 
     //@author A0111889W
     public synchronized static void logError(String error) {
+        if (error == null) {
+            return;
+        }
         EventLogger.getInstance().logError(error);
     }
 
@@ -133,17 +140,26 @@ public class StorageHandler {
 
     //@author A0111889W
     public synchronized boolean modifyTask(Task modifiedTask) {
+        if (modifiedTask == null) {
+            return false;
+        }
+        
         boolean isModified = false;
-
+        
         for (IStorage individualStorage : _listOfStorages) {
             individualStorage.modifyTask(modifiedTask);
         }
+        
         isModified = true;
         return isModified;
     }
 
     //@author A0111889W
     public synchronized boolean addTask(Task addedTask) {
+        if (addedTask == null) {
+            return false;
+        }
+        
         boolean isAdded = false;
 
         for (IStorage individualStorage : _listOfStorages) {
@@ -156,6 +172,10 @@ public class StorageHandler {
 
     //@author A0111889W
     public synchronized Task deleteTask(Task deletedTask) {
+        if (deletedTask == null) {
+            return null;
+        }
+        
         boolean isDeleted = false;
 
         if ("".equals(deletedTask.getGoogleId())) {
@@ -219,8 +239,10 @@ public class StorageHandler {
     }
     
     static void resetGoogleProps(Task taskToReset) {
-        taskToReset.setGoogleId("");
-        taskToReset.setETag("");
+        if (taskToReset != null) {
+            taskToReset.setGoogleId("");
+            taskToReset.setETag("");
+        }
     }
     
     static void resetTasksItems() {
@@ -248,20 +270,24 @@ public class StorageHandler {
     }
     
     public void removeCloudStorage() {
-        GoogleStorage gStorage = (GoogleStorage) googleStorage;
-        gStorage.close();
-        _listOfStorages.remove(googleStorage);
-        googleStorage = null;
+        if (isGStorageValid()) {
+            GoogleStorage gStorage = (GoogleStorage) googleStorage;
+            gStorage.close();
+            _listOfStorages.remove(googleStorage);
+            googleStorage = null;
+        }
     }
 
     public synchronized static boolean sync() {
         boolean isSyncRunned = false;
 
         if (isStorageInit()) {
-            GoogleStorage gStorage = (GoogleStorage) googleStorage;
-            List<Task> allTasks = getAllTasks();
-            if (allTasks != null) {
-                isSyncRunned = gStorage.sync(allTasks);
+            if (isGStorageValid()) {
+                GoogleStorage gStorage = (GoogleStorage) googleStorage;
+                List<Task> allTasks = getAllTasks();
+                if (allTasks != null) {
+                    isSyncRunned = gStorage.sync(allTasks);
+                }
             }
         } else if (isLocalChirpStorageInit()){
             if (!isGoogleStorageInit()) {
@@ -273,6 +299,10 @@ public class StorageHandler {
     }
 
     static synchronized void updateStorages(Task modifiedTask) {
+        if (modifiedTask == null) {
+            return;
+        }
+        
         if (isStorageInit()) {
             if ("".equals(modifiedTask.getGoogleId())) {
                 for (IStorage individualStorage : _listOfStorages) {
@@ -286,6 +316,10 @@ public class StorageHandler {
     }
     
     static void updateFromAllExceptCloud(Task modifiedTask) {
+        if (modifiedTask == null) {
+            return;
+        }
+        
         List<Task> allTasks = sessionStorage.getAllTasks();
         
         if (allTasks.contains(modifiedTask)) {
@@ -301,6 +335,10 @@ public class StorageHandler {
     
     //@author A0111889W
     static synchronized void deleteFromStorage(Task deletedTask) {
+        if (deletedTask == null) {
+            return;
+        }
+        
         if (isLocalChirpStorageInit()) {
             if (deletedTask != null) {
                 deleteFromAllExceptCloud(deletedTask);
@@ -309,6 +347,10 @@ public class StorageHandler {
     }
     
     static void deleteFromAllExceptCloud(Task deletedTask) {
+        if (deletedTask == null) {
+            return;
+        }
+        
         List<Task> allTasks = sessionStorage.getAllTasks();
         
         if (allTasks.contains(deletedTask)) {
