@@ -31,19 +31,9 @@ public class DisplayView {
      * 
      * */
     public static void updateTaskView(List<Task> tasks, MainGui gui) {
-
         Collections.sort(tasks);
-
         processUpdateTaskView(tasks, gui);
-
         processUpdateHashtagAndCategoryView(gui);
-        // Iterator<Map.Entry<Date, TasksByDate>> it =
-        // map.entrySet().iterator();
-        // TaskView view = new TaskView();
-        // while (it.hasNext()) {
-        // view.addToTaskView(it.next().getValue());
-        // }
-
     }
 
     /**
@@ -69,7 +59,6 @@ public class DisplayView {
      */
     private synchronized static void processUpdateTaskView(List<Task> tasks,
             MainGui gui) {
-
         for (int i = START_LIST; i < tasks.size(); i++) {
             Task T = tasks.get(i);
             gui.addNewTaskViewDate(T.getDate());
@@ -77,22 +66,6 @@ public class DisplayView {
             gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
                     T.getDescription(), dateToString, T.isDone());
         }
-
-        // Iterator<Task> itr = tasks.iterator();
-        // while (itr.hasNext()) {
-        // Task T = itr.next();
-        // gui.addNewTaskViewDate(T.getDate());
-        // String dateToString = convertTaskDateToDurationString(T);
-        // gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
-        // T.getDescription(), dateToString, T.isDone());
-        // }
-
-        // for (Task task : tasks) {
-        // gui.addNewTaskViewDate(task.getDate());
-        // String dateToString = convertTaskDateToDurationString(task);
-        // gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
-        // task.getDescription(), dateToString, task.isDone());
-        // }
     }
 
     //@author A0111889W

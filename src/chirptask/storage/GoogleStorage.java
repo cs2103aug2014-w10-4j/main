@@ -76,10 +76,12 @@ public class GoogleStorage implements IStorage {
         }
     }
     
-    synchronized void sync(List<Task> allTasks) {
+    synchronized boolean sync(List<Task> allTasks) {
+        boolean isSyncRunned = false;
         if (allTasks != null) {
-            _gController.sync(allTasks);
+            isSyncRunned = _gController.sync(allTasks);
         }
+        return isSyncRunned;
     }
     
     void login() {

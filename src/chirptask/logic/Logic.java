@@ -283,7 +283,7 @@ public class Logic {
     private void processLogin(Action command) {
         assert command != null;
         boolean isSuccess;
-        isSuccess = _storageHandler.initCloudStorage();
+        isSuccess = StorageHandler.initCloudStorage();
         this.showStatusToUser(command, isSuccess);
     }
 
@@ -415,12 +415,14 @@ public class Logic {
     }
 
     public synchronized void refreshUi() {
-        clearUi();
-        FilterTasks.filter(_gui);
-        DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+        if (_gui != null) {
+            clearUi();
+            FilterTasks.filter(_gui);
+            DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+        }
     }
-
-    public static void refresh() {
+    
+    public synchronized static void refresh() {
         _gui.refreshUI();
     }
 

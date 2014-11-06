@@ -37,7 +37,7 @@ public class StorageHandler {
         setAllTasks(localStorage.getAllTasks());
     }
 
-    public boolean initCloudStorage() {
+    public static boolean initCloudStorage() {
         boolean isInit = false;
         if (!isGoogleStorageInit()) {
             addGoogleStorage();
@@ -51,7 +51,8 @@ public class StorageHandler {
                 }
             }
         } else if (googleStorage instanceof GoogleStorage) {
-            GoogleController.setOnlineStatus(Status.LOGIN);
+            sync();
+            isInit = true;
         }
         return isInit;
     }
@@ -77,7 +78,7 @@ public class StorageHandler {
         }
     }
 
-    private void addGoogleStorage() {
+    private static void addGoogleStorage() {
         if (!isGoogleStorageInit()) {
             googleStorage = new GoogleStorage();
         }
@@ -247,8 +248,11 @@ public class StorageHandler {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
             List<Task> allTasks = getAllTasks();
             if (allTasks != null) {
-                gStorage.sync(allTasks);
-                isSyncRunned = true;
+                isSyncRunned = gStorage.sync(allTasks);
+            }
+        } else if (isLocalChirpStorageInit()){
+            if (!isGoogleStorageInit()) {
+                isSyncRunned = initCloudStorage();
             }
         }
 

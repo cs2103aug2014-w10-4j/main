@@ -254,12 +254,15 @@ public class GoogleController implements Runnable {
     }
 
     // Methods below are general methods to perform other actions
-    public void sync(List<chirptask.storage.Task> allTasks) {
+    public boolean sync(List<chirptask.storage.Task> allTasks) {
+        boolean isSyncRunned = false;
         if (isGoogleLoaded() && allTasks != null) {
             ConcurrentSync concurrentSync = new ConcurrentSync(allTasks, this, 
                     _calendarController, _tasksController);
             CONCURRENT.addToExecutor(concurrentSync);
+            isSyncRunned = true;
         }
+        return isSyncRunned;
     }
     
     static void resetGoogleIdAndEtag(String googleService) {
