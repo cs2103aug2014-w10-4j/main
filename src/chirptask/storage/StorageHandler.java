@@ -206,10 +206,14 @@ public class StorageHandler {
             String taskType = currentTask.getType();
             
             if (Task.TASK_TIMED.equals(taskType)) {
-                currentTask.setGoogleId("");
-                currentTask.setETag("");
+                resetGoogleProps(currentTask);
             }
         }
+    }
+    
+    static void resetGoogleProps(Task taskToReset) {
+        taskToReset.setGoogleId("");
+        taskToReset.setETag("");
     }
     
     static void resetTasksItems() {
@@ -220,8 +224,7 @@ public class StorageHandler {
             
             if (Task.TASK_DEADLINE.equals(taskType) || 
                     Task.TASK_FLOATING.equals(taskType)) {
-                currentTask.setGoogleId("");
-                currentTask.setETag("");
+                resetGoogleProps(currentTask);
             }
         }
     }
@@ -230,15 +233,18 @@ public class StorageHandler {
         boolean isRanLogout = false;
         
         if (isGoogleStorageInit()) {
-            GoogleStorage gStorage = (GoogleStorage) googleStorage;
-            gStorage.close();
-            _listOfStorages.remove(googleStorage);
-            googleStorage = null;
+            removeCloudStorage();
             GoogleController.setOnlineStatus(Status.OFFLINE);
             isRanLogout = true;
         }
-        
         return isRanLogout;
+    }
+    
+    public void removeCloudStorage() {
+        GoogleStorage gStorage = (GoogleStorage) googleStorage;
+        gStorage.close();
+        _listOfStorages.remove(googleStorage);
+        googleStorage = null;
     }
 
     public synchronized static boolean sync() {
@@ -266,19 +272,23 @@ public class StorageHandler {
                     individualStorage.removeTask(modifiedTask);
                 }
             } else {
-                List<Task> allTasks = sessionStorage.getAllTasks();
-                
-                if (allTasks.contains(modifiedTask)) {
-                    sessionStorage.modifyTask(modifiedTask);
-                    localStorage.modifyTask(modifiedTask);
-                    eventStorage.modifyTask(modifiedTask);
-                } else {
-                    sessionStorage.storeNewTask(modifiedTask);
-                    localStorage.storeNewTask(modifiedTask);
-                    eventStorage.storeNewTask(modifiedTask);
-                }
+                updateFromAllExceptCloud(modifiedTask);
             }
             Logic.refresh(); // need to update GUI
+        }
+    }
+    
+    static void updateFromAllExceptCloud(Task modifiedTask) {
+        List<Task> allTasks = sessionStorage.getAllTasks();
+        
+        if (allTasks.contains(modifiedTask)) {
+            sessionStorage.modifyTask(modifiedTask);
+            localStorage.modifyTask(modifiedTask);
+            eventStorage.modifyTask(modifiedTask);
+        } else {
+            sessionStorage.storeNewTask(modifiedTask);
+            localStorage.storeNewTask(modifiedTask);
+            eventStorage.storeNewTask(modifiedTask);
         }
     }
     
@@ -286,15 +296,19 @@ public class StorageHandler {
     static synchronized void deleteFromStorage(Task deletedTask) {
         if (isLocalChirpStorageInit()) {
             if (deletedTask != null) {
-                List<Task> allTasks = sessionStorage.getAllTasks();
-                
-                if (allTasks.contains(deletedTask)) {
-                    sessionStorage.removeTask(deletedTask);
-                    localStorage.removeTask(deletedTask);
-                    eventStorage.removeTask(deletedTask);
-                    Logic.refresh(); // need to update GUI
-                }
+                deleteFromAllExceptCloud(deletedTask);
             }
+        }
+    }
+    
+    static void deleteFromAllExceptCloud(Task deletedTask) {
+        List<Task> allTasks = sessionStorage.getAllTasks();
+        
+        if (allTasks.contains(deletedTask)) {
+            sessionStorage.removeTask(deletedTask);
+            localStorage.removeTask(deletedTask);
+            eventStorage.removeTask(deletedTask);
+            Logic.refresh(); // need to update GUI
         }
     }
 
