@@ -19,7 +19,7 @@ public class JUnitDateParser {
 		 * dd/mm dd-mm dd.mm mm/dd mm-dd mm.dd (dd/mm format takes precedence over mm/dd)
 		 * relaxed month dd-MMM, MMM
 		 * specific time HH:mm, HHmm, HHmm'h', 
-		 * HHmm'hr', hhmm+am/pm, hh:mm+am/pm, h+am/pm, hh'a', hh'p'
+		 * HHmm'hr', hh:mm+am/pm, h+am/pm, hh'a', hh'p'
 		 * relaxed day of week
 		 * relative date now, today, tomorrow, (next/this/last/from) week, month, day,
 		 * hour, hrs, minute, min 

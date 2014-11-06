@@ -337,7 +337,6 @@ public class InputParser {
 		default:
 			toDate = "";
 		}
-//		System.out.printf("%s, %s\n", toDate, taskDescNoDate);
 		String[] hashAndAt = toDate.split("\\s+");
 		toDate = "";
 		for (int i = 0; i < hashAndAt.length; i++) {

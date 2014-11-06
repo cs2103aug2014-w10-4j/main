@@ -19,10 +19,10 @@ public class DateParser {
 	private Parser parse;
 
 	private final static String[] patternsDate = { "dd/MM", "dd-MM", "dd.MM",
-			"MM/dd","MM-dd","MM.dd","MMM", "dd-MMM", "EEE" };
+			"MM/dd", "MM-dd", "MM.dd", "MMM", "dd-MMM", "EEE" };
 	private final static String[] patternsTime = { "HH:mm", "HHmm", "HHmm'h'",
 			"HHmm'hr'", "hha", "hhmma", "hh:mma", "ha", "hh'a'", "hh'p'" };
-	private final static String relativeKey = "next|from|last|this";
+	private final static String relativeKey = "next|last|this";
 	private final static String relativeKeyDate = "now|today|tomorrow|week|month|day|yesterday|weeks|months|days";
 	private final static String relativeKeyTime = "am|pm|hour|hours|hrs|min|minute|mins|minutes";
 
@@ -35,110 +35,127 @@ public class DateParser {
 		boolean mayHas = false;
 		boolean isTimeSet = false;
 		boolean isDateSet = false;
-		int dateMatched = -1; 
-		int pos = -1;
-		Date date = null;
-		Date time = null;
+		String seekDate;
+		String seekTime;
 
 		if (toParse == null) {
 			return null;
 		}
-		
+
 		list = new ArrayList<Calendar>();
 		toParse = toParse.replaceAll("\\s+(?=-/.)", "").replaceAll(
 				"(?<=-/.)\\s+", "");
 		String splitSpace[] = toParse.split("\\s+");
-		for (int i = 0; i < patternsDate.length; i++) {
-			SimpleDateFormat dateParse = new SimpleDateFormat(patternsDate[i]);
-			dateParse.setLenient(false);
-			for (int j=0; j < splitSpace.length; j++) {
-				try {
-					date = dateParse.parse(splitSpace[j]);
-				} catch (ParseException e) {
-					date = null;
+		toParse = "";
+		for (int i = 0; i < splitSpace.length; i++) {
+			seekDate = findDate(splitSpace[i]);
+			if (seekDate != null) {
+				isDateSet = true;
+				splitSpace[i] = seekDate;
+			}
+
+			seekTime = findTime(splitSpace[i]);
+			if (seekTime != null) {
+				isTimeSet = true;
+				splitSpace[i] = seekTime;
+			}
+
+			if (!success) {
+				success = (isDateSet || isTimeSet);
+				if (splitSpace[i].matches(relativeKey)) {
+					mayHas = true;
 				}
-				if (date != null) {
+				if (splitSpace[i].matches(relativeKeyDate)) {
+					mayHas = true;
 					isDateSet = true;
-					success = true;
-					dateMatched = i;
-					pos = j;
-					break;
+				}
+				if (splitSpace[i].matches(relativeKeyTime)) {
+					mayHas = true;
+					isTimeSet = true;
 				}
 			}
+			
+			toParse = toParse.concat(splitSpace[i]).concat(" ");
+		}
 
-			if (isDateSet) {
-				break;
+		if (success || mayHas) {
+			parseDateTime(toParse, isTimeSet);
+		}
+		return list;
+	}
+
+	/**
+	 * @param toParse
+	 * @param isTimeSet
+	 */
+	private void parseDateTime(String toParse, boolean isTimeSet) {
+		Calendar today = Calendar.getInstance();
+		today.setTime(new Date());
+		List<DateGroup> dateGroup = parse.parse(toParse);
+		for (int i = 0; i < dateGroup.size(); i++) {
+			List<Date> dates = dateGroup.get(i).getDates();
+			for (int j = 0; j < dates.size(); j++) {
+				Calendar cal = convertToCalendar(dates.get(j));
+				if (!isTimeSet) {
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 59);
+				}
+				list.add(cal);
 			}
 		}
-		if (dateMatched <= 5 && dateMatched >=3 && pos >= 0) {
-			String[] flip = splitSpace[pos].split("[/.-]");
-			String newDate;
-			if (flip.length == 2) {
-				newDate = flip[1] + "/" + flip[0];
-				toParse = toParse.replaceAll(splitSpace[pos], newDate);
-			} 
-		}
-		
-		if (dateMatched == 2 && pos >= 0) {
-			String newForm = splitSpace[pos].replace(".", "/");
-			toParse = toParse.replaceAll(splitSpace[pos], newForm);
-		}
+	}
 
+	private String findTime(String seek) {
+		Date time = null;
+		int pattern = -1;
 		for (int i = 0; i < patternsTime.length; i++) {
 			SimpleDateFormat timeParse = new SimpleDateFormat(patternsTime[i]);
 			timeParse.setLenient(false);
-			for (String s : splitSpace) {
-				try {
-					time = timeParse.parse(s);
-				} catch (ParseException e) {
-					time = null;
-				}
-				if (time != null) {
-					success = true;
-					isTimeSet = true;
-					break;
-				}
+			try {
+				time = timeParse.parse(seek);
+			} catch (ParseException e) {
+				time = null;
 			}
-			if (isTimeSet) {
+			if (time != null) {
+				pattern = i;
 				break;
 			}
-
 		}
+		if (pattern == 1) {
+			seek += 'h';
+		} else if (pattern == -1) {
+			seek = null;
+		}
+		return seek;
+	}
 
-		if (!success) {
-			for (String s : splitSpace) {
-				if (s.matches(relativeKey)) {
-					mayHas = true;
-				}
-				if (s.matches(relativeKeyDate)) {
-					mayHas = true;
-					isDateSet = true;
-				}
-				if (s.matches(relativeKeyTime)) {
-					mayHas = true;
-					isTimeSet = true;
-				}
+	private String findDate(String seek) {
+		Date date = null;
+		int pattern = -1;
+		for (int i = 0; i < patternsDate.length; i++) {
+			SimpleDateFormat dateParse = new SimpleDateFormat(patternsDate[i]);
+			dateParse.setLenient(false);
+			try {
+				date = dateParse.parse(seek);
+			} catch (ParseException e) {
+				date = null;
+			}
+			if (date != null) {
+				pattern = i;
+				break;
 			}
 		}
-//		System.out.printf("toParse: %s, success: %s, mayhas: %s\n", toParse,
-//				success, mayHas);
-		if (success || mayHas) {
-			Calendar today = Calendar.getInstance();
-			today.setTime(new Date());
-			List<DateGroup> dateGroup = parse.parse(toParse);
-			for (int i = 0; i < dateGroup.size(); i++) {
-				List<Date> dates = dateGroup.get(i).getDates();
-				for (int j = 0; j < dates.size(); j++) {
-					Calendar cal = convertToCalendar(dates.get(j));
-					if (!isTimeSet) {
-						cal.set(Calendar.HOUR_OF_DAY, 23);
-						cal.set(Calendar.MINUTE, 59);
-					}
-					list.add(cal);
-				}
+		if (pattern <= 5 && pattern >= 3) {
+			String[] flip = seek.split("[/.-]");
+			if (flip.length == 2) {
+				seek = flip[1] + "/" + flip[0];
 			}
+		} else if (pattern == 2) {
+			seek = seek.replace(".", "/");
+		} else if (pattern == -1) {
+			seek = null;
 		}
-		return list;
+		return seek;
 	}
 
 	private Calendar convertToCalendar(Date date) {
