@@ -108,7 +108,7 @@ public class GoogleAuthorizer {
                                             new AuthorizationCodeInstalledApp(
                                                 codeFlow,
                                                 codeReceiver);
-        
+
         Credential accessToken = authorizer.authorize(credentialUser);
         
         return accessToken;

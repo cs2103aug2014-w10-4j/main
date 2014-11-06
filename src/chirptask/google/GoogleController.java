@@ -111,6 +111,7 @@ public class GoogleController implements Runnable {
      */
     public void run() {
         initializeRemoteComponents(); 
+
         while (!isGoogleLoaded()) {
             //wait for google to load
         }
@@ -125,6 +126,7 @@ public class GoogleController implements Runnable {
         try {
             // initialize the credential component
             _credential = GoogleAuthorizer.authorize();
+
             // initialize the Calendar Controller
             _calendarController = new CalendarController(_httpTransport,
                     JSON_FACTORY, _credential, APPLICATION_NAME);
@@ -136,8 +138,10 @@ public class GoogleController implements Runnable {
                 Thread.sleep(timeToSleep);
             } catch (InterruptedException interruptedException) {
             }
-            // This error can be thrown by authorize();
-            initializeRemoteComponents();
+            // This error can be thrown by authorize(); 
+            finally {
+                initializeRemoteComponents();
+            }
         }
     }
     

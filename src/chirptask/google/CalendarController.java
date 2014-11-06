@@ -82,30 +82,22 @@ public class CalendarController {
         _calendarId = newId;
     }
 
-    private Calendar initializeCalendar(String calendarId) {
+    private Calendar initializeCalendar(String calendarId) throws 
+                                        UnknownHostException, IOException{
         if (calendarId == null) { // If null ID, assume fresh install/run
             Calendar newCalendar = null;
-            try {
                 newCalendar = createCalendar();
-            } catch (UnknownHostException unknownHost) {
-                
-                initializeCalendar(null); 
-            } catch (IOException e) {
-                initializeCalendar(null);            
-            }
             return newCalendar;
         } else {
             try {
-                Calendar foundCalendar = CalendarHandler.retrieveCalendarById(calendarId);
+                Calendar foundCalendar = 
+                        CalendarHandler.retrieveCalendarById(calendarId);
                 
-                if (CalendarHandler.isNull(foundCalendar)) { // TaskList not found
+                // TaskList not found
+                if (CalendarHandler.isNull(foundCalendar)) { 
                     foundCalendar = createCalendar();
                 }
                 return foundCalendar;
-                
-            } catch (UnknownHostException unknownHost) {
-                // No internet
-                initializeCalendar(calendarId);
                 
             } catch (GoogleJsonResponseException jsonResponseEx) {
                 int responseCode = jsonResponseEx.getStatusCode();
@@ -114,11 +106,9 @@ public class CalendarController {
                 if (responseCode == RESOURCE_NOT_FOUND && 
                         JSON_NOT_FOUND.equals(responseMessage)) {
                     GoogleController.resetGoogleIdAndEtag(GOOGLE_SERVICE_NAME);
-                    initializeCalendar(null);
+                    calendarId = "";
+                    throw new IOException();
                 }
-                
-            } catch (IOException ioError) { // Error during transmission
-                initializeCalendar(calendarId);
             } 
         }
         return null;
