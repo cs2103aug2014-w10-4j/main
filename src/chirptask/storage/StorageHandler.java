@@ -41,20 +41,27 @@ public class StorageHandler {
         boolean isInit = false;
         if (!isGoogleStorageInit()) {
             addGoogleStorage();
-            if (isGoogleStorageInit()) {
-                if (googleStorage instanceof GoogleStorage) {
-                    GoogleStorage currentGStorage = (GoogleStorage) googleStorage;
-                    if (currentGStorage != null) {
-                        currentGStorage.login();
-                        isInit = true;
-                    }
-                }
+            
+            if (isGStorageValid()) {
+                GoogleStorage gStore = (GoogleStorage) googleStorage;
+                isInit = gStore.login();
             }
         } else if (googleStorage instanceof GoogleStorage) {
-            sync();
-            isInit = true;
+            isInit = sync();
         }
         return isInit;
+    }
+    
+    private static boolean isGStorageValid() {
+        boolean isValid = false;
+        if (isGoogleStorageInit()) {
+            if (googleStorage instanceof GoogleStorage) {
+                if (googleStorage != null) {
+                    isValid = true;
+                }
+            }
+        }
+        return isValid;
     }
     
     private static void addSessionStorage() {

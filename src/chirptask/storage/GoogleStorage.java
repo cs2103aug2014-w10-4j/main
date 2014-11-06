@@ -84,10 +84,13 @@ public class GoogleStorage implements IStorage {
         return isSyncRunned;
     }
     
-    void login() {
+    boolean login() {
+        boolean isLoginRun = false;
         if (_gController != null) {
             _gController.login();
+            isLoginRun = true;
         }
+        return isLoginRun;
     }
     
     public static void resetGoogleIdAndEtag(String googleService) {
