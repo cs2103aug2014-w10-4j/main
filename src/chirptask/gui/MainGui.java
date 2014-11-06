@@ -66,7 +66,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private static List<Integer> _taskIndexToId = new ArrayList<>();
     private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
-            "Monday", "Tuesday", "Wednesday", "Thusday", "Friday", "Saturday" };
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
     private static final int MIN_HEIGHT = 300;
     private static final int MIN_WIDTH = 500;
