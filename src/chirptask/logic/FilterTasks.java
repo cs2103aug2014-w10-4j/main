@@ -1,3 +1,4 @@
+//@author A0111930W
 package chirptask.logic;
 
 import java.security.InvalidParameterException;
@@ -13,49 +14,66 @@ import chirptask.gui.MainGui;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 
-//@author A0111930W
 public class FilterTasks {
 
     private static List<Task> filteredTask;
     private static List<String> categoriesList;
     private static List<String> hashtagList;
     private static String currentFilter = Settings.DEFAULT_FILTER;
-    private static final int PARAM_FILTER = 1;
+    private static final int INIT_FILTER = 1;
+    private static final int INIT_TASKINDEX = -1;
+    private static final int FIRST_POS = 1;
 
     static void filter(Task T, MainGui gui) {
-
-        currentFilter = T.getDescription();
-
-        // check 1st String to determine the type of filter
         filteredTask = StorageHandler.getAllTasks();
         filteredTask = hideDeleted(filteredTask);
+        currentFilter = T.getDescription();
         if (currentFilter.isEmpty()) {
-            DisplayView.showStatusToUser(StatusType.MESSAGE, gui, "");
+            showStatusToUser(gui);
         } else {
             processFilter(currentFilter, gui);
         }
 
     }
 
+    private static void showStatusToUser(MainGui gui) {
+        DisplayView.showStatusToUser(StatusType.MESSAGE, gui, "");
+    }
+
     public static void editCli(String editInput, MainGui gui) {
         assert gui != null && !editInput.trim().isEmpty();
-        int taskIndex = -1;
+        int taskIndex = convertInputToIndex(editInput);
+        showEditTaskToUser(gui, taskIndex);
+    }
+
+    private static void showEditTaskToUser(MainGui gui, int taskIndex) {
+        int oldtaskIndex = taskIndex;
+        taskIndex--;
+        if (isTaskIndexInRange(taskIndex)) {
+            showEditTask(gui, taskIndex, oldtaskIndex);
+        }
+    }
+
+    private static void showEditTask(MainGui gui, int taskIndex,
+            int oldtaskIndex) {
+        gui.setUserInputText("edit " + oldtaskIndex + " "
+                + filteredTask.get(taskIndex).getDescription());
+    }
+
+    private static boolean isTaskIndexInRange(int taskIndex) {
+        return taskIndex > INIT_TASKINDEX && taskIndex < filteredTask.size();
+    }
+
+    private static int convertInputToIndex(String editInput) {
+        int taskIndex = INIT_TASKINDEX;
         try {
-            taskIndex = Integer.parseInt(editInput.split(" ")[1]);
+            taskIndex = Integer.parseInt(editInput.split(" ")[FIRST_POS]);
         } catch (NumberFormatException e) {
             // update status bar if required
         } catch (ArrayIndexOutOfBoundsException e) {
             // update status bar if required
         }
-
-        int oldtaskIndex = taskIndex;
-        taskIndex = taskIndex - 1;
-        if (taskIndex > -1 && taskIndex < filteredTask.size()) {
-
-            gui.setUserInputText("edit " + oldtaskIndex + " "
-                    + filteredTask.get(taskIndex).getDescription());
-
-        }
+        return taskIndex;
     }
 
     public static List<Task> hideDeleted(List<Task> taskList) {
@@ -72,7 +90,7 @@ public class FilterTasks {
     }
 
     private static void processFilter(String filters, MainGui gui) {
-        String[] param = filters.split("\\s+");
+        String[] param = processFilterParam(filters);
 
         List<Task> templist = new CopyOnWriteArrayList<Task>();
         templist.addAll(filteredTask);
@@ -80,62 +98,77 @@ public class FilterTasks {
         for (int i = 0; i < param.length; i++) {
             String filter = param[i];
             switch (filter) {
-                case "/done" :
-                    // search done task
-                    filterStatus(templist, true);
+            case "/done":
+                // search done task
+                filterStatus(templist, true);
+                break;
+            case "/undone":
+                // search undone task
+                filterStatus(templist, false);
+                break;
+            case "/floating":
+                filterTaskType(templist, Task.TASK_FLOATING);
+                break;
+            case "/timed":
+                filterTaskType(templist, Task.TASK_TIMED);
+                break;
+            case "/deadline":
+                filterTaskType(templist, Task.TASK_DEADLINE);
+                break;
+            case "/date":
+                try {
+                    filterTaskDate(gui, param, templist, i);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // log down invalid input
+                    templist = processExceptionLogging(gui);
                     break;
-                case "/undone" :
-                    // search undone task
-                    filterStatus(templist, false);
-                    break;
-                case "/floating" :
-                    filterTaskType(templist, Task.TASK_FLOATING);
-                    break;
-                case "/timed" :
-                    filterTaskType(templist, Task.TASK_TIMED);
-                    break;
-                case "/deadline" :
-                    filterTaskType(templist, Task.TASK_DEADLINE);
-                    break;
-                case "/date" :
-                    // Assuming input is 23/10
-                    try {
-                        Calendar filterdate = processFilterDateParam(param[i
-                                + PARAM_FILTER]);
-                        if (filterdate != null) {
-                            // add 1 so that the filter includes tasks of the
-                            // same date.
-                            filterdate.add(Calendar.DAY_OF_MONTH, 1);
-                            filterTaskByDate(templist, filterdate);
-                            DisplayView.showStatusToUser(StatusType.MESSAGE,
-                                    gui, param[i + PARAM_FILTER]);
-                        }
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        // log down invalid input
 
-                        StorageHandler
-                                .logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
-                        DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
-
-                        templist = new ArrayList<Task>(
-                                StorageHandler.getAllTasks());
-
-                        break;
-
-                    } catch (InvalidParameterException invalidParameterException) {
-                        DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
-                    } finally {
-                        i++;
-                    }
-                    break;
-                default:
-                    // Entire string keyword search
-                    filterKeyword(templist, filter);
-                    break;
+                } catch (InvalidParameterException invalidParameterException) {
+                    DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+                } finally {
+                    i++;
+                }
+                break;
+            default:
+                // Entire string keyword search
+                filterKeyword(templist, filter);
+                break;
             }
             filteredTask = new ArrayList<Task>(templist);
         }
 
+    }
+
+    private static void filterTaskDate(MainGui gui, String[] param,
+            List<Task> templist, int i) {
+        Calendar filterdate = processFilterDateParam(param[i
+                + INIT_FILTER]);
+        if (filterdate != null) {
+            processFilterDate(gui, param, templist, i, filterdate);
+        }
+    }
+
+    private static void processFilterDate(MainGui gui, String[] param,
+            List<Task> templist, int i, Calendar filterdate) {
+        // add 1 so that the filter includes tasks of the
+        // same date.
+        filterdate.add(Calendar.DAY_OF_MONTH, 1);
+        filterTaskByDate(templist, filterdate);
+        DisplayView.showStatusToUser(StatusType.MESSAGE, gui, param[i
+                + INIT_FILTER]);
+    }
+
+    private static List<Task> processExceptionLogging(MainGui gui) {
+        List<Task> templist;
+        StorageHandler.logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
+        DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
+
+        templist = new ArrayList<Task>(StorageHandler.getAllTasks());
+        return templist;
+    }
+
+    private static String[] processFilterParam(String filters) {
+        return filters.split("\\s+");
     }
 
     public static Calendar processFilterDateParam(String filter)
