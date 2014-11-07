@@ -3,6 +3,7 @@ package chirptask.google;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -61,14 +62,21 @@ public class CalendarController {
     //@author A0111840W
     private void initializeCalendarClient(HttpTransport httpTransport,
             JsonFactory jsonFactory, Credential credential,
-            String applicationName) {
+            String applicationName) throws NullPointerException {
+        if (httpTransport == null || 
+                jsonFactory == null || 
+                credential == null || 
+                applicationName == null) {
+            assert false;
+        }
+        
         // initialize the Google Calendar Service Client
         _calendarClient = new com.google.api.services.calendar.Calendar.Builder(
                 httpTransport, jsonFactory, credential).setApplicationName(
                 applicationName).build();
     }
     
-    private void initializeCalendarId() {
+    private void initializeCalendarId() throws NullPointerException {
         String timedTaskCalendarId = retrieveId();
         setCalendarId(timedTaskCalendarId);
     }
@@ -78,13 +86,18 @@ public class CalendarController {
         return workingListId;
     }
 
-    private void setCalendarId(String newId) {
+    private void setCalendarId(String newId) throws NullPointerException {
+        if (newId == null) {
+            throw new NullPointerException();
+        }
+        
         _calendarId = newId;
     }
 
     private Calendar initializeCalendar(String calendarId) throws 
-                                        UnknownHostException, IOException{
-        if (calendarId == null) { // If null ID, assume fresh install/run
+                                        UnknownHostException, IOException {
+        if (calendarId == null || "".equals(calendarId)) { 
+            // Assume fresh install/run
             Calendar newCalendar = null;
                 newCalendar = createCalendar();
             return newCalendar;
@@ -122,7 +135,11 @@ public class CalendarController {
         return newCalendar;
     }
     
-    private void setCalendarId(Calendar calendar) {
+    private void setCalendarId(Calendar calendar) throws NullPointerException {
+        if (calendar == null) {
+            throw new NullPointerException();
+        }
+        
         String calendarId = calendar.getId();
         setCalendarId(calendarId);
     }
@@ -132,12 +149,20 @@ public class CalendarController {
     }
     
     List<Event> getEvents() throws UnknownHostException, IOException {
+        if (_calendarId == null) {
+            return new ArrayList<Event>();
+        }
+        
         List<Event> events = CalendarHandler.retrieveEventsById(_calendarId);
         return events;
     }
     
     Event addTimedTask(String taskTitle, Date startTime, Date endTime) 
                                 throws UnknownHostException, IOException {
+        if (taskTitle == null || startTime == null || endTime == null) {
+            return null;
+        }
+        
         Event newTimedTask = CalendarHandler.createEvent(taskTitle);
         newTimedTask = CalendarHandler.setStart(newTimedTask, startTime);
         newTimedTask = CalendarHandler.setEnd(newTimedTask, endTime);
@@ -149,6 +174,10 @@ public class CalendarController {
     
     private Event insertEvent(Event timedTask)
                                 throws UnknownHostException, IOException {
+        if (timedTask == null) {
+            return null;
+        }
+        
         String calendarId = getCalendarId();
         Event insertedEvent = CalendarHandler.insertToCalendar(calendarId, 
                 timedTask);
@@ -156,6 +185,10 @@ public class CalendarController {
     }
     
     boolean deleteEvent(String eventId) {
+        if (eventId == null) {
+            return false;
+        }
+        
         boolean isDeleted = false;
         isDeleted = CalendarHandler.deleteEvent(_calendarId, eventId);
         return isDeleted;
