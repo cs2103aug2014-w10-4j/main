@@ -155,33 +155,54 @@ public class DisplayView {
     }
 
     //@author A0111930W
-    // Call this at init to show all tasks.
+    /**
+     * This method will be call during init to display all task
+     * @param gui
+     */
     public static void updateTaskView(MainGui gui) {
-        List<Task> allTasks = FilterTasks.getFilteredList();// StorageHandler.getAllTasks();
+        List<Task> allTasks = FilterTasks.getFilteredList();
         if (allTasks != null) {
             updateTaskView(allTasks, gui);
         }
 
     }
-
+    /**
+     * This method will call gui to update the category view.
+     * @param gui
+     */
     public static void updateCategoryView(MainGui gui) {
         List<String> categories = FilterTasks.getCategoryList();
         for (String category : categories) {
             gui.addCategoryIntoList(category);
         }
     }
-
+    
+    /**
+     * This method will call gui to update the Hashtag view.
+     * @param gui
+     */
     public static void updateHashtagView(MainGui gui) {
         List<String> contexts = FilterTasks.getContextList();
         for (String context : contexts) {
             gui.addHashtagIntoList(context);
         }
     }
-
+    
+    /**
+     * Show status to user with the respective message
+     * @param Message
+     * @param gui
+     */
     public static void showStatusToUser(String Message, MainGui gui) {
         gui.setStatus(Message);
     }
-
+    
+    /**
+     * Show status to user depending on the success
+     * @param Message
+     * @param gui
+     * @param success
+     */
     public static void showStatusToUser(String Message, MainGui gui,
             boolean success) {
         if (success) {
@@ -190,10 +211,16 @@ public class DisplayView {
             gui.setError(Message);
         }
     }
-
+    
+    /**
+     * Show status to user depending on the execution of display command
+     * @param type
+     * @param gui
+     * @param filter
+     */
     public static void showStatusToUser(Settings.StatusType type, MainGui gui,
             String filter) {
-        if (type == Settings.StatusType.ERROR) {
+        if (isStatusError(type)) {
             processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
                     Messages.LOG_MESSAGE_ERROR, "");
         } else {
@@ -216,94 +243,123 @@ public class DisplayView {
     public static void showStatusToUser(Settings.StatusType type,
             Action action, MainGui gui) {
         CommandType command = action.getCommandType();
-        if (type == Settings.StatusType.ERROR) {
-            switch (command) {
-                case ADD :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
-                            Messages.LOG_MESSAGE_ERROR);
-                    break;
-                case DELETE :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
-                            Messages.LOG_MESSAGE_ERROR);
-                    break;
-
-                case EDIT :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                            Messages.LOG_MESSAGE_ERROR);
-
-                    break;
-                case DONE :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
-                            Messages.LOG_MESSAGE_ERROR);
-                    break;
-                case UNDONE :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                            Messages.LOG_MESSAGE_ERROR);
-                    break;
-                case LOGIN :
-                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, false,
-                            Messages.LOG_MESSAGE_ERROR);
-                    break;
-                case SYNC :
-                    processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC_FAIL, false,
-                            Messages.LOG_MESSAGE_FAIL);
-                    break;
-                case LOGOUT :
-                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL,
-                            false, "");
-                    break;
-                default:
-                    processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
-                            Messages.LOG_MESSAGE_ERROR, "");
-                    break;
-            }
+        if (isStatusError(type)) {
+            processErrorGui(action, gui, command);
         } else {
-            switch (command) {
-                case ADD :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
-                            Messages.LOG_MESSAGE_SUCCESS);
-
-                    break;
-                case DELETE :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
-                            Messages.LOG_MESSAGE_SUCCESS);
-                    break;
-
-                case EDIT :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                            Messages.LOG_MESSAGE_SUCCESS);
-
-                    break;
-                case DONE :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
-                            Messages.LOG_MESSAGE_SUCCESS);
-
-                    break;
-                case UNDONE :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                            Messages.LOG_MESSAGE_SUCCESS);
-                    break;
-                case LOGIN :
-                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, true,
-                            Messages.LOG_MESSAGE_SUCCESS);
-                    break;
-                case LOGOUT :
-                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS,
-                            true, "");
-                    break;
-                case DISPLAY :
-                    processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
-                            Messages.LOG_MESSAGE_SUCCESS);
-                    break;
-                case SYNC :
-                    processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC, true,
-                            Messages.LOG_MESSAGE_SYN_INIT);
-                    break;
-                default:
-
-                    break;
-            }
+            processSuccessGui(action, gui, command);
         }
+    }
+    /**
+     * Method will display success message to user
+     * @param action
+     * @param gui
+     * @param command
+     */
+    private static void processSuccessGui(Action action, MainGui gui,
+            CommandType command) {
+        switch (command) {
+            case ADD :
+                processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
+                        Messages.LOG_MESSAGE_SUCCESS);
+
+                break;
+            case DELETE :
+                processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
+                        Messages.LOG_MESSAGE_SUCCESS);
+                break;
+
+            case EDIT :
+                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                        Messages.LOG_MESSAGE_SUCCESS);
+
+                break;
+            case DONE :
+                processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
+                        Messages.LOG_MESSAGE_SUCCESS);
+
+                break;
+            case UNDONE :
+                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                        Messages.LOG_MESSAGE_SUCCESS);
+                break;
+            case LOGIN :
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, true,
+                        Messages.LOG_MESSAGE_SUCCESS);
+                break;
+            case LOGOUT :
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS,
+                        true, "");
+                break;
+            case DISPLAY :
+                processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
+                        Messages.LOG_MESSAGE_SUCCESS);
+                break;
+            case SYNC :
+                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC, true,
+                        Messages.LOG_MESSAGE_SYN_INIT);
+                break;
+            default:
+                assert false;
+                break;
+        }
+    }
+    /**
+     * Method will display error message to user
+     * @param action
+     * @param gui
+     * @param command
+     */
+    private static void processErrorGui(Action action, MainGui gui,
+            CommandType command) {
+        switch (command) {
+            case ADD :
+                processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
+                        Messages.LOG_MESSAGE_ERROR);
+                break;
+            case DELETE :
+                processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
+                        Messages.LOG_MESSAGE_ERROR);
+                break;
+
+            case EDIT :
+                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                        Messages.LOG_MESSAGE_ERROR);
+
+                break;
+            case DONE :
+                processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
+                        Messages.LOG_MESSAGE_ERROR);
+                break;
+            case UNDONE :
+                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                        Messages.LOG_MESSAGE_ERROR);
+                break;
+            case LOGIN :
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, false,
+                        Messages.LOG_MESSAGE_ERROR);
+                break;
+            case SYNC :
+                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC_FAIL, false,
+                        Messages.LOG_MESSAGE_FAIL);
+                break;
+            case LOGOUT :
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL,
+                        false, "");
+                break;
+            default:
+                processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
+                        Messages.LOG_MESSAGE_ERROR, "");
+                break;
+        }
+    }
+    
+    /**
+     * Return true if statustype is error, else return true
+     * @param type
+     * @return
+     */
+    private static boolean isStatusError(Settings.StatusType type) {
+        return type == Settings.StatusType.ERROR;
     }
 
     /**
@@ -319,12 +375,20 @@ public class DisplayView {
     private static void processGUIError(MainGui gui,
             String logMessageInvalidCommand, String logMessageError,
             String filter) {
-        if (logMessageError == Messages.LOG_MESSAGE_ERROR) {
+        if (isLogMessageError(logMessageError)) {
             gui.setError(String.format(logMessageInvalidCommand));
         } else {
             gui.setStatus(String.format(logMessageInvalidCommand,
                     logMessageError, filter));
         }
+    }
+    /**
+     * Method will return true is is a error message, else false
+     * @param logMessageError
+     * @return
+     */
+    private static boolean isLogMessageError(String logMessageError) {
+        return logMessageError == Messages.LOG_MESSAGE_ERROR;
     }
 
     /**
@@ -410,27 +474,57 @@ public class DisplayView {
         String parseDateToString = sdf.format(date.getTime());
         return parseDateToString;
     }
-
+    
+    //@author A0111930W
+    /**
+     * Show message and command type to user.
+     * @param message
+     * @param type
+     * @param _gui
+     */
     public static void showStatusToUser(StatusType message, CommandType type,
             MainGui _gui) {
         assert _gui != null;
         processGUI(message, type, _gui);
     }
+    
+    /**
+     * Method will call gui and show status to user
+     * @param message
+     * @param type
+     * @param _gui
+     */
 
     private static void processGUI(StatusType message, CommandType type,
             MainGui _gui) {
         assert _gui != null;
-        if (message == StatusType.ERROR) {
+        if (isStatusError(message)) {
 
-            _gui.setError(String.format(
-                    Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
-                    Messages.LOG_MESSAGE_FAIL, type.toString()));
+            _gui.setError(formatStringError(type));
         } else {
 
-            _gui.setStatus(String.format(
-                    Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
-                    Messages.LOG_MESSAGE_SUCCESS, type.toString()));
+            _gui.setStatus(formatStringSuccess(type));
         }
 
+    }
+    /**
+     * Format the success message
+     * @param type
+     * @return
+     */
+    private static String formatStringSuccess(CommandType type) {
+        return String.format(
+                Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
+                Messages.LOG_MESSAGE_SUCCESS, type.toString());
+    }
+    /**
+     * Format the error message
+     * @param type
+     * @return
+     */
+    private static String formatStringError(CommandType type) {
+        return String.format(
+                Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
+                Messages.LOG_MESSAGE_FAIL, type.toString());
     }
 }
