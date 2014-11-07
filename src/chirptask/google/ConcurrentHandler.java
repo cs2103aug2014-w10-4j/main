@@ -1,18 +1,61 @@
+//@author A0111840W
 package chirptask.google;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Date;
+import java.util.List;
 
 import chirptask.storage.GoogleStorage;
-import chirptask.storage.TimedTask;
 
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.tasks.model.Task;
 
 class ConcurrentHandler {
-    private static final String STRING_DONE = "[Done]";
-    private static final String STRING_EMPTY = "";
+    
+    /** 
+     * General Google Component Preconditions
+     */
+    static boolean isNull(GoogleController gController) {
+        if (gController == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    static boolean isNull(TasksController tController) {
+        if (tController == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    static boolean isNull(CalendarController cController) {
+        if (cController == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    static void setNull(chirptask.storage.Task task) {
+        task = null;
+    }
+    
+    static void setNull(List<chirptask.storage.Task> taskList) {
+        taskList = null;
+    }
+    
+    static void setNull(GoogleController gController) {
+        gController = null;
+    }
+    
+    static void setNull(TasksController tController) {
+        tController = null;
+    }
+    
+    static void setNull(CalendarController cController) {
+        cController = null;
+    }
     
     /**
      * General ChirpTask Task
@@ -23,12 +66,6 @@ class ConcurrentHandler {
         } else {
             return false;
         }
-    }
-
-    private static chirptask.storage.Task addGoogleIdToChirpTask(
-            chirptask.storage.Task taskToModify, String googleId) {
-        taskToModify.setGoogleId(googleId);
-        return taskToModify;
     }
 
     /**
@@ -42,59 +79,42 @@ class ConcurrentHandler {
         }
     }
 
-    static boolean modifyGoogleTask(chirptask.storage.Task taskToModify)
-            throws UnknownHostException, IOException {
-        boolean isModified = false;
-
-        // First check if Google ID exists
-        String googleId = taskToModify.getGoogleId();
-        String taskType = taskToModify.getType();
-
-        if (!GoogleController.isEntryExists(googleId, taskType)) {
-            isModified = false;
-            return isModified;
-        }
-        String taskListId = TasksController.getTaskListId();
-        Task modifiedGoogleTask = TasksHandler.getTaskFromId(taskListId,
-                googleId);
-
-        modifiedGoogleTask = GoogleController.toggleTasksDone(
-                modifiedGoogleTask, taskToModify);
-        modifiedGoogleTask = GoogleController.updateTasksDescription(
-                modifiedGoogleTask, taskToModify);
-        modifiedGoogleTask = GoogleController.updateDueDate(modifiedGoogleTask,
-                taskToModify);
-        modifiedGoogleTask = TasksController.updateTask(modifiedGoogleTask);
-
-        if (isNotNull(modifiedGoogleTask)) {
-            /*
-             * Possibly used to overwrite googleId in local storage, eg. change
-             * type from floating to timed. (GoogleTasks <-> GoogleCalendar)
-             * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask,
-             * taskToModify);
-             */
-            isModified = true;
-        }
-
-        return isModified;
-    }
-
-    static void addGoogleIdToStorage(Task googleTask,
+    static boolean addGoogleIdToStorage(Task googleTask,
             chirptask.storage.Task taskToModify) {
+        if (googleTask == null || taskToModify == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+        
         String googleId = getGoogleId(googleTask);
-
         chirptask.storage.Task modifiedTask = addGoogleIdToChirpTask(
-                taskToModify, googleId);
+                                                taskToModify, googleId);
         GoogleStorage.updateStorages(modifiedTask);
+        isAdded = true;
+        
+        return isAdded;
     }
 
     private static String getGoogleId(Task googleTask) {
         String googleId = googleTask.getId();
         return googleId;
     }
+    
+    private static chirptask.storage.Task addGoogleIdToChirpTask(
+            chirptask.storage.Task taskToModify, String googleId) {
+        taskToModify.setGoogleId(googleId);
+        return taskToModify;
+    }
 
-    static void addETagToStorage(Task googleTask,
+    static boolean addETagToStorage(Task googleTask,
             chirptask.storage.Task taskToModify) {
+        if (googleTask == null || taskToModify == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+        
         String eTag = getETag(googleTask);
 
         chirptask.storage.Task modifiedTask = addETagToChirpTask(
@@ -104,6 +124,9 @@ class ConcurrentHandler {
         if (modifiedTask != null) {
             GoogleStorage.updateStorages(modifiedTask);
         }
+        isAdded = true;
+        
+        return isAdded;
     }
 
     static String getETag(Task googleTask) {
@@ -138,81 +161,31 @@ class ConcurrentHandler {
         }
     }
 
-    static boolean modifyGoogleEvent(chirptask.storage.Task taskToModify)
-            throws UnknownHostException, IOException {
-        boolean isModified = false;
-
-        // First check if Google ID exists
-        String googleId = taskToModify.getGoogleId();
-        String taskType = taskToModify.getType();
-
-        if (!GoogleController.isEntryExists(googleId, taskType)) {
-            isModified = false;
-            return isModified;
-        }
-
-        chirptask.storage.Task modifyTask = taskToModify;
-
-        boolean isDone = modifyTask.isDone();
-        String newDescription = modifyTask.getDescription();
-        String calendarId = CalendarController.getCalendarId();
-
-        Event modifiedGoogleEvent = CalendarHandler.getEventFromId(calendarId,
-                googleId);
-        
-        if (isDone) {
-            newDescription = setDoneDescription(newDescription);
-            modifiedGoogleEvent = CalendarHandler.setDescription(modifiedGoogleEvent, STRING_DONE);
-        } else {
-            if (newDescription.startsWith(STRING_DONE)) {
-                newDescription.replaceFirst(STRING_DONE, STRING_EMPTY);
-            }
-            modifiedGoogleEvent = CalendarHandler.setDescription(modifiedGoogleEvent, STRING_EMPTY);
-        }
-        
-        modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent,
-                newDescription);
-
-        if (taskToModify instanceof TimedTask) { // Try type casting
-            TimedTask modifyTimeTask = (TimedTask) modifyTask;
-            Date newStartTime = modifyTimeTask.getStartTime().getTime();
-            Date newEndTime = modifyTimeTask.getEndTime().getTime();
-            modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent,
-                    newStartTime);
-            modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent,
-                    newEndTime);
-        }
-
-        modifiedGoogleEvent = CalendarHandler.updateEvent(calendarId, googleId,
-                modifiedGoogleEvent);
-
-        if (isNotNull(modifiedGoogleEvent)) {
-            /*
-             * Possibly used to overwrite googleId in local storage, eg. change
-             * type from floating to timed. (GoogleTasks <-> GoogleCalendar)
-             * ConcurrentHandler.addGoogleIdToStorage(modifiedGoogleTask,
-             * taskToModify);
-             */
-            isModified = true;
-        }
-
-        return isModified;
-    }
-
-    /*
-     * static Event getGoogleEventFromId(String googleId) { return null; }
-     */
-
-    static void addGoogleIdToStorage(Event googleEvent,
+    static boolean addGoogleIdToStorage(Event googleEvent,
             chirptask.storage.Task taskToModify) {
+        if (googleEvent == null || taskToModify == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+        
         String googleId = getGoogleId(googleEvent);
         chirptask.storage.Task modifiedTask = addGoogleIdToChirpTask(
                 taskToModify, googleId);
         GoogleStorage.updateStorages(modifiedTask);
+        isAdded = true;
+        
+        return isAdded;
     }
     
-    static void addETagToStorage(Event googleEvent,
+    static boolean addETagToStorage(Event googleEvent,
             chirptask.storage.Task taskToModify) {
+        if (googleEvent == null || taskToModify == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+        
         String eTag = getETag(googleEvent);
 
         chirptask.storage.Task modifiedTask = addETagToChirpTask(
@@ -222,6 +195,9 @@ class ConcurrentHandler {
         if (modifiedTask != null) {
             GoogleStorage.updateStorages(modifiedTask);
         }
+        isAdded = true;
+        
+        return isAdded;
     }
 
     static void modifyLocalStorage(chirptask.storage.Task taskToModify) {
@@ -250,14 +226,6 @@ class ConcurrentHandler {
         eTag = googleEvent.getEtag();
 
         return eTag;
-    }
-    
-    static String setDoneDescription(String description) {
-        String newDescription = "";
-        if (description != null) {
-            newDescription = STRING_DONE + " " + description;
-        }
-        return newDescription;
     }
 
 }

@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import java.util.concurrent.Callable;
@@ -6,24 +7,29 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 class ConcurrentController {
-    private ExecutorService googleExecutor;
+    private final int DEFAULT_THREAD_POOL = 10;
+    private final int WAIT_TIME = 10;
+    
+    private ExecutorService googleExecutor = null;
     
     ConcurrentController() {
         initComponents();
     }
     
     private void initComponents() {
-        googleExecutor = Executors.newFixedThreadPool(10);
+        googleExecutor = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL);
     }
     
     void addToExecutor(Callable<Boolean> task) {
-        startExecutorIfNotRunning();
-        googleExecutor.submit(task);
+        if (task != null) {
+            startExecutorIfNotRunning();
+            googleExecutor.submit(task);
+        }
     }
     
     private void startExecutorIfNotRunning() {
         if(googleExecutor.isShutdown()) {
-            googleExecutor = Executors.newFixedThreadPool(10);
+            googleExecutor = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL);
         }
     }
     public void close() {
@@ -31,7 +37,8 @@ class ConcurrentController {
     }
     
     public boolean awaitTermination() throws InterruptedException {
-        boolean isTerminated = googleExecutor.awaitTermination(10, TimeUnit.SECONDS);
+        boolean isTerminated = 
+                googleExecutor.awaitTermination(WAIT_TIME, TimeUnit.SECONDS);
         return isTerminated;
     }
 }

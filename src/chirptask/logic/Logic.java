@@ -15,8 +15,8 @@ import chirptask.storage.Task;
 
 //@author A0111930W
 public class Logic {
+    private static final String STRING_DONE = "[Done]";
 
-    private static final String FLOATING = "floating";
     private GroupAction _lastAction;
     private InputParser _parser = new InputParser();
     private StorageHandler _storageHandler = new StorageHandler();
@@ -127,7 +127,6 @@ public class Logic {
         // should return a boolean variable to state whether sync is successful
         isSuccess = _storageHandler.logout();
         this.showStatusToUser(command, isSuccess);
-
     }
 
     private void processSync(Action command) {
@@ -273,10 +272,10 @@ public class Logic {
     }
 
     private void processExit() {
-        // Add in GUI code to close, storage close
         if (GlobalScreen.isNativeHookRegistered()) {
             GlobalScreen.unregisterNativeHook();
         }
+        _storageHandler.closeStorages();
         System.runFinalization();
         System.exit(Settings.SYSTEM_EXIT_NORMAL);
     }
@@ -284,13 +283,13 @@ public class Logic {
     private void processLogin(Action command) {
         assert command != null;
         boolean isSuccess;
-        isSuccess = _storageHandler.initCloudStorage();
+        isSuccess = StorageHandler.initCloudStorage();
         this.showStatusToUser(command, isSuccess);
     }
 
     private void processDone(Action command, Task task) {
         assert command != null && task != null;
-        if (task.getType().equalsIgnoreCase(FLOATING)) {
+        if (Task.TASK_FLOATING.equalsIgnoreCase(task.getType())) {
             Calendar doneDate = Calendar.getInstance();
             task.setDate(doneDate);
         }
@@ -300,9 +299,10 @@ public class Logic {
 
     private void processUndone(Action command, Task task) {
         assert command != null && task != null;
-        if (task.getType().equalsIgnoreCase(FLOATING)) {
+        if (Task.TASK_FLOATING.equalsIgnoreCase(task.getType())) {
             task.removeDate();
         }
+
         task.setDone(false);
         processEdit(command, task);
     }
@@ -310,8 +310,11 @@ public class Logic {
     private void processUndo() {
         GroupAction lastAction = getLastGroupAction();
         GroupAction tempGroupAction = new GroupAction();
+
         if (lastAction != null) {
-            for (Action action : lastAction.getActionList()) {
+            for (int i = 0; i < lastAction.getActionList().size(); i++) {
+                Action action = lastAction.getActionList().get(i);
+
                 if (action.undo() != null) {
                     Action undoAction = action.undo();
                     undoAction.setUndo(action);
@@ -323,7 +326,8 @@ public class Logic {
             }
             setLastGroupAction(tempGroupAction);
             lastAction = getLastGroupAction();
-            for (Action action : lastAction.getActionList()) {
+            for (int i = 0; i < lastAction.getActionList().size(); i++) {
+                Action action = lastAction.getActionList().get(i);
                 executeAction(action);
             }
 
@@ -336,10 +340,41 @@ public class Logic {
 
     private void processEdit(Action command, Task task) {
         assert command != null && task != null;
+
+        if (!task.getGoogleId().isEmpty()) {
+            if (Task.TASK_TIMED.equalsIgnoreCase(task.getType()) && task.isDone()) {
+                processEditDone(task);
+
+            } else if (Task.TASK_TIMED.equalsIgnoreCase(task.getType())
+                    && !task.isDone()) {
+                processEditUndone(task);
+            }
+        }
         boolean isSuccess;
         task.setModified(true);
         isSuccess = _storageHandler.modifyTask(task);
         filterAndDisplay(command, isSuccess);
+    }
+
+    private void processEditUndone(Task task) {
+        if (task.getDescription().length() > 6) {
+            // [Done]
+            if (task.getDescription().substring(0, 6)
+                    .equalsIgnoreCase(STRING_DONE)) {
+                task.setDescription(task.getDescription().substring(7,
+                        task.getDescription().length()));
+            }
+        }
+    }
+
+    private void processEditDone(Task task) {
+        if (task.getDescription().length() > 6) {
+            // [Done]
+            if (!task.getDescription().substring(0, 6)
+                    .equalsIgnoreCase(STRING_DONE)) {
+                task.setDescription(STRING_DONE + " " + task.getDescription());
+            }
+        }
     }
 
     private void processDisplay(Action command, Task task) {
@@ -367,18 +402,27 @@ public class Logic {
 
     private void processAdd(Action command, Task task) {
         assert command != null && task != null;
-        boolean isSuccess;
-        isSuccess = _storageHandler.addTask(task);
+        boolean isSuccess = true;
+
+        if ("".equals(task.getGoogleId())) {
+            isSuccess = _storageHandler.addTask(task);
+        } else {
+            task.setDeleted(false);
+            _storageHandler.modifyTask(task);
+        }
+
         filterAndDisplay(command, isSuccess);
     }
 
     public synchronized void refreshUi() {
-        clearUi();
-        FilterTasks.filter(_gui);
-        DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+        if (_gui != null) {
+            clearUi();
+            FilterTasks.filter(_gui);
+            DisplayView.updateTaskView(FilterTasks.getFilteredList(), _gui);
+        }
     }
-
-    public static void refresh() {
+    
+    public synchronized static void refresh() {
         _gui.refreshUI();
     }
 
@@ -399,6 +443,12 @@ public class Logic {
         } else {
             DisplayView.showStatusToUser(Settings.StatusType.ERROR, command,
                     _gui);
+        }
+    }
+    
+    public static void setOnlineStatus(String status) {
+        if (status != null && _gui != null) {
+            _gui.setOnlineStatus(status);
         }
     }
 

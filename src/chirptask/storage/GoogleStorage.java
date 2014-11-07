@@ -16,7 +16,7 @@ public class GoogleStorage implements IStorage {
     @Override
     public boolean storeNewTask(Task newTask) {
         boolean isAdded = false;
-        _gController.add(newTask);
+        _gController.addTask(newTask);
         isAdded = true;
         return isAdded;
     }
@@ -76,16 +76,25 @@ public class GoogleStorage implements IStorage {
         }
     }
     
-    synchronized void sync(List<Task> allTasks) {
+    synchronized boolean sync(List<Task> allTasks) {
+        boolean isSyncRunned = false;
         if (allTasks != null) {
-            _gController.sync(allTasks);
+            isSyncRunned = _gController.sync(allTasks);
         }
+        return isSyncRunned;
     }
     
-    void login() {
+    boolean login() {
+        boolean isLoginRun = false;
         if (_gController != null) {
             _gController.login();
+            isLoginRun = true;
         }
+        return isLoginRun;
+    }
+    
+    public static void resetGoogleIdAndEtag(String googleService) {
+        StorageHandler.resetGoogleIdAndEtag(googleService);
     }
     
 }

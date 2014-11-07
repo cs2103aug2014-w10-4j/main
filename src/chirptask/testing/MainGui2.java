@@ -1,3 +1,4 @@
+//@author A0111889W
 package chirptask.testing;
 
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import chirptask.logic.DisplayView;
 /*
  * Class for System Testing. Dependency Injection.
  */
-//@author A0111889W
 public class MainGui2 extends MainGui {
 
     public String _filter = "";
@@ -56,7 +56,7 @@ public class MainGui2 extends MainGui {
         _status = errorMessage;
     }
 
-    public void addContextIntoList(String Context) {
+    public void addHashtagIntoList(String Context) {
         _contextList.add(Context);
     }
 

@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
-import java.util.Date;
 import java.util.List;
+
+import chirptask.common.Messages;
+import chirptask.logic.Logic;
+import chirptask.storage.EventLogger;
 import chirptask.storage.GoogleStorage;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -35,6 +38,11 @@ import com.google.api.services.tasks.model.Task;
  */
 
 public class GoogleController implements Runnable {
+
+    public enum Status {
+        ONLINE, OFFLINE, SYNC, SYNC_FAIL, LOGIN
+    }
+    
     /** Constant instance of the application name. */
     private static final String APPLICATION_NAME = "ChirpTask-GoogleIntegration/0.1";
 
@@ -54,19 +62,19 @@ public class GoogleController implements Runnable {
      * The best practice is to make it a single globally shared instance across
      * your application
      */
-    static FileDataStoreFactory _dataStoreFactory;
+    static FileDataStoreFactory _dataStoreFactory = null;
 
     /** Global instance of the HTTP transport. */
-    static HttpTransport _httpTransport;
+    static HttpTransport _httpTransport = null;
 
     /** Global instance of the Credential. */
-    private static Credential _credential;
+    private static Credential _credential = null;
 
     /** Global instance of the CalendarController. */
-    private static CalendarController _calendarController;
+    private static CalendarController _calendarController = null;
 
     /** Global instance of the TasksController. */
-    private static TasksController _tasksController;
+    private static TasksController _tasksController = null;
     
     private final int timeToSleep = 5000;
 
@@ -80,6 +88,8 @@ public class GoogleController implements Runnable {
             _httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             // initialize the data store factory
             _dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
+        } catch (NullPointerException nullPointerException) {
+            assert false;
         } catch (GeneralSecurityException generalSecurityError) {
             // This error is thrown by
             // GoogleNetHttpTransport.newTrustedTransport();
@@ -90,9 +100,23 @@ public class GoogleController implements Runnable {
     }
 
     public void login() {
+        setOnlineStatus(Status.LOGIN);
         Thread initializeGoogleController = new Thread(this);
         initializeGoogleController.setDaemon(true);
         initializeGoogleController.start();
+    }
+
+    // Method below is for threading.
+    /**
+     * To make Google Login/Authentication run in the background. It allows the
+     * program to continue running normally in the mean time.
+     */
+    public void run() {
+        initializeRemoteComponents(); 
+        while (!isGoogleLoaded()) { //wait for google to load
+            sleepThread();
+        }
+        GoogleStorage.hasBeenInitialized();
     }
     
     /**
@@ -100,268 +124,74 @@ public class GoogleController implements Runnable {
      * Services - Google Calendar and Google Tasks.
      */
     private void initializeRemoteComponents() {
+        initializeGoogleCredential();
+        initializeCalendarController();
+        initializeTasksController();
+    }
+    
+    private void initializeGoogleCredential() {
         try {
             // initialize the credential component
-            _credential = GoogleAuthorizer.authorize();
-            // initialize the Calendar Controller
-            _calendarController = new CalendarController(_httpTransport,
-                    JSON_FACTORY, _credential, APPLICATION_NAME);
-            // initialize the Tasks Controller
-            _tasksController = new TasksController(_httpTransport,
-                    JSON_FACTORY, _credential, APPLICATION_NAME);
+            buildGoogleCredential();
         } catch (Exception allExceptions) {
-            try {
-                Thread.sleep(timeToSleep);
-            } catch (InterruptedException interruptedException) {
-            }
-            // This error can be thrown by authorize();
-            initializeRemoteComponents();
+            sleepThread();
+            initializeGoogleCredential();
         }
     }
-
-    /**
-     * Methods below are made to be called by the StorageHandler for the
-     * GoogleIntegration component of ChirpTask.
-     */
-    // Called by GoogleStorage
-    /**
-     * add(Task) will perform the relevant addTask method depending on the
-     * content of the chirptask.storage.Task object passed in. After the task
-     * has been added to the relevant Google Service, it will return the Google
-     * ID of the newly created task to update the entry in the local storage
-     * (xml file).
-     * 
-     * @param taskToAdd
-     * @return
-     * @throws IOException
-     */
-    public void add(chirptask.storage.Task taskToAdd) {
-        if (isGoogleLoaded()) {
-            ConcurrentAdd addTask = new ConcurrentAdd(taskToAdd);
-            CONCURRENT.addToExecutor(addTask);
+    
+    private void buildGoogleCredential() throws IOException {
+        _credential = GoogleAuthorizer.authorize();
+        
+        if (_credential == null) {
+            throw new NullPointerException();
         }
     }
-
-    public void modifyTask(chirptask.storage.Task taskToModify) {
-        if (isGoogleLoaded()) {
-            ConcurrentModify modifyTask = new ConcurrentModify(taskToModify);
-            CONCURRENT.addToExecutor(modifyTask);
-        }
-    }
-
-    public void removeTask(chirptask.storage.Task taskToRemove) {
-        if (isGoogleLoaded()) {
-            ConcurrentDelete deleteTask = new ConcurrentDelete(taskToRemove);
-            CONCURRENT.addToExecutor(deleteTask);
-        }
-    }
-
-    public void close() {
-        CONCURRENT.close();
+    
+    private void sleepThread() {
         try {
-            CONCURRENT.awaitTermination();
-        } catch (InterruptedException e) {
+            Thread.sleep(timeToSleep);
+        } catch (InterruptedException interruptedException) {
         }
     }
-
-    /**
-     * deletes a specific task in Google Tasks by its ID
-     * 
-     * @param taskId
-     *            to be passed in, should read in from localStorage
-     */
-    private static boolean deleteGoogleTask(String taskId) {
-        boolean isDeleted = false;
-
-        if (isGoogleLoaded()) {
-            isDeleted = _tasksController.deleteTask(taskId);
-        }
-
-        return isDeleted;
-    }
-
-    /**
-     * deletes a specific task in Google Calendar by its ID
-     * 
-     * @param taskId
-     *            to be passed in, should read in from localStorage
-     */
-    private static boolean deleteGoogleEvent(String taskId) {
-        boolean isDeleted = false;
-        if (isGoogleLoaded()) {
-            isDeleted = _calendarController.deleteEvent(taskId);
-        }
-        return isDeleted;
-    }
-
-    // Called by ConcurrentAdd
-    /**
-     * adds a floating task with the specified task title.
-     * 
-     * @param taskTitle
-     *            The floating task description
-     * @return The reference to the created Google Task object
-     * @throws UnknownHostException
-     *             If the host machine cannot reach Google.
-     * @throws IOException
-     *             If there are other errors when sending the request.
-     */
-    static Task addFloatingTask(String taskTitle) throws UnknownHostException,
-            IOException {
-        Task addedTask = _tasksController.addTask(taskTitle);
-        return addedTask;
-    }
-
-    /**
-     * adds a deadline task with the specified task title and due date.
-     * 
-     * @param taskTitle
-     *            The deadline task description
-     * @param date
-     *            The due date
-     * @return The reference to the created Google Task object
-     * @throws UnknownHostException
-     *             If the host machine cannot reach Google.
-     * @throws IOException
-     *             If there are other errors when sending the request.
-     */
-    static Task addDeadlineTask(String taskTitle, Date date)
-            throws UnknownHostException, IOException {
-        Task addedTask = _tasksController.addTask(taskTitle, date);
-        return addedTask;
-    }
-
-    static Event addTimedTask(String taskTitle, Date startTime, Date endTime)
-            throws UnknownHostException, IOException {
-        Event addedEvent = _calendarController.addTimedTask(taskTitle,
-                startTime, endTime);
-        return addedEvent;
-    }
-
-    // Called by ConcurrentDelete
-    static boolean deleteTask(chirptask.storage.Task taskToDelete)
-            throws UnknownHostException, IOException {
-        boolean isDeleted = false;
-        String googleId = taskToDelete.getGoogleId();
-        String taskType = taskToDelete.getType();
-
-        if (googleId == null || googleId == "") {
-            isDeleted = false;
-            return isDeleted;
-        } else if (!isEntryExists(googleId, taskType)) {
-            isDeleted = false;
-            return isDeleted;
-        }
-
-        switch (taskType) {
-        case "floating":
-        case "deadline":
-            isDeleted = deleteGoogleTask(googleId);
-            break;
-        case "timedtask":
-            isDeleted = deleteGoogleEvent(googleId);
-            break;
-        default:
-            break;
-        }
-
-        return isDeleted;
-    }
-
-    // Called by ConcurrentModify
-    static Task toggleTasksDone(Task googleTask,
-            chirptask.storage.Task toggleTask) {
-
-        boolean isDone = toggleTask.isDone();
-        Task toggledTask = _tasksController.toggleTaskDone(googleTask, isDone);
-
-        if (toggledTask != null) {
-            return toggledTask;
-        } else {
-            return null;
+    
+    private void initializeCalendarController() {
+        try {
+            // initialize the Calendar Controller
+            buildCalendarController();
+        } catch (Exception allExceptions) {
+            sleepThread();
+            initializeCalendarController();
         }
     }
-
-    static Task updateDueDate(Task taskToUpdate,
-            chirptask.storage.Task updatedTask) {
-        String taskType = updatedTask.getType();
-
-        if (taskType.equals("deadline")) { // magic string, must solve this.
-            Date newDueDate = updatedTask.getDate().getTime();
-
-            Task updatedGoogleTask = _tasksController.updateDueDate(
-                    taskToUpdate, newDueDate);
-
-            if (updatedGoogleTask != null) {
-                return updatedGoogleTask;
-            } else {
-                return taskToUpdate;
-            }
-        } else { // Is a floating task
-            return taskToUpdate;
+    
+    private void buildCalendarController() throws IOException {
+        _calendarController = new CalendarController(_httpTransport,
+                JSON_FACTORY, _credential, APPLICATION_NAME);
+        
+        if (_calendarController == null) {
+            throw new NullPointerException();
         }
     }
-
-    static Task updateTasksDescription(Task taskToUpdate,
-            chirptask.storage.Task updatedTask) {
-
-        String updatedDescription = updatedTask.getDescription();
-        Task updatedGoogleTask = _tasksController.updateDescription(
-                taskToUpdate, updatedDescription);
-
-        if (updatedGoogleTask != null) {
-            return updatedGoogleTask;
-        } else {
-            return null;
+    
+    private void initializeTasksController() {
+        try {
+            // initialize the Tasks Controller
+            buildTasksController();
+        } catch (Exception allExceptions) {
+            sleepThread();
+            initializeTasksController();
         }
     }
-
-    // Code from here onwards are methods to aid checking.
-    /**
-     * Checks if the specified task's Google ID exists in the client's Google
-     * account.
-     * 
-     * Should be called before performing modification or deletion of the task.
-     * 
-     * @param googleId
-     *            The Google ID of the task from Tasks or Calendar
-     * @param taskType
-     *            The type of ChirpTask (floating/timed/deadline)
-     * @return true if it exists; false if it does not.
-     * @throws UnknownHostException
-     *             If the host machine cannot reach Google.
-     * @throws IOException
-     *             If there are other errors when sending the request.
-     */
-    static boolean isEntryExists(String googleId, String taskType)
-            throws UnknownHostException, IOException {
-        boolean isExist = false;
-        String googleListId = "";
-
-        switch (taskType) {
-        case "floating":
-        case "deadline":
-            googleListId = TasksController.getTaskListId();
-            Task foundTask = TasksHandler.getTaskFromId(googleListId, googleId);
-            if (foundTask != null) {
-                isExist = true;
-            }
-            break;
-        case "timedtask":
-            googleListId = CalendarController.getCalendarId();
-            Event foundEvent = CalendarHandler.getEventFromId(googleListId,
-                    googleId);
-            if (foundEvent != null) {
-                isExist = true;
-            }
-            break;
-        default:
-            break;
+    
+    private void buildTasksController() throws IOException {
+        _tasksController = new TasksController(_httpTransport,
+                JSON_FACTORY, _credential, APPLICATION_NAME);
+        
+        if (_tasksController == null) {
+            throw new NullPointerException();
         }
-
-        return isExist;
     }
-
+    
     /**
      * Provides a checker if the required Google components loaded.
      * 
@@ -419,25 +249,167 @@ public class GoogleController implements Runnable {
         }
     }
 
-    // Method below is for threading.
     /**
-     * To make Google Login/Authentication run in the background. It allows the
-     * program to continue running normally in the mean time.
+     * Methods below are made to be called by the GoogleStorage for the
+     * GoogleIntegration component of ChirpTask.
      */
-    public void run() {
-        initializeRemoteComponents(); 
-        while (!isGoogleLoaded()) {
-            //wait for google to load
+    // Called by GoogleStorage
+    /**
+     * add(Task) will perform the relevant addTask method depending on the
+     * content of the chirptask.storage.Task object passed in. After the task
+     * has been added to the relevant Google Service, it will return the Google
+     * ID of the newly created task to update the entry in the local storage
+     * (xml file).
+     * 
+     * @param taskToAdd
+     * @return
+     * @throws IOException
+     */
+    public void addTask(chirptask.storage.Task taskToAdd) {
+        if (taskToAdd == null) {
+            return;
         }
-        GoogleStorage.hasBeenInitialized();
+        
+        if (isGoogleLoaded()) {
+            ConcurrentAdd addTask = new ConcurrentAdd(taskToAdd, 
+                    this, 
+                    _tasksController, 
+                    _calendarController);
+            CONCURRENT.addToExecutor(addTask);
+        }
     }
 
-    public void sync(List<chirptask.storage.Task> allTasks) {
+    public void modifyTask(chirptask.storage.Task taskToModify) {
+        if (taskToModify == null) {
+            return;
+        }
+        
+        if (isGoogleLoaded()) {
+            ConcurrentModify modifyTask = new ConcurrentModify(taskToModify,
+                    _tasksController);
+            CONCURRENT.addToExecutor(modifyTask);
+        }
+    }
+
+    public void removeTask(chirptask.storage.Task taskToRemove) {
+        if (taskToRemove == null) {
+            return;
+        }
+        
+        if (isGoogleLoaded()) {
+            ConcurrentDelete deleteTask = new ConcurrentDelete(taskToRemove, 
+                    _tasksController, 
+                    _calendarController);
+            CONCURRENT.addToExecutor(deleteTask);
+        }
+    }
+
+    public void close() {
+        CONCURRENT.close();
+        try {
+            CONCURRENT.awaitTermination();
+        } catch (InterruptedException e) {
+        }
+    }
+
+    // Methods below are general methods to perform other actions
+    public boolean sync(List<chirptask.storage.Task> allTasks) {
+        boolean isSyncRunned = false;
         if (isGoogleLoaded() && allTasks != null) {
             ConcurrentSync concurrentSync = new ConcurrentSync(allTasks, this, 
                     _calendarController, _tasksController);
             CONCURRENT.addToExecutor(concurrentSync);
+            isSyncRunned = true;
         }
+        return isSyncRunned;
     }
     
+    static void resetGoogleIdAndEtag(String googleService) {
+        if (googleService == null) {
+            return;
+        }
+        
+        GoogleStorage.resetGoogleIdAndEtag(googleService);
+    }
+    
+    // Method(s) to aid checking for add/modify.
+    /**
+     * Checks if the specified task's Google ID exists in the client's Google
+     * account.
+     * 
+     * Should be called before performing modification or deletion of the task.
+     * 
+     * @param googleId
+     *            The Google ID of the task from Tasks or Calendar
+     * @param taskType
+     *            The type of ChirpTask (floating/timed/deadline)
+     * @return true if it exists; false if it does not.
+     * @throws UnknownHostException
+     *             If the host machine cannot reach Google.
+     * @throws IOException
+     *             If there are other errors when sending the request.
+     */
+    static boolean isEntryExists(String googleId, String taskType)
+            throws UnknownHostException, IOException {
+        if (googleId == null || taskType == null) {
+            return false;
+        }
+        
+        boolean isExist = false;
+        String googleListId = "";
+
+        switch (taskType) {
+        case chirptask.storage.Task.TASK_FLOATING :
+        case chirptask.storage.Task.TASK_DEADLINE :
+            googleListId = TasksController.getTaskListId();
+            Task foundTask = TasksHandler.getTaskFromId(googleListId, googleId);
+            
+            if (foundTask != null) {
+                isExist = true;
+            }
+            break;
+        case chirptask.storage.Task.TASK_TIMED :
+            googleListId = CalendarController.getCalendarId();
+            Event foundEvent = CalendarHandler.getEventFromId(googleListId,
+                    googleId);
+            
+            if (foundEvent != null) {
+                isExist = true;
+            }
+            break;
+        default :
+            break;
+        }
+
+        return isExist;
+    }
+    
+    // Methods below is made as an interface for Google Components to call
+    // to change the MainGui Online Status.
+    public static void setOnlineStatus(Status newStatus) {
+        if (newStatus != null) {
+            switch (newStatus) {
+            case ONLINE :
+                Logic.setOnlineStatus(Messages.TITLE_ONLINE);
+                break;
+            case OFFLINE :
+            Logic.setOnlineStatus(Messages.TITLE_OFFLINE);
+            break;
+            case SYNC :
+                Logic.setOnlineStatus(Messages.TITLE_SYNCING);
+                break;
+            case SYNC_FAIL :
+                Logic.setOnlineStatus(Messages.TITLE_SYNC_FAIL);
+                break;
+            case LOGIN :
+                Logic.setOnlineStatus(Messages.TITLE_LOGGING_IN);
+                break;
+            default :
+                EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+                assert false;
+                break;
+            }
+        }
+    }
+
 }

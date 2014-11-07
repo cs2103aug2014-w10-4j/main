@@ -1,3 +1,4 @@
+//@author A0111889W
 package chirptask.storage;
 
 import java.io.BufferedOutputStream;
@@ -10,7 +11,6 @@ import java.util.Date;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 
-//@author A0111889W
 public class EventLogger implements IStorage {
 
     private static PrintStream fileWriter;

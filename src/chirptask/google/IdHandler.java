@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import chirptask.common.Settings;
 import chirptask.storage.StorageHandler;
 
 /**
@@ -22,9 +23,25 @@ import chirptask.storage.StorageHandler;
  */
 class IdHandler {
 
-	static String getIdFromFile(File idFile) {
-		String id = null;
+    static String getIdFromSettings() {
+        String googleCalendarId = Settings.GOOGLE_CALENDAR_ID;
+        return googleCalendarId;
+    }
+    
+    static void saveIdToSettings(String googleId) {
+        Settings.writeGoogleCalendarId(googleId);
+    }
+    
 
+    //@author A0111840W-unused 
+    // Code is unused because we remove the need for this additional file
+    // Now we store Google Calendar ID in the Settings, config.properties file
+	static String getIdFromFile(File idFile) {
+	    if (idFile == null) {
+	        return null;
+	    }
+	    
+		String id = null;
 		try (BufferedReader idFileReader = new BufferedReader(new FileReader(
 				idFile))) {
 			id = idFileReader.readLine();
@@ -38,6 +55,10 @@ class IdHandler {
 	}
 
 	static void saveIdToFile(File idFile, String id) {
+	    if (idFile == null || id == null) {
+	        return;
+	    }
+	    
 		try (BufferedWriter idFileWriter = new BufferedWriter(new FileWriter(
 				idFile))) {
 			idFileWriter.write(id);

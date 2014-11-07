@@ -12,7 +12,6 @@ import java.util.List;
 import org.junit.Test;
 
 import chirptask.common.Settings;
-import chirptask.gui.MainGui;
 import chirptask.logic.Action;
 import chirptask.logic.DisplayView;
 import chirptask.logic.FilterTasks;
@@ -29,7 +28,7 @@ public class JUnitLogic {
         // Testing display logic with tag /undone /floating
         // commend out the GUI portion for this to run.
         Logic a = new Logic(null);
-
+        
         Action act = new Action();
         Task task = new Task();
 
@@ -55,7 +54,7 @@ public class JUnitLogic {
         // test floating task
         Task test1 = new Task();
         test1.setType("floating");
-        assertEquals("all-day",
+        assertEquals("",
                 DisplayView.convertTaskDateToDurationString(test1));
 
         // test Deadline task
@@ -89,7 +88,7 @@ public class JUnitLogic {
         // test Method hideDeleted
 
         // Create a list of all deleted task
-        // hideDeleted should return a emptylist
+        // hideDeleted should return an empty list
         List<Task> list = new ArrayList<Task>();
         List<Task> expected = new ArrayList<Task>();
         Task A = new Task();
@@ -103,7 +102,7 @@ public class JUnitLogic {
         list.add(B);
         list.add(C);
 
-        FilterTasks.hideDeleted(list);
+        list = FilterTasks.hideDeleted(list);
         assertEquals(expected, list);
 
         // Set B to be deleted
@@ -114,7 +113,7 @@ public class JUnitLogic {
         list.add(C);
         expected.add(B);
 
-        FilterTasks.hideDeleted(list);
+        list = FilterTasks.hideDeleted(list);
         assertEquals(expected, list);
 
         // setDeleted false for all Tasks
@@ -126,14 +125,14 @@ public class JUnitLogic {
         expected.add(A);
         expected.add(C);
 
-        FilterTasks.hideDeleted(list);
+        list = FilterTasks.hideDeleted(list);
         assertEquals(expected, list);
         // End of test for hideDeleted
 
         // test for method processFilterDateParam
 
-        // proper date format MM/DD
-        String date1 = "10/22";
+        // proper date format DD/MM
+        String date1 = "22/10";
         Calendar testParam = Calendar.getInstance();
         testParam.set(testParam.get(Calendar.YEAR), 9, 22);
 
@@ -150,7 +149,7 @@ public class JUnitLogic {
                 expected1.get(Calendar.MONTH));
         assertEquals(testParam.get(Calendar.DAY_OF_MONTH),
                 expected1.get(Calendar.DAY_OF_MONTH));
-
+        
         // wrong date format MM-DD
         // Return a current Calendar object
         String date2 = "10-22";

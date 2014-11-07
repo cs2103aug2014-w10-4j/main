@@ -1,3 +1,4 @@
+//@author A0111889W
 package chirptask.testing;
 
 import static org.junit.Assert.*;
@@ -20,7 +21,6 @@ import chirptask.storage.EventLogger;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
-//@author A0111889W
 public class JUnitEventLogger {
 
     Settings settings = new Settings();

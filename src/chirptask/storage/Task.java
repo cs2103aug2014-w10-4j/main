@@ -1,3 +1,4 @@
+//@author A0111889W
 package chirptask.storage;
 
 import java.util.ArrayList;
@@ -9,9 +10,10 @@ import java.util.List;
  */
 
 public class Task implements Comparable<Task> {
-    private static final String TASK_FLOATING = "floating";
+    public static final String TASK_FLOATING = "floating";
+    public static final String TASK_DEADLINE = "deadline";
+    public static final String TASK_TIMED = "timedtask";
 
-    // @author A0111889W
     private List<String> _contexts;
     private List<String> _categories;
 
@@ -53,14 +55,32 @@ public class Task implements Comparable<Task> {
     }
 
     /*
-     * Compare first by Date object then description
+     * Compare by Time then Type then Description (Lexicographically)
      */
     public int compareTo(Task b) {
         boolean isSameDateAndTime = this.getDate().compareTo(b.getDate()) == 0;
-
+        boolean isSameType = this.getType().compareTo(b.getType()) == 0;
         if (isSameDateAndTime) {
-            // compare description
-            return this.getDescription().compareTo(b.getDescription());
+            if (isSameType) {
+                // compare description
+                return this.getDescription().compareTo(b.getDescription());
+            } else {
+
+                /*
+                 * Floating tasks shown at the top before the rest.
+                 * Floating < Deadline < TimedTasks
+                 * You only enter this section of the code if the two Task are
+                 * of different type. With that, if either is a floating type,
+                 * the floating type must be shown first.
+                 */
+                if (this.getType().equals("floating")) {
+                    return -1;
+                } else if (b.getType().equals("floating")) {
+                    return 1;
+                } else {
+                    return this.getType().compareTo(b.getType());
+                }
+            }
         } else {
             return this.getDate().compareTo(b.getDate());
         }
@@ -143,13 +163,12 @@ public class Task implements Comparable<Task> {
     public Calendar getDate() {
         if (_cal == null) {
             _cal = Calendar.getInstance();
+            _cal.set(Calendar.HOUR_OF_DAY, 0);
+            _cal.set(Calendar.MINUTE, 0);
+            _cal.set(Calendar.SECOND, 0);
+            _cal.set(Calendar.MILLISECOND, 0);
         }
         return _cal;
-    }
-
-    // @author A0111930W
-    public void setDate(Calendar doneDate) {
-        _cal = doneDate;
     }
 
     public void removeDate() {
@@ -171,4 +190,14 @@ public class Task implements Comparable<Task> {
     public void setCategories(List<String> _categories) {
         this._categories = _categories;
     }
+
+    // @author A0111930W
+    public void setDate(Calendar doneDate) {
+        _cal = doneDate;
+        _cal.set(Calendar.HOUR_OF_DAY, 0);
+        _cal.set(Calendar.MINUTE, 0);
+        _cal.set(Calendar.SECOND, 0);
+        _cal.set(Calendar.MILLISECOND, 0);
+    }
+
 }

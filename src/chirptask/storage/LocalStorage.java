@@ -173,7 +173,7 @@ public class LocalStorage implements IStorage {
 	/**
 	 * This methods writes new task to XML file
 	 */
-	public boolean storeNewTask(Task task) {
+	public synchronized boolean storeNewTask(Task task) {
 		Element root = getRoot();
 
 		if (root == null) {
@@ -279,7 +279,7 @@ public class LocalStorage implements IStorage {
 	/**
 	 * This method deletes a task from XML file
 	 */
-	public Task removeTask(Task task) {
+	public synchronized Task removeTask(Task task) {
 		if (task == null) {
 		    return null;
 		}
@@ -317,7 +317,7 @@ public class LocalStorage implements IStorage {
 	 * This methods deletes a task in XML file and write its updated version
 	 * back.
 	 */
-	public boolean modifyTask(Task T) {
+	public synchronized boolean modifyTask(Task T) {
 	    boolean isModified = false;
 		Task toDelete = getTask(T.getTaskId());
 		Task removedTask = removeTask(toDelete);
@@ -386,7 +386,7 @@ public class LocalStorage implements IStorage {
 	/**
 	 * This method returns a list of tasks stored in XML file
 	 */
-	public List<Task> getAllTasks() {
+	public synchronized List<Task> getAllTasks() {
 		List<Task> tasks = new ArrayList<Task>();
 		try {
 			localStorage = docBuilder.parse(local);

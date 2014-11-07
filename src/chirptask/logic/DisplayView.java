@@ -4,9 +4,7 @@ package chirptask.logic;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -39,13 +37,14 @@ public class DisplayView {
 
         sortTask(tasks);
         processUpdateTaskView(tasks, gui);
-        processUpdateContextAndCategoryView(gui);
+        processUpdateHashtagAndCategoryView(gui);
         // Iterator<Map.Entry<Date, TasksByDate>> it =
         // map.entrySet().iterator();
         // TaskView view = new TaskView();
         // while (it.hasNext()) {
         // view.addToTaskView(it.next().getValue());
         // }
+
 
     }
     /**
@@ -63,9 +62,9 @@ public class DisplayView {
      * @author A0111930W
      * @param gui
      */
-    private static void processUpdateContextAndCategoryView(MainGui gui) {
+    private static void processUpdateHashtagAndCategoryView(MainGui gui) {
         updateCategoryView(gui);
-        updateContextView(gui);
+        updateHashtagView(gui);
     }
 
     
@@ -80,13 +79,13 @@ public class DisplayView {
      */
     private synchronized static void processUpdateTaskView(List<Task> tasks,
             MainGui gui) {
-
         for (int i = START_LIST; i < tasks.size(); i++) {
             Task T = tasks.get(i);
             updateTaskViewDate(gui, T);
             String dateToString = convertTaskDateToDurationString(T);
             updateTaskToDate(gui, T, dateToString);
         }
+
         //Unused
         // Iterator<Task> itr = tasks.iterator();
         // while (itr.hasNext()) {
@@ -103,6 +102,7 @@ public class DisplayView {
         // gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
         // task.getDescription(), dateToString, task.isDone());
         // }
+
     }
     
     /**
@@ -136,14 +136,15 @@ public class DisplayView {
     public static String convertTaskDateToDurationString(Task task) {
         assert task != null && task.getDate() != null;
         String dateToString = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("kk:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-        if (task.getType() == TASK_FLOATING) {
-            dateToString = TASK_ALL_DAY;
-        } else if (task.getType() == "deadline") {
+
+        if (Task.TASK_FLOATING.equals(task.getType())) {
+            dateToString = "";
+        } else if (Task.TASK_DEADLINE.equals(task.getType())) {
             DeadlineTask dTask = (DeadlineTask) task;
             dateToString = "due by " + sdf.format(dTask.getDate().getTime());
-        } else if (task.getType() == "timedtask") {
+        } else if (Task.TASK_TIMED.equals(task.getType())) {
             TimedTask tTask = (TimedTask) task;
             dateToString = sdf.format(tTask.getStartTime().getTime()) + " to "
                     + sdf.format(tTask.getEndTime().getTime());
@@ -170,23 +171,24 @@ public class DisplayView {
         }
     }
 
-    public static void updateContextView(MainGui gui) {
+    public static void updateHashtagView(MainGui gui) {
         List<String> contexts = FilterTasks.getContextList();
         for (String context : contexts) {
-            gui.addContextIntoList(context);
+            gui.addHashtagIntoList(context);
         }
     }
 
     public static void showStatusToUser(String Message, MainGui gui) {
         gui.setStatus(Message);
     }
-    
-    public static void showStatusToUser(String Message, MainGui gui, boolean success){
-           if(success){
-               gui.setStatus(Message);
-           }else{
-               gui.setError(Message);
-           }
+
+    public static void showStatusToUser(String Message, MainGui gui,
+            boolean success) {
+        if (success) {
+            gui.setStatus(Message);
+        } else {
+            gui.setError(Message);
+        }
     }
 
     public static void showStatusToUser(Settings.StatusType type, MainGui gui,
@@ -216,90 +218,90 @@ public class DisplayView {
         CommandType command = action.getCommandType();
         if (type == Settings.StatusType.ERROR) {
             switch (command) {
-            case ADD:
-                processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
-            case DELETE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
+                case ADD :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
+                case DELETE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
 
-            case EDIT:
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
+                case EDIT :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                            Messages.LOG_MESSAGE_ERROR);
 
-                break;
-            case DONE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
-            case UNDONE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
-            case LOGIN:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, false,
-                        Messages.LOG_MESSAGE_ERROR);
-                break;
-            case SYNC:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC_FAIL, false,
-                        Messages.LOG_MESSAGE_FAIL);
-                break;
-            case LOGOUT:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL, false,
-                        "");
-                break;
-            default:
-                processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
-                        Messages.LOG_MESSAGE_ERROR, "");
-                break;
+                    break;
+                case DONE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
+                case UNDONE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
+                case LOGIN :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, false,
+                            Messages.LOG_MESSAGE_ERROR);
+                    break;
+                case SYNC :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC_FAIL, false,
+                            Messages.LOG_MESSAGE_FAIL);
+                    break;
+                case LOGOUT :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL,
+                            false, "");
+                    break;
+                default:
+                    processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
+                            Messages.LOG_MESSAGE_ERROR, "");
+                    break;
             }
         } else {
             switch (command) {
-            case ADD:
-                processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                case ADD :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
+                            Messages.LOG_MESSAGE_SUCCESS);
 
-                break;
-            case DELETE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
-                break;
+                    break;
+                case DELETE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
+                            Messages.LOG_MESSAGE_SUCCESS);
+                    break;
 
-            case EDIT:
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                case EDIT :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                            Messages.LOG_MESSAGE_SUCCESS);
 
-                break;
-            case DONE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                    break;
+                case DONE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
+                            Messages.LOG_MESSAGE_SUCCESS);
 
-                break;
-            case UNDONE:
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
-                break;
-            case LOGIN:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, true,
-                        Messages.LOG_MESSAGE_SUCCESS);
-                break;
-            case LOGOUT:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS, true,
-                        "");
-                break;
-            case DISPLAY:
-                processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
-                        Messages.LOG_MESSAGE_SUCCESS);
-                break;
-            case SYNC:
-                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC, true,
-                        Messages.LOG_MESSAGE_SYN_INIT);
-                break;
-            default:
+                    break;
+                case UNDONE :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
+                            Messages.LOG_MESSAGE_SUCCESS);
+                    break;
+                case LOGIN :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, true,
+                            Messages.LOG_MESSAGE_SUCCESS);
+                    break;
+                case LOGOUT :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS,
+                            true, "");
+                    break;
+                case DISPLAY :
+                    processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
+                            Messages.LOG_MESSAGE_SUCCESS);
+                    break;
+                case SYNC :
+                    processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC, true,
+                            Messages.LOG_MESSAGE_SYN_INIT);
+                    break;
+                default:
 
-                break;
+                    break;
             }
         }
     }
@@ -361,38 +363,39 @@ public class DisplayView {
         }
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public static TextFlow parseDescriptionToTextFlow(String description,
             boolean done, MainGui _gui) {
         TextFlow parsedDesc = new TextFlow();
-        StringBuilder descSb = new StringBuilder(description);
+        StringBuilder descStringBuilder = new StringBuilder(description);
         Text bufferText = new Text();
 
-        while (descSb.length() > 0) {
-            int index = descSb.length();
+        while (descStringBuilder.length() > 0) {
+            int index = descStringBuilder.length();
 
-            boolean hasSpaceInDesc = descSb.indexOf(" ") > 0;
+            boolean hasSpaceCharInDesc = descStringBuilder.indexOf(" ") > 0;
 
-            if (hasSpaceInDesc) {
-                index = descSb.indexOf(" ");
-            } else if (descSb.indexOf(" ") == 0) {
+            if (hasSpaceCharInDesc) {
+                index = descStringBuilder.indexOf(" ");
+            } else if (descStringBuilder.indexOf(" ") == 0) {
                 index = 1;
             }
 
-            // obtain description till first space
-            bufferText = new Text(descSb.substring(0, index));
+            // obtain description until the first space
+            bufferText = new Text(descStringBuilder.substring(0, index));
 
-            if (descSb.charAt(0) == Settings.CONTEXT_CHAR) {
+            if (descStringBuilder.charAt(0) == Settings.HASHTAG_CHAR) {
                 // Context
-                bufferText.getStyleClass().add("context-text");
-                bufferText.setOnMouseClicked(_gui.clickOnContext());
-            } else if (descSb.charAt(0) == Settings.CATEGORY_CHAR) {
+                bufferText.getStyleClass().add("hashtag-text");
+                bufferText.setOnMouseClicked(_gui.clickOnHashtag());
+            } else if (descStringBuilder.charAt(0) == Settings.CATEGORY_CHAR) {
                 // Category
                 bufferText.getStyleClass().add("category-text");
                 bufferText.setOnMouseClicked(_gui.clickOnCategory());
             }
-
-            descSb.delete(0, index);
+            
+            // delete parsed text
+            descStringBuilder.delete(0, index);
             bufferText.setStrikethrough(done);
             parsedDesc.getChildren().add(bufferText);
         }
@@ -400,7 +403,7 @@ public class DisplayView {
         return parsedDesc;
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public static String convertDateToString(Calendar date) {
         assert date != null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
