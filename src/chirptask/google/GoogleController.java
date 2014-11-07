@@ -62,19 +62,19 @@ public class GoogleController implements Runnable {
      * The best practice is to make it a single globally shared instance across
      * your application
      */
-    static FileDataStoreFactory _dataStoreFactory;
+    static FileDataStoreFactory _dataStoreFactory = null;
 
     /** Global instance of the HTTP transport. */
-    static HttpTransport _httpTransport;
+    static HttpTransport _httpTransport = null;
 
     /** Global instance of the Credential. */
-    private static Credential _credential;
+    private static Credential _credential = null;
 
     /** Global instance of the CalendarController. */
-    private static CalendarController _calendarController;
+    private static CalendarController _calendarController = null;
 
     /** Global instance of the TasksController. */
-    private static TasksController _tasksController;
+    private static TasksController _tasksController = null;
     
     private final int timeToSleep = 5000;
 
@@ -111,9 +111,8 @@ public class GoogleController implements Runnable {
      */
     public void run() {
         initializeRemoteComponents(); 
-
-        while (!isGoogleLoaded()) {
-            //wait for google to load
+        while (!isGoogleLoaded()) { //wait for google to load
+            sleepThread();
         }
         GoogleStorage.hasBeenInitialized();
     }
@@ -123,25 +122,71 @@ public class GoogleController implements Runnable {
      * Services - Google Calendar and Google Tasks.
      */
     private void initializeRemoteComponents() {
+        initializeGoogleCredential();
+        initializeCalendarController();
+        initializeTasksController();
+    }
+    
+    private void initializeGoogleCredential() {
         try {
             // initialize the credential component
-            _credential = GoogleAuthorizer.authorize();
-
-            // initialize the Calendar Controller
-            _calendarController = new CalendarController(_httpTransport,
-                    JSON_FACTORY, _credential, APPLICATION_NAME);
-            // initialize the Tasks Controller
-            _tasksController = new TasksController(_httpTransport,
-                    JSON_FACTORY, _credential, APPLICATION_NAME);
+            buildGoogleCredential();
         } catch (Exception allExceptions) {
-            try {
-                Thread.sleep(timeToSleep);
-            } catch (InterruptedException interruptedException) {
-            }
-            // This error can be thrown by authorize(); 
-            finally {
-                initializeRemoteComponents();
-            }
+            sleepThread();
+            initializeGoogleCredential();
+        }
+    }
+    
+    private void buildGoogleCredential() throws IOException {
+        _credential = GoogleAuthorizer.authorize();
+        
+        if (_credential == null) {
+            throw new NullPointerException();
+        }
+    }
+    
+    private void sleepThread() {
+        try {
+            Thread.sleep(timeToSleep);
+        } catch (InterruptedException interruptedException) {
+        }
+    }
+    
+    private void initializeCalendarController() {
+        try {
+            // initialize the Calendar Controller
+            buildCalendarController();
+        } catch (Exception allExceptions) {
+            sleepThread();
+            initializeCalendarController();
+        }
+    }
+    
+    private void buildCalendarController() throws IOException {
+        _calendarController = new CalendarController(_httpTransport,
+                JSON_FACTORY, _credential, APPLICATION_NAME);
+        
+        if (_calendarController == null) {
+            throw new NullPointerException();
+        }
+    }
+    
+    private void initializeTasksController() {
+        try {
+            // initialize the Tasks Controller
+            buildTasksController();
+        } catch (Exception allExceptions) {
+            sleepThread();
+            initializeTasksController();
+        }
+    }
+    
+    private void buildTasksController() throws IOException {
+        _tasksController = new TasksController(_httpTransport,
+                JSON_FACTORY, _credential, APPLICATION_NAME);
+        
+        if (_tasksController == null) {
+            throw new NullPointerException();
         }
     }
     

@@ -70,6 +70,10 @@ public class CalendarHandler {
         com.google.api.services.calendar.Calendar calendarClient = 
                 CalendarController.getCalendarClient();
         
+        if (calendarClient == null) {
+            return null;
+        }
+        
         Calendar retrievedCalendar = calendarClient
                                         .calendars()
                                         .get(calendarId)

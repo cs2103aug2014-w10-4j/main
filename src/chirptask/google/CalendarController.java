@@ -30,7 +30,7 @@ public class CalendarController {
      * Global instance of the Google Calendar Service Client. Calendar
      * calendarClient; is the main object connected to the Google Calendar API.
      */
-    private static com.google.api.services.calendar.Calendar _calendarClient;
+    private static com.google.api.services.calendar.Calendar _calendarClient = null;
     
     /** Global instance of the working Google Calendar ID */
     private static String _calendarId;

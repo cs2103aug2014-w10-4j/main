@@ -31,7 +31,7 @@ public class TasksController {
      * Global instance of the Google Tasks Service Client. 
      * Tasks tasksClient; is the main object connected to the Google Tasks API.
      */
-    static com.google.api.services.tasks.Tasks _tasksClient;
+    static com.google.api.services.tasks.Tasks _tasksClient = null;
 
     /** Constructor */
     TasksController(HttpTransport httpTransport, JsonFactory jsonFactory,
