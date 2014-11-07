@@ -88,6 +88,8 @@ public class GoogleController implements Runnable {
             _httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             // initialize the data store factory
             _dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
+        } catch (NullPointerException nullPointerException) {
+            assert false;
         } catch (GeneralSecurityException generalSecurityError) {
             // This error is thrown by
             // GoogleNetHttpTransport.newTrustedTransport();
@@ -264,6 +266,10 @@ public class GoogleController implements Runnable {
      * @throws IOException
      */
     public void addTask(chirptask.storage.Task taskToAdd) {
+        if (taskToAdd == null) {
+            return;
+        }
+        
         if (isGoogleLoaded()) {
             ConcurrentAdd addTask = new ConcurrentAdd(taskToAdd, 
                     this, 
@@ -274,6 +280,10 @@ public class GoogleController implements Runnable {
     }
 
     public void modifyTask(chirptask.storage.Task taskToModify) {
+        if (taskToModify == null) {
+            return;
+        }
+        
         if (isGoogleLoaded()) {
             ConcurrentModify modifyTask = new ConcurrentModify(taskToModify,
                     _tasksController);
@@ -282,6 +292,10 @@ public class GoogleController implements Runnable {
     }
 
     public void removeTask(chirptask.storage.Task taskToRemove) {
+        if (taskToRemove == null) {
+            return;
+        }
+        
         if (isGoogleLoaded()) {
             ConcurrentDelete deleteTask = new ConcurrentDelete(taskToRemove, 
                     _tasksController, 
@@ -311,6 +325,10 @@ public class GoogleController implements Runnable {
     }
     
     static void resetGoogleIdAndEtag(String googleService) {
+        if (googleService == null) {
+            return;
+        }
+        
         GoogleStorage.resetGoogleIdAndEtag(googleService);
     }
     
@@ -333,12 +351,16 @@ public class GoogleController implements Runnable {
      */
     static boolean isEntryExists(String googleId, String taskType)
             throws UnknownHostException, IOException {
+        if (googleId == null || taskType == null) {
+            return false;
+        }
+        
         boolean isExist = false;
         String googleListId = "";
 
         switch (taskType) {
-        case chirptask.storage.Task.TASK_FLOATING:
-        case chirptask.storage.Task.TASK_DEADLINE:
+        case chirptask.storage.Task.TASK_FLOATING :
+        case chirptask.storage.Task.TASK_DEADLINE :
             googleListId = TasksController.getTaskListId();
             Task foundTask = TasksHandler.getTaskFromId(googleListId, googleId);
             
@@ -346,7 +368,7 @@ public class GoogleController implements Runnable {
                 isExist = true;
             }
             break;
-        case chirptask.storage.Task.TASK_TIMED:
+        case chirptask.storage.Task.TASK_TIMED :
             googleListId = CalendarController.getCalendarId();
             Event foundEvent = CalendarHandler.getEventFromId(googleListId,
                     googleId);
@@ -355,7 +377,7 @@ public class GoogleController implements Runnable {
                 isExist = true;
             }
             break;
-        default:
+        default :
             break;
         }
 
