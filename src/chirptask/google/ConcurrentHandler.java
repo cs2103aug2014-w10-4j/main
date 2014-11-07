@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import java.util.List;
@@ -67,12 +68,6 @@ class ConcurrentHandler {
         }
     }
 
-    private static chirptask.storage.Task addGoogleIdToChirpTask(
-            chirptask.storage.Task taskToModify, String googleId) {
-        taskToModify.setGoogleId(googleId);
-        return taskToModify;
-    }
-
     /**
      * Google Tasks Task
      */
@@ -84,22 +79,42 @@ class ConcurrentHandler {
         }
     }
 
-    static void addGoogleIdToStorage(Task googleTask,
+    static boolean addGoogleIdToStorage(Task googleTask,
             chirptask.storage.Task taskToModify) {
+        if (googleTask == null || taskToModify == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+        
         String googleId = getGoogleId(googleTask);
-
         chirptask.storage.Task modifiedTask = addGoogleIdToChirpTask(
-                taskToModify, googleId);
+                                                taskToModify, googleId);
         GoogleStorage.updateStorages(modifiedTask);
+        isAdded = true;
+        
+        return isAdded;
     }
 
     private static String getGoogleId(Task googleTask) {
         String googleId = googleTask.getId();
         return googleId;
     }
+    
+    private static chirptask.storage.Task addGoogleIdToChirpTask(
+            chirptask.storage.Task taskToModify, String googleId) {
+        taskToModify.setGoogleId(googleId);
+        return taskToModify;
+    }
 
-    static void addETagToStorage(Task googleTask,
+    static boolean addETagToStorage(Task googleTask,
             chirptask.storage.Task taskToModify) {
+        if (googleTask == null || taskToModify == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+        
         String eTag = getETag(googleTask);
 
         chirptask.storage.Task modifiedTask = addETagToChirpTask(
@@ -109,6 +124,9 @@ class ConcurrentHandler {
         if (modifiedTask != null) {
             GoogleStorage.updateStorages(modifiedTask);
         }
+        isAdded = true;
+        
+        return isAdded;
     }
 
     static String getETag(Task googleTask) {
@@ -143,16 +161,31 @@ class ConcurrentHandler {
         }
     }
 
-    static void addGoogleIdToStorage(Event googleEvent,
+    static boolean addGoogleIdToStorage(Event googleEvent,
             chirptask.storage.Task taskToModify) {
+        if (googleEvent == null || taskToModify == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+        
         String googleId = getGoogleId(googleEvent);
         chirptask.storage.Task modifiedTask = addGoogleIdToChirpTask(
                 taskToModify, googleId);
         GoogleStorage.updateStorages(modifiedTask);
+        isAdded = true;
+        
+        return isAdded;
     }
     
-    static void addETagToStorage(Event googleEvent,
+    static boolean addETagToStorage(Event googleEvent,
             chirptask.storage.Task taskToModify) {
+        if (googleEvent == null || taskToModify == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+        
         String eTag = getETag(googleEvent);
 
         chirptask.storage.Task modifiedTask = addETagToChirpTask(
@@ -162,6 +195,9 @@ class ConcurrentHandler {
         if (modifiedTask != null) {
             GoogleStorage.updateStorages(modifiedTask);
         }
+        isAdded = true;
+        
+        return isAdded;
     }
 
     static void modifyLocalStorage(chirptask.storage.Task taskToModify) {

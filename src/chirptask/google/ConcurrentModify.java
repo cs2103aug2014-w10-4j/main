@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import java.io.IOException;
@@ -84,6 +85,10 @@ class ConcurrentModify implements Callable<Boolean> {
     
     static boolean modifyGoogleTask(chirptask.storage.Task taskToModify)
             throws UnknownHostException, IOException {
+        if (taskToModify == null) {
+            return false;
+        }
+        
         boolean isModified = false;
 
         // First check if Google ID exists
@@ -118,6 +123,11 @@ class ConcurrentModify implements Callable<Boolean> {
     
     static boolean modifyGoogleEvent(chirptask.storage.Task taskToModify)
             throws UnknownHostException, IOException {
+        if (taskToModify == null || 
+                taskToModify instanceof TimedTask == false) {
+            return false;
+        }
+        
         boolean isModified = false;
 
         // First check if Google ID exists
@@ -129,29 +139,10 @@ class ConcurrentModify implements Callable<Boolean> {
             return isModified;
         }
 
-        chirptask.storage.Task modifyTask = taskToModify;
-
-        String newDescription = modifyTask.getDescription();
         String calendarId = CalendarController.getCalendarId();
         Event modifiedGoogleEvent = CalendarHandler.getEventFromId(calendarId,
                 googleId);
-        
-        modifiedGoogleEvent = CalendarHandler.setSummary(modifiedGoogleEvent, newDescription);
-
-        if (taskToModify instanceof TimedTask) { // Try type casting
-            TimedTask modifyTimeTask = (TimedTask) modifyTask;
-            Date newStartTime = modifyTimeTask.getStartTime().getTime();
-            Date newEndTime = modifyTimeTask.getEndTime().getTime();
-            modifiedGoogleEvent = CalendarHandler.setStart(modifiedGoogleEvent,
-                    newStartTime);
-            modifiedGoogleEvent = CalendarHandler.setEnd(modifiedGoogleEvent,
-                    newEndTime);
-        }
-        
-        modifiedGoogleEvent = CalendarHandler.setColorAndLook(modifiedGoogleEvent, taskToModify.isDone());
-
-        modifiedGoogleEvent = CalendarHandler.updateEvent(calendarId, googleId,
-                modifiedGoogleEvent);
+        modifiedGoogleEvent = createModifiedEvent(taskToModify, modifiedGoogleEvent);
 
         if (ConcurrentHandler.isNotNull(modifiedGoogleEvent)) {
             isModified = true;
@@ -163,10 +154,41 @@ class ConcurrentModify implements Callable<Boolean> {
         return isModified;
     }
     
+    static Event createModifiedEvent(chirptask.storage.Task modifiedTask, 
+                                      Event modifiedEvent) throws IOException {
+        if (modifiedTask == null || modifiedEvent == null || 
+                modifiedTask instanceof TimedTask == false) {
+            return null;
+        }
+        
+        Event modifiedGoogleEvent = modifiedEvent;
+        String calendarId = CalendarController.getCalendarId();
+        String googleId = modifiedTask.getGoogleId();
+        String newDesc = modifiedTask.getDescription();
+        TimedTask modifyTimeTask = (TimedTask) modifiedTask;
+        
+        modifiedGoogleEvent = 
+                CalendarHandler.setSummary(modifiedGoogleEvent, newDesc);
+        modifiedGoogleEvent = 
+                CalendarHandler.setStartAndEnd(modifyTimeTask, modifiedGoogleEvent);
+        modifiedGoogleEvent = 
+                CalendarHandler.setColorAndLook(modifiedGoogleEvent, 
+                        modifiedTask.isDone());
+        modifiedGoogleEvent = 
+                CalendarHandler.updateEvent(calendarId, 
+                        googleId, 
+                        modifiedGoogleEvent);
+        
+        return modifiedGoogleEvent;
+    }
+    
     // Called by modifyGoogleTasks or modifyGoogleEvents
     static Task toggleTasksDone(Task googleTask,
             chirptask.storage.Task toggleTask) {
-
+        if (googleTask == null || toggleTask == null) {
+            return null;
+        }
+        
         boolean isDone = toggleTask.isDone();
         Task toggledTask = _tasksController.toggleTaskDone(googleTask, isDone);
 
@@ -179,6 +201,10 @@ class ConcurrentModify implements Callable<Boolean> {
 
     static Task updateDueDate(Task taskToUpdate,
             chirptask.storage.Task updatedTask) {
+        if (taskToUpdate == null || updatedTask == null) {
+            return null;
+        }
+        
         String taskType = updatedTask.getType();
 
         if (taskType.equals(chirptask.storage.Task.TASK_DEADLINE)) {
@@ -203,7 +229,10 @@ class ConcurrentModify implements Callable<Boolean> {
 
     static Task updateTasksDescription(Task taskToUpdate,
             chirptask.storage.Task updatedTask) {
-
+        if (taskToUpdate == null || updatedTask == null) {
+            return null;
+        }
+        
         String updatedDescription = updatedTask.getDescription();
         Task updatedGoogleTask = _tasksController.updateDescription(
                 taskToUpdate, updatedDescription);

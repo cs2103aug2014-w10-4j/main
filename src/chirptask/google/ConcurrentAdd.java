@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import java.io.IOException;
@@ -52,8 +53,9 @@ class ConcurrentAdd implements Callable<Boolean> {
 
     public Boolean call() throws UnknownHostException, IOException  {
         Boolean isAdded = false;
+        
         if (ConcurrentHandler.isNull(_taskToAdd)) {
-            return isAdded;
+            return false;
         }
         while (GoogleController.isGoogleLoaded() == false) {
             // wait until google is loaded in background
@@ -61,7 +63,7 @@ class ConcurrentAdd implements Callable<Boolean> {
 
         String type = _taskToAdd.getType();
         String task = _taskToAdd.getDescription();
-
+        
         Task addedGoogleTask = null;
         Event addedGoogleEvent = null;
 
@@ -70,30 +72,16 @@ class ConcurrentAdd implements Callable<Boolean> {
             addedGoogleTask = addFloatingTask(task);
             break;
         case chirptask.storage.Task.TASK_DEADLINE:
-            Date dueDate = _taskToAdd.getDate().getTime();
-            addedGoogleTask = addDeadlineTask(task, dueDate);
+            addedGoogleTask = addDeadlineTask(task, _taskToAdd);
             break;
         case chirptask.storage.Task.TASK_TIMED:
-            TimedTask timedTask = (TimedTask) _taskToAdd;
-            Date startTime = timedTask.getStartTime().getTime();
-            Date endTime = timedTask.getEndTime().getTime();
-            addedGoogleEvent = addTimedTask(task, startTime, endTime);
+            addedGoogleEvent = addTimedTask(task, _taskToAdd);
             break;
         default:
             break;
         }
         
-        if (ConcurrentHandler.isNotNull(addedGoogleTask)) {
-            ConcurrentHandler.addGoogleIdToStorage(addedGoogleTask, _taskToAdd);
-            ConcurrentHandler.addETagToStorage(addedGoogleTask, _taskToAdd);
-            isAdded = true;
-        } else if (ConcurrentHandler.isNotNull(addedGoogleEvent)) {
-            ConcurrentHandler.addGoogleIdToStorage(addedGoogleEvent, _taskToAdd);
-            ConcurrentHandler.addETagToStorage(addedGoogleEvent, _taskToAdd);
-            isAdded = true;
-        } else {
-            GoogleController.setOnlineStatus(Status.SYNC_FAIL);
-        }
+        isAdded = isAddIdAndEtag(addedGoogleTask, addedGoogleEvent, _taskToAdd);
 
         boolean isDone = _taskToAdd.isDone();
         if (isDone) {
@@ -103,7 +91,6 @@ class ConcurrentAdd implements Callable<Boolean> {
         return isAdded;
     }
     
- // Called by ConcurrentAdd
     /**
      * adds a floating task with the specified task title.
      * 
@@ -117,6 +104,10 @@ class ConcurrentAdd implements Callable<Boolean> {
      */
     static Task addFloatingTask(String taskTitle) throws UnknownHostException,
             IOException {
+        if (taskTitle == null) {
+            return null;
+        }
+        
         Task addedTask = _tasksController.addTask(taskTitle);
         return addedTask;
     }
@@ -134,17 +125,61 @@ class ConcurrentAdd implements Callable<Boolean> {
      * @throws IOException
      *             If there are other errors when sending the request.
      */
-    static Task addDeadlineTask(String taskTitle, Date date)
-            throws UnknownHostException, IOException {
-        Task addedTask = _tasksController.addTask(taskTitle, date);
+    static Task addDeadlineTask(String taskTitle, 
+                            chirptask.storage.Task taskToAdd)
+                            throws UnknownHostException, IOException {
+        if (taskTitle == null || taskToAdd == null) {
+            return null;
+        }
+
+        Date dueDate = taskToAdd.getDate().getTime();
+        
+        Task addedTask = _tasksController.addTask(taskTitle, dueDate);
         return addedTask;
     }
 
-    static Event addTimedTask(String taskTitle, Date startTime, Date endTime)
+    static Event addTimedTask(String taskTitle, chirptask.storage.Task taskToAdd)
             throws UnknownHostException, IOException {
+        if (taskTitle == null || taskToAdd == null || 
+                taskToAdd instanceof TimedTask == false) {
+            return null;
+        }
+        
+        TimedTask timedTask = (TimedTask) taskToAdd;
+        Date startTime = timedTask.getStartTime().getTime();
+        Date endTime = timedTask.getEndTime().getTime();
         Event addedEvent = _calendarController.addTimedTask(taskTitle,
-                startTime, endTime);
+                    startTime, endTime);
+        
         return addedEvent;
+    }
+    
+    static boolean isAddIdAndEtag(Task addedGoogleTask, 
+                    Event addedGoogleEvent, chirptask.storage.Task taskToAdd) {
+        if (taskToAdd == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+        
+        if (ConcurrentHandler.isNotNull(addedGoogleTask)) {
+            isAdded = ConcurrentHandler.addGoogleIdToStorage(addedGoogleTask, 
+                                                                taskToAdd);
+            isAdded = isAdded && 
+                    ConcurrentHandler.addETagToStorage(
+                            addedGoogleTask, taskToAdd);
+        } else if (ConcurrentHandler.isNotNull(addedGoogleEvent)) {
+            isAdded = ConcurrentHandler.addGoogleIdToStorage(addedGoogleEvent, 
+                                                                taskToAdd);
+            isAdded = isAdded && 
+                    ConcurrentHandler.addETagToStorage(
+                            addedGoogleEvent, taskToAdd);
+            isAdded = true;
+        } else {
+            GoogleController.setOnlineStatus(Status.SYNC_FAIL);
+        }
+        
+        return isAdded;
     }
 }
 

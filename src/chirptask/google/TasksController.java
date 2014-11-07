@@ -43,6 +43,10 @@ public class TasksController {
     private void initializeTasksClient(HttpTransport httpTransport,
             JsonFactory jsonFactory, Credential credential,
             String applicationName) {
+        if (httpTransport == null || jsonFactory == null || 
+                credential == null || applicationName == null) {
+            return;
+        }
         _tasksClient = new com.google.api.services.tasks.Tasks.Builder(
                 httpTransport, jsonFactory, credential).setApplicationName(
                 applicationName).build();
@@ -54,11 +58,17 @@ public class TasksController {
 
 
     Task getTask(String id) throws UnknownHostException, IOException {
+        if (id == null) {
+            return null;
+        }
         Task result = TasksHandler.getTaskFromId(DEFAULT_TASKLIST, id);
         return result;
     }
 
     Task addTask(String taskTitle) throws UnknownHostException, IOException {
+        if (taskTitle == null) {
+            return null;
+        }
         Task newTask = TasksHandler.createTask(taskTitle);
         Task addedTask = insertTask(newTask);
         return addedTask;
@@ -66,6 +76,9 @@ public class TasksController {
 
     Task addTask(String taskTitle, Date dueDate)
             throws UnknownHostException, IOException {
+        if (taskTitle == null || dueDate == null) {
+            return null;
+        }
         Task newTask = TasksHandler.createTask(taskTitle);
         newTask = TasksHandler.setDueDate(newTask, dueDate);
         Task addedTask = insertTask(newTask);
@@ -74,6 +87,9 @@ public class TasksController {
 
     Task addTask(String taskTitle, String notes, Date dueDate)
             throws UnknownHostException, IOException {
+        if (taskTitle == null || notes == null || dueDate == null) {
+            return null;
+        }
         Task newTask = TasksHandler.createTask(taskTitle);
         newTask = TasksHandler.setNotes(newTask, notes);
         newTask = TasksHandler.setDueDate(newTask, dueDate);
@@ -83,11 +99,17 @@ public class TasksController {
 
     private Task insertTask(Task task) 
             throws UnknownHostException, IOException {
+        if (task == null) {
+            return null;
+        }
         Task result = TasksHandler.insertTaskToList(DEFAULT_TASKLIST, task);
         return result;
     }
     
     Task toggleTaskDone(Task taskToToggle, boolean isDone) {
+        if (taskToToggle == null) {
+            return null;
+        }
         Task toggledTask = taskToToggle;
         if (isDone) {
             toggledTask = TasksHandler.setCompleted(taskToToggle);
@@ -98,6 +120,9 @@ public class TasksController {
     }
 
     boolean deleteTask(String taskId) {
+        if (taskId == null) {
+            return false;
+        }
         boolean isDeleted = false;
         isDeleted = TasksHandler.deleteTaskWithId(DEFAULT_TASKLIST, taskId);
         return isDeleted;
@@ -109,17 +134,26 @@ public class TasksController {
     }
 
     Task updateDescription(Task taskToUpdate, String description) {
+        if (taskToUpdate == null || description == null) {
+            return null;
+        }
         Task updatedTask = TasksHandler.setTitle(taskToUpdate, description);
         return updatedTask;
     }
     
     Task updateDueDate(Task taskToUpdate, Date dueDate) {
+        if (taskToUpdate == null || dueDate == null) {
+            return null;
+        }
         Task updatedTask = TasksHandler.setDueDate(taskToUpdate, dueDate);
         return updatedTask;
     }
     
     static Task updateTask(Task updatedTask) 
                             throws UnknownHostException, IOException {
+        if (updatedTask == null) {
+            return null;
+        }
         updatedTask = TasksHandler.updateTask(DEFAULT_TASKLIST,
                 updatedTask.getId(), updatedTask);
         return updatedTask;

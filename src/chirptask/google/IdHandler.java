@@ -37,8 +37,11 @@ class IdHandler {
     // Code is unused because we remove the need for this additional file
     // Now we store Google Calendar ID in the Settings, config.properties file
 	static String getIdFromFile(File idFile) {
+	    if (idFile == null) {
+	        return null;
+	    }
+	    
 		String id = null;
-
 		try (BufferedReader idFileReader = new BufferedReader(new FileReader(
 				idFile))) {
 			id = idFileReader.readLine();
@@ -52,6 +55,10 @@ class IdHandler {
 	}
 
 	static void saveIdToFile(File idFile, String id) {
+	    if (idFile == null || id == null) {
+	        return;
+	    }
+	    
 		try (BufferedWriter idFileWriter = new BufferedWriter(new FileWriter(
 				idFile))) {
 			idFileWriter.write(id);

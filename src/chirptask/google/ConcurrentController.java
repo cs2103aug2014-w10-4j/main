@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import java.util.concurrent.Callable;
@@ -9,7 +10,7 @@ class ConcurrentController {
     private final int DEFAULT_THREAD_POOL = 10;
     private final int WAIT_TIME = 10;
     
-    private ExecutorService googleExecutor;
+    private ExecutorService googleExecutor = null;
     
     ConcurrentController() {
         initComponents();
@@ -20,8 +21,10 @@ class ConcurrentController {
     }
     
     void addToExecutor(Callable<Boolean> task) {
-        startExecutorIfNotRunning();
-        googleExecutor.submit(task);
+        if (task != null) {
+            startExecutorIfNotRunning();
+            googleExecutor.submit(task);
+        }
     }
     
     private void startExecutorIfNotRunning() {

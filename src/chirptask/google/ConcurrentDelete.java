@@ -1,3 +1,4 @@
+//@author A0111840W
 package chirptask.google;
 
 import java.io.IOException;
@@ -63,9 +64,12 @@ public class ConcurrentDelete implements Callable<Boolean> {
         return isDeleted;
     }
     
- // Called by ConcurrentDelete
     static boolean deleteTask(chirptask.storage.Task taskToDelete)
             throws UnknownHostException, IOException {
+        if (taskToDelete == null) {
+            return false;
+        }
+        
         boolean isDeleted = false;
         String googleId = taskToDelete.getGoogleId();
         String taskType = taskToDelete.getType();
@@ -79,14 +83,14 @@ public class ConcurrentDelete implements Callable<Boolean> {
         }
 
         switch (taskType) {
-        case chirptask.storage.Task.TASK_FLOATING:
-        case chirptask.storage.Task.TASK_DEADLINE:
+        case chirptask.storage.Task.TASK_FLOATING :
+        case chirptask.storage.Task.TASK_DEADLINE :
             isDeleted = deleteGoogleTask(googleId);
             break;
-        case chirptask.storage.Task.TASK_TIMED:
+        case chirptask.storage.Task.TASK_TIMED :
             isDeleted = deleteGoogleEvent(googleId);
             break;
-        default:
+        default :
             break;
         }
 
@@ -100,6 +104,10 @@ public class ConcurrentDelete implements Callable<Boolean> {
      *            to be passed in, should read in from localStorage
      */
     private static boolean deleteGoogleTask(String taskId) {
+        if (taskId == null) {
+            return false;
+        }
+        
         boolean isDeleted = false;
 
         if (GoogleController.isGoogleLoaded()) {
@@ -119,7 +127,12 @@ public class ConcurrentDelete implements Callable<Boolean> {
      *            to be passed in, should read in from localStorage
      */
     private static boolean deleteGoogleEvent(String taskId) {
+        if (taskId == null) {
+            return false;
+        }
+        
         boolean isDeleted = false;
+        
         if (GoogleController.isGoogleLoaded()) {
             isDeleted = _calendarController.deleteEvent(taskId);
             if (!isDeleted) {

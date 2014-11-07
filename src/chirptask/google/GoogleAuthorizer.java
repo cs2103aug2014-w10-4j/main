@@ -37,7 +37,6 @@ public class GoogleAuthorizer {
 
         // Set up Google authorization code flow
         GoogleAuthorizationCodeFlow codeFlow = getAuthorizationCodeFlow(
-                                            credentialUser,
                                             oAuthClientId,
                                             oAuthClientSecret,
                                             googleScopes);
@@ -76,18 +75,21 @@ public class GoogleAuthorizer {
     }
     
     private static GoogleAuthorizationCodeFlow getAuthorizationCodeFlow(
-                                                String credentialUser, 
-                                                String oAuthClientId, 
-                                                String oAuthClientSecret,
-                                                List<String> googleScopes)
-                                               throws IOException {
+                                                    String oAuthClientId, 
+                                                    String oAuthClientSecret,
+                                                    List<String> googleScopes)
+                                                    throws IOException {
+        if (oAuthClientId == null || oAuthClientSecret == null || 
+                googleScopes == null) {
+            return null;
+        }
         
         FileDataStoreFactory dataStoreFactory = GoogleController._dataStoreFactory;
         HttpTransport httpTransport = GoogleController._httpTransport;
         JsonFactory jsonFactory = GoogleController.JSON_FACTORY;
         
-        GoogleAuthorizationCodeFlow codeFlow = new GoogleAuthorizationCodeFlow
-                                                .Builder(httpTransport, 
+        GoogleAuthorizationCodeFlow codeFlow = 
+                new GoogleAuthorizationCodeFlow.Builder(httpTransport, 
                                                         jsonFactory, 
                                                         oAuthClientId, 
                                                         oAuthClientSecret, 
@@ -102,6 +104,9 @@ public class GoogleAuthorizer {
                                         GoogleAuthorizationCodeFlow codeFlow,
                                         String credentialUser) 
                                                 throws IOException{
+        if (codeFlow == null) { // if credentialUser null, non-persistent mode.
+            return null;
+        }
         
         VerificationCodeReceiver codeReceiver = new LocalServerReceiver();
         AuthorizationCodeInstalledApp authorizer = 
