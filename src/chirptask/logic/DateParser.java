@@ -13,7 +13,7 @@ import com.joestelmach.natty.Parser;
 /**
  * Acknowledgment: this code uses natty 0.9 (author joestelmach)
  */
-// @author A0113022
+//@author A0113022
 public class DateParser {
 	private List<Calendar> list;
 	private Parser parse;
@@ -121,6 +121,7 @@ public class DateParser {
 				break;
 			}
 		}
+		//pattern that may be interpreted wrongly by natty
 		if (pattern == 1) {
 			seek += 'h';
 		} else if (pattern == -1) {
@@ -145,6 +146,7 @@ public class DateParser {
 				break;
 			}
 		}
+		//pattern natty does not recognize
 		if (pattern <= 5 && pattern >= 3) {
 			String[] flip = seek.split("[/.-]");
 			if (flip.length == 2) {
