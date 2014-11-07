@@ -1,3 +1,4 @@
+//@author A0111930W
 package chirptask.logic;
 
 import java.text.SimpleDateFormat;
@@ -18,9 +19,11 @@ import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
-//@author A0111930W
+
 public class DisplayView {
     private static final int START_LIST = 0;
+    private static final String TASK_FLOATING = "floating";
+    private static final String TASK_ALL_DAY = "all-day";
 
     /**
      * This will take in a filtered list and update the taskview, sort to
@@ -34,10 +37,8 @@ public class DisplayView {
      * */
     public static void updateTaskView(List<Task> tasks, MainGui gui) {
 
-        Collections.sort(tasks);
-
+        sortTask(tasks);
         processUpdateTaskView(tasks, gui);
-
         processUpdateContextAndCategoryView(gui);
         // Iterator<Map.Entry<Date, TasksByDate>> it =
         // map.entrySet().iterator();
@@ -47,7 +48,15 @@ public class DisplayView {
         // }
 
     }
+    /**
+     * Method will sort the task
+     * @param tasks
+     */
+    private static void sortTask(List<Task> tasks) {
+        Collections.sort(tasks);
+    }
 
+    
     /**
      * This method will update the Context and category on the GUI
      * 
@@ -59,7 +68,7 @@ public class DisplayView {
         updateContextView(gui);
     }
 
-    // @author A0111930W
+    
     /**
      * This method will update the user GUI view. The GUI view will be sorted to
      * all tasks under a date.
@@ -74,12 +83,11 @@ public class DisplayView {
 
         for (int i = START_LIST; i < tasks.size(); i++) {
             Task T = tasks.get(i);
-            gui.addNewTaskViewDate(T.getDate());
+            updateTaskViewDate(gui, T);
             String dateToString = convertTaskDateToDurationString(T);
-            gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
-                    T.getDescription(), dateToString, T.isDone());
+            updateTaskToDate(gui, T, dateToString);
         }
-
+        //Unused
         // Iterator<Task> itr = tasks.iterator();
         // while (itr.hasNext()) {
         // Task T = itr.next();
@@ -96,8 +104,29 @@ public class DisplayView {
         // task.getDescription(), dateToString, task.isDone());
         // }
     }
+    
+    /**
+     * Method will call GUI method to update the task under the respective date
+     * @param gui
+     * @param T
+     * @param dateToString
+     */
+    private static void updateTaskToDate(MainGui gui, Task T,
+            String dateToString) {
+        gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
+                T.getDescription(), dateToString, T.isDone());
+    }
+    
+    /**
+     * Method will call GUI method to create a date view
+     * @param gui
+     * @param T
+     */
+    private static void updateTaskViewDate(MainGui gui, Task T) {
+        gui.addNewTaskViewDate(T.getDate());
+    }
 
-    // @author A0111889W
+    //@author A0111889W
     /**
      * Assuming there are only 3 type of task we need to handle
      * 
@@ -109,8 +138,8 @@ public class DisplayView {
         String dateToString = "";
         SimpleDateFormat sdf = new SimpleDateFormat("kk:mm");
 
-        if (task.getType() == "floating") {
-            dateToString = "all-day";
+        if (task.getType() == TASK_FLOATING) {
+            dateToString = TASK_ALL_DAY;
         } else if (task.getType() == "deadline") {
             DeadlineTask dTask = (DeadlineTask) task;
             dateToString = "due by " + sdf.format(dTask.getDate().getTime());
@@ -124,6 +153,7 @@ public class DisplayView {
         return dateToString;
     }
 
+    //@author A0111930W
     // Call this at init to show all tasks.
     public static void updateTaskView(MainGui gui) {
         List<Task> allTasks = FilterTasks.getFilteredList();// StorageHandler.getAllTasks();
