@@ -60,6 +60,14 @@ public class CalendarController {
     }*/
 
     //@author A0111840W
+    /**
+     * Creates the Calendar Client object to be used for Google Calendar
+     * @param httpTransport The provided HttpTransport object
+     * @param jsonFactory The provided JsonFactory object
+     * @param credential The provided OAuth Credential
+     * @param applicationName The provided application name for OAuth
+     * @throws NullPointerException If any parameter is null
+     */
     private void initializeCalendarClient(HttpTransport httpTransport,
             JsonFactory jsonFactory, Credential credential,
             String applicationName) throws NullPointerException {
@@ -67,7 +75,7 @@ public class CalendarController {
                 jsonFactory == null || 
                 credential == null || 
                 applicationName == null) {
-            assert false;
+            throw new NullPointerException();
         }
         
         // initialize the Google Calendar Service Client
@@ -76,6 +84,10 @@ public class CalendarController {
                 applicationName).build();
     }
     
+    /**
+     * Reads and sets the Calendar ID from Settings
+     * @throws NullPointerException If timedTaskCalendarId is null
+     */
     private void initializeCalendarId() throws NullPointerException {
         String timedTaskCalendarId = retrieveId();
         setCalendarId(timedTaskCalendarId);
@@ -90,10 +102,17 @@ public class CalendarController {
         if (newId == null) {
             throw new NullPointerException();
         }
-        
         _calendarId = newId;
     }
 
+    /**
+     * Creates the Calendar object for Google Calendar if doesn't exist
+     * Else it will retrieve the Calendar from Google Calendar
+     * @param calendarId The Google Calendar ID to retrieve
+     * @return A Calendar object that was successful in initialization
+     * @throws UnknownHostException If the host cannot be contacted
+     * @throws IOException If it got an invalid response or transmission error
+     */
     private Calendar initializeCalendar(String calendarId) throws 
                                         UnknownHostException, IOException {
         if (calendarId == null || "".equals(calendarId)) { 
@@ -120,7 +139,7 @@ public class CalendarController {
                         JSON_NOT_FOUND.equals(responseMessage)) {
                     GoogleController.resetGoogleIdAndEtag(GOOGLE_SERVICE_NAME);
                     calendarId = "";
-                    throw new IOException();
+                    throw jsonResponseEx;
                 }
             } 
         }
@@ -148,6 +167,13 @@ public class CalendarController {
         return _calendarId;
     }
     
+    /**
+     * Retrieves an instance of all Events from the given Google Calendar ID
+     * @return A List<Event> object if found. 
+     *          If calendarID is null, returns an empty List<Event>
+     * @throws UnknownHostException If cannot reach the host
+     * @throws IOException If invalid response or transmission error
+     */
     List<Event> getEvents() throws UnknownHostException, IOException {
         if (_calendarId == null) {
             return new ArrayList<Event>();
@@ -157,6 +183,15 @@ public class CalendarController {
         return events;
     }
     
+    /**
+     * Adds an Event into Google Calendar
+     * @param taskTitle The task description itself
+     * @param startTime The start time in a Date object
+     * @param endTime The end time in a Date object
+     * @return The added Google Event if successful, null if null parameter
+     * @throws UnknownHostException If cannot reach the host
+     * @throws IOException If invalid repsonse or transmission error
+     */
     Event addTimedTask(String taskTitle, Date startTime, Date endTime) 
                                 throws UnknownHostException, IOException {
         if (taskTitle == null || startTime == null || endTime == null) {
@@ -184,6 +219,11 @@ public class CalendarController {
         return insertedEvent;
     }
     
+    /**
+     * Deletes the Event from Google Calendar with the Event ID
+     * @param eventId The Google Calendar's Event ID
+     * @return true if delete is successful, false otherwise
+     */
     boolean deleteEvent(String eventId) {
         if (eventId == null) {
             return false;

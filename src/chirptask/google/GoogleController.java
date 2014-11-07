@@ -378,6 +378,8 @@ public class GoogleController implements Runnable {
             }
             break;
         default :
+            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            assert false;
             break;
         }
 
