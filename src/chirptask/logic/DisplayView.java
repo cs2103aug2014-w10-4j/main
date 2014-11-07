@@ -20,8 +20,7 @@ import chirptask.storage.TimedTask;
 
 public class DisplayView {
     private static final int START_LIST = 0;
-    private static final String TASK_FLOATING = "floating";
-    private static final String TASK_ALL_DAY = "all-day";
+    
 
     /**
      * This will take in a filtered list and update the taskview, sort to
@@ -85,23 +84,6 @@ public class DisplayView {
             String dateToString = convertTaskDateToDurationString(T);
             updateTaskToDate(gui, T, dateToString);
         }
-
-        //Unused
-        // Iterator<Task> itr = tasks.iterator();
-        // while (itr.hasNext()) {
-        // Task T = itr.next();
-        // gui.addNewTaskViewDate(T.getDate());
-        // String dateToString = convertTaskDateToDurationString(T);
-        // gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
-        // T.getDescription(), dateToString, T.isDone());
-        // }
-
-        // for (Task task : tasks) {
-        // gui.addNewTaskViewDate(task.getDate());
-        // String dateToString = convertTaskDateToDurationString(task);
-        // gui.addNewTaskViewToDate(task.getDate(), task.getTaskId(),
-        // task.getDescription(), dateToString, task.isDone());
-        // }
 
     }
     

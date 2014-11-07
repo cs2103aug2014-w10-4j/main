@@ -3,7 +3,7 @@ package chirptask.logic;
 import java.util.ArrayList;
 import java.util.List;
 //@author A0111930W
-//Contains list of TaskByDates Objects.
+
 public class TaskView {
 
 	private List<TasksByDate> listByDate;
