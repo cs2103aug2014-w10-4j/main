@@ -6,7 +6,9 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
+import chirptask.common.Messages;
 import chirptask.google.GoogleController.Status;
+import chirptask.storage.EventLogger;
 import chirptask.storage.TimedTask;
 
 import com.google.api.services.calendar.model.Event;
@@ -78,6 +80,8 @@ class ConcurrentAdd implements Callable<Boolean> {
             addedGoogleEvent = addTimedTask(task, _taskToAdd);
             break;
         default:
+            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            assert false;
             break;
         }
         

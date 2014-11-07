@@ -69,6 +69,8 @@ class ConcurrentModify implements Callable<Boolean> {
                             modifyGoogleEvent(_taskToModify);
             break;
         default:
+            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            assert false;
             break;
         }
 
@@ -199,6 +201,12 @@ class ConcurrentModify implements Callable<Boolean> {
         }
     }
 
+    /**
+     * Update the GoogleTasks Due Date value with the one stored in ChirpTask
+     * @param taskToUpdate Google Tasks Task object
+     * @param updatedTask ChirpTask Task object
+     * @return The updated task if successful, null otherwise
+     */
     static Task updateDueDate(Task taskToUpdate,
             chirptask.storage.Task updatedTask) {
         if (taskToUpdate == null || updatedTask == null) {
@@ -207,21 +215,27 @@ class ConcurrentModify implements Callable<Boolean> {
         
         String taskType = updatedTask.getType();
 
-        if (taskType.equals(chirptask.storage.Task.TASK_DEADLINE)) {
+        switch (taskType) {
+        case chirptask.storage.Task.TASK_DEADLINE :
             Date newDueDate = updatedTask.getDate().getTime();
 
             Task updatedGoogleTask = _tasksController.updateDueDate(
-                    taskToUpdate, newDueDate);
+                taskToUpdate, newDueDate);
 
             if (updatedGoogleTask != null) {
                 return updatedGoogleTask;
             } else {
                 return taskToUpdate;
             }
-        } else if (taskType.equals(chirptask.storage.Task.TASK_FLOATING)) { 
+        case chirptask.storage.Task.TASK_FLOATING :
             return taskToUpdate;
-        } else { //Should not reach here 
-            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_INVALID_TASK_TYPE);
+        case chirptask.storage.Task.TASK_TIMED :
+            //Should not reach here in normal cases
+            return null;
+        default :
+            //Should not reach here at all if covers all types of task
+            EventLogger.getInstance()
+                .logError(Messages.LOG_MESSAGE_INVALID_TASK_TYPE);
             assert false;
             return null;
         }

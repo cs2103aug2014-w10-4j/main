@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 
+import chirptask.common.Messages;
 import chirptask.google.GoogleController.Status;
+import chirptask.storage.EventLogger;
 
 public class ConcurrentDelete implements Callable<Boolean> {
 
@@ -91,6 +93,8 @@ public class ConcurrentDelete implements Callable<Boolean> {
             isDeleted = deleteGoogleEvent(googleId);
             break;
         default :
+            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            assert false;
             break;
         }
 
