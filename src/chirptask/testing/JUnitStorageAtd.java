@@ -19,12 +19,11 @@ import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
 public class JUnitStorageAtd {
-    private final int taskIdA = 1; 
-    
     private final String taskA = "Task A";
     private final String taskB = "Task B";
     private final String taskC = "Task C";
-    
+
+    private int taskIdA = 0; 
     private int taskIdB = 0;
     private int taskIdC = 0;
     
@@ -37,7 +36,8 @@ public class JUnitStorageAtd {
     public void setupStorageAndSampleTasks() {
         local = new LocalStorage();
         local.setUpJUnitTestXmlWriter(); //Start test storage from fresh
-        
+
+        taskIdA = LocalStorage.generateId(); //1
         taskIdB = LocalStorage.generateId(); //2
         taskIdC = LocalStorage.generateId(); //3
         
@@ -65,7 +65,7 @@ public class JUnitStorageAtd {
      */
 	@Test
 	public void testLocalStorage() {
-		//true if the task has been successfully stored
+		// true if the task has been successfully stored
 		assertTrue(local.storeNewTask(floatingTask));
 		assertTrue(local.storeNewTask(timedTask));
 		assertTrue(local.storeNewTask(deadlineTask));
@@ -73,10 +73,14 @@ public class JUnitStorageAtd {
 
         /* This JUnit Test presents 3 partitions. */
 		//There is only Task ID 1-3 in storage
-		//4 and -1 should fail and return null.
+		
+		// Test out of range (lower and upper range)
+		// 4 and 0 should fail and return null.
+        assertEquals(null, local.getTask(4));  //Over the current limit value partition
+        assertEquals(null, local.getTask(0)); //Negative value partition
+        // Tests boundaries
         assertEquals(floatingTask, local.getTask(taskIdA)); //Test value within range 1-3
-        assertEquals(null, local.getTask(9999));  //Over the current limit value partition
-        assertEquals(null, local.getTask(-1)); //Negative value partition
+        assertEquals(deadlineTask, local.getTask(taskIdC)); //
         
         assertEquals(timedTask, local.removeTask(timedTask));
         assertNull(local.getTask(timedTask.getTaskId()));

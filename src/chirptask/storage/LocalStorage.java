@@ -127,8 +127,16 @@ public class LocalStorage implements IStorage {
             local = new File("localJUnitTest.xml");
             local.delete();
             local.createNewFile();
+            docBuilder = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder();
+            localStorage = docBuilder.newDocument();
+            trans = TransformerFactory.newInstance().newTransformer();
+            trans.setOutputProperty(OutputKeys.INDENT, "yes");
+            restartLocalStorage();
         } catch (IOException ioException) {
-            
+        } catch (ParserConfigurationException e) {
+        } catch (TransformerConfigurationException e) {
+        } catch (TransformerFactoryConfigurationError e) {
         }
     }
 	
