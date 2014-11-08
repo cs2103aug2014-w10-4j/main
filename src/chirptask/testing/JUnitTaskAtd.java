@@ -1,7 +1,7 @@
+//@author A0111840W
 package chirptask.testing;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import chirptask.storage.DeadlineTask;
@@ -16,35 +17,60 @@ import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
 public class JUnitTaskAtd {
+    
+    private int taskIdA;
+    private int taskIdB;
+    private int taskIdC;
+    private int taskIdD;
+    private Calendar calA;
+    private Calendar calB;
+    private Calendar calB2;
+    private Calendar calC;
+    private List<Task> taskList;
+    private Long millisA;
+    private Long millisB;
+    private Long millisB2;
+    private Long millisC;
+    private String taskA;
+    private String taskB;
+    private String taskC;
+    private String taskD;
+    private Task floatingTask;
+    private Task timedTask;
+    private Task deadlineTask;
+    private Task nextFloatingTask;
+    
+    @Before
+    public void setupTest() {
+        taskIdA = 1;
+        taskIdB = 2;
+        taskIdC = 3;
+        taskIdD = 4;
+        millisA = 1412935810000L; //Fri Oct 10 18:10:10 SGT 2014 in Epoch Millis
+        millisB = 1412763010000L; //Wed Oct 08 18:10:10 SGT 2014 in Epoch Millis
+        millisB2 = 1412935810000L; //Fri Oct 10 18:10:10 SGT 2014 in Epoch Millis
+        millisC = 1413108610000L; //Sun Oct 12 18:10:10 SGT 2014 in Epoch Millis
+        taskA = "Task A";
+        taskB = "Task B";
+        taskC = "Task C";
+        taskD = "Task D";
+        calA = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        calA.setTimeInMillis(millisA);
+        calB = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        calB.setTimeInMillis(millisB);
+        calB2 = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        calB2.setTimeInMillis(millisB2);
+        calC = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        calC.setTimeInMillis(millisC);
+        taskList = new ArrayList<Task>();
+        floatingTask = new Task(taskIdA, taskA);
+        timedTask = new TimedTask(taskIdB, taskB, calB, calB2);
+        deadlineTask = new DeadlineTask(taskIdC, taskC, calC);
+        nextFloatingTask = new Task(taskIdD, taskD);
+    }
 
-	//@author A0111840W
 	@Test
 	public void testSortTasks() {
-	    int taskIdA = 1;
-        int taskIdB = 2;
-        int taskIdC = 3;
-        int taskIdD = 4;
-        Long millisB1 = 1412763010000L; //Wed Oct 08 18:10:10 SGT 2014 in Epoch Millis
-        Long millisB2 = 1412935810000L; //Fri Oct 10 18:10:10 SGT 2014 in Epoch Millis
-        Long millisC = 1413108610000L; //Sun Oct 12 18:10:10 SGT 2014 in Epoch Millis
-        String taskA = "Task A";
-        String taskB = "Task B";
-        String taskC = "Task C";
-        String taskD = "Task D";
-
-        Calendar calB1 = Calendar.getInstance(); //Assume local time is SGT TimeZone
-        calB1.setTimeInMillis(millisB1);
-        Calendar calB2 = Calendar.getInstance(); //Assume local time is SGT TimeZone
-        calB2.setTimeInMillis(millisB2);
-        Calendar calC = Calendar.getInstance(); //Assume local time is SGT TimeZone
-        calC.setTimeInMillis(millisC);
-		
-		List<Task> taskList = new ArrayList<Task>();
-		Task floatingTask = new Task(taskIdA, taskA);
-		Task timedTask = new TimedTask(taskIdB, taskB, calB1, calB2);
-		Task deadlineTask = new DeadlineTask(taskIdC, taskC, calC);
-		Task nextFloatingTask = new Task(taskIdD, taskD);
-
         taskList.add(nextFloatingTask);   //Task D
 		taskList.add(floatingTask);       //Task A
         taskList.add(deadlineTask);       //Task C
@@ -60,23 +86,6 @@ public class JUnitTaskAtd {
 
 	@Test
 	public void testDeadlineTasks() {
-	    int taskIdA = 1;
-	    int taskIdB = 2;
-	    int taskIdC = 3;
-	    Long millisA = 1412935810000L; //Fri Oct 10 18:10:10 SGT 2014 in Epoch Millis
-	    Long millisB = 1412763010000L; //Wed Oct 08 18:10:10 SGT 2014 in Epoch Millis
-	    Long millisC = 1413108610000L; //Sun Oct 12 18:10:10 SGT 2014 in Epoch Millis
-	    String taskA = "Task A";
-	    String taskB = "Task B";
-	    String taskC = "Task C";
-	    
-	    Calendar calA = Calendar.getInstance(); //Assume local time is SGT TimeZone
-	    calA.setTimeInMillis(millisA);
-	    Calendar calB = Calendar.getInstance(); //Assume local time is SGT TimeZone
-	    calB.setTimeInMillis(millisB);
-        Calendar calC = Calendar.getInstance(); //Assume local time is SGT TimeZone
-        calC.setTimeInMillis(millisC);
-        
         assertEquals("test calendar values", "Fri Oct 10 18:10:10 SGT 2014", calA.getTime().toString());
         assertEquals("test calendar values", "Wed Oct 08 18:10:10 SGT 2014", calB.getTime().toString());
         assertEquals("test calendar values", "Sun Oct 12 18:10:10 SGT 2014", calC.getTime().toString());
@@ -97,16 +106,5 @@ public class JUnitTaskAtd {
         assertEquals("test calendar values", "Fri Oct 10 18:10:10 SGT 2014", calA.getTime().toString());
         assertEquals("test calendar values", "Wed Oct 08 18:10:10 SGT 2014", calB.getTime().toString());
         assertEquals("test calendar values", "Sun Oct 12 18:10:10 SGT 2014", calC.getTime().toString());
-        
-        //These are the Calendar objects will be created by Task object (superclass)
-        //These calendars should not be equal to the ones entered above
-        //These calendars should be of the current instance time of the host machine
-        calA = deadlineA.getDate();
-        calB = deadlineB.getDate(); 
-        calC = deadlineC.getDate(); 
-        
-        assertNotEquals("should not equal", "Fri Oct 10 18:10:10 SGT 2014", calA.getTime().toString());
-        assertNotEquals("should not equal", "Wed Oct 08 18:10:10 SGT 2014", calB.getTime().toString());
-        assertNotEquals("should not equal", "Sun Oct 12 18:10:10 SGT 2014", calC.getTime().toString());
 	}
 }
