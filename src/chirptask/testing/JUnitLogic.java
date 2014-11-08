@@ -78,6 +78,30 @@ public class JUnitLogic {
         _logic.retrieveInputFromUI("delete 1-3");
         assertEquals(FilterTasks.getFilteredList().size(), 2);
         
+        //Done a task
+        //Task 1 is done, expected true
+        _logic.retrieveInputFromUI("done 1");
+        assertEquals(FilterTasks.getFilteredList().get(0).isDone(), true);
+        //Undone a task
+        //Task 1 is undone, expected false
+        _logic.retrieveInputFromUI("undone 1");
+        assertEquals(FilterTasks.getFilteredList().get(0).isDone(), false);
+        //Done a task out of range
+        //Expect none of the tasks to be done since its out of range.
+        _logic.retrieveInputFromUI("done 1-3");
+        assertEquals(FilterTasks.getFilteredList().get(0).isDone(), false);
+        assertEquals(FilterTasks.getFilteredList().get(1).isDone(), false);
+        //Undone a task out of range
+        //Expect all task to be remain as done none of the task will be undone.
+        _logic.retrieveInputFromUI("done 1-2");
+        _logic.retrieveInputFromUI("undone 1-3");
+        assertEquals(FilterTasks.getFilteredList().get(0).isDone(), true);
+        assertEquals(FilterTasks.getFilteredList().get(1).isDone(), true);
+        //Delete all task
+        _logic.retrieveInputFromUI("delete 1-2");
+        //Clear all task, task will be deleted from local storage
+        _logic.retrieveInputFromUI("clear");
+        assertEquals(FilterTasks.getFilteredList().size(), 0);
     }
 
     @Test
