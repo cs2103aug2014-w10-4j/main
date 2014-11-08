@@ -10,53 +10,51 @@ import org.junit.Test;
 import chirptask.logic.DateParser;
 //@author A0113022
 public class JUnitDateParser {
+	/*
+	 * recognized format:
+	 * Formal date: dd/mm dd-mm dd.mm mm/dd mm-dd mm.dd 
+	 * (dd/mm format takes precedence over mm/dd)
+	 * Relaxed month: dd-MMM, MMM
+	 * Specific time: HH:mm, HHmm, HHmm'h', 
+	 * HHmm'hr', hh:mm+ am/pm, h am/pm, hh'a', hh'p'
+	 * Relaxed day of week: Mon, Tue, Wed, Thurs, Thur, Fri, Sat, Sun 
+	 * Relative date: now, today, tomorrow, 
+	 * (next/this/last) week, month, day, hour, hrs, minute, min 
+	 */
 	DateParser parser = new DateParser();
 	
 	@Test
-	public void testDate() {
-		/*
-		 * recognized format:
-		 * dd/mm dd-mm dd.mm mm/dd mm-dd mm.dd (dd/mm format takes precedence over mm/dd)
-		 * relaxed month dd-MMM, MMM
-		 * specific time HH:mm, HHmm, HHmm'h', 
-		 * HHmm'hr', hh:mm+am/pm, h+am/pm, hh'a', hh'p'
-		 * relaxed day of week
-		 * relative date now, today, tomorrow, (next/this/last/from) week, month, day,
-		 * hour, hrs, minute, min 
-		 */
+	public void testFormalDate() {
+		
 		Calendar today = Calendar.getInstance();
 		List<Calendar> cals;
 		cals = parser.parseDate("23/10");
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
 		
-		cals = parser.parseDate("23-10");
+		cals = parser.parseDate("by 23-10-15");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2015, 9, 23, 23, 59);
+		
+		cals = parser.parseDate("by 23.10");
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
 		
-		cals = parser.parseDate("23.10");
+		cals = parser.parseDate("by 10.23.13");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2013, 9, 23, 23, 59);
+		
+		cals = parser.parseDate("by 10-23");
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
 		
-		cals = parser.parseDate("10.23");
+		cals = parser.parseDate("by 10/23");
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
 		
-		cals = parser.parseDate("10-23");
-		assertEquals(cals.size(), 1);
-		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
-		
-		cals = parser.parseDate("10/23");
-		assertEquals(cals.size(), 1);
-		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
-		
-		cals = parser.parseDate("11.3");
+		cals = parser.parseDate("by 11.3");
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 2, 11, 23, 59);
-		
-		cals = parser.parseDate("23-nov");
-		assertEquals(cals.size(), 1);
-		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 10, 23, 23, 59);
 		
 		cals = parser.parseDate("from 23/10 to 25/11");
 		assertEquals(cals.size(), 2);
@@ -68,6 +66,45 @@ public class JUnitDateParser {
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
 		validateDateTime(cals.get(1), today.get(Calendar.YEAR), 10, 25, 23, 59);
 		
+		cals = parser.parseDate("from 23.10 to 25.01.15");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
+		validateDateTime(cals.get(1), 2015, 0, 25, 23, 59);
+		
+		cals = parser.parseDate("from 10-23 to 01.25.15");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
+		validateDateTime(cals.get(1), 2015, 0, 25, 23, 59);
+		
+		cals = parser.parseDate("from 25.01.15 to 10/23/15");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2015, 0, 25, 23, 59);
+		validateDateTime(cals.get(1), 2015, 9, 23, 23, 59);
+		
+	}
+		
+	@Test
+	public void testRelaxedMonth() {
+		
+		Calendar today = Calendar.getInstance();
+		List<Calendar> cals;
+		
+		cals = parser.parseDate("by dec");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 11, 1, 23, 59);
+		
+		cals = parser.parseDate("23-nov");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 10, 23, 23, 59);
+		
+		cals = parser.parseDate("by 1-dec-2015");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2015, 11, 1, 23, 59);
+		
+		cals = parser.parseDate("by jan 1st");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 0, 1, 23, 59);
+		
 		cals = parser.parseDate("from 23 oct to 11.25");
 		assertEquals(cals.size(), 2);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
@@ -77,6 +114,12 @@ public class JUnitDateParser {
 		assertEquals(cals.size(), 2);
 		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 9, 23, 23, 59);
 		validateDateTime(cals.get(1), today.get(Calendar.YEAR), 10, 25, 23, 59);
+		
+		cals = parser.parseDate("from nov 23rd to nov 25th");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), today.get(Calendar.YEAR), 10, 23, 23, 59);
+		validateDateTime(cals.get(1), today.get(Calendar.YEAR), 10, 25, 23, 59);
+		
 	}
 	
 	@Test

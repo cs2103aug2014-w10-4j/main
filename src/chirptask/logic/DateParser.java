@@ -146,11 +146,13 @@ public class DateParser {
 				break;
 			}
 		}
-		//pattern natty does not recognize
+		//patterns natty does not recognize
 		if (pattern <= 5 && pattern >= 3) {
 			String[] flip = seek.split("[/.-]");
 			if (flip.length == 2) {
 				seek = flip[1] + "/" + flip[0];
+			} else if (flip.length == 3) {
+				seek = flip[1]  + "/" + flip[0] + "/" + flip[2];
 			}
 		} else if (pattern == 2) {
 			seek = seek.replace(".", "/");
