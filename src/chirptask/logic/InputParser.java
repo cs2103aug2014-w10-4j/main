@@ -20,7 +20,7 @@ public class InputParser {
 	private static final int TASK_ID_DISPLAY = -1;
 	private static final int TASK_ID_INVALID = -2;
 	private static final int TASK_ID_PARSE_EXCEPTION = -3;
-	
+	private static final int DAY_IN_MILLI = 24*60*60*1000;
 	private static final String[] deadlineKeyword = new String[] { "by", "on", "at" };
 	private static final String[] timedKeyword = new String[] { "to", "til", "->" };
 	private static final int INVALID_POSITION = -1;
@@ -204,6 +204,15 @@ public class InputParser {
 			}
 			Calendar startTime = dateList.get(0);
 			Calendar endTime = dateList.get(1);
+			long distance = startTime.getTimeInMillis() - endTime.getTimeInMillis();
+			if (distance > 0) {
+				if (distance >= DAY_IN_MILLI) {
+					return processInvalid(CommandType.ADD);
+				} else {
+					endTime.add(Calendar.DAY_OF_MONTH, 1);
+				}
+			}
+			
 			if (details[1] != null && !details[1].equals("")) {
 				description = details[1];
 			}
@@ -491,6 +500,14 @@ public class InputParser {
 				editedDescription = newDesc;
 			} else {
 				return newTask;
+			}
+		}
+		long distance = startDate.getTimeInMillis() - endDate.getTimeInMillis();
+		if (distance > 0) {
+			if (distance >= DAY_IN_MILLI) {
+				return newTask;
+			} else {
+				endDate.add(Calendar.DAY_OF_MONTH, 1);
 			}
 		}
 

@@ -172,6 +172,16 @@ public class JUnitInputParser {
 				empty, empty);
 		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
+		
+		parser.receiveInput("addt attend talk from code to product "
+				+ "from 11pm -> 1am");
+		start.set(2014, 10, 4, 23, 00);
+		end.set(2014, 10, 5, 1, 00);
+		task = templateTaskTimed(
+				"attend talk from code to product", start, end,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
 	}
 
 
