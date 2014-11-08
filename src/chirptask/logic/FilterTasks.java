@@ -1,4 +1,5 @@
 //@author A0111930W
+
 package chirptask.logic;
 
 import java.security.InvalidParameterException;
@@ -14,6 +15,13 @@ import chirptask.gui.MainGui;
 import chirptask.storage.StorageHandler;
 import chirptask.storage.Task;
 
+/**
+ * This class is use to populate the task/hashtag/category list and will be use to display
+ * by DisplayView class.
+ * 
+ * @author A0111930W
+ *
+ */
 public class FilterTasks {
 
     private static List<Task> filteredTask;
@@ -22,9 +30,18 @@ public class FilterTasks {
     private static String currentFilter = Settings.DEFAULT_FILTER;
     private static final int INIT_FILTER = 1;
     private static final int INIT_TASKINDEX = -1;
+    private static final int ZERO_POS = 0;
     private static final int FIRST_POS = 1;
+    private static final int START_INDEX = 0;
+    private static final int INT_ONE = 1;
 
-    static void filter(Task T, MainGui gui) {
+    /**
+     * This method is use to process the current filter entered by user
+     * 
+     * @param T
+     * @param gui
+     */
+    public static void filter(Task T, MainGui gui) {
         filteredTask = StorageHandler.getAllTasks();
         filteredTask = hideDeleted(filteredTask);
         currentFilter = T.getDescription();
@@ -36,16 +53,35 @@ public class FilterTasks {
 
     }
 
+    /**
+     * Show appropriate message to user
+     * 
+     * @param gui
+     */
     private static void showStatusToUser(MainGui gui) {
         DisplayView.showStatusToUser(StatusType.MESSAGE, gui, "");
     }
 
+    /**
+     * Enables gui component to call this method when user presses tab to show
+     * the edited description
+     * 
+     * @param editInput
+     * @param gui
+     */
     public static void editCli(String editInput, MainGui gui) {
         assert gui != null && !editInput.trim().isEmpty();
         int taskIndex = convertInputToIndex(editInput);
         showEditTaskToUser(gui, taskIndex);
     }
 
+    /**
+     * Check if edited task is in the task list range and show the selected task
+     * to cli.
+     * 
+     * @param gui
+     * @param taskIndex
+     */
     private static void showEditTaskToUser(MainGui gui, int taskIndex) {
         int oldtaskIndex = taskIndex;
         taskIndex--;
@@ -60,6 +96,13 @@ public class FilterTasks {
                 + filteredTask.get(taskIndex).getDescription());
     }
 
+    /**
+     * Method returns true if task key in by user is within the range of the
+     * displayed task.
+     * 
+     * @param taskIndex
+     * @return
+     */
     private static boolean isTaskIndexInRange(int taskIndex) {
         return taskIndex > INIT_TASKINDEX && taskIndex < filteredTask.size();
     }
@@ -76,10 +119,16 @@ public class FilterTasks {
         return taskIndex;
     }
 
+    /**
+     * Return a list of tasks that is not deleted.
+     * 
+     * @param taskList
+     * @return
+     */
     public static List<Task> hideDeleted(List<Task> taskList) {
         List<Task> unhiddenList = new ArrayList<Task>();
 
-        for (int i = 0; i < taskList.size(); i++) {
+        for (int i = START_INDEX; i < taskList.size(); i++) {
             Task currTask = taskList.get(i);
             if (!currTask.isDeleted()) {
                 unhiddenList.add(currTask);
@@ -89,13 +138,20 @@ public class FilterTasks {
         return unhiddenList;
     }
 
+    /**
+     * Process the user input for filter and populate the list of tasks
+     * accordingly
+     * 
+     * @param filters
+     * @param gui
+     */
     private static void processFilter(String filters, MainGui gui) {
         String[] param = processFilterParam(filters);
 
         List<Task> templist = new CopyOnWriteArrayList<Task>();
         templist.addAll(filteredTask);
 
-        for (int i = 0; i < param.length; i++) {
+        for (int i = START_INDEX; i < param.length; i++) {
             String filter = param[i];
             switch (filter) {
             case "/done":
@@ -128,6 +184,14 @@ public class FilterTasks {
 
     }
 
+    /**
+     * Filter the task list by date
+     * 
+     * @param gui
+     * @param param
+     * @param templist
+     * @param i
+     */
     private static void filterTaskDate(MainGui gui, String[] param,
             List<Task> templist, int i) {
         try {
@@ -144,6 +208,15 @@ public class FilterTasks {
         }
     }
 
+    /**
+     * Process the date filter and display status to user
+     * 
+     * @param gui
+     * @param param
+     * @param templist
+     * @param i
+     * @param filterdate
+     */
     private static void processFilterDate(MainGui gui, String[] param,
             List<Task> templist, int i, Calendar filterdate) {
         // add 1 so that the filter includes tasks of the
@@ -154,6 +227,12 @@ public class FilterTasks {
                 + INIT_FILTER]);
     }
 
+    /**
+     * Log down invalid action by user and set error status.
+     * 
+     * @param gui
+     * @return
+     */
     private static List<Task> processExceptionLogging(MainGui gui) {
         List<Task> templist;
         StorageHandler.logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
@@ -163,19 +242,30 @@ public class FilterTasks {
         return templist;
     }
 
+    /**
+     * Method that will split the filter string by space
+     * 
+     * @param filters
+     * @return
+     */
     private static String[] processFilterParam(String filters) {
         return filters.split("\\s+");
     }
 
+    /**
+     * Process the user date input and return an calendar object
+     * 
+     * @param filter
+     * @return
+     * @throws InvalidParameterException
+     */
     public static Calendar processFilterDateParam(String filter)
             throws InvalidParameterException {
         String[] temp = filter.split("/");
         Calendar filterdate = Calendar.getInstance();
-        if (temp.length > 1) {
+        if (isValidDateLength(temp)) {
             try {
-                filterdate.set(filterdate.get(Calendar.YEAR),
-                        Integer.parseInt(temp[1]) - 1,
-                        Integer.parseInt(temp[0]));
+                setCalendar(temp, filterdate);
             } catch (NumberFormatException e) {
 
             }
@@ -185,6 +275,25 @@ public class FilterTasks {
         }
 
         return filterdate;
+    }
+
+    /**
+     * 
+     * @param temp
+     * @param filterdate
+     */
+    private static void setCalendar(String[] temp, Calendar filterdate) {
+        filterdate.set(filterdate.get(Calendar.YEAR),
+                convertStringDateToInt(temp, FIRST_POS) - INT_ONE,
+                convertStringDateToInt(temp, ZERO_POS));
+    }
+
+    private static int convertStringDateToInt(String[] temp, int pos) {
+        return Integer.parseInt(temp[pos]);
+    }
+
+    private static boolean isValidDateLength(String[] temp) {
+        return temp.length > INT_ONE;
     }
 
     private static void filterTaskByDate(List<Task> tempList,
@@ -210,11 +319,7 @@ public class FilterTasks {
     private static void populateDateList(List<Task> tempList,
             Calendar filterdate) {
         for (Task T : filteredTask) {
-            // System.out.println(T.getDate().get(Calendar.DATE)+"/"+T.getDate().get(Calendar.MONTH));
-            // >= 0 means the current calendar is after or equals to the Task
-            // calendar
-            if (filterdate.compareTo(T.getDate()) < 1) {
-                // System.out.println(filterdate.get(Calendar.DATE));
+            if (filterdate.compareTo(T.getDate()) < INT_ONE) {
                 tempList.remove(T);
             }
         }
@@ -228,7 +333,13 @@ public class FilterTasks {
             populateStringList(tempList, keyword);
         }
     }
-
+    /**
+     * This method will remove from all the tasks that does not match the user input,
+     * final filteredTask list will contains all tasks that matches. 
+     * 
+     * @param templist
+     * @param keywords
+     */
     private static void populateStringList(List<Task> templist, String keywords) {
         for (Task T : filteredTask) {
             if (!T.getDescription().toLowerCase()
@@ -245,7 +356,11 @@ public class FilterTasks {
             populateStatusList(tempList, done);
         }
     }
-
+    /**
+     * 
+     * @param tempList
+     * @param done
+     */
     private static void populateStatusList(List<Task> tempList, boolean done) {
         for (Task T : filteredTask) {
             if (T.isDone() != done) {
@@ -253,7 +368,9 @@ public class FilterTasks {
             }
         }
     }
-
+    /**
+     * Repopulate the filtered task which simulate a refresh.
+     */
     private static void resetFilteredTask() {
         filteredTask = StorageHandler.getAllTasks();
         filteredTask = hideDeleted(filteredTask);
@@ -274,7 +391,12 @@ public class FilterTasks {
             }
         }
     }
-
+    /**
+     * This method is called during the initialization of the program,
+     * and will populate all task and category/hastags into the respective list for display.
+     * 
+     * @param gui
+     */
     static void filter(MainGui gui) {
         categoriesList = new ArrayList<String>();
         hashtagList = new ArrayList<String>();
@@ -307,9 +429,9 @@ public class FilterTasks {
 
     private static void populateHashtag(Task task) {
 
-        for (String context : task.getContexts()) {
-            if (!hashtagList.contains(context.toLowerCase())) {
-                hashtagList.add(context.toLowerCase());
+        for (String hashtag : task.getContexts()) {
+            if (!hashtagList.contains(hashtag.toLowerCase())) {
+                hashtagList.add(hashtag.toLowerCase());
             }
         }
 

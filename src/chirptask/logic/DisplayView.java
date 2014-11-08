@@ -17,6 +17,13 @@ import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
+/**
+ * This class handles the processing of filtertask before displaying the results to user
+ *  using MainGui methods.
+ * 
+ * @author A0111930W
+ *
+ */
 
 public class DisplayView {
     private static final int START_LIST = 0;
