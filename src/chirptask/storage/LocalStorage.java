@@ -32,6 +32,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import chirptask.common.Messages;
+
 /**
  * This class handles the tasks list in XML format. The XML file it manages
  * contains tasks id, description, contexts, categories and deadline/start time
@@ -65,19 +67,23 @@ public class LocalStorage implements IStorage {
 				setIdGenerator(getLatestId());
 			} catch (SAXException e) { //if file cannot be parsed
 				clearContent(local);
-				addRoot();
-				writeToFile();
-				setIdGenerator(0);
-//				e.printStackTrace();
+				restartLocalStorage();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println(String.format(Messages.ERROR_LOCAL, 
+						"write to file failed"));
 			}
 		} else {
-			addRoot();
-			writeToFile();
-			setIdGenerator(0);
+			restartLocalStorage();
 		} 
+	}
+
+	/**
+	 * 
+	 */
+	private void restartLocalStorage() {
+		addRoot();
+		writeToFile();
+		setIdGenerator(0);
 	}
 
 	private void clearContent(File file) {
@@ -87,8 +93,7 @@ public class LocalStorage implements IStorage {
 			writer.print("");
 			writer.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		}
 		
 		
@@ -122,7 +127,7 @@ public class LocalStorage implements IStorage {
             local = new File("localJUnitTest.xml");
             local.delete();
             local.createNewFile();
-        }catch (IOException ioException) {
+        } catch (IOException ioException) {
             
         }
     }
@@ -411,100 +416,110 @@ public class LocalStorage implements IStorage {
 	 */
 	private Task retrieveTaskFromFile(Node node) {
 		Task task = null;
+		int taskId = -1;
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element item = (Element) node;
 			try {
-				int taskId = Integer.parseInt(item.getAttribute("TaskId"));
-				
-				if (taskId < 0) {
-				    return null;
-				}
-				
-				String typeTask = getValues("type", item).get(0);
-				String description = getValues("description", item).get(0);
-				String googleId = getValues("googleId", item).get(0);
-				String googleETag = getValues("googleETag", item).get(0);
-				String taskStatus = item.getAttribute("done");
-                String deleted = getValues("isDeleted", item).get(0);
-                String modified = getValues("isModified", item).get(0);
-                
-                boolean isDone = false;
-                boolean isDeleted = false;
-                boolean isModified = false;
-                
-                if (taskStatus != null) {
-                    if (taskStatus.equals("true")) {
-                        isDone = true;
-                    } else {
-                        isDone = false;
-                    }
-                }
-                
-                if (deleted != null) {
-                    if (deleted.equals("true")) {
-                        isDeleted = true;
-                    } else {
-                        isDeleted = false;
-                    }
-                }
-                
-                if (modified != null) {
-                    if (modified.equals("true")) {
-                        isModified = true;
-                    } else {
-                        isModified = false;
-                    }
-                }
-                
-				SimpleDateFormat dateFormatter = new SimpleDateFormat(
-						DATE_FORMAT);
-
-				if (typeTask.equalsIgnoreCase("Deadline Task")) {
-					Calendar dueDate = Calendar.getInstance();
-					dueDate.setTime(dateFormatter.parse(getValues("deadline",
-							item).get(0)));
-					task = new DeadlineTask(taskId, description, dueDate);
-				} else if (typeTask.equalsIgnoreCase("Timed Task")) {
-					Calendar startTime = Calendar.getInstance();
-					startTime.setTime(dateFormatter.parse(getValues("start",
-							item).get(0)));
-					Calendar endTime = Calendar.getInstance();
-					endTime.setTime(dateFormatter.parse(getValues("end", item)
-							.get(0)));
-					task = new TimedTask(taskId, description, startTime,
-							endTime);
-				} else {
-					task = new Task(taskId, description);
-					if (isDone) {
-					    Calendar doneDate = Calendar.getInstance();
-					    String storedDateString = getValues("doneDate",
-					            item).get(0);
-					    if (storedDateString != null) {
-					        try { 
-					        Date storedDate = dateFormatter.parse(
-					                storedDateString);
-					        doneDate.setTime(storedDate);
-					        } catch (ParseException parseException) {
-					            //do nothing, just use today's date above.
-					            //support for older versions.
-					        }
-					    }
-					    task.setDate(doneDate);
-					}
-				}
-
-				task.setContexts(getValues("contexts", item));
-				task.setCategories(getValues("categories", item));
-				task.setGoogleId(googleId);
-				task.setETag(googleETag);
-				task.setDeleted(isDeleted);
-				task.setModified(isModified);
-				task.setDone(isDone);
-				
+				taskId = Integer.parseInt(item.getAttribute("TaskId"));
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
+			}	
+			
+			if (taskId < 0) {
+				return null;
 			}
+				
+			String typeTask = getValues("type", item).get(0);
+			String description = getValues("description", item).get(0);
+			String googleId = getValues("googleId", item).get(0);
+			String googleETag = getValues("googleETag", item).get(0);
+			String taskStatus = item.getAttribute("done");
+            String deleted = getValues("isDeleted", item).get(0);
+            String modified = getValues("isModified", item).get(0);
+                
+            boolean isDone = false;
+            boolean isDeleted = false;
+            boolean isModified = false;
+                
+            if (taskStatus != null) {
+                if (taskStatus.equals("true")) {
+                   isDone = true;
+                } else {
+                   isDone = false;
+                }
+            }
+                
+            if (deleted != null) {
+                if (deleted.equals("true")) {
+                    isDeleted = true;
+                } else {
+                    isDeleted = false;
+                }
+            }
+                
+            if (modified != null) {
+                 if (modified.equals("true")) {
+                    isModified = true;
+                 } else {
+                    isModified = false;
+                }
+            }
+                
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(
+						DATE_FORMAT);
+
+			if (typeTask.equalsIgnoreCase("Deadline Task")) {
+				Calendar dueDate = Calendar.getInstance();
+				Date deadline;
+				try {
+					deadline = dateFormatter.parse(getValues("deadline",item).get(0));
+				} catch (ParseException e) {
+					return null;
+				}
+				dueDate.setTime(deadline);
+				task = new DeadlineTask(taskId, description, dueDate);
+			} else if (typeTask.equalsIgnoreCase("Timed Task")) {
+				try {
+					Calendar startTime = Calendar.getInstance();
+					startTime.setTime(dateFormatter.parse(getValues("start",
+								item).get(0)));
+					Calendar endTime = Calendar.getInstance();
+					endTime.setTime(dateFormatter.parse(getValues("end", item)
+								.get(0)));
+					task = new TimedTask(taskId, description, startTime,
+								endTime);
+				} catch (ParseException e) {
+					return null;
+				}
+			} else {
+				task = new Task(taskId, description);
+				if (isDone) {
+					Calendar doneDate = Calendar.getInstance();
+					String storedDateString = getValues("doneDate",
+					            item).get(0);
+					if (storedDateString != null) {
+					   try { 
+					        Date storedDate = dateFormatter.parse(
+					                storedDateString);
+					        doneDate.setTime(storedDate);
+					   } catch (ParseException parseException) {
+					            //do nothing, just use today's date above.
+					            //support for older versions.
+					    }
+					}
+					task.setDate(doneDate);
+				}
+			}
+
+			task.setContexts(getValues("contexts", item));
+			task.setCategories(getValues("categories", item));
+			task.setGoogleId(googleId);
+			task.setETag(googleETag);
+			task.setDeleted(isDeleted);
+			task.setModified(isModified);
+			task.setDone(isDone);
+
 		}
 		return task;
 	}
