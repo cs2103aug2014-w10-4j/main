@@ -14,7 +14,13 @@ import chirptask.storage.TimedTask;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.tasks.model.Task;
 
-
+/**
+ * ConcurrentModify is submitted to the ExecutorService to run Concurrently
+ * It will determine which method to call based on the Task Type
+ * Furthermore, if the modification online is successfully, it will reset
+ * the local ChirpTask Task isModified flag to false.
+ *
+ */
 class ConcurrentModify implements Callable<Boolean> {
 
     private chirptask.storage.Task _taskToModify;
@@ -85,6 +91,14 @@ class ConcurrentModify implements Callable<Boolean> {
         return isModified;
     }
     
+    /**
+     * Uses the GoogleId stored locally to check if the task is stored online
+     * If it is, modify the online task. 
+     * @param taskToModify The ChirpTask Task object
+     * @return True if modified online task, false otherwise
+     * @throws UnknownHostException If Google's hosts are unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static boolean modifyGoogleTask(chirptask.storage.Task taskToModify)
             throws UnknownHostException, IOException {
         if (taskToModify == null) {
@@ -123,6 +137,14 @@ class ConcurrentModify implements Callable<Boolean> {
         return isModified;
     }
     
+    /**
+     * Uses the GoogleId stored locally to check if the task is stored online
+     * If it is, modify the online task. 
+     * @param taskToModify The ChirpTask Task object
+     * @return True if modified online task, false otherwise
+     * @throws UnknownHostException If Google's hosts are unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static boolean modifyGoogleEvent(chirptask.storage.Task taskToModify)
             throws UnknownHostException, IOException {
         if (taskToModify == null || 
@@ -156,6 +178,14 @@ class ConcurrentModify implements Callable<Boolean> {
         return isModified;
     }
     
+    /**
+     * This method enters details such as description from ChirpTask Task into 
+     * Google Calendar Event object.
+     * @param modifiedTask The ChirpTask Task object
+     * @param modifiedEvent The Google Calendar Event object
+     * @return The modified Google Calendar Event object
+     * @throws IOException Can be thrown by CalendarHandler.updateEvent
+     */
     static Event createModifiedEvent(chirptask.storage.Task modifiedTask, 
                                       Event modifiedEvent) throws IOException {
         if (modifiedTask == null || modifiedEvent == null || 
@@ -192,7 +222,13 @@ class ConcurrentModify implements Callable<Boolean> {
         }
         
         boolean isDone = toggleTask.isDone();
-        Task toggledTask = _tasksController.toggleTaskDone(googleTask, isDone);
+        Task toggledTask = googleTask;
+        
+        if (isDone) {
+            toggledTask = TasksHandler.setCompleted(googleTask);
+        } else {
+            toggledTask = TasksHandler.setNotCompleted(googleTask);
+        }
 
         if (toggledTask != null) {
             return toggledTask;
@@ -219,7 +255,7 @@ class ConcurrentModify implements Callable<Boolean> {
         case chirptask.storage.Task.TASK_DEADLINE :
             Date newDueDate = updatedTask.getDate().getTime();
 
-            Task updatedGoogleTask = _tasksController.updateDueDate(
+            Task updatedGoogleTask = TasksHandler.setDueDate(
                 taskToUpdate, newDueDate);
 
             if (updatedGoogleTask != null) {
@@ -248,8 +284,8 @@ class ConcurrentModify implements Callable<Boolean> {
         }
         
         String updatedDescription = updatedTask.getDescription();
-        Task updatedGoogleTask = _tasksController.updateDescription(
-                taskToUpdate, updatedDescription);
+        Task updatedGoogleTask = 
+                TasksHandler.setTitle(taskToUpdate, updatedDescription);
 
         if (updatedGoogleTask != null) {
             return updatedGoogleTask;

@@ -304,6 +304,10 @@ public class GoogleController implements Runnable {
         }
     }
 
+    /**
+     * We must ensure that the ExecutorService shutdown signal is sent
+     * to prevent any memory leakage or wild process/thread in background
+     */
     public void close() {
         CONCURRENT.close();
         try {
@@ -386,8 +390,11 @@ public class GoogleController implements Runnable {
         return isExist;
     }
     
-    // Methods below is made as an interface for Google Components to call
-    // to change the MainGui Online Status.
+    /**
+     * An interface for Google (or Other) Components to call,
+     * to change and reflect the updated MainGui Online Status.
+     * @param newStatus One of the statuses in the Status enum
+     */
     public static void setOnlineStatus(Status newStatus) {
         if (newStatus != null) {
             switch (newStatus) {

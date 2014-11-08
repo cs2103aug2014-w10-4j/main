@@ -6,6 +6,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * ConcurrentController holds the ExecutorService object.
+ * This object is important as it is the central place 
+ * that maintains the thread pool for all the Google requests and response.
+ */
 class ConcurrentController {
     private final int DEFAULT_THREAD_POOL = 10;
     private final int WAIT_TIME = 10;

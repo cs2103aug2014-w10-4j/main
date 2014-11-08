@@ -23,6 +23,15 @@ import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.tasks.model.Task;
 import com.google.api.services.tasks.model.Tasks;
 
+/**
+ * ConcurrentSync is submitted to the ExecutorService to run Concurrently
+ * It will perform a series of sync phases to ensure that the tasks between
+ * ChirpTask and Google are in sync.
+ * 
+ * One thing to note is that we have prioritised ChirpTask to take precedence
+ * in the event of having unsynced modifications on both sides at the same time
+ * The ChirpTask Task will take over the modification remotely in this case.
+ */
 class ConcurrentSync implements Callable<Boolean> {
 
     private static final String STRING_DONE_TASK = "completed";

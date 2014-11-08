@@ -9,6 +9,11 @@ import chirptask.common.Messages;
 import chirptask.google.GoogleController.Status;
 import chirptask.storage.EventLogger;
 
+/**
+ * ConcurrentDeleted is submitted to the ExecutorService to run Concurrently
+ * It will determine which method to call based on the Task Type
+ * Then, it will delete the correct task with the stored Google ID.
+ */
 public class ConcurrentDelete implements Callable<Boolean> {
 
     private chirptask.storage.Task _taskToDelete;
@@ -146,6 +151,14 @@ public class ConcurrentDelete implements Callable<Boolean> {
         return isDeleted;
     }
     
+    /**
+     * The instructions in this method is required as a form of clean-up 
+     * to allow ChirpTask to recognise the task as an item to be deleted.
+     * Setting GoogleID to empty is one of the criteria that ChirpTask checks
+     * before actually deleting the Task from its LocalStorage
+     * 
+     * @param taskToModify The ChirpTask Task to be deleted
+     */
     private void setDeleted(chirptask.storage.Task taskToModify) {
         taskToModify.setGoogleId(""); // Set Google ID to empty for deletion
         taskToModify.setDeleted(false); // Reset isDeleted flag to false

@@ -79,6 +79,13 @@ class ConcurrentHandler {
         }
     }
 
+    /**
+     * Once the Google Tasks Task is successfully added, there would 
+     * be a unique Google ID. This method is called to store this ID.
+     * @param googleTask The Google Tasks Task object
+     * @param taskToModify The ChirpTask Task object
+     * @return
+     */
     static boolean addGoogleIdToStorage(Task googleTask,
             chirptask.storage.Task taskToModify) {
         if (googleTask == null || taskToModify == null) {
@@ -88,8 +95,8 @@ class ConcurrentHandler {
         boolean isAdded = false;
         
         String googleId = getGoogleId(googleTask);
-        chirptask.storage.Task modifiedTask = addGoogleIdToChirpTask(
-                                                taskToModify, googleId);
+        chirptask.storage.Task modifiedTask = 
+                addGoogleIdToChirpTask(taskToModify, googleId);
         GoogleStorage.updateStorages(modifiedTask);
         isAdded = true;
         
@@ -107,6 +114,13 @@ class ConcurrentHandler {
         return taskToModify;
     }
 
+    /**
+     * Once the Google Tasks Task is successfully added, there would 
+     * be a unique Google ETag. This method is called to store this ETag
+     * @param googleTask The Google Tasks Task object
+     * @param taskToModify The ChirpTask Task object
+     * @return
+     */
     static boolean addETagToStorage(Task googleTask,
             chirptask.storage.Task taskToModify) {
         if (googleTask == null || taskToModify == null) {
@@ -161,6 +175,13 @@ class ConcurrentHandler {
         }
     }
 
+    /**
+     * Once the Google Calendar Event is successfully added, there would 
+     * be a unique Google ID. This method is called to allow storing this ID.
+     * @param googleEvent The Google Calendar Event object
+     * @param taskToModify The ChirpTask Task object
+     * @return
+     */
     static boolean addGoogleIdToStorage(Event googleEvent,
             chirptask.storage.Task taskToModify) {
         if (googleEvent == null || taskToModify == null) {
@@ -178,25 +199,29 @@ class ConcurrentHandler {
         return isAdded;
     }
     
+    /**
+     * 
+     * Once the Google Calendar Event is successfully added, there would 
+     * be a unique Google ID. This method is called to allow storing this ID.
+     * @param googleEvent The Google Calendar Event object
+     * @param taskToModify The ChirpTask Task object
+     * @return
+     */
     static boolean addETagToStorage(Event googleEvent,
             chirptask.storage.Task taskToModify) {
         if (googleEvent == null || taskToModify == null) {
             return false;
         }
-        
         boolean isAdded = false;
-        
         String eTag = getETag(googleEvent);
-
-        chirptask.storage.Task modifiedTask = addETagToChirpTask(
-                taskToModify,
-                eTag);
+        
+        chirptask.storage.Task modifiedTask = 
+                addETagToChirpTask(taskToModify, eTag);
 
         if (modifiedTask != null) {
             GoogleStorage.updateStorages(modifiedTask);
         }
         isAdded = true;
-        
         return isAdded;
     }
 
@@ -211,9 +236,7 @@ class ConcurrentHandler {
         if (googleEvent == null) {
             return googleId;
         }
-        
         googleId = googleEvent.getId();
-        
         return googleId;
     }
     
@@ -222,9 +245,7 @@ class ConcurrentHandler {
         if (googleEvent == null) {
             return eTag;
         }
-
         eTag = googleEvent.getEtag();
-
         return eTag;
     }
 
