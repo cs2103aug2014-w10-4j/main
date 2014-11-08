@@ -392,8 +392,7 @@ public class FilterTasks {
         }
     }
     /**
-     * This method is called during the initialization of the program,
-     * and will populate all task and category/hastags into the respective list for display.
+     * This will populate all task and category/hastags into the respective list for display.
      * 
      * @param gui
      */

@@ -1,3 +1,4 @@
+//@author A0111930W-unused
 package chirptask.logic;
 
 import java.util.ArrayList;
@@ -5,7 +6,15 @@ import java.util.Calendar;
 import java.util.List;
 
 import chirptask.storage.Task;
-//@author A0111930W-unused
+
+/**
+ * Did not used it as it was not appropriate for our search function.
+ * However this can be used for future developement if dev are interested to do a search by date range.
+ * 
+ * This class keep track of each task belonging to which dates.
+ * @author User
+ *
+ */
 
 public class TasksByDate {
 	private Calendar taskDate;
