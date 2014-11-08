@@ -195,6 +195,47 @@ public class JUnitDateParser {
 		validateDateTime(cals.get(1), year, month, date, 8, 0);
 	}
 	
+	public void testDateTime() {
+		Calendar today = Calendar.getInstance();
+		int year = today.get(Calendar.YEAR);
+		List<Calendar> cals;
+		
+		cals = parser.parseDate("by 5pm 09.11");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 10, 9, 17, 0);
+		
+		cals = parser.parseDate("by 23/10 0600");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 9, 23, 6, 0);
+		
+		cals = parser.parseDate("by 01.01.15 12:00");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2015, 0, 1, 12, 0);
+		
+		cals = parser.parseDate("at 2300hr 01 nov ");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 10, 1, 23, 0);
+		
+		cals = parser.parseDate("on 1530 23.12.15");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2015, 11, 23, 15, 30);
+		
+		cals = parser.parseDate("from 1530 to 1730 01 nov");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 10, 1, 15, 30);
+		validateDateTime(cals.get(1), year, 10, 1, 17, 30);
+		
+		cals = parser.parseDate("from 01 nov 1530 to 1730 03 nov");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 10, 1, 15, 30);
+		validateDateTime(cals.get(1), year, 10, 3, 17, 30);
+		
+		cals = parser.parseDate("from 1530 12/26 to 1730 01 nov");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 11, 26, 15, 30);
+		validateDateTime(cals.get(1), year, 10, 1, 17, 30);
+	}
+	
 	//test relative date from this point onward. 
 	//Base date 4/11/2014, 10am.
 	@Test
@@ -263,9 +304,14 @@ public class JUnitDateParser {
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), 2014, 10, 4, 11, 0);
 		
-		cals = parser.parseDate("");
+		cals = parser.parseDate("at thirty mins from now");
 		assertEquals(cals.size(), 1);
-		validateDateTime(cals.get(0), 2014, 10, 6, 23, 59);
+		validateDateTime(cals.get(0), 2014, 10, 4, 10, 30);
+		
+		cals = parser.parseDate("from thirty mins to 6 hrs from now");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2014, 10, 4, 10, 30);
+		validateDateTime(cals.get(1), 2014, 10, 4, 16, 30);
 	}
 	
 	@Test
@@ -280,6 +326,11 @@ public class JUnitDateParser {
 		cals = parser.parseDate("by 12p tomorrow");
 		assertEquals(cals.size(), 1);
 		validateDateTime(cals.get(0), 2014, 10, 5, 12, 0);
+		
+		cals = parser.parseDate("from 2p to 5p next month");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2014, 11, 4, 14, 0);
+		validateDateTime(cals.get(1), 2014, 11, 4, 17, 0);
 	}
 
 	@Test
@@ -288,6 +339,8 @@ public class JUnitDateParser {
 		cals = parser.parseDate("32/11");
 		assertEquals(cals.size(), 0);
 
+		cals = parser.parseDate("2.29.15");
+		assertEquals(cals.size(), 0);
 	}
 
 	// code reused from natty
