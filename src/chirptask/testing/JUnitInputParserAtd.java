@@ -19,7 +19,7 @@ import chirptask.storage.TimedTask;
 import com.joestelmach.natty.CalendarSource;
 
 //@author A0113022
-public class JUnitInputParser {
+public class JUnitInputParserAtd {
 
 	InputParser parser = new InputParser();
 

@@ -12,7 +12,7 @@ import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
-public class JUnitDisplayViewParserTest {
+public class JUnitDisplayViewParserTestAtd {
 
     /*
      * Tests only two methods under DisplayView.

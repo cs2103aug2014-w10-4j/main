@@ -14,7 +14,7 @@ import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
-public class JUnitTaskSorting {
+public class JUnitTaskSortingAtd {
 
     @Test
     public void testSortingOfTask() {

@@ -15,7 +15,7 @@ import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
-public class JUnitTask {
+public class JUnitTaskAtd {
 
 	//@author A0111840W
 	@Test

@@ -17,7 +17,7 @@ import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
 //@author A0111930W
-public class JUnitLogic {
+public class JUnitLogicAtd {
 
     @Test
     // Before testing u should back up your xml and create a fresh copy

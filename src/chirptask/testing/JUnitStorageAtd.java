@@ -15,7 +15,7 @@ import chirptask.storage.LocalStorage;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
-public class JUnitStorage {
+public class JUnitStorageAtd {
 
     //@author A0111840W
     /**
