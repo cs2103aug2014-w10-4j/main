@@ -38,7 +38,6 @@ public class InputParser {
 	}
 
 	public void receiveInput(String userInput) {
-
 		_userInput = userInput;
 		_actions = processCommand();
 	}
@@ -140,7 +139,7 @@ public class InputParser {
 		Action action = new Action();
 		Task task = new Task();
 		task.setTaskId(TASK_ID_DISPLAY);
-		action.setCommandType(Settings.CommandType.DISPLAY);
+		action.setCommandType(CommandType.DISPLAY);
 
 		if (parameter != null) {
 			task.setDescription(parameter);
@@ -160,12 +159,12 @@ public class InputParser {
 		Action action = new Action();
 		Action negate = new Action();
 
-		if (parameter == null) {
+		if (parameter == null || parameter.equals("")) {
 			return processInvalid(CommandType.ADD);
 		}
 
 		Task toDo = getTaskFromString(parameter);
-		String toParse;
+		String timeString;
 		List<Calendar> dateList;
 		int taskIndex = LocalStorage.generateId();
 		String description = toDo.getDescription();
@@ -179,40 +178,38 @@ public class InputParser {
 			break;
 		case "addd":
 			String[] parameters = getStringToParseDate(parameter, Task.TASK_DEADLINE);
-			toParse = parameters[0];
+			timeString = parameters[0];
 
-			dateList = _dateParser.parseDate(toParse);
-			if (dateList != null && dateList.size() == 1) {
-				Calendar dueDate = dateList.get(0);
-				if (parameters[1] != null && !parameters[1].equals("")) {
-					String deadline = new SimpleDateFormat("HH:mm dd/MM")
-						.format(dueDate.getTime());
-					description = parameters[1] + " by " + deadline;
-				}
-				Task deadline = new DeadlineTask(taskIndex, description,
-						dueDate);
-				toDo = deadline;
-			} else {
+			dateList = _dateParser.parseDate(timeString);
+			if (dateList == null || dateList.size() != 1) {
 				return processInvalid(CommandType.ADD);
 			}
+			Calendar dueDate = dateList.get(0);
+			if (parameters[1] != null && !parameters[1].equals("")) {
+				String deadline = new SimpleDateFormat("HH:mm dd/MM")
+						.format(dueDate.getTime());
+				description = parameters[1] + " by " + deadline;
+			}
+			Task deadline = new DeadlineTask(taskIndex, description,
+					dueDate);
+			toDo = deadline; 
 			break;
 		case "addt":
 			String[] details = getStringToParseDate(parameter, Task.TASK_TIMED);
-			toParse = details[0];
+			timeString = details[0];
 
-			dateList = _dateParser.parseDate(toParse);
-			if (dateList != null && dateList.size() == 2) {
-				Calendar startTime = dateList.get(0);
-				Calendar endTime = dateList.get(1);
-				if(details[1] != null && !details[1].equals("")) {
-					description = details[1];
-				}
-				Task timed = new TimedTask(taskIndex, description, startTime,
-						endTime);
-				toDo = timed;
-			} else {
+			dateList = _dateParser.parseDate(timeString);
+			if (dateList == null || dateList.size() != 2) {
 				return processInvalid(CommandType.ADD);
 			}
+			Calendar startTime = dateList.get(0);
+			Calendar endTime = dateList.get(1);
+			if (details[1] != null && !details[1].equals("")) {
+				description = details[1];
+			}
+			Task timed = new TimedTask(taskIndex, description, startTime,
+						endTime);
+			toDo = timed;
 			break;
 		default:
 			actions = processInvalid(CommandType.ADD);
@@ -224,7 +221,6 @@ public class InputParser {
 
 		action.setCommandType(Settings.CommandType.ADD);
 		action.setTask(toDo);
-		action.setUserInput(_userInput);
 		negate.setCommandType(Settings.CommandType.DELETE);
 		negate.setTask(toDo);
 		action.setUndo(negate);
@@ -238,9 +234,8 @@ public class InputParser {
 		Action action = new Action();
 		Action negate = new Action();
 	
-		if (parameter == null) {
-			actions = processInvalid(CommandType.EDIT);
-			return actions;
+		if (parameter == null || parameter.equals("")) {
+			return processInvalid(CommandType.EDIT);
 		}
 	
 		int taskIndex = getId(parameter);
@@ -249,34 +244,39 @@ public class InputParser {
 		int normalizedIndex = normalizeId(taskIndex);
 	
 		if (!isIndexInRange(normalizedIndex)) {
-			actions = processInvalid(CommandType.EDIT);
-		} else {
-			Task oldTask = taskList.get(normalizedIndex);
-			String[] parameters = parameter.trim().split("\\s+", 2);
-			if (parameters.length > 1) {
-				parameter = parameters[1];
-				Task editedTask = getTaskFromString(parameter);
-				editedTask = getEditedTask(oldTask, editedTask);
-				if (editedTask == null) {
-					return processInvalid(CommandType.EDIT);
-				}
-				action.setCommandType(Settings.CommandType.EDIT);
-				action.setTask(editedTask);
-				negate.setCommandType(Settings.CommandType.EDIT);
-				negate.setTask(oldTask);
-				action.setUndo(negate);
-				actions.addAction(action);
-			} else {
-				actions = processInvalid(CommandType.EDIT);
-			}
+			return processInvalid(CommandType.EDIT);
+		} 
+			
+		Task oldTask = taskList.get(normalizedIndex);
+		String[] parameters = parameter.trim().split("\\s+", 2);
+		if (parameters.length <= 1) {
+			return processInvalid(CommandType.EDIT);
 		}
+				
+		parameter = parameters[1];
+		Task editedTask = getTaskFromString(parameter);
+		editedTask = getEditedTask(oldTask, editedTask);
+		
+		if (editedTask == null) {
+			return processInvalid(CommandType.EDIT);
+		}
+		
+		action.setCommandType(Settings.CommandType.EDIT);
+		action.setTask(editedTask);
+		negate.setCommandType(Settings.CommandType.EDIT);
+		negate.setTask(oldTask);
+		action.setUndo(negate);
+		actions.addAction(action);
+	
 		return actions;
 	}
 
 	private GroupAction processByTaskIndex(CommandType command, String parameter) {
 		GroupAction actions = new GroupAction();
-		Settings.CommandType reverse;
-		if (parameter == null) {
+		CommandType reverse;
+		List<Task> allTasks = FilterTasks.getFilteredList();
+		List<Integer> list;
+		if (parameter == null || parameter.equals("")) {
 			return processInvalid(command);
 		}
 
@@ -296,33 +296,37 @@ public class InputParser {
 		}
 
 		try {
-			List<Integer> list = getTaskIndexFromString(parameter);
-			List<Task> allTasks = FilterTasks.getFilteredList();
-			if (allTasks != null && allTasks.size() != 0) {
-				for (Integer i : list) {
-					Action action = new Action();
-					action.setCommandType(command);
-					int normalizedIndex = normalizeId(i);
-					if (isIndexInRange(normalizedIndex)) {
-						Task task = allTasks.get(normalizedIndex);
-						action.setTask(task);
-
-						Action negate = new Action();
-						negate.setCommandType(reverse);
-						negate.setTask(task);
-
-						action.setUndo(negate);
-						actions.addAction(action);
-					} else {
-						return processInvalid(command);
-					}
-				}
-			} else {
-				return processInvalid(command);
-			}
+			list = getTaskIndexFromString(parameter);
 		} catch (NumberFormatException e) {
 			return processInvalid(command);
 		}
+		
+		if (list == null || list.size() == 0) {
+			return processInvalid(command);
+		}
+		
+		if (allTasks == null || allTasks.size() == 0) {
+			return processInvalid(command);
+		} 	
+		
+		for (Integer i : list) {
+			Action action = new Action();
+			action.setCommandType(command);
+			int normalizedIndex = normalizeId(i);
+			if (!isIndexInRange(normalizedIndex)) {
+				return processInvalid(command);
+			}
+			Task task = allTasks.get(normalizedIndex);
+			action.setTask(task);
+
+			Action negate = new Action();
+			negate.setCommandType(reverse);
+			negate.setTask(task);
+
+			action.setUndo(negate);
+			actions.addAction(action);
+		} 
+			
 		return actions;
 	}
 
@@ -336,116 +340,163 @@ public class InputParser {
 	}
 
 	private Task getEditedTask(Task oldTask, Task editedTask) {
-		int taskId = oldTask.getTaskId();
 		String taskType = oldTask.getType(); // Assumes cannot change task type
-
-		String googleId = oldTask.getGoogleId();
-		String eTag = oldTask.getETag();
-		boolean isDeleted = oldTask.isDeleted();
-		boolean isModified = oldTask.isModified();
-		boolean isDone = oldTask.isDone();
-		String editedDescription = editedTask.getDescription();
-		List<String> editedCategoryList = editedTask.getCategories();
-		List<String> editedContextList = editedTask.getContexts();
-		// List<Calendar> editedDateList = dateList;
-
-		String toParse = getStringToParseDate(editedDescription,
-				oldTask.getType())[0];
-		String newDesc = getStringToParseDate(editedDescription,
-				oldTask.getType())[1];
-		List<Calendar> editedDateList = _dateParser.parseDate(toParse);
-		boolean emptyParse = ((toParse == null) || toParse.equals(""));
-		boolean emptyDesc = ((newDesc == null) || newDesc.equals(""));
-
+		
 		Task newTask = null;
 		switch (taskType) {
 		case Task.TASK_DEADLINE:
-			Calendar dueDate = oldTask.getDate();
-			if (emptyParse && emptyDesc) {
-				return newTask;
-			} else if (emptyParse && !emptyDesc) {
-				String wrongType = getStringToParseDate(newDesc, Task.TASK_TIMED)[0];
-				List<Calendar> testWrongType = _dateParser.parseDate(wrongType);
-				if (testWrongType != null && testWrongType.size() != 0) {
-					return newTask;
-				}
-				String deadline = new SimpleDateFormat("HH:mm dd/MM")
-						.format(dueDate.getTime());
-				editedDescription += " by " + deadline;
-			} else if (!emptyParse && emptyDesc) {
-				if (editedDateList != null && editedDateList.size() == 1) {
-					dueDate = editedDateList.get(0);
-					editedDescription = getStringToParseDate(
-							oldTask.getDescription(), oldTask.getType())[1];
-					String deadline = new SimpleDateFormat("HH:mm dd/MM")
-							.format(dueDate.getTime());
-					editedDescription += " by " + deadline;
-				} else {
-					return newTask;
-				}
-			} else {
-				if (editedDateList != null && editedDateList.size() == 1) {
-					dueDate = editedDateList.get(0);
-				} else {
-					return newTask;
-				}
-			}
-			newTask = new DeadlineTask(taskId, editedDescription, dueDate);
+			newTask = editDeadlineTask(oldTask, editedTask);
 			break;
 		case Task.TASK_TIMED:
-			TimedTask timedTask = (TimedTask) oldTask;
-			Calendar startDate = timedTask.getStartTime();
-			Calendar endDate = timedTask.getEndTime();
-
-			if (emptyParse && emptyDesc) {
-				return newTask;
-			} else if (emptyParse && !emptyDesc) {
-				String wrongType = getStringToParseDate(newDesc, Task.TASK_DEADLINE)[0];
-				List<Calendar> testWrongType = _dateParser.parseDate(wrongType);
-				if (testWrongType != null && testWrongType.size() != 0) {
-					return newTask;
-				}
-			} else if (!emptyParse && emptyDesc) {
-				if (editedDateList != null && editedDateList.size() == 2) {
-					startDate = editedDateList.get(0);
-					endDate = editedDateList.get(1);
-					editedDescription = getStringToParseDate(
-							oldTask.getDescription(), oldTask.getType())[1];
-				} else {
-					return newTask;
-				}
-			} else {
-				if (editedDateList != null && editedDateList.size() == 2) {
-					startDate = editedDateList.get(0);
-					endDate = editedDateList.get(1);
-				} else {
-					return newTask;
-				}
-			}
-
-			newTask = new TimedTask(taskId, editedDescription, startDate,
-					endDate);
+			newTask = editTimedTask(oldTask, editedTask);
 			break;
 		case Task.TASK_FLOATING:
-			newTask = new Task(taskId, editedDescription);
+			newTask = editFloatingtask(oldTask, editedTask);
 			break;
 		default:
 			break;
 		}
 
 		if (newTask != null) {
-			newTask.setCategories(editedCategoryList);
-			newTask.setContexts(editedContextList);
-			newTask.setGoogleId(googleId);
-			newTask.setETag(eTag);
-			newTask.setDeleted(isDeleted);
-			newTask.setModified(isModified);
-			newTask.setDone(isDone);
+			newTask = setEditedTask(oldTask, editedTask, newTask);
 		}
 
 		return newTask;
 	}
 
+	/**
+	 * @param oldTask
+	 * @param editedTask
+	 * @return
+	 */
+	private Task editFloatingtask(Task oldTask, Task editedTask) {
+		int taskId = oldTask.getTaskId();
+		String description = editedTask.getDescription();
+		return new Task(taskId, description);
+	}
+
+	/**
+	 * @param oldTask
+	 * @param editedTask
+	 * @param newTask
+	 */
+	private Task setEditedTask(Task oldTask, Task editedTask, Task newTask) {
+		String googleId = oldTask.getGoogleId();
+		String eTag = oldTask.getETag();
+		boolean isDeleted = oldTask.isDeleted();
+		boolean isModified = oldTask.isModified();
+		boolean isDone = oldTask.isDone();
+		List<String> editedCategoryList = editedTask.getCategories();
+		List<String> editedContextList = editedTask.getContexts();
+		newTask.setCategories(editedCategoryList);
+		newTask.setContexts(editedContextList);
+		newTask.setGoogleId(googleId);
+		newTask.setETag(eTag);
+		newTask.setDeleted(isDeleted);
+		newTask.setModified(isModified);
+		newTask.setDone(isDone);
+		return newTask;
+	}
+
+	private DeadlineTask editDeadlineTask(Task oldTask, Task editedTask) {
+		DeadlineTask newTask = null;
+		Calendar dueDate = oldTask.getDate();
+		String editedDescription = editedTask.getDescription();
+		int taskId = oldTask.getTaskId();
+		String[] details = getStringToParseDate(editedDescription, Task.TASK_DEADLINE);
+		String newDesc = details[1];
+		String timeString = details[0];
+		
+		boolean emptyDate = ((timeString == null) || timeString.equals(""));
+		boolean emptyDesc = ((newDesc == null) || newDesc.equals(""));
+		
+		List<Calendar> editedDateList = _dateParser.parseDate(timeString);
+		
+		if (emptyDate && emptyDesc) {
+			return newTask;
+		}
+		
+		if (emptyDate && !emptyDesc) {
+			String wrongType = getStringToParseDate(newDesc, Task.TASK_TIMED)[0];
+			List<Calendar> testWrongType = _dateParser.parseDate(wrongType);
+			if (testWrongType != null && testWrongType.size() != 0) {
+				return newTask;
+			}
+		} else if (!emptyDate && emptyDesc) {
+			if (editedDateList == null || editedDateList.size() != 1) {
+				return newTask;
+			}
+			dueDate = editedDateList.get(0);
+			editedDescription = getStringToParseDate(
+						oldTask.getDescription(), Task.TASK_DEADLINE)[1];
+		} else {
+			if (editedDateList != null && editedDateList.size() == 1) {
+				dueDate = editedDateList.get(0);
+			} else {
+				return newTask;
+			}
+		}
+		String deadline = new SimpleDateFormat("HH:mm dd/MM")
+			.format(dueDate.getTime());
+		editedDescription += " by " + deadline;
+		newTask = new DeadlineTask(taskId, editedDescription, dueDate);
+		return newTask;
+	}
+	
+	private TimedTask editTimedTask(Task oldTask, Task editedTask) {
+		TimedTask newTask = null;
+		
+		TimedTask timedTask = (TimedTask) oldTask;
+		int taskId = oldTask.getTaskId();
+		Calendar startDate = timedTask.getStartTime();
+		Calendar endDate = timedTask.getEndTime();
+
+		String editedDescription = editedTask.getDescription();
+		
+		String[] details = getStringToParseDate(editedDescription, Task.TASK_TIMED);
+		String newDesc = details[1];
+		String timeString = details[0];
+		
+		boolean emptyDate = ((timeString == null) || timeString.equals(""));
+		boolean emptyDesc = ((newDesc == null) || newDesc.equals(""));
+		
+		List<Calendar> editedDateList = _dateParser.parseDate(timeString);
+		
+		if (emptyDate && emptyDesc) {
+			return newTask;
+		}
+		
+		if (emptyDate && !emptyDesc) {
+			String wrongType = getStringToParseDate(newDesc, Task.TASK_DEADLINE)[0];
+			List<Calendar> testWrongType = _dateParser.parseDate(wrongType);
+			if (testWrongType != null && testWrongType.size() != 0) {
+				return newTask;
+			}
+			editedDescription = newDesc;
+		} else if (!emptyDate && emptyDesc) {
+			if (editedDateList == null || editedDateList.size() != 2) {
+				return newTask;
+			}
+			startDate = editedDateList.get(0);
+			endDate = editedDateList.get(1);
+			editedDescription = getStringToParseDate(
+					oldTask.getDescription(), Task.TASK_TIMED)[1];
+	
+		} else {
+			if (editedDateList != null && editedDateList.size() == 2) {
+				startDate = editedDateList.get(0);
+				endDate = editedDateList.get(1);
+				editedDescription = newDesc;
+			} else {
+				return newTask;
+			}
+		}
+
+		newTask = new TimedTask(taskId, editedDescription, startDate,
+				endDate);
+		return newTask;
+	}
+	
 	public static Task getTaskFromString(String parameter) {
 		Task newTask = new Task();
 		newTask.setDescription(parameter);
