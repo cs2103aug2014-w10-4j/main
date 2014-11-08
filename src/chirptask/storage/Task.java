@@ -191,7 +191,7 @@ public class Task implements Comparable<Task> {
         this._categories = _categories;
     }
 
-    // @author A0111930W
+    //@author A0111930W
     public void setDate(Calendar doneDate) {
         _cal = doneDate;
         _cal.set(Calendar.HOUR_OF_DAY, 0);

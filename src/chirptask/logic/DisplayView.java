@@ -17,6 +17,13 @@ import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
+/**
+ * This class handles the processing of filtertask before displaying the results to user
+ *  using MainGui methods.
+ * 
+ * @author A0111930W
+ *
+ */
 
 public class DisplayView {
     private static final int START_LIST = 0;
@@ -203,7 +210,7 @@ public class DisplayView {
     public static void showStatusToUser(Settings.StatusType type, MainGui gui,
             String filter) {
         if (isStatusError(type)) {
-            processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
+            processGUIError(gui, Messages.LOG_MESSAGE_DISPLAY_USAGE,
                     Messages.LOG_MESSAGE_ERROR, "");
         } else {
             processGUIError(gui, Messages.LOG_MESSAGE_DISPLAY,
