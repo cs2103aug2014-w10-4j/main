@@ -21,7 +21,7 @@ import chirptask.storage.EventLogger;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
-public class JUnitEventLogger {
+public class JUnitEventLoggerAtd {
 
     Settings settings = new Settings();
     Calendar today = Calendar.getInstance();

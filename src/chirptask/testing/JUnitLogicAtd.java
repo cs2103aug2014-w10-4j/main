@@ -1,8 +1,6 @@
 package chirptask.testing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -11,8 +9,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import chirptask.common.Settings;
-import chirptask.logic.Action;
 import chirptask.logic.DisplayView;
 import chirptask.logic.FilterTasks;
 import chirptask.logic.Logic;
@@ -21,29 +17,91 @@ import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
 //@author A0111930W
-public class JUnitLogic {
+public class JUnitLogicAtd {
 
-    // @Test
-    public void Displaytest() {
-        // Testing display logic with tag /undone /floating
-        // commend out the GUI portion for this to run.
-        Logic a = new Logic(null);
+    @Test
+    // Before testing u should back up your xml and create a fresh copy
+    public void commandtest() {
+        // Integration testing with UI and storage
+        MainGui2 _mainGui = new MainGui2();
+        Logic _logic = new Logic(_mainGui);
+
+        // Adding a normal floating task
+        _logic.retrieveInputFromUI("add normal floating task");
+        // Compare task list if task is there means successfully added to local
+        // storage
+        assertEquals(FilterTasks.getFilteredList().get(0).getDescription(),
+                "normal floating task");
+
+        // Delete that task
+        _logic.retrieveInputFromUI("delete 1");
+        assertEquals(FilterTasks.getFilteredList().size(), 0);
+
+        // adding a timed task
+        _logic.retrieveInputFromUI("addt eating with mum from 12a to 12p 08/11");
+        assertEquals(FilterTasks.getFilteredList().get(0).getDescription(),
+                "eating with mum");
+
+        // add deadline task
+        _logic.retrieveInputFromUI("addd go out with parents on 17/11");
+        assertEquals(FilterTasks.getFilteredList().get(1).getDescription(),
+                "go out with parents by 23:59 17/11");
         
-        Action act = new Action();
-        Task task = new Task();
+        // Use a invalid command 
+        // Expected task to be in the list 2, since this is a wrong type
+        _logic.retrieveInputFromUI("adddd go out on 17/11");
+        assertEquals(FilterTasks.getFilteredList().size(), 2);
 
-        task.setTaskId(-1);
-        task.setDescription("/undone /floating");
-        act.setCommandType(Settings.CommandType.DISPLAY);
-        act.setTask(task);
-        act.setUndo(null);
+        // delete all task
+        _logic.retrieveInputFromUI("delete 1-2");
+        assertEquals(FilterTasks.getFilteredList().size(), 0);
 
-        List<Task> list = FilterTasks.getFilteredList();
+        // Undo command
+        _logic.retrieveInputFromUI("undo");
+        assertEquals(FilterTasks.getFilteredList().size(), 2);
 
-        a.executeAction(act);
+        // Undo again
+        _logic.retrieveInputFromUI("undo");
+        assertEquals(FilterTasks.getFilteredList().size(), 0);
 
-        assertEquals(list, FilterTasks.getFilteredList());
+        // Undo the tasks again this time task will be added back
+        _logic.retrieveInputFromUI("undo");
+        assertEquals(FilterTasks.getFilteredList().size(), 2);
 
+        // edit task 1 change desc to dad
+        _logic.retrieveInputFromUI("edit 1 eating with dad from 12a to 12p 08/11");
+        assertEquals(FilterTasks.getFilteredList().get(0).getDescription(),
+                "eating with dad from 12a to 12p 08/11");
+        
+        // Delete out of range tasks
+        // This action will not be execute as it delete tasks that are out of range
+        _logic.retrieveInputFromUI("delete 1-3");
+        assertEquals(FilterTasks.getFilteredList().size(), 2);
+        
+        //Done a task
+        //Task 1 is done, expected true
+        _logic.retrieveInputFromUI("done 1");
+        assertEquals(FilterTasks.getFilteredList().get(0).isDone(), true);
+        //Undone a task
+        //Task 1 is undone, expected false
+        _logic.retrieveInputFromUI("undone 1");
+        assertEquals(FilterTasks.getFilteredList().get(0).isDone(), false);
+        //Done a task out of range
+        //Expect none of the tasks to be done since its out of range.
+        _logic.retrieveInputFromUI("done 1-3");
+        assertEquals(FilterTasks.getFilteredList().get(0).isDone(), false);
+        assertEquals(FilterTasks.getFilteredList().get(1).isDone(), false);
+        //Undone a task out of range
+        //Expect all task to be remain as done none of the task will be undone.
+        _logic.retrieveInputFromUI("done 1-2");
+        _logic.retrieveInputFromUI("undone 1-3");
+        assertEquals(FilterTasks.getFilteredList().get(0).isDone(), true);
+        assertEquals(FilterTasks.getFilteredList().get(1).isDone(), true);
+        //Delete all task
+        _logic.retrieveInputFromUI("delete 1-2");
+        //Clear all task, task will be deleted from local storage
+        _logic.retrieveInputFromUI("clear");
+        assertEquals(FilterTasks.getFilteredList().size(), 0);
     }
 
     @Test
@@ -54,8 +112,7 @@ public class JUnitLogic {
         // test floating task
         Task test1 = new Task();
         test1.setType("floating");
-        assertEquals("",
-                DisplayView.convertTaskDateToDurationString(test1));
+        assertEquals("", DisplayView.convertTaskDateToDurationString(test1));
 
         // test Deadline task
         Calendar date = Calendar.getInstance();
@@ -149,7 +206,7 @@ public class JUnitLogic {
                 expected1.get(Calendar.MONTH));
         assertEquals(testParam.get(Calendar.DAY_OF_MONTH),
                 expected1.get(Calendar.DAY_OF_MONTH));
-        
+
         // wrong date format MM-DD
         // Return a current Calendar object
         String date2 = "10-22";

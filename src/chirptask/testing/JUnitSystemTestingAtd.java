@@ -11,7 +11,7 @@ import org.junit.Test;
 import chirptask.logic.DisplayView;
 import chirptask.logic.Logic;
 
-public class JUnitSystemTesting {
+public class JUnitSystemTestingAtd {
 
     @Test
     public void invalidCommands() {

@@ -105,19 +105,6 @@ public class TasksController {
         Task result = TasksHandler.insertTaskToList(DEFAULT_TASKLIST, task);
         return result;
     }
-    
-    Task toggleTaskDone(Task taskToToggle, boolean isDone) {
-        if (taskToToggle == null) {
-            return null;
-        }
-        Task toggledTask = taskToToggle;
-        if (isDone) {
-            toggledTask = TasksHandler.setCompleted(taskToToggle);
-        } else {
-            toggledTask = TasksHandler.setNotCompleted(taskToToggle);
-        }
-        return toggledTask;
-    }
 
     boolean deleteTask(String taskId) {
         if (taskId == null) {
@@ -133,22 +120,6 @@ public class TasksController {
         return tasks;
     }
 
-    Task updateDescription(Task taskToUpdate, String description) {
-        if (taskToUpdate == null || description == null) {
-            return null;
-        }
-        Task updatedTask = TasksHandler.setTitle(taskToUpdate, description);
-        return updatedTask;
-    }
-    
-    Task updateDueDate(Task taskToUpdate, Date dueDate) {
-        if (taskToUpdate == null || dueDate == null) {
-            return null;
-        }
-        Task updatedTask = TasksHandler.setDueDate(taskToUpdate, dueDate);
-        return updatedTask;
-    }
-    
     static Task updateTask(Task updatedTask) 
                             throws UnknownHostException, IOException {
         if (updatedTask == null) {

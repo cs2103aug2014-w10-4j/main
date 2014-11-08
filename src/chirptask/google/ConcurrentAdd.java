@@ -14,6 +14,13 @@ import chirptask.storage.TimedTask;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.tasks.model.Task;
 
+/**
+ * ConcurrentAdd is submitted to the ExecutorService to run Concurrently
+ * It will determine which method to call based on the Task Type
+ * Furthermore, it will add to the correct Google service with the 
+ * accurate information and upon successful insertion, ConcurrentAdd
+ * will add the unique Google ID and ETag into the local storage. 
+ */
 class ConcurrentAdd implements Callable<Boolean> {
 
     private chirptask.storage.Task _taskToAdd;

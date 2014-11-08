@@ -58,7 +58,7 @@ public class Logic {
         _parser.receiveInput(input);
         assert _parser.getActions() != null;
 
-        if (isUndo()) {
+        if (isNotUndoCommand()) {
             setLastGroupAction(_parser.getActions());
         }
 
@@ -70,7 +70,7 @@ public class Logic {
      * 
      * @return
      */
-    private boolean isUndo() {
+    private boolean isNotUndoCommand() {
         return _parser.getActions().getActionList().get(FIRST_ACTION)
                 .getCommandType() != Settings.CommandType.UNDO;
     }

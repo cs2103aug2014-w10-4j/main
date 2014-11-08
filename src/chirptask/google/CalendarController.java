@@ -146,6 +146,16 @@ public class CalendarController {
         return null;
     }
 
+    /**
+     * CreateCalendar will invoke methods in CalendarHandler to perform the 
+     * actual creation of Calendar object as well as to send the request to 
+     * Google. When Google returns the Calendar object, the unique Calendar ID
+     * will be stored into ChirpTask settings, config.properties.
+     * @return 
+     *      The created Calendar object from Google
+     * @throws UnknownHostException If Google host is not reachable
+     * @throws IOException If bad response or transmission error
+     */
     private Calendar createCalendar() throws UnknownHostException, IOException {
         Calendar newCalendar = CalendarHandler.addCalendar(DEFAULT_CALENDAR);
         setCalendarId(newCalendar);

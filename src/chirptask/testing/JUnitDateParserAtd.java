@@ -11,7 +11,7 @@ import chirptask.logic.DateParser;
 import com.joestelmach.natty.CalendarSource;
 
 //@author A0113022
-public class JUnitDateParser {
+public class JUnitDateParserAtd {
 	/*
 	 * recognized format: 
 	 * Formal date: dd/mm dd-mm dd.mm mm/dd mm-dd mm.dd
