@@ -2,6 +2,7 @@ package chirptask.logic;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -19,8 +20,12 @@ public class InputParser {
 	private static final int TASK_ID_DISPLAY = -1;
 	private static final int TASK_ID_INVALID = -2;
 	private static final int TASK_ID_PARSE_EXCEPTION = -3;
+	
+	private static final String[] deadlineKeyword = new String[] { "by", "on", "at" };
+	private static final String[] timedKeyword = new String[] { "to", "til", "->" };
+	private static final int INVALID_POSITION = -1;
+	
 	private final DateParser _dateParser = new DateParser();
-
 	private String _userInput;
 	private GroupAction _actions;
 
@@ -36,6 +41,14 @@ public class InputParser {
 
 		_userInput = userInput;
 		_actions = processCommand();
+	}
+
+	public GroupAction getActions() {
+		return _actions;
+	}
+
+	public void setActions(GroupAction actions) {
+		_actions = actions;
 	}
 
 	private GroupAction processCommand() {
@@ -110,12 +123,15 @@ public class InputParser {
 		return processByTaskIndex(CommandType.DELETE, parameter);
 	}
 
-	private GroupAction processWithNoTask(CommandType command) {
+	private GroupAction processInvalid(CommandType command) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
-		action.setCommandType(command);
+		action.setCommandType(Settings.CommandType.INVALID);
+		action.setInvalidCommandType(command);
+		action.setUserInput(_userInput);
 		action.setUndo(null);
 		actions.addAction(action);
+	
 		return actions;
 	}
 
@@ -217,140 +233,44 @@ public class InputParser {
 		return actions;
 	}
 
-	private String[] getStringToParseDate(String parameter, String type) {
-		String toDate = parameter;
-		String taskDescNoDate = parameter;
-		String[] toReturns = new String[2];
-//		if (parameter.contains(Settings.CATEGORY)
-//				|| parameter.contains(Settings.CONTEXT)) {
-//			String[] split = parameter.split("\\s+");
-//			for (String s : split) {
-//				if (!(s.contains(Settings.CATEGORY) || s
-//						.contains(Settings.CONTEXT))) {
-//					toDate = toDate.concat(s).concat(" ");
-//				}
-//			}
-//		} else {
-//			toDate = parameter;
-//		}
-
-		boolean hasInterval = toDate.contains("from ")
-				&& (toDate.contains("to ") || toDate.contains("til ") || toDate
-						.contains("->"));
-
-		switch (type) {
-		case Task.TASK_DEADLINE:
-			String inBetween;
-			String deadline[];
-			boolean hasBy = false;
-			boolean hasOn = false;
-			boolean hasAt = false;
-			int lastBy = -1;
-			int lastOn = -1;
-			int lastAt = -1;
-			
-			String[] splitSpaces = toDate.split("\\s+");
-			for (int i = 0; i < splitSpaces.length; i++) {
-				if (splitSpaces[i].equals("by")) {
-					hasBy = true;
-					lastBy = i; 
-				} else if (splitSpaces[i].equals("on")) {
-					hasOn = true;
-					lastOn = i;
-				} else if (splitSpaces[i].equals("at")) {
-					hasAt = true;
-					lastAt = i;
-				}
-			}
-			if (hasBy || hasOn || hasAt) {
-				taskDescNoDate = "";
-				if (lastBy > lastOn && lastBy > lastAt) {
-					hasOn = false;
-					hasAt = false;
-				} else if (lastOn > lastBy && lastOn > lastAt) {
-					hasBy = false;
-					hasAt = false;
-				} else if (lastAt > lastBy && lastAt > lastOn) {
-					hasBy = false;
-					hasOn = false;
-				}
-				
-				if (hasBy) {
-					deadline = toDate.split("by ");
-					inBetween = "by ";
-				} else if (hasOn) {
-					deadline = toDate.split("on ");
-					inBetween = "on ";
-				} else {
-					deadline = toDate.split("at ");
-					inBetween = "at ";
-				}
-				toDate = deadline[deadline.length - 1];
-				for (int i = 0; i < deadline.length - 1; i++) {
-					taskDescNoDate = taskDescNoDate.concat(deadline[i]);
-					if (i < deadline.length - 2) {
-						taskDescNoDate.concat(inBetween);
-					}
-				}
-			} else {
-				toDate  = "";
-			}
-			break;
-		case Task.TASK_TIMED:
-			if (hasInterval) {
-				List<Integer> fromPos = new ArrayList<Integer>();
-				List<Integer> toPos = new ArrayList<Integer>();
-				String[] splitSpace = toDate.split("\\s+");
-				toDate = "";
-				for (int i = 0; i < splitSpace.length; i++) {
-					if (splitSpace[i].equals("from")) {
-						fromPos.add(i);
-					} else if (splitSpace[i].equals("to")
-							|| splitSpace[i].equals("til")
-							|| splitSpace[i].equals("->")) {
-						toPos.add(i);
-					}
-				}
-				int size = fromPos.size();
-				int toLast = toPos.get(toPos.size() - 1);
-				while (size > 0) {
-					if (fromPos.get(size - 1) < toLast) {
-						break;
-					}
-					size--;
-				}
-
-				if (size > 0) {
-					taskDescNoDate = "";
-					for (int i = 0; i < fromPos.get(size - 1); i++) {
-						taskDescNoDate += splitSpace[i] + " ";
-					}
-					for (int i = fromPos.get(size - 1); i < splitSpace.length; i++) {
-						toDate += splitSpace[i];
-						toDate += " ";
-					}
-				}
-			} else {
-				toDate = "";
-			}
-			break;
-		default:
-			toDate = "";
+	private GroupAction processEdit(String parameter) {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		Action negate = new Action();
+	
+		if (parameter == null) {
+			actions = processInvalid(CommandType.EDIT);
+			return actions;
 		}
-		String[] hashAndAt = toDate.split("\\s+");
-		toDate = "";
-		for (int i = 0; i < hashAndAt.length; i++) {
-			if (!(hashAndAt[i].contains(Settings.CATEGORY)
-					|| hashAndAt[i].contains(Settings.CONTEXT))) {
-				toDate = toDate.concat(hashAndAt[i]).concat(" ");
+	
+		int taskIndex = getId(parameter);
+	
+		List<Task> taskList = FilterTasks.getFilteredList();
+		int normalizedIndex = normalizeId(taskIndex);
+	
+		if (!isIndexInRange(normalizedIndex)) {
+			actions = processInvalid(CommandType.EDIT);
+		} else {
+			Task oldTask = taskList.get(normalizedIndex);
+			String[] parameters = parameter.trim().split("\\s+", 2);
+			if (parameters.length > 1) {
+				parameter = parameters[1];
+				Task editedTask = getTaskFromString(parameter);
+				editedTask = getEditedTask(oldTask, editedTask);
+				if (editedTask == null) {
+					return processInvalid(CommandType.EDIT);
+				}
+				action.setCommandType(Settings.CommandType.EDIT);
+				action.setTask(editedTask);
+				negate.setCommandType(Settings.CommandType.EDIT);
+				negate.setTask(oldTask);
+				action.setUndo(negate);
+				actions.addAction(action);
 			} else {
-				taskDescNoDate = taskDescNoDate.concat(" ").concat(hashAndAt[i]);
-			}	
+				actions = processInvalid(CommandType.EDIT);
+			}
 		}
-		
-		toReturns[0] = toDate.trim();
-		toReturns[1] = taskDescNoDate.trim();
-		return toReturns;
+		return actions;
 	}
 
 	private GroupAction processByTaskIndex(CommandType command, String parameter) {
@@ -406,72 +326,12 @@ public class InputParser {
 		return actions;
 	}
 
-	private List<Integer> getTaskIndexFromString(String parameter)
-			throws NumberFormatException {
-		List<Integer> taskIndex = new ArrayList<Integer>();
-
-		parameter = parameter.replaceAll("\\s+(?=-)", "").replaceAll(
-				"(?<=-)\\s+", "");
-		String[] split = parameter.trim().split("\\s+|,");
-		for (int i = 0; i < split.length; i++) {
-			if (!split[i].equals("") && split[i].contains("-")) {
-				String[] sequence = split[i].split("-");
-
-				int size = sequence.length;
-				if (size == 2) {
-					int start = Integer.parseInt(sequence[0]);
-					int end = Integer.parseInt(sequence[1]);
-					for (int j = start; j <= end; j++) {
-						taskIndex.add(j);
-					}
-				} else {
-					Integer.parseInt(split[i]);
-				}
-			} else if (!split[i].equals("")) {
-				taskIndex.add(Integer.parseInt(split[i]));
-			}
-
-		}
-		return taskIndex;
-	}
-
-	private GroupAction processEdit(String parameter) {
+	private GroupAction processWithNoTask(CommandType command) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
-		Action negate = new Action();
-
-		if (parameter == null) {
-			actions = processInvalid(CommandType.EDIT);
-			return actions;
-		}
-
-		int taskIndex = getId(parameter);
-
-		List<Task> taskList = FilterTasks.getFilteredList();
-		int normalizedIndex = normalizeId(taskIndex);
-
-		if (!isIndexInRange(normalizedIndex)) {
-			actions = processInvalid(CommandType.EDIT);
-		} else {
-			Task oldTask = taskList.get(normalizedIndex);
-			String[] parameters = parameter.trim().split("\\s+", 2);
-			if (parameters.length > 1) {
-				parameter = parameters[1];
-				Task editedTask = getTaskFromString(parameter);
-				editedTask = getEditedTask(oldTask, editedTask);
-				if (editedTask == null) {
-					return processInvalid(CommandType.EDIT);
-				}
-				action.setCommandType(Settings.CommandType.EDIT);
-				action.setTask(editedTask);
-				negate.setCommandType(Settings.CommandType.EDIT);
-				negate.setTask(oldTask);
-				action.setUndo(negate);
-				actions.addAction(action);
-			} else {
-				actions = processInvalid(CommandType.EDIT);
-			}
-		}
+		action.setCommandType(command);
+		action.setUndo(null);
+		actions.addAction(action);
 		return actions;
 	}
 
@@ -591,30 +451,28 @@ public class InputParser {
 		newTask.setDescription(parameter);
 
 		parameter = parameter.trim();
-		String[] taskDesc = parameter.split("@|#", 2);
+	
+		List<String> contexts = new ArrayList<String>();
+		List<String> categories = new ArrayList<String>();
 
-		if (taskDesc.length > 0) {
-			List<String> contexts = new ArrayList<String>();
-			List<String> categories = new ArrayList<String>();
+		String[] word = parameter.split("\\s+");
 
-			String[] word = parameter.split("\\s+");
-
-			for (int i = 0; i < word.length; i++) {
-				char firstChar = ' ';
-				if (word[i].length() > 0) {
-					firstChar = word[i].charAt(0);
-				}
-
-				if (firstChar == Settings.HASHTAG_CHAR && word[i].length() > 1) {
-					contexts.add(word[i].substring(1));
-				}
-				if (firstChar == Settings.CATEGORY_CHAR && word[i].length() > 1) {
-					categories.add(word[i].substring(1));
-				}
+		for (int i = 0; i < word.length; i++) {
+			char firstChar = ' ';
+			if (word[i].length() > 0) {
+				firstChar = word[i].charAt(0);
 			}
-			newTask.setCategories(categories);
-			newTask.setContexts(contexts);
+
+			if (firstChar == Settings.HASHTAG_CHAR && word[i].length() > 1) {
+				contexts.add(word[i].substring(1));
+			}
+			if (firstChar == Settings.CATEGORY_CHAR && word[i].length() > 1) {
+				categories.add(word[i].substring(1));
+			}
 		}
+		newTask.setCategories(categories);
+		newTask.setContexts(contexts);
+
 		return newTask;
 	}
 
@@ -634,7 +492,7 @@ public class InputParser {
 		return normalizedId;
 	}
 
-	// @author A0113022
+	//@author A0113022
 	private String getCommandTypeString() {
 		return _userInput.trim().split("\\s+")[0].toLowerCase();
 	}
@@ -648,14 +506,6 @@ public class InputParser {
 		}
 	}
 
-	public GroupAction getActions() {
-		return _actions;
-	}
-
-	public void setActions(GroupAction actions) {
-		_actions = actions;
-	}
-
 	private boolean isIndexInRange(int index) {
 		boolean isInRange = false;
 		List<Task> allTasks = FilterTasks.getFilteredList();
@@ -665,15 +515,182 @@ public class InputParser {
 		return isInRange;
 	}
 
-	private GroupAction processInvalid(CommandType command) {
-		GroupAction actions = new GroupAction();
-		Action action = new Action();
-		action.setCommandType(Settings.CommandType.INVALID);
-		action.setInvalidCommandType(command);
-		action.setUserInput(_userInput);
-		action.setUndo(null);
-		actions.addAction(action);
+	private List<Integer> getTaskIndexFromString(String parameter)
+			throws NumberFormatException {
+		List<Integer> taskIndex = new ArrayList<Integer>();
+	
+		parameter = parameter.replaceAll("\\s+(?=-)", "").replaceAll(
+				"(?<=-)\\s+", "");
+		String[] split = parameter.trim().split("\\s+|,");
+		for (int i = 0; i < split.length; i++) {
+			if (!split[i].equals("") && split[i].contains("-")) {
+				String[] sequence = split[i].split("-");
+	
+				int size = sequence.length;
+				if (size == 2) {
+					int start = Integer.parseInt(sequence[0]);
+					int end = Integer.parseInt(sequence[1]);
+					for (int j = start; j <= end; j++) {
+						taskIndex.add(j);
+					}
+				} else {
+					Integer.parseInt(split[i]);
+				}
+			} else if (!split[i].equals("")) {
+				taskIndex.add(Integer.parseInt(split[i]));
+			}
+	
+		}
+		return taskIndex;
+	}
 
-		return actions;
+	private String[] getStringToParseDate(String parameter, String type) {
+		String[] timeAndDesc = new String[2];
+	
+		switch (type) {
+		case Task.TASK_DEADLINE:
+			timeAndDesc = extractDeadline(parameter);
+			break;
+			
+		case Task.TASK_TIMED:
+			timeAndDesc = extractTimed(parameter);
+			break;
+			
+		default:
+			timeAndDesc[0] = "";
+			timeAndDesc[1] = parameter;
+		}
+	
+		timeAndDesc = extractCategoryAndContext(timeAndDesc);
+	
+		return timeAndDesc;
+	}
+
+	/**
+	 * @param timeAndDesc
+	 * @param splitSpaces
+	 */
+	private String[] extractDeadline(String parameter) {
+		String[] timeAndDesc = new String[2];
+		timeAndDesc[0] = "";
+		timeAndDesc[1] = parameter;
+		StringBuilder description = new StringBuilder(parameter.length());
+		
+		String[] splitSpaces = parameter.split("\\s+");
+		String deadline[];
+		
+		int keywordPos[] = new int[deadlineKeyword.length];
+		Arrays.fill(keywordPos, INVALID_POSITION);
+		int lastKey = INVALID_POSITION;
+	
+		for (int i = 0; i < splitSpaces.length; i++) {
+			for (int j = 0; j < deadlineKeyword.length; j++) {
+				if (splitSpaces[i].equals(deadlineKeyword[j])) {
+					keywordPos[j] = i;
+				}
+			}
+		}
+		
+		for (int i = 0; i < deadlineKeyword.length; i++) {
+			if (keywordPos[i] > lastKey) {
+				lastKey = keywordPos[i];
+			}
+		}
+		
+		if (lastKey != INVALID_POSITION) {
+			String key = splitSpaces[lastKey] + " ";
+			deadline = parameter.split(key);
+	
+			timeAndDesc[0] = deadline[deadline.length - 1];
+			for (int i = 0; i < deadline.length - 1; i++) {
+				description.append(deadline[i]);
+				if (i < deadline.length - 2) {
+					description.append(key);
+				}
+			}
+			timeAndDesc[1] = description.toString();
+		} 
+		return timeAndDesc;
+	}
+
+	/**
+	 * @param timeAndDesc
+	 * @param splitSpaces
+	 */
+	private String[] extractTimed(String parameter) {
+		String[] timeAndDesc = new String[2];
+		timeAndDesc[0] = "";
+		timeAndDesc[1] = parameter;
+		String[] splitSpaces = parameter.split("\\s+");
+		StringBuilder time = new StringBuilder(parameter.length());
+		StringBuilder description = new StringBuilder(parameter.length());
+		
+		int fromPos = INVALID_POSITION;
+		int toPos[] = new int[timedKeyword.length];
+		int lastTo = INVALID_POSITION;
+		Arrays.fill(toPos, INVALID_POSITION);
+		
+		for (int i = 0; i < splitSpaces.length; i++) {
+			for (int j = 0; j < timedKeyword.length; j++) {
+				if (splitSpaces[i].equals(timedKeyword[j])) {
+					toPos[j] = i;
+				}
+			}
+		}
+	
+		for (int i = 0; i < timedKeyword.length; i++) {
+			if (toPos[i] > lastTo) {
+				lastTo = toPos[i];
+			}
+		}
+	
+		for (int i = 0; i < lastTo; i++) {
+			if (splitSpaces[i].equals("from")) {
+					fromPos = i;
+			}
+		}
+		
+		if (fromPos != INVALID_POSITION) {
+			timeAndDesc[1] = "";
+			for (int i = 0; i < fromPos; i++) {
+				description.append(splitSpaces[i] + " ");
+			}
+			
+			for (int i = fromPos; i < splitSpaces.length; i++) {
+				if (i != lastTo) {
+					time.append(splitSpaces[i] + " ");
+				} else {
+					time.append(timedKeyword[0] + " ");
+				}
+			}
+			timeAndDesc[0] = time.toString();
+			timeAndDesc[1] = description.toString();
+		} 
+		return timeAndDesc;
+	}
+
+	/**
+	 * @param timeAndDesc
+	 */
+	private String[] extractCategoryAndContext(String[] timeAndDesc) {
+		StringBuilder time = new StringBuilder();
+		StringBuilder description = new StringBuilder(timeAndDesc[1].trim());
+		String[] hashAndAt = new String[0];
+		if (!timeAndDesc[0].equals("")) {
+			hashAndAt = timeAndDesc[0].split("\\s+");
+		}
+
+		for (int i = 0; i < hashAndAt.length; i++) {
+			if (!(hashAndAt[i].contains(Settings.CATEGORY)
+					|| hashAndAt[i].contains(Settings.CONTEXT))) {
+				time.append(hashAndAt[i] + " ");
+			} else {
+				description.append(" " + hashAndAt[i]);
+			}	
+		}
+		timeAndDesc[0] = time.toString();
+		timeAndDesc[1] = description.toString();
+		
+		return timeAndDesc;
 	}
 }

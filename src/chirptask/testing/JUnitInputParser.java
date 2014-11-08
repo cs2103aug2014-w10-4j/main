@@ -2,10 +2,9 @@ package chirptask.testing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -17,250 +16,172 @@ import chirptask.logic.InputParser;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
+import com.joestelmach.natty.CalendarSource;
 
-// @author A0113022
+//@author A0113022
 public class JUnitInputParser {
 
 	InputParser parser = new InputParser();
 
 	@Test
 	// Partition: floating task with categories and contexts
-	public void testAdd() {
+	public void testAddFloating() {
+		List<String> contexts = new ArrayList<String>();
+		List<String> categories = new ArrayList<String>();
+		List<String> empty = new ArrayList<String>();
+		Task task;
+		GroupAction group;
+
 		parser.receiveInput("add task 1 @2103 @2101 #homework");
+		contexts.add("homework");
+		categories.add("2103");
+		categories.add("2101");
+		task = templateTaskFloating("task 1 @2103 @2101 #homework", categories,
+				contexts);
 
-		Task toCompare = taskToCompareF();
-
-		GroupAction group = groupActionAdd(toCompare);
-
+		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("add @2103 @2101 #homework");
+		task = templateTaskFloating("@2103 @2101 #homework", categories,
+				contexts);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("add @2103 @2101");
+		task = templateTaskFloating("@2103 @2101", categories, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("add watch edge of tomorrow");
+		task = templateTaskFloating("watch edge of tomorrow", empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
 	}
 
 	@Test
 	public void testAddInvalid() {
 		parser.receiveInput("add");
-		GroupAction group = groupActionInvalid("add", Settings.CommandType.ADD);
+		GroupAction group = templateGroupInvalid("add",
+				Settings.CommandType.ADD);
 
 		compareGroup(group, parser.getActions());
-	}
-
-	@Test
-	// Boundary: floating task with only categories and contexts
-	public void testAdd2() {
-		parser.receiveInput("add @2103 @2101 #homework");
-		Task toCompare = taskToCompareF();
-		toCompare.setDescription("@2103 @2101 #homework");
-
-		GroupAction group = groupActionAdd(toCompare);
-		compareGroup(group, parser.getActions());
-	}
-
-	@Test
-	// Partition: floating task with no categories and contexts
-	public void testAdd3() {
-		parser.receiveInput("add task 1");
-		List<String> empty = new ArrayList<String>();
-		Task toCompare = taskToCompareF();
-		toCompare.setCategories(empty);
-		toCompare.setContexts(empty);
-		toCompare.setDescription("task 1");
-
-		GroupAction group = groupActionAdd(toCompare);
-		compareGroup(group, parser.getActions());
-
 	}
 
 	@Test
 	// Partition: deadline task, no categories/contexts, relative date
-	public void testAddd() {
-		parser.receiveInput("addd finish this by today");
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 59);
-		DeadlineTask toCompare = taskToCompareD("finish this by today", cal);
-
-		GroupAction group = groupActionAdd(toCompare);
-
-		compareGroup(group, parser.getActions());
-	}
-
-	@Test
-	// Partition: deadline task, has categories/contexts, relative date
-	public void testAddd2() {
-		parser.receiveInput("addd v0.2 by next week @2103");
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 59);
-		cal.add(Calendar.DAY_OF_MONTH, 7);
-		DeadlineTask toCompare = taskToCompareD("v0.2 by next week @2103", cal);
+	public void testAddDeadline() {
+		List<String> contexts = new ArrayList<String>();
 		List<String> categories = new ArrayList<String>();
+		List<String> empty = new ArrayList<String>();
+		DeadlineTask task;
+		GroupAction group;
+		Calendar deadline = Calendar.getInstance();
+		deadline.set(2014, 10, 4, 10, 0);
+		CalendarSource.setBaseDate(deadline.getTime());
+
+		parser.receiveInput("addd finish this by today");
+		deadline.set(Calendar.HOUR_OF_DAY, 23);
+		deadline.set(Calendar.MINUTE, 59);
+		task = templateTaskDeadline("finish this by 23:59 04/11", deadline,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addd finish this on today");
+		task = templateTaskDeadline("finish this by 23:59 04/11", deadline,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addd finish this at today 11pm");
+		deadline.set(Calendar.HOUR_OF_DAY, 23);
+		deadline.set(Calendar.MINUTE, 00);
+		task = templateTaskDeadline("finish this by 23:00 04/11", deadline,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addd v0.2 by next week @2103 #homework");
+		deadline.set(2014, 10, 11, 23, 59);
 		categories.add("2103");
-		toCompare.setCategories(categories);
-		GroupAction group = groupActionAdd(toCompare);
+		contexts.add("homework");
+		task = templateTaskDeadline("v0.2 @2103 #homework by 23:59 11/11", deadline,
+				categories, contexts);
+		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
-	}
 
-	@Test
-	// Partition: deadline task, no categories/contexts, absolute date
-	public void testAddd3() {
-		parser.receiveInput("addd watch goodbye tomorrow by 23 oct");
-		Calendar cal = Calendar.getInstance();
-		cal.set(2014, 9, 23, 23, 59);
-		DeadlineTask toCompare = taskToCompareD(
-				"watch goodbye tomorrow by 23 oct", cal);
-		GroupAction group = groupActionAdd(toCompare);
-
+		parser.receiveInput("addd watch goodbye tomorrow on 23 oct");
+		deadline.set(2014, 9, 23, 23, 59);
+		task = templateTaskDeadline("watch goodbye tomorrow by 23:59 23/10",
+				deadline, empty, empty);
+		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
-	}
 
-	@Test
-	// Partition: deadline task, no categories/contexts, absolute date mm/dd
-	// representation
-	// (plan to change to dd/mm representation)
-	public void testAddd4() {
-		parser.receiveInput("addd finish this by 23/10");
-		Calendar cal = Calendar.getInstance();
-		cal.set(2014, 9, 23, 23, 59);
-		DeadlineTask toCompare = taskToCompareD("finish this by 23/10", cal);
-		GroupAction group = groupActionAdd(toCompare);
-		compareGroup(group, parser.getActions());
-	}
-
-	@Test
-	public void TestAddd5() {
-		parser.receiveInput("addd finish this by 10/23");
-		GroupAction group = groupActionInvalid("addd finish this by 10/23",
-				Settings.CommandType.ADD);
+		parser.receiveInput("addd finish this at school tomorrow by today");
+		deadline.set(2014, 10, 4, 23, 59);
+		task = templateTaskDeadline(
+				"finish this at school tomorrow by 23:59 04/11", deadline,
+				empty, empty);
+		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
 	}
 
 	@Test
 	// Partition: timed task, no categories/contexts, absolute date mm/dd
 	// representation
-	public void testAddt() {
-		parser.receiveInput("addt from 2pm to 4pm 23/10");
-		Calendar cal1 = Calendar.getInstance();
-		cal1.set(2014, 9, 23, 14, 00);
-		Calendar cal2 = Calendar.getInstance();
-		cal2.set(2014, 9, 23, 16, 00);
-
-		TimedTask toCompare = taskToCompareT("from 2pm to 4pm 23/10", cal1,
-				cal2);
-		GroupAction group = groupActionAdd(toCompare);
-		compareGroup(group, parser.getActions());
-	}
-
-	@Test
-	// Partition: timed task, has categories/contexts, absolute date mm/dd
-	// representation
-	// has another pair from to with no date
-	public void testAddt2() {
-		parser.receiveInput("addt attend talk from code to product "
-				+ "from 3pm to 5pm @2103 @3204 01 nov");
-		Calendar cal1 = Calendar.getInstance();
-		cal1.set(2014, 10, 1, 15, 00);
-		Calendar cal2 = Calendar.getInstance();
-		cal2.set(2014, 10, 1, 17, 00);
+	public void testAddTimed() {
+		List<String> contexts = new ArrayList<String>();
 		List<String> categories = new ArrayList<String>();
+		List<String> empty = new ArrayList<String>();
+		TimedTask task;
+		GroupAction group;
+		Calendar start = Calendar.getInstance();
+		Calendar end = Calendar.getInstance();
+		start.set(2014, 10, 4, 10, 0);
+		CalendarSource.setBaseDate(start.getTime());
+
+		parser.receiveInput("addt from 2pm to 4pm 23/10");
+		start.set(2014, 9, 23, 14, 00);
+		end.set(2014, 9, 23, 16, 00);
+
+		task = templateTaskTimed("from 2pm to 4pm 23/10", start, end, empty,
+				empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addt attend talk from code to product "
+				+ "from 3pm til 5pm @2103 @3204 01 nov");
+		start.set(2014, 10, 1, 15, 00);
+		end.set(2014, 10, 1, 17, 00);
 		categories.add("2103");
 		categories.add("3204");
-
-		TimedTask toCompare = taskToCompareT(
-				"attend talk from code to product "
-						+ "from 3pm to 5pm @2103 @3204 01 nov", cal1, cal2);
-		toCompare.setCategories(categories);
-		GroupAction group = groupActionAdd(toCompare);
+		task = templateTaskTimed(
+				"attend talk from code to product @2103 @3204", start, end,
+				categories, contexts);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+		
+		parser.receiveInput("addt attend talk from code to product "
+				+ "from 3pm -> 5pm today");
+		start.set(2014, 10, 4, 15, 00);
+		end.set(2014, 10, 4, 17, 00);
+		task = templateTaskTimed(
+				"attend talk from code to product", start, end,
+				empty, empty);
+		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
 	}
 
-	@Test
-	public void testAddt3() {
-		parser.receiveInput("addt do this from 2pm to 4pm 10/23");
-		GroupAction group = groupActionInvalid(
-				"addt do this from 2pm to 4pm 10/23", Settings.CommandType.ADD);
-		compareGroup(group, parser.getActions());
-	}
-
-	// ignore task Id for now
-	private void compareTask(Task task1, Task task2) {
-		if (task1 == null) {
-			assertEquals(task2, null);
-		} else if (task2 == null) {
-			assertTrue(false);
-		} else {
-			assertEquals(task1.getType(), task2.getType());
-			switch (task1.getType()) {
-			case "deadline":
-				compareTime(task1.getDate(), task2.getDate());
-				break;
-			case "timed task":
-				compareTime(task1.getDate(), task2.getDate());
-				compareTime(((TimedTask) task1).getEndTime(),
-						((TimedTask) task2).getEndTime());
-			default:
-			}
-			assertEquals(task1.getDescription(), task2.getDescription());
-			assertEquals(task1.getContexts(), task2.getContexts());
-			assertEquals(task1.getCategories(), task2.getCategories());
-
-		}
-
-	}
-
-	private void compareAction(Action act1, Action act2) {
-		if (act1 == null) {
-			assertEquals(act2, null);
-		} else if (act2 == null) {
-			assertTrue(false);
-		} else {
-			assertEquals(act1.getCommandType(), act2.getCommandType());
-			compareTask(act1.getTask(), act2.getTask());
-			if (act1.undo() == null) {
-				assertEquals(act2.undo(), null);
-			} else if (act2.undo() == null) {
-				assertTrue(false);
-			} else {
-				assertEquals(act1.undo().getCommandType(), act2.undo()
-						.getCommandType());
-				compareTask(act1.undo().getTask(), act2.undo().getTask());
-			}
-		}
-	}
-
-	private void compareGroup(GroupAction gr1, GroupAction gr2) {
-		assertEquals(gr1.getActionList().size(), gr2.getActionList().size());
-		int size = gr1.getActionList().size();
-		for (int i = 0; i < size; i++) {
-			compareAction(gr1.getActionList().get(i), gr2.getActionList()
-					.get(i));
-
-		}
-	}
 
 	/**
+	 * @param task
 	 * @return
 	 */
-	private Task taskToCompareF() {
-		Task toCompare = new Task();
-		toCompare.setDescription("task 1 @2103 @2101 #homework");
-		List<String> categories = new ArrayList<String>();
-		categories.add("2103");
-		categories.add("2101");
-		List<String> contexts = new ArrayList<String>();
-		contexts.add("homework");
-		toCompare.setCategories(categories);
-		toCompare.setContexts(contexts);
-		return toCompare;
-	}
-
-	/**
-	 * @param toCompare
-	 * @return
-	 */
-	private GroupAction groupActionAdd(Task toCompare) {
-		Action toAdd = new Action(Settings.CommandType.ADD, toCompare);
-		Action negate = new Action(Settings.CommandType.DELETE, toCompare);
+	private GroupAction templateGroupAdd(Task task) {
+		Action toAdd = new Action(Settings.CommandType.ADD, task);
+		Action negate = new Action(Settings.CommandType.DELETE, task);
 		toAdd.setUndo(negate);
 
 		GroupAction group = new GroupAction();
@@ -268,47 +189,118 @@ public class JUnitInputParser {
 		return group;
 	}
 
-	private GroupAction groupActionInvalid(String input,
+	private GroupAction templateGroupInvalid(String input,
 			Settings.CommandType command) {
 		Action invalid = new Action(Settings.CommandType.INVALID);
 		invalid.setUndo(null);
 		invalid.setInvalidCommandType(command);
 		invalid.setUserInput(input);
+
 		GroupAction group = new GroupAction();
 		group.addAction(invalid);
 		return group;
 	}
 
-	private DeadlineTask taskToCompareD(String desc, Calendar cal) {
-		DeadlineTask toCompare = new DeadlineTask(0, desc, cal);
-		List<String> empty = new ArrayList<String>();
-		toCompare.setCategories(empty);
-		toCompare.setContexts(empty);
-		return toCompare;
+	private DeadlineTask templateTaskDeadline(String desc, Calendar deadline,
+			List<String> categories, List<String> contexts) {
+		DeadlineTask task = new DeadlineTask(0, desc, deadline);
+
+		task.setCategories(categories);
+		task.setContexts(contexts);
+
+		return task;
 	}
 
-	private TimedTask taskToCompareT(String desc, Calendar cal1, Calendar cal2) {
-		TimedTask toCompare = new TimedTask(0, desc, cal1, cal2);
-		List<String> empty = new ArrayList<String>();
-		toCompare.setCategories(empty);
-		toCompare.setContexts(empty);
-		return toCompare;
+	/**
+	 * @return
+	 */
+	private Task templateTaskFloating(String desc, List<String> categories,
+			List<String> contexts) {
+		Task task = new Task(0, desc);
+
+		task.setCategories(categories);
+		task.setContexts(contexts);
+
+		return task;
+	}
+
+	private TimedTask templateTaskTimed(String desc, Calendar start,
+			Calendar end, List<String> categories, List<String> contexts) {
+		TimedTask task = new TimedTask(0, desc, start, end);
+
+		task.setCategories(categories);
+		task.setContexts(contexts);
+
+		return task;
+	}
+
+	private void compareGroup(GroupAction result, GroupAction expected) {
+		assertEquals(result.getActionList().size(), expected.getActionList()
+				.size());
+
+		int size = result.getActionList().size();
+		for (int i = 0; i < size; i++) {
+			compareAction(result.getActionList().get(i), expected
+					.getActionList().get(i));
+		}
+	}
+
+	private void compareAction(Action result, Action expected) {
+		if (expected == null) {
+			assertNull(result);
+		} else {
+			assertEquals(result.getCommandType(), expected.getCommandType());
+			compareTask(result.getTask(), expected.getTask());
+			if (result.undo() == null) {
+				assertEquals(expected.undo(), null);
+			} else if (expected.undo() == null) {
+				assertTrue(false);
+			} else {
+				assertEquals(result.undo().getCommandType(), expected.undo()
+						.getCommandType());
+				compareTask(result.undo().getTask(), expected.undo().getTask());
+			}
+		}
+	}
+
+	// ignore task Id
+	private void compareTask(Task result, Task expected) {
+		if (expected == null) {
+			assertNull(result);
+		} else {
+			assertEquals(result.getType(), expected.getType());
+			switch (result.getType()) {
+			case Task.TASK_DEADLINE:
+				compareTime(result.getDate(), expected.getDate());
+				break;
+			case Task.TASK_TIMED:
+				compareTime(result.getDate(), expected.getDate());
+				compareTime(((TimedTask) result).getEndTime(),
+						((TimedTask) expected).getEndTime());
+			default:
+			}
+			assertEquals(result.getDescription(), expected.getDescription());
+			assertEquals(result.getContexts(), expected.getContexts());
+			assertEquals(result.getCategories(), expected.getCategories());
+
+		}
+
 	}
 
 	// @author A0113022
-	private void compareTime(Calendar cal1, Calendar cal2) {
-		if (cal1 == null) {
-			assertEquals(cal2, null);
-		} else if (cal2 == null) {
-			assertTrue(false);
+	private void compareTime(Calendar result, Calendar expected) {
+		if (expected == null) {
+			assertNull(result);
 		} else {
-			assertEquals(cal1.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
-			assertEquals(cal1.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
-			assertEquals(cal1.get(Calendar.DAY_OF_MONTH),
-					cal2.get(Calendar.DAY_OF_MONTH));
-			assertEquals(cal1.get(Calendar.HOUR_OF_DAY),
-					cal2.get(Calendar.HOUR_OF_DAY));
-			assertEquals(cal1.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
+			assertEquals(result.get(Calendar.YEAR), expected.get(Calendar.YEAR));
+			assertEquals(result.get(Calendar.MONTH),
+					expected.get(Calendar.MONTH));
+			assertEquals(result.get(Calendar.DAY_OF_MONTH),
+					expected.get(Calendar.DAY_OF_MONTH));
+			assertEquals(result.get(Calendar.HOUR_OF_DAY),
+					expected.get(Calendar.HOUR_OF_DAY));
+			assertEquals(result.get(Calendar.MINUTE),
+					expected.get(Calendar.MINUTE));
 		}
 	}
 
