@@ -422,6 +422,7 @@ public class InputParser {
 			if (testWrongType != null && testWrongType.size() != 0) {
 				return newTask;
 			}
+			editedDescription = newDesc;
 		} else if (!emptyDate && emptyDesc) {
 			if (editedDateList == null || editedDateList.size() != 1) {
 				return newTask;
@@ -432,6 +433,7 @@ public class InputParser {
 		} else {
 			if (editedDateList != null && editedDateList.size() == 1) {
 				dueDate = editedDateList.get(0);
+				editedDescription = newDesc;
 			} else {
 				return newTask;
 			}
