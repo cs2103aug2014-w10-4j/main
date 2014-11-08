@@ -203,7 +203,7 @@ public class DisplayView {
     public static void showStatusToUser(Settings.StatusType type, MainGui gui,
             String filter) {
         if (isStatusError(type)) {
-            processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
+            processGUIError(gui, Messages.LOG_MESSAGE_DISPLAY_USAGE,
                     Messages.LOG_MESSAGE_ERROR, "");
         } else {
             processGUIError(gui, Messages.LOG_MESSAGE_DISPLAY,

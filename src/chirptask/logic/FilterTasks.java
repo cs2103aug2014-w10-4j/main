@@ -116,21 +116,10 @@ public class FilterTasks {
                 filterTaskType(templist, Task.TASK_DEADLINE);
                 break;
             case "/date":
-                try {
-                    filterTaskDate(gui, param, templist, i);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    // log down invalid input
-                    templist = processExceptionLogging(gui);
-                    break;
-
-                } catch (InvalidParameterException invalidParameterException) {
-                    DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
-                } finally {
-                    i++;
-                }
+                filterTaskDate(gui, param, templist, i);
+                i++;
                 break;
             default:
-                // Entire string keyword search
                 filterKeyword(templist, filter);
                 break;
             }
@@ -141,10 +130,17 @@ public class FilterTasks {
 
     private static void filterTaskDate(MainGui gui, String[] param,
             List<Task> templist, int i) {
-        Calendar filterdate = processFilterDateParam(param[i
-                + INIT_FILTER]);
-        if (filterdate != null) {
-            processFilterDate(gui, param, templist, i, filterdate);
+        try {
+            Calendar filterdate = processFilterDateParam(param[i + INIT_FILTER]);
+            if (filterdate != null) {
+                processFilterDate(gui, param, templist, i, filterdate);
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // log down invalid input
+            templist = processExceptionLogging(gui);
+
+        } catch (InvalidParameterException invalidParameterException) {
+            DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
         }
     }
 
