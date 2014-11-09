@@ -88,10 +88,10 @@ public class LocalStorage implements IStorage {
 	}
 
 	private void checkSessionStorage() {
-		if (StorageHandler.sessionStorage == null) {
+		if (StorageHandler.isSessionStorageInit() == false) {
 			return;
 		}
-		List<Task> sessionList = StorageHandler.sessionStorage.getAllTasks();
+		List<Task> sessionList = StorageHandler.getAllTasks();
 		if (sessionList == null || sessionList.size() == 0) {
 			return;
 		}
