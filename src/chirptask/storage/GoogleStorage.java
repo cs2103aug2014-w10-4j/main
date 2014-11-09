@@ -4,7 +4,7 @@ package chirptask.storage;
 import java.util.List;
 
 import chirptask.google.GoogleController;
-import chirptask.storage.StorageHandler.GoogleService;
+import chirptask.google.GoogleController.GoogleService;
 
 public class GoogleStorage implements IStorage {
     private static GoogleController _gController;

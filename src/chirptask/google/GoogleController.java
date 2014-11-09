@@ -11,7 +11,6 @@ import chirptask.common.Messages;
 import chirptask.logic.Logic;
 import chirptask.storage.EventLogger;
 import chirptask.storage.GoogleStorage;
-import chirptask.storage.StorageHandler.GoogleService;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -39,7 +38,10 @@ import com.google.api.services.tasks.model.Task;
  */
 
 public class GoogleController implements Runnable {
-
+    public enum GoogleService {
+        GOOGLE_CALENDAR, GOOGLE_TASKS;
+    }
+    
     public enum Status {
         ONLINE, OFFLINE, SYNC, SYNC_FAIL, LOGIN
     }

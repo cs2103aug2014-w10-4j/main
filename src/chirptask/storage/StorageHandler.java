@@ -5,15 +5,11 @@ import java.util.List;
 
 import chirptask.common.Settings;
 import chirptask.google.GoogleController;
+import chirptask.google.GoogleController.GoogleService;
 import chirptask.google.GoogleController.Status;
 import chirptask.logic.Logic;
 
 public class StorageHandler {
-
-    public enum GoogleService {
-        GOOGLE_CALENDAR, GOOGLE_TASKS;
-    }
-    
     private static List<IStorage> _listOfStorages = new ArrayList<IStorage>();
     private static IStorage eventStorage;
     private static IStorage googleStorage;

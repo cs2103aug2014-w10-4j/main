@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import chirptask.storage.StorageHandler.GoogleService;
+import chirptask.google.GoogleController.GoogleService;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
