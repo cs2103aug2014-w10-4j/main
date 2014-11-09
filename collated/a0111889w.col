@@ -3,6 +3,211 @@
 
 
 	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\common\Messages.java
+	 */
+
+package chirptask.common;
+
+public class Messages {
+    public static final String LOG_MESSAGE_ADD_TASK = "%1$s Added new task %2$s.";
+    public static final String LOG_MESSAGE_REMOVE_TASK = "%1$s Removed task %2$s.";
+    public static final String LOG_MESSAGE_MODIFY_TASK = "%1$s Modified task %2$s.";
+    public static final String LOG_MESSAGE_GET_TASK = "%1$s Retrieved task with Id: %2$s.";
+    public static final String LOG_MESSAGE_GET_ALL_TASKS = "%1$s Retrieved all tasks.";
+    public static final String LOG_MESSAGE_INVALID_COMMAND = "Valid commands: add addd addt edit delete done undone display filter clear undo login logout sync";
+    public static final String LOG_MESSAGE_INVALID_TASK_TYPE = "Invalid Task Type.";
+    public static final String LOG_MESSAGE_LOGIN = "%1$s Login";
+    public static final String LOG_MESSAGE_SYNC = "%1$s Sync to google";
+    public static final String LOG_MESSAGE_SYNC_FAIL = "%1$s Sync to google, Please login to enable sync";
+    public static final String LOG_MESSAGE_DONE = "%1$s: Done %2$s";
+    public static final String LOG_MESSAGE_UNDONE = "%1$s: Undone %2$s";
+    public static final String LOG_MESSAGE_DISPLAY = "%1$s Displayed %2$s.";
+    public static final String LOG_MESSAGE_SUCCESS = "Successfully";
+    public static final String LOG_MESSAGE_ERROR = "Error";
+    public static final String LOG_MESSAGE_FAIL = "Fail to ";
+    public static final String LOG_MESSAGE_UNDO_NOTHING = "Nothing to undo";
+    public static final String LOG_MESSAGE_SUCCESS_OR_FAILURE = "%1$s execute %2$s";
+    public static final String LOG_MESSAGE_LOGOUT_FAIL = "You are not logged in.";
+    public static final String LOG_MESSAGE_LOGOUT_SUCCESS = "Successfully logout.";
+    public static final String LOG_MESSAGE_SYN_INIT = "Initiated";
+    public static final String LOG_MESSAGE_UNEXPECTED = "Unexpected behaviour encountered.";
+
+    public static final String LOG_MESSAGE_ADD_USAGE = "Usage: Add <Task> | Addd <Task> by MM/DD | Addt <Task> from HH to HH DD/MM";
+    public static final String LOG_MESSAGE_DELETE_USAGE = "Usage: delete <Task no> | delete <Task no>-<Task no>,<Task no>";
+    public static final String LOG_MESSAGE_DISPLAY_USAGE = "Usage: display <keyword> | display /<category>";
+    public static final String LOG_MESSAGE_EDIT_USAGE = "Usage: edit <Task no> <desc>";
+    public static final String LOG_MESSAGE_UNDO_USAGE = "Usage: undo";
+    public static final String LOG_MESSAGE_UNDONE_USAGE = "Usage: undone <Task no> | undone <Task no>-<Task no>";
+    public static final String LOG_MESSAGE_DONE_USAGE = "Usage: done <Task no> | done <Task no>-<Task no>";
+    public static final String LOG_MESSAGE_LOGIN_USAGE = "Usage: login";
+    public static final String LOG_MESSAGE_LOGOUT_USAGE = "Usage: logout";
+    public static final String LOG_MESSAGE_SYNC_USAGE = "Usage: sync";
+    public static final String LOG_MESSAGE_CLEAR_USAGE = "Usage: clear";
+
+    public static final String LABEL_FILTER = "Filter: ";
+    public static final String LABEL_USERINPUT = "Input: ";
+
+    public static final String STATUS_ERROR = "Error: %1$s";
+    public static final String STATUS_NORMAL = "Status: %1$s";
+
+    public static final String TITLE_SETTINGS = "Settings";
+    public static final String TITLE_SOFTWARE = "ChirpTask";
+    public static final String TITLE_LOGGING_IN = "Connecting";
+    public static final String TITLE_OFFLINE = "Offline";
+    public static final String TITLE_ONLINE = "Online";
+    public static final String TITLE_SYNCING = "Syncing";
+    public static final String TITLE_SYNC_FAIL = "Sync failed";
+
+    public static final String DEFAULT_STATUS = "Nothing is happening.";
+
+    public static final String ERROR = "%1$s: Error %2$s";
+    public static final String ERROR_LOCAL = "Local storage %2$s.";
+    public static final String INVALID_INPUT = "Invalid input: %1$s.";
+
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\common\Messages.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\common\Settings.java
+	 */
+
+package chirptask.common;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.jnativehook.keyboard.NativeKeyEvent;
+
+import chirptask.storage.StorageHandler;
+
+public class Settings {
+
+    public static String EVENT_LOG_FILENAME = "eventlogs.txt";
+    public static String DEFAULT_FILTER = "";
+    public static String GOOGLE_CALENDAR_ID = "";
+    public static char CATEGORY_CHAR = '@';
+    public static char HASHTAG_CHAR = '#';
+    public static boolean LOGIN_AUTO = false;
+    public static int SYSTEM_EXIT_NORMAL = 0;
+
+    public static String CATEGORY = CATEGORY_CHAR + "";
+    public static String CONTEXT = HASHTAG_CHAR + "";
+
+    public static int HOTKEY_TOGGLE_HIDE = NativeKeyEvent.VC_ESCAPE;
+    public static int HOTKEY_TOGGLE_SHOW = NativeKeyEvent.VC_G;
+
+    public enum CommandType {
+        ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT, CLEAR, SYNC, LOGOUT
+    }
+
+    public enum StatusType {
+        ERROR, MESSAGE
+    }
+
+    private static final String propertiesFile = "config.properties";
+    private static final File configFile = new File(propertiesFile);
+    private static final Properties props = new Properties();
+    public static boolean hasRead = false;
+
+    // Initialized at the start by UI
+    public Settings() {
+        if (configFile.exists()) {
+            readPropertiesFromFile();
+        } else {
+            writeDefaultPropertiesToFile();
+        }
+    }
+
+    private void writeDefaultPropertiesToFile() {
+        try {
+            FileWriter writer = new FileWriter(configFile);
+
+            // write default values
+            props.setProperty("EVENT_LOG_FILENAME", "eventlogs.txt");
+            props.setProperty("DEFAULT_FILTER", "");
+            props.setProperty("CATEGORY_CHAR", "@");
+            props.setProperty("CONTEXT_CHAR", "#");
+            props.setProperty("LOGIN_AUTO", "false");
+            props.setProperty("SYSTEM_EXIT_NORMAL", "0");
+            props.setProperty("HOTKEY_TOGGLE_HIDE", ""
+                    + NativeKeyEvent.VC_ESCAPE);
+            props.setProperty("HOTKEY_TOGGLE_SHOW", "" + NativeKeyEvent.VC_G);
+            props.setProperty("GOOGLE_CALENDAR_ID", "");
+
+            props.store(writer, "Default Settings");
+            writer.close();
+        } catch (IOException e) {
+            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+                    "while writing to file.\n" + e.getMessage()));
+        }
+    }
+
+    public void readPropertiesFromFile() {
+        FileReader reader;
+        try {
+            reader = new FileReader(configFile);
+            props.load(reader);
+            
+            EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME");
+            DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER");
+            CATEGORY_CHAR = props.getProperty("CATEGORY_CHAR").charAt(0);
+            HASHTAG_CHAR = props.getProperty("CONTEXT_CHAR").charAt(0);
+            LOGIN_AUTO = Boolean.parseBoolean(props.getProperty("LOGIN_AUTO"));
+            SYSTEM_EXIT_NORMAL = Integer.parseInt(props
+                    .getProperty("SYSTEM_EXIT_NORMAL"));
+            HOTKEY_TOGGLE_HIDE = Integer.parseInt(props
+                    .getProperty("HOTKEY_TOGGLE_HIDE"));
+            HOTKEY_TOGGLE_SHOW = Integer.parseInt(props
+                    .getProperty("HOTKEY_TOGGLE_SHOW"));
+            GOOGLE_CALENDAR_ID = props.getProperty("GOOGLE_CALENDAR_ID");
+            hasRead = true;
+            
+            reader.close();
+        } catch (FileNotFoundException ex) {
+            writeDefaultPropertiesToFile();
+        } catch (IOException ex) {
+            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+                    "while reading from file.\n" + ex.getMessage()));
+        } catch (NumberFormatException NFE) {
+            // corrupted settings
+            writeDefaultPropertiesToFile();
+        } catch (IndexOutOfBoundsException OOB){
+            // corrupted settings
+            writeDefaultPropertiesToFile();
+        }
+    }
+    
+    public static void writeGoogleCalendarId(String googleId) {
+        try {
+            if (props != null && googleId != null) {
+                FileWriter writer = new FileWriter(configFile);
+                props.setProperty("GOOGLE_CALENDAR_ID", googleId);
+                props.store(writer, "Default Settings");
+                writer.close();
+            }
+        } catch (IOException e) {
+            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+                    "while writing to file.\n" + e.getMessage()));
+        }
+    }
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\common\Settings.java
+
+
+
+
+
+	/**
 	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\gui\layoutStyle.css
 	 */
 
@@ -151,6 +356,2256 @@
     -fx-background-color: transparent;
 }
 	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\gui\layoutStyle.css
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\gui\MainGui.java
+	 */
+
+package chirptask.gui;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import javafx.animation.FadeTransition;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javafx.util.Duration;
+
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
+import org.jnativehook.NativeInputEvent;
+import org.jnativehook.keyboard.NativeKeyEvent;
+import org.jnativehook.keyboard.NativeKeyListener;
+
+import chirptask.common.Messages;
+import chirptask.common.Settings;
+import chirptask.logic.DisplayView;
+import chirptask.logic.FilterTasks;
+import chirptask.logic.Logic;
+
+public class MainGui extends Application implements NativeKeyListener {
+
+    private static List<Integer> _taskIndexToId = new ArrayList<>();
+    private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+
+    private static final int MIN_HEIGHT = 300;
+    private static final int MIN_WIDTH = 500;
+
+    private static final String[] MONTH = new String[] { "January", "February",
+            "March", "April", "May", "June", "July", "August", "September",
+            "October", "November", "December" };
+    private static final double SCROLL_VALUE = 50;
+
+    private static final int STARTING_HEIGHT = 600;
+    private static final int STARTING_WIDTH = 800;
+
+    private BorderPane _headerBar;
+    private VBox _categoryList = new VBox();
+    private TextField _commandLineInterface;
+    private TextField _filterField;
+    private MainGui _gui = this;
+    private VBox _hashtagList = new VBox();
+    private Logic _logic;
+    private Stage _primaryStage;
+    private Label _statusText;
+
+    private VBox _taskViewByDate = new VBox();
+
+    private SortedMap<String, VBox> _taskViewDateMap = new TreeMap<>();
+
+    private ScrollPane _taskViewScrollPane;
+
+    public static List<Integer> getTaskIndexToId() {
+        return _taskIndexToId;
+    }
+
+    /**
+     * The main() method is ignored in correctly deployed JavaFX application.
+     * main() serves only as fallback in case the application can not be
+     * launched through deployment artifacts, e.g., in IDEs with limited FX
+     * support. NetBeans ignores main().
+     *
+     * @param args
+     *            the command line arguments
+     */
+    public static void main(String[] args) {
+
+        // ensures that settings has been initialized before continuing.
+        while (!Settings.hasRead) {
+            new Settings();
+        }
+        launch(args);
+    }
+
+    public void setOnlineStatus(final String Status) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Text onlineStatus = new Text(Status);
+                onlineStatus.getStyleClass().add("header-title");
+                BorderPane.setAlignment(onlineStatus, Pos.BOTTOM_RIGHT);
+                _headerBar.setRight(onlineStatus);
+            }
+        });
+    }
+
+    public void addCategoryIntoList(String Category) {
+        assert !Category.isEmpty();
+        Text categoryText = new Text(Settings.CATEGORY_CHAR + Category);
+        categoryText.getStyleClass().add("category-text");
+        categoryText.setOnMouseClicked(clickOnCategory());
+        _categoryList.getChildren().add(categoryText);
+    }
+
+    public void addHashtagIntoList(String hashtag) {
+        assert !hashtag.isEmpty();
+        Text hashtagText = new Text(Settings.HASHTAG_CHAR + hashtag);
+        hashtagText.getStyleClass().add("hashtag-text");
+        hashtagText.setOnMouseClicked(clickOnHashtag());
+        _hashtagList.getChildren().add(hashtagText);
+    }
+
+    public boolean addNewTaskViewDate(Calendar date) {
+        assert date != null;
+        String parseDateToString = DisplayView.convertDateToString(date);
+
+        if (_taskViewDateMap.containsKey(parseDateToString)) {
+            return false;
+        }
+
+        // Task View Date contains all tasks of that date
+        VBox taskViewDateBox = generateTaskViewDate(date);
+
+        _taskViewDateMap.put(parseDateToString, taskViewDateBox);
+        _taskViewByDate.getChildren().add(taskViewDateBox);
+
+        return true;
+    }
+
+    private VBox generateTaskViewDate(Calendar date) {
+        // Box to contain all tasks of that date
+        VBox taskViewDateBox = new VBox();
+        taskViewDateBox.setPadding(new Insets(0, 5, 10, 5));
+
+        // header that shows day of the week and date
+        BorderPane taskViewHeader = generateTaskViewHeader(date);
+        taskViewDateBox.getChildren().add(taskViewHeader);
+        return taskViewDateBox;
+    }
+
+    public boolean addNewTaskViewToDate(Calendar date, int taskId,
+            String description, String time, boolean done) {
+        assert date != null && taskId > -1;
+
+        if (_taskIndexToId.contains(taskId)) {
+            return false;
+        }
+
+        _taskIndexToId.add(taskId);
+
+        String descriptionWithIndex = _taskIndexToId.size() + ". "
+                + description;
+
+        BorderPane taskPane = generateTaskView(time, done, descriptionWithIndex);
+
+        _taskViewDateMap.get(DisplayView.convertDateToString(date))
+                .getChildren().add(taskPane);
+        return true;
+    }
+
+    private BorderPane generateTaskView(String time, boolean done,
+            String descriptionWithIndex) {
+        // pane that makes up task view
+        BorderPane taskPane = new BorderPane();
+
+        Pane checkBoxPane = generateTaskCheckBox(done, taskPane);
+        HBox descriptionBox = generateTaskDescription(descriptionWithIndex,
+                done);
+        Text taskTime = generateTaskTimeText(time, done);
+
+        // formatting task view pane
+        formatTaskView(taskPane, checkBoxPane, descriptionBox, taskTime);
+        return taskPane;
+    }
+
+    private void formatTaskView(BorderPane taskPane, Pane checkBoxPane,
+            HBox descriptionBox, Text taskTime) {
+        taskPane.setPadding(new Insets(10, 5, 8, 10));
+        taskPane.getStyleClass().add("task-pane");
+        taskPane.setLeft(checkBoxPane);
+        taskPane.setCenter(descriptionBox);
+        taskPane.setRight(taskTime);
+    }
+
+    public void clearTaskView() {
+        _taskViewByDate.getChildren().clear();
+        _taskViewDateMap.clear();
+        _taskIndexToId.clear();
+    }
+
+    public void clearTrendingList() {
+        _hashtagList.getChildren().clear();
+        _categoryList.getChildren().clear();
+        generateTrendingList();
+    }
+
+    public EventHandler<MouseEvent> clickOnCategory() {
+        return onClickTrendingListText();
+    }
+
+    public EventHandler<MouseEvent> clickOnHashtag() {
+        return onClickTrendingListText();
+    }
+
+    public String getFilter() {
+        return _filterField.getText();
+    }
+
+    public String getUserInput() {
+        return _commandLineInterface.getText();
+    }
+
+    @Override
+    public void nativeKeyPressed(NativeKeyEvent e) {
+        hotKeyToFocusCLI(e);
+        hotKeyToScrollTaskView(e);
+    }
+
+    @Override
+    public void nativeKeyReleased(NativeKeyEvent e) {
+        hotKeyToScrollToToday(e);
+        hotKeyToShowStage(e);
+        hotKeyToHideStage(e);
+    }
+
+    @Override
+    public void nativeKeyTyped(NativeKeyEvent e) {
+
+    }
+
+    public void refreshUI() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (_logic != null) {
+                    _logic.refreshUi();
+                }
+            }
+        });
+    }
+
+    public void setError(String errorMessage) {
+        assert !errorMessage.isEmpty();
+
+        String Status = String.format(Messages.STATUS_ERROR, errorMessage);
+        _statusText.setText(Status);
+        _statusText.getStyleClass().clear();
+        _statusText.getStyleClass().add("error-message");
+    }
+
+    public void setFilterText(String text) {
+        int caretPosition = _filterField.getCaretPosition();
+        _filterField.setText(text);
+        _filterField.positionCaret(caretPosition);
+    }
+
+    public void setStatus(String message) {
+        assert !message.isEmpty();
+
+        String Status = String.format(Messages.STATUS_NORMAL, message);
+        _statusText.setText(Status);
+        _statusText.getStyleClass().clear();
+        _statusText.getStyleClass().add("status-message");
+    }
+
+    public void setUserInputText(String text) {
+        _commandLineInterface.setText(text);
+        _commandLineInterface.positionCaret(text.length());
+    }
+
+    @Override
+    /*
+     * Actual starting point of application
+     * (non-Javadoc)
+     * 
+     * @see javafx.application.Application#start(javafx.stage.Stage)
+     */
+    public void start(Stage primaryStage) {
+        macOsXInitialization();
+        prepareScene(primaryStage);
+
+        /*
+         * Try to have lesser stuff loading before .show().
+         * Too much processing will cause the GUI to take awhile to load.
+         */
+        primaryStage.show();
+
+        initJNativeHook();
+        _logic = new Logic(this);
+        scrollToToday();
+    }
+
+    private EventHandler<? super MouseEvent> clearAllAction() {
+        return new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    setFilterText("");
+                    sendEnterKeyToFilterBar();
+                }
+            }
+
+            private void sendEnterKeyToFilterBar() {
+                filterModified().handle(
+                        new KeyEvent(null, null, null, KeyCode.ENTER, false,
+                                false, false, false));
+            }
+        };
+    }
+
+    private EventHandler<KeyEvent> cliKeyPressHandler() {
+        return new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                KeyCode keyPressed = event.getCode();
+                cliKeyTab(event, keyPressed);
+                cliKeyEnter(keyPressed);
+            }
+
+            private void cliKeyEnter(KeyCode keyPressed) {
+                if (keyPressed == KeyCode.ENTER) {
+                    String input = _commandLineInterface.getText();
+                    if (!input.trim().isEmpty()) {
+                        _commandLineInterface.setText("");
+                        _logic.retrieveInputFromUI(input);
+                    }
+                }
+            }
+
+            private void cliKeyTab(KeyEvent event, KeyCode keyPressed) {
+                if (keyPressed == KeyCode.TAB) {
+                    String input = _commandLineInterface.getText()
+                            .toLowerCase().trim();
+                    if (input.startsWith("display")) {
+                        event.consume();
+                        setUserInputText("display " + getFilter());
+                    } else if (input.startsWith("filter")) {
+                        event.consume();
+                        setUserInputText("filter " + getFilter());
+                    } else if (input.startsWith("edit ")) {
+                        event.consume();
+                        FilterTasks.editCli(input, _gui);
+                    }
+                }
+            }
+        };
+    }
+
+    private EventHandler<KeyEvent> filterModified() {
+        return new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                // check difference
+                if (event.getCode() == KeyCode.ENTER) {
+                    _logic.retrieveInputFromUI("display "
+                            + _filterField.getText());
+                }
+            }
+        };
+    }
+
+    private void formatTextLabel(Text Label, String color) {
+        Label.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 12));
+        Label.setFill(Color.web(color));
+    }
+
+    private ScrollPane generateCategoryList() {
+        Text categoryTitle = new Text("Categories (@)");
+        setTrendingListTitleFont(categoryTitle);
+
+        _categoryList.setPadding(new Insets(8));
+        _categoryList.setSpacing(5);
+        _categoryList.getChildren().add(categoryTitle);
+
+        ScrollPane categoryScrollPane = new ScrollPane();
+        categoryScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        categoryScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        categoryScrollPane.setContent(_categoryList);
+        categoryScrollPane.getStyleClass().add("category-scroll");
+
+        return categoryScrollPane;
+    }
+
+    private HBox generateFilterBox() {
+        _filterField = new TextField();
+        _filterField.setText(Settings.DEFAULT_FILTER);
+        _filterField.setOnKeyReleased(filterModified());
+
+        HBox.setHgrow(_filterField, Priority.ALWAYS);
+
+        Text filterLabel = new Text(Messages.LABEL_FILTER);
+
+        Button clearFilter = new Button();
+        clearFilter.setText("Clear");
+        clearFilter.getStyleClass().add("clear-button");
+        clearFilter.setOnMouseClicked(clearAllAction());
+
+        HBox filterBox = new HBox();
+        filterBox.setAlignment(Pos.CENTER);
+        filterBox.setPadding(new Insets(5));
+
+        filterBox.getChildren().addAll(filterLabel, _filterField, clearFilter);
+
+        return filterBox;
+    }
+
+    private ScrollPane generateHashtagList() {
+        Text hashtagTitle = new Text("Hashtags (#)");
+        setTrendingListTitleFont(hashtagTitle);
+
+        _hashtagList.setPadding(new Insets(8));
+        _hashtagList.setSpacing(5);
+        _hashtagList.getChildren().add(hashtagTitle);
+        ScrollPane hashtagScrollPane = new ScrollPane();
+        hashtagScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        hashtagScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        hashtagScrollPane.setContent(_hashtagList);
+        hashtagScrollPane.getStyleClass().add("context-scroll");
+
+        return hashtagScrollPane;
+    }
+
+    private BorderPane generateHeaderBar() {
+        BorderPane headerBar = new BorderPane();
+        headerBar.setPadding(new Insets(13, 10, 8, 10));
+        headerBar.getStyleClass().add("header-bar");
+
+        Text onlineStatus = generateOnlineStatusText();
+        HBox titleBox = generateTitleBox();
+
+        headerBar.setLeft(titleBox);
+        headerBar.setRight(onlineStatus);
+        return headerBar;
+    }
+
+    private BorderPane generateMainDisplay() {
+        BorderPane mainDisplay = new BorderPane();
+        mainDisplay.setPadding(new Insets(0));
+        mainDisplay.getStyleClass().add("address");
+
+        HBox filterBox = generateFilterBox();
+        mainDisplay.setTop(filterBox);
+
+        _taskViewScrollPane = new ScrollPane();
+        _taskViewScrollPane = generateTasksView();
+        mainDisplay.setCenter(_taskViewScrollPane);
+
+        VBox mainDisplayBottom = generateUserInputAndStatusBar();
+        mainDisplay.setBottom(mainDisplayBottom);
+
+        return mainDisplay;
+    }
+
+    private Text generateOnlineStatusText() {
+        // default is offline.
+        Text onlineStatus = new Text(Messages.TITLE_OFFLINE);
+        onlineStatus.getStyleClass().add("header-title");
+        BorderPane.setAlignment(onlineStatus, Pos.BOTTOM_RIGHT);
+        return onlineStatus;
+    }
+
+    private BorderPane generateRootPane() {
+        BorderPane rootPane = new BorderPane();
+
+        _headerBar = generateHeaderBar();
+        rootPane.setTop(_headerBar);
+
+        BorderPane mainDisplay = generateMainDisplay();
+        rootPane.setCenter(mainDisplay);
+
+        VBox trendingList = generateTrendingList();
+        rootPane.setRight(trendingList);
+
+        // scroll bar hack to beautify scroll bar
+        makeScrollFadeable(mainDisplay.lookup(".address > .scroll-pane"));
+        makeScrollFadeable(trendingList.getChildren().get(0));
+        makeScrollFadeable(trendingList.getChildren().get(1));
+
+        return rootPane;
+    }
+
+    private VBox generateStatusBarInterface() {
+        _statusText = new Label();
+        _statusText.setTextOverrun(OverrunStyle.ELLIPSIS);
+        setStatus(Messages.DEFAULT_STATUS);
+
+        VBox statusBar = new VBox();
+        statusBar.getStyleClass().add("status-bar");
+        statusBar.setPadding(new Insets(5));
+        statusBar.getChildren().add(_statusText);
+        return statusBar;
+    }
+
+    private Pane generateTaskCheckBox(boolean Done, final BorderPane taskPane) {
+        CheckBox markTaskAsDone = new CheckBox();
+        markTaskAsDone.setSelected(Done);
+
+        markTaskAsDone.selectedProperty().addListener(
+                listenerForTaskStatusChange(taskPane));
+
+        Pane checkBoxPane = new Pane();
+        checkBoxPane.setMaxWidth(20);
+        checkBoxPane.getChildren().add(markTaskAsDone);
+
+        return checkBoxPane;
+    }
+
+    private HBox generateTaskDescription(String description, boolean done) {
+        HBox descriptionBox = new HBox();
+        descriptionBox.setPadding(new Insets(0, 8, 0, 8));
+        TextFlow taskDescription = DisplayView.parseDescriptionToTextFlow(
+                description, done, this);
+
+        descriptionBox.setAlignment(Pos.CENTER_LEFT);
+        descriptionBox.getChildren().add(taskDescription);
+        return descriptionBox;
+    }
+
+    private ScrollPane generateTasksView() {
+        ScrollPane taskViewScrollPane = new ScrollPane();
+        taskViewScrollPane.setPadding(new Insets(5));
+        taskViewScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        taskViewScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+        taskViewScrollPane.setContent(_taskViewByDate);
+        taskViewScrollPane.setFitToWidth(true);
+
+        return taskViewScrollPane;
+    }
+
+    private Text generateTaskTimeText(String time, boolean done) {
+        Text taskTime = new Text(time);
+        taskTime.getStyleClass().add("task-time");
+        taskTime.setStrikethrough(done);
+        return taskTime;
+    }
+
+    private BorderPane generateTaskViewHeader(Calendar date) {
+
+        Text dayLabel = new Text();
+        dayLabel.setText(DAY_OF_WEEK[date.get(Calendar.DAY_OF_WEEK) - 1]);
+
+        Text dateLabel = new Text();
+        dateLabel.setText(date.get(Calendar.DAY_OF_MONTH) + " "
+                + MONTH[date.get(Calendar.MONTH)] + ", "
+                + (date.get(Calendar.YEAR)));
+
+        BorderPane taskViewHeader = new BorderPane();
+        taskViewHeader.setPadding(new Insets(5, 5, 3, 5));
+        taskViewHeader.setLeft(dayLabel);
+        taskViewHeader.setRight(dateLabel);
+
+        boolean isToday = DisplayView.convertDateToString(date).equals(
+                DisplayView.convertDateToString(Calendar.getInstance()));
+        if (isToday) {
+            taskViewHeader.getStyleClass().add("taskView-header-today");
+            formatTextLabel(dayLabel, "#CC6C6B");
+            formatTextLabel(dateLabel, "#CC6C6B");
+        } else {
+            taskViewHeader.getStyleClass().add("taskView-header");
+            formatTextLabel(dayLabel, "#777");
+            formatTextLabel(dateLabel, "#777");
+        }
+        return taskViewHeader;
+    }
+
+    private HBox generateTitleBox() {
+        Text sceneTitle = new Text(Messages.TITLE_SOFTWARE);
+        sceneTitle.getStyleClass().add("header-title");
+        sceneTitle.setTextAlignment(TextAlignment.CENTER);
+
+        ImageView imgView = new ImageView(new Image(this.getClass()
+                .getResourceAsStream("images/chirptask_clear.png")));
+        imgView.setFitHeight(30);
+        imgView.setPreserveRatio(true);
+        imgView.setSmooth(true);
+        imgView.setCache(true);
+
+        HBox titleBox = new HBox();
+        titleBox.setSpacing(10);
+        titleBox.setAlignment(Pos.BOTTOM_LEFT);
+        titleBox.getChildren().addAll(imgView, sceneTitle);
+        return titleBox;
+    }
+
+    private VBox generateTrendingList() {
+        VBox trendingList = new VBox();
+        trendingList.setPadding(new Insets(0));
+        trendingList.setSpacing(0);
+        trendingList.setMinWidth(180);
+        trendingList.getStyleClass().addAll("trending-list", "address");
+
+        ScrollPane hashtagPane = generateHashtagList();
+        ScrollPane categoryPane = generateCategoryList();
+
+        VBox.setVgrow(hashtagPane, Priority.ALWAYS);
+        VBox.setVgrow(categoryPane, Priority.ALWAYS);
+        hashtagPane.setMaxSize(Region.USE_COMPUTED_SIZE,
+                Region.USE_COMPUTED_SIZE);
+        categoryPane.setMaxSize(Region.USE_COMPUTED_SIZE,
+                Region.USE_COMPUTED_SIZE);
+
+        trendingList.getChildren().addAll(categoryPane, hashtagPane);
+        return trendingList;
+    }
+
+    private VBox generateUserInputAndStatusBar() {
+        _commandLineInterface = new TextField();
+        HBox.setHgrow(_commandLineInterface, Priority.ALWAYS);
+        _commandLineInterface.setOnKeyPressed(cliKeyPressHandler());
+
+        VBox mainDisplayBottom = new VBox();
+
+        HBox userInputBox = generateUserInputInterface();
+        VBox statusBar = generateStatusBarInterface();
+
+        mainDisplayBottom.getChildren().addAll(userInputBox, statusBar);
+
+        return mainDisplayBottom;
+    }
+
+    private HBox generateUserInputInterface() {
+        Text userInputLabel = new Text(Messages.LABEL_USERINPUT);
+
+        HBox userInputBox = new HBox();
+        userInputBox.setPadding(new Insets(5));
+        userInputBox.setAlignment(Pos.CENTER);
+        userInputBox.getChildren().add(userInputLabel);
+        userInputBox.getChildren().add(_commandLineInterface);
+        return userInputBox;
+    }
+
+    private void guiClosing(WindowEvent we) {
+        // consume the closing request, let logic handle
+        we.consume();
+        _logic.retrieveInputFromUI("exit");
+    }
+
+    private void hotKeyToFocusCLI(NativeKeyEvent e) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (_primaryStage.isFocused() && !_filterField.isFocused()) {
+                    _commandLineInterface.requestFocus();
+                }
+            }
+        });
+    }
+
+    private void hotKeyToHideStage(NativeKeyEvent e) {
+        if (_primaryStage.isFocused()
+                && e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    _primaryStage.setIconified(true);
+                }
+            });
+        }
+    }
+
+    private void hotKeyToScrollTaskView(NativeKeyEvent e) {
+        if (_primaryStage.isFocused() && e.getKeyCode() == NativeKeyEvent.VC_UP) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    _taskViewScrollPane.setVvalue(_taskViewScrollPane
+                            .getVvalue()
+                            - (SCROLL_VALUE / (_taskViewByDate.getHeight() - _taskViewScrollPane
+                                    .getHeight())));
+                }
+            });
+        } else if (_primaryStage.isFocused()
+                && e.getKeyCode() == NativeKeyEvent.VC_DOWN) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    _taskViewScrollPane.setVvalue(_taskViewScrollPane
+                            .getVvalue()
+                            + (SCROLL_VALUE / (_taskViewByDate.getHeight() - _taskViewScrollPane
+                                    .getHeight())));
+                }
+            });
+        }
+
+    }
+
+    private void hotKeyToScrollToToday(NativeKeyEvent e) {
+        int mod = e.getModifiers();
+        if (_primaryStage.isFocused()
+                && e.getKeyCode() == NativeKeyEvent.VC_T
+                && (mod == NativeInputEvent.CTRL_L_MASK
+                        || mod == NativeInputEvent.CTRL_R_MASK
+                        || mod == NativeInputEvent.CTRL_MASK
+                        || mod == NativeInputEvent.META_L_MASK
+                        || mod == NativeInputEvent.META_R_MASK || mod == NativeInputEvent.META_MASK)) {
+            scrollToToday();
+        }
+    }
+
+    private void hotKeyToShowStage(NativeKeyEvent e) {
+        int mod = e.getModifiers();
+        if (e.getKeyCode() == Settings.HOTKEY_TOGGLE_SHOW
+                && (mod == NativeInputEvent.CTRL_L_MASK
+                        || mod == NativeInputEvent.CTRL_R_MASK
+                        || mod == NativeInputEvent.CTRL_MASK
+                        || mod == NativeInputEvent.META_L_MASK
+                        || mod == NativeInputEvent.META_R_MASK || mod == NativeInputEvent.META_MASK)) {
+            // focus on CLI
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (!_primaryStage.isFocused()) {
+                        _primaryStage.toFront();
+                        _primaryStage.setIconified(false);
+                        _primaryStage.requestFocus();
+                        _primaryStage.getScene().getRoot().requestFocus();
+                    }
+                    _commandLineInterface.requestFocus();
+                }
+            });
+        }
+    }
+
+    private void initJNativeHook() {
+        try {
+            // Gets the JNativeHook logger
+            Logger logger = Logger.getLogger(GlobalScreen.class.getPackage()
+                    .getName());
+            LogManager.getLogManager().reset();
+            // Set level to off before V0.5.
+            logger.setLevel(Level.WARNING);
+
+            GlobalScreen.registerNativeHook();
+
+        } catch (NativeHookException ex) {
+            // Occasionally the hook will fail, this issue is with the library,
+            // we are unable to solve it.
+            System.err
+                    .println("There was a problem registering the native hook.");
+        }
+        GlobalScreen.getInstance().addNativeKeyListener(this);
+    }
+
+    private ChangeListener<Boolean> listenerForTaskStatusChange(
+            final BorderPane taskPane) {
+        return new ChangeListener<Boolean>() {
+            public void changed(ObservableValue<? extends Boolean> ov,
+                    Boolean old_val, Boolean new_val) {
+
+                HBox descriptionBox = (HBox) taskPane.getCenter();
+                TextFlow desc = (TextFlow) descriptionBox.getChildren().get(0);
+                String taskIndex = ""
+                        + ((Text) desc.getChildren().get(0)).getText().split(
+                                "\\.")[0];
+
+                if (new_val) {
+                    _logic.retrieveInputFromUI("done " + taskIndex);
+                } else {
+                    _logic.retrieveInputFromUI("undone " + taskIndex);
+                }
+
+                Iterator<Node> descChildIterator = desc.getChildren()
+                        .iterator();
+                Text taskTime = (Text) taskPane.getRight();
+                while (descChildIterator.hasNext()) {
+                    Text descChild = (Text) descChildIterator.next();
+                    descChild.setStrikethrough(new_val);
+                }
+                taskTime.setStrikethrough(new_val);
+
+            }
+        };
+    }
+
+    private void macOsXInitialization() {
+        if (System.getProperty("os.name").equals("Mac OS X")) {
+            // com.apple.eawt.Application application =
+            // com.apple.eawt.Application
+            // .getApplication();
+            // java.awt.Image image = Toolkit.getDefaultToolkit().getImage(
+            // getClass().getResource("images/chirptask_clear.png"));
+            // System.setProperty("apple.laf.useScreenMenuBar", "true");
+            // application.setDockIconImage(image);
+        }
+    }
+
+    /*
+     * Code re-use from https://gist.github.com/jewelsea/
+     */
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\gui\MainGui.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DisplayView.java
+	 */
+
+    /**
+     * Assuming there are only 3 type of task we need to handle
+     * 
+     * @param task
+     * @return String
+     */
+    public static String convertTaskDateToDurationString(Task task) {
+        assert task != null && task.getDate() != null;
+        String dateToString = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+
+        if (Task.TASK_FLOATING.equals(task.getType())) {
+            dateToString = "";
+        } else if (Task.TASK_DEADLINE.equals(task.getType())) {
+            DeadlineTask dTask = (DeadlineTask) task;
+            dateToString = "due by " + sdf.format(dTask.getDate().getTime());
+        } else if (Task.TASK_TIMED.equals(task.getType())) {
+            TimedTask tTask = (TimedTask) task;
+            dateToString = sdf.format(tTask.getStartTime().getTime()) + " to "
+                    + sdf.format(tTask.getEndTime().getTime());
+        } else {
+            assert false;
+        }
+        return dateToString;
+    }
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DisplayView.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DisplayView.java
+	 */
+
+    public static TextFlow parseDescriptionToTextFlow(String description,
+            boolean done, MainGui _gui) {
+        TextFlow parsedDesc = new TextFlow();
+        StringBuilder descStringBuilder = new StringBuilder(description);
+        Text bufferText = new Text();
+
+        while (descStringBuilder.length() > 0) {
+            int index = descStringBuilder.length();
+
+            boolean hasSpaceCharInDesc = descStringBuilder.indexOf(" ") > 0;
+
+            if (hasSpaceCharInDesc) {
+                index = descStringBuilder.indexOf(" ");
+            } else if (descStringBuilder.indexOf(" ") == 0) {
+                index = 1;
+            }
+
+            // obtain description until the first space
+            bufferText = new Text(descStringBuilder.substring(0, index));
+
+            if (descStringBuilder.charAt(0) == Settings.HASHTAG_CHAR) {
+                // Context
+                bufferText.getStyleClass().add("hashtag-text");
+                bufferText.setOnMouseClicked(_gui.clickOnHashtag());
+            } else if (descStringBuilder.charAt(0) == Settings.CATEGORY_CHAR) {
+                // Category
+                bufferText.getStyleClass().add("category-text");
+                bufferText.setOnMouseClicked(_gui.clickOnCategory());
+            }
+            
+            // delete parsed text
+            descStringBuilder.delete(0, index);
+            bufferText.setStrikethrough(done);
+            parsedDesc.getChildren().add(bufferText);
+        }
+
+        return parsedDesc;
+    }
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DisplayView.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DisplayView.java
+	 */
+
+    public static String convertDateToString(Calendar date) {
+        assert date != null;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+        String parseDateToString = sdf.format(date.getTime());
+        return parseDateToString;
+    }
+    
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DisplayView.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\DeadlineTask.java
+	 */
+
+package chirptask.storage;
+
+import java.util.Calendar;
+
+public class DeadlineTask extends Task {
+    private static final String TASK_DEADLINE = "deadline";
+    
+	Calendar _deadline;
+
+	public DeadlineTask(int taskId, String description, Calendar deadline) {
+		super(taskId, description, TASK_DEADLINE);
+		_deadline = deadline;
+	}
+
+	public Calendar getDate() {
+		return _deadline;
+	}
+
+	public void setDate(Calendar deadline) {
+		_deadline = deadline;
+	}
+
+}
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\DeadlineTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\EventLogger.java
+	 */
+
+package chirptask.storage;
+
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Date;
+
+import chirptask.common.Messages;
+import chirptask.common.Settings;
+
+public class EventLogger implements IStorage {
+
+    private static PrintStream fileWriter;
+    private static EventLogger instance = null;
+
+    private EventLogger() {
+        try {
+            fileWriter = new PrintStream(new BufferedOutputStream(
+                    new FileOutputStream(Settings.EVENT_LOG_FILENAME, true)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Set a printstream to the fileWriter variable, allowing printing of logs
+     * to other output streams like system.out
+     * 
+     * @param output
+     */
+    public static void setStream(PrintStream output) {
+        fileWriter = output;
+    }
+
+    public static EventLogger getInstance() {
+        if (instance == null) {
+            instance = new EventLogger();
+        }
+        return instance;
+    }
+
+    @Override
+    public void close() {
+        fileWriter.close();
+    }
+
+    @Override
+    public boolean storeNewTask(Task T) {
+        try {
+            fileWriter.println(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+                    new Date(), T.getDate().getTime(), T.getTaskId(),
+                    T.getDescription()));
+            fileWriter.flush();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Task removeTask(Task T) {
+        try {
+            fileWriter.println(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+                    new Date(), T.getDate().getTime(), T.getTaskId(),
+                    T.getDescription()));
+            fileWriter.flush();
+            return T;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean modifyTask(Task T) {
+        try {
+            fileWriter.println(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+                    new Date(), T.getDate().getTime(), T.getTaskId(),
+                    T.getDescription()));
+            fileWriter.flush();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Task getTask(int taskId) {
+        fileWriter.println(String.format(Messages.LOG_MESSAGE_GET_TASK,
+                new Date(), taskId));
+        fileWriter.flush();
+        return null;
+    }
+
+    @Override
+    public ArrayList<Task> getAllTasks() {
+        fileWriter.println(String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                new Date()));
+        fileWriter.flush();
+        return null;
+    }
+
+    public void logError(String error) {
+        fileWriter.println(String.format(Messages.ERROR, new Date(), error));
+        fileWriter.flush();
+    }
+
+}
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\EventLogger.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\IStorage.java
+	 */
+
+package chirptask.storage;
+
+import java.util.List;
+
+public interface IStorage {
+    boolean storeNewTask(Task T);
+    
+    Task removeTask(Task T);
+
+    boolean modifyTask(Task T);
+
+    Task getTask(int taskId);
+
+    // Task array or other data structure(?)
+    List<Task> getAllTasks();
+
+    void close();
+
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\IStorage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+	 */
+
+    public synchronized static void logError(String error) {
+        if (error == null) {
+            return;
+        }
+        EventLogger.getInstance().logError(error);
+    }
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+	 */
+
+    public void closeStorages() {
+        for (IStorage individualStorage : _listOfStorages) {
+            individualStorage.close();
+        }
+    }
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+	 */
+
+    public synchronized boolean modifyTask(Task modifiedTask) {
+        if (modifiedTask == null) {
+            return false;
+        }
+        
+        boolean isModified = false;
+        
+        for (IStorage individualStorage : _listOfStorages) {
+            individualStorage.modifyTask(modifiedTask);
+        }
+        
+        isModified = true;
+        return isModified;
+    }
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+	 */
+
+    public synchronized boolean addTask(Task addedTask) {
+        if (addedTask == null) {
+            return false;
+        }
+        
+        boolean isAdded = false;
+
+        for (IStorage individualStorage : _listOfStorages) {
+            individualStorage.storeNewTask(addedTask);
+        }
+        
+        isAdded = true;
+        return isAdded;
+    }
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+	 */
+
+    public synchronized Task deleteTask(Task deletedTask) {
+        if (deletedTask == null) {
+            return null;
+        }
+        
+        boolean isDeleted = false;
+
+        if ("".equals(deletedTask.getGoogleId())) {
+            for (IStorage individualStorage : _listOfStorages) {
+                individualStorage.removeTask(deletedTask);
+            }
+        } else {
+            if (isStorageInit()) { //All storages init including Google
+                for (IStorage individualStorage : _listOfStorages) {
+                    individualStorage.removeTask(deletedTask);
+                }
+            } else {
+                deletedTask.setDeleted(true);
+                modifyTask(deletedTask);
+            }
+        }
+
+        isDeleted = true;
+
+        if (isDeleted) {
+            return deletedTask;
+        } else {
+            return null;
+        }
+    }
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+	 */
+
+    static synchronized void deleteFromStorage(Task deletedTask) {
+        if (deletedTask == null) {
+            return;
+        }
+        
+        if (isLocalChirpStorageInit()) {
+            if (deletedTask != null) {
+                deleteFromAllExceptCloud(deletedTask);
+            }
+        }
+    }
+    
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\Task.java
+	 */
+
+package chirptask.storage;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+/**
+ * Super class for the various tasks: Timed Task and Deadline Task.
+ */
+
+public class Task implements Comparable<Task> {
+    public static final String TASK_FLOATING = "floating";
+    public static final String TASK_DEADLINE = "deadline";
+    public static final String TASK_TIMED = "timedtask";
+
+    private List<String> _contexts;
+    private List<String> _categories;
+
+    private int _taskId;
+
+    private String _description;
+    private String _eTag;
+    private String _googleId;
+    private String _type;
+
+    private boolean _isDone = false;
+    private boolean _isDeleted;
+    private boolean _isModified;
+
+    private Calendar _cal;
+
+    public Task() {
+        _contexts = new ArrayList<String>();
+        _categories = new ArrayList<String>();
+        _eTag = "";
+        _googleId = "";
+        _type = TASK_FLOATING;
+        _isDeleted = false;
+        _isModified = false;
+        _cal = null;
+    }
+
+    public Task(int taskId, String description) {
+        this();
+        _taskId = taskId;
+        _description = description;
+    }
+
+    Task(int taskId, String description, String taskType) {
+        this();
+        _taskId = taskId;
+        _description = description;
+        _type = taskType;
+    }
+
+    /*
+     * Compare by Time then Type then Description (Lexicographically)
+     */
+    public int compareTo(Task b) {
+        boolean isSameDateAndTime = this.getDate().compareTo(b.getDate()) == 0;
+        boolean isSameType = this.getType().compareTo(b.getType()) == 0;
+        if (isSameDateAndTime) {
+            if (isSameType) {
+                // compare description
+                return this.getDescription().compareTo(b.getDescription());
+            } else {
+
+                /*
+                 * Floating tasks shown at the top before the rest.
+                 * Floating < Deadline < TimedTasks
+                 * You only enter this section of the code if the two Task are
+                 * of different type. With that, if either is a floating type,
+                 * the floating type must be shown first.
+                 */
+                if (this.getType().equals("floating")) {
+                    return -1;
+                } else if (b.getType().equals("floating")) {
+                    return 1;
+                } else {
+                    return this.getType().compareTo(b.getType());
+                }
+            }
+        } else {
+            return this.getDate().compareTo(b.getDate());
+        }
+    }
+
+    public boolean equals(Object o) {
+        if (o instanceof Task) {
+            Task b = (Task) o;
+            if (this.getTaskId() == b.getTaskId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isDone() {
+        return _isDone;
+    }
+
+    public void setDone(boolean isDone) {
+        _isDone = isDone;
+    }
+
+    public boolean isDeleted() {
+        return _isDeleted;
+    }
+
+    public void setDeleted(boolean isDeleted) {
+        _isDeleted = isDeleted;
+    }
+
+    public boolean isModified() {
+        return _isModified;
+    }
+
+    public void setModified(boolean isModified) {
+        _isModified = isModified;
+    }
+
+    public String getETag() {
+        return _eTag;
+    }
+
+    public void setETag(String eTag) {
+        _eTag = eTag;
+    }
+
+    public int getTaskId() {
+        return _taskId;
+    }
+
+    public void setTaskId(int taskId) {
+        _taskId = taskId;
+    }
+
+    public String getDescription() {
+        return _description;
+    }
+
+    public void setDescription(String description) {
+        _description = description;
+    }
+
+    public String getGoogleId() {
+        return _googleId;
+    }
+
+    public void setGoogleId(String googleId) {
+        _googleId = googleId;
+    }
+
+    public String getType() {
+        return _type;
+    }
+
+    public void setType(String type) {
+        _type = type;
+    }
+
+    public Calendar getDate() {
+        if (_cal == null) {
+            _cal = Calendar.getInstance();
+            _cal.set(Calendar.HOUR_OF_DAY, 0);
+            _cal.set(Calendar.MINUTE, 0);
+            _cal.set(Calendar.SECOND, 0);
+            _cal.set(Calendar.MILLISECOND, 0);
+        }
+        return _cal;
+    }
+
+    public void removeDate() {
+        _cal = null;
+    }
+
+    public List<String> getContexts() {
+        return _contexts;
+    }
+
+    public void setContexts(List<String> _contexts) {
+        this._contexts = _contexts;
+    }
+
+    public List<String> getCategories() {
+        return _categories;
+    }
+
+    public void setCategories(List<String> _categories) {
+        this._categories = _categories;
+    }
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\TimedTask.java
+	 */
+
+package chirptask.storage;
+
+import java.util.Calendar;
+
+public class TimedTask extends Task {
+    private static final String TASK_TIMED = "timedtask";
+
+    Calendar _startTime;
+    Calendar _endTime;
+
+    public TimedTask(int taskId, String description, Calendar startTime,
+            Calendar endTime) {
+        super(taskId, description, TASK_TIMED);
+        _startTime = startTime;
+        _endTime = endTime;
+    }
+
+    public Calendar getDate() {
+        return getStartTime();
+    }
+
+    public Calendar getStartTime() {
+        return _startTime;
+    }
+
+    public void setStartTime(Calendar startTime) {
+        _startTime = startTime;
+    }
+
+    public Calendar getEndTime() {
+        return _endTime;
+    }
+
+    public void setEndTime(Calendar endTime) {
+        _endTime = endTime;
+    }
+
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\TimedTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitDisplayViewParserTestAtd.java
+	 */
+
+package chirptask.testing;
+
+import static org.junit.Assert.*;
+
+import java.util.Calendar;
+
+import org.junit.Test;
+
+import chirptask.logic.DisplayView;
+import chirptask.storage.DeadlineTask;
+import chirptask.storage.Task;
+import chirptask.storage.TimedTask;
+
+public class JUnitDisplayViewParserTestAtd {
+
+    /*
+     * Tests only two methods under DisplayView.
+     * These two methods are used by GUI to parse certain object into strings.
+     * 
+     * ConvertDateToString method and ConvertTaskDateToDuration method
+     */
+    @Test
+    public void testConvertDateToString() {
+
+        Calendar date = Calendar.getInstance();
+
+        // Valid inputs
+        // There are no invalid inputs as defensive coding has handled that
+        date.set(1991, 7, 27);
+        assertEquals("27/08/1991", DisplayView.convertDateToString(date));
+
+        date.set(1991, 0, 1);
+        assertEquals("01/01/1991", DisplayView.convertDateToString(date));
+
+        date.set(2000, 0, 1);
+        assertEquals("01/01/2000", DisplayView.convertDateToString(date));
+
+    }
+
+    @Test
+    public void testConvertTaskDateToDurationString() {
+
+        Calendar date = Calendar.getInstance();
+        Calendar date2 = Calendar.getInstance();
+
+        // test for valid input
+        date.set(2014, 9, 22, 21, 30, 00);
+        Task floating = new Task(0, "Floating Task");
+        assertEquals("",
+                DisplayView.convertTaskDateToDurationString(floating));
+
+        // checks if method verifies type of task as deadline task
+        floating = new DeadlineTask(1, "Deadline Task as Floating Task", date);
+        assertEquals("due by 21:30",
+                DisplayView.convertTaskDateToDurationString(floating));
+
+        DeadlineTask deadline = new DeadlineTask(2, "Deadline Task", date);
+        assertEquals("due by 21:30",
+                DisplayView.convertTaskDateToDurationString(deadline));
+
+        date2.set(2014, 9, 22, 23, 30, 00);
+
+        // checks if method verifies type of task as timed task
+        floating = new TimedTask(3, "Timed Task as Floating Task", date, date2);
+        assertEquals("21:30 to 23:30",
+                DisplayView.convertTaskDateToDurationString(floating));
+
+        TimedTask timed = new TimedTask(4, "Floating Task", date, date2);
+        assertEquals("21:30 to 23:30",
+                DisplayView.convertTaskDateToDurationString(timed));
+    }
+
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitDisplayViewParserTestAtd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitEventLoggerAtd.java
+	 */
+
+package chirptask.testing;
+
+import static org.junit.Assert.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import java.text.ParseException;
+import java.util.Calendar;
+
+import org.junit.Test;
+
+import chirptask.common.Messages;
+import chirptask.common.Settings;
+import chirptask.storage.DeadlineTask;
+import chirptask.storage.EventLogger;
+import chirptask.storage.Task;
+import chirptask.storage.TimedTask;
+
+public class JUnitEventLoggerAtd {
+
+    Settings settings = new Settings();
+    Calendar today = Calendar.getInstance();
+    Calendar tomorrow = Calendar.getInstance();
+
+    EventLogger logger = EventLogger.getInstance();
+    PipedInputStream pin = new PipedInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
+    PipedOutputStream pout;
+    PrintStream c;
+
+    /*
+     * Tests the EventLogger Component
+     * 
+     * Not much heuristics to be applied to eventlog testing, code is pretty
+     * straightforward, no boundary cases, no equivalence partition either.
+     */
+
+    @Test
+    public void deadlineTaskTesting() throws ParseException, IOException {
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        pout = new PipedOutputStream(pin);
+        c = new PrintStream(pout);
+
+        EventLogger.setStream(c);
+
+        DeadlineTask dt = new DeadlineTask(111889,
+                "Deadline Task JUnit Testing", tomorrow);
+        
+        //Tests if logging is accurate for deadline tasks operations
+        //More importantly, tests if time and descriptions are accurately logged.
+        assertTrue(logger.storeNewTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertEquals(dt, logger.removeTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertTrue(logger.modifyTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertNull(logger.getTask(dt.getTaskId()));
+        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+                today.getTime(), dt.getTaskId()), in.readLine());
+
+        assertNull(logger.getAllTasks());
+        assertEquals(
+                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                        today.getTime(), today.getTime()), in.readLine());
+
+        logger.logError(dt.getDescription());
+        assertEquals(
+                String.format(Messages.ERROR, today.getTime(),
+                        dt.getDescription()), in.readLine());
+
+        logger.close();
+    }
+
+    @Test
+    public void taskTesting() throws ParseException, IOException {
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        pout = new PipedOutputStream(pin);
+        c = new PrintStream(pout);
+
+        EventLogger.setStream(c);
+
+        Task dt = new Task(111840, "Floating Task JUnit Testing");
+
+        //Tests if logging is accurate for floating tasks operations
+        assertTrue(logger.storeNewTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertEquals(dt, logger.removeTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertTrue(logger.modifyTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertNull(logger.getTask(dt.getTaskId()));
+        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+                today.getTime(), dt.getTaskId()), in.readLine());
+
+        assertNull(logger.getAllTasks());
+        assertEquals(
+                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                        today.getTime(), today.getTime()), in.readLine());
+
+        logger.logError(dt.getDescription());
+
+        assertEquals(
+                String.format(Messages.ERROR, today.getTime(),
+                        dt.getDescription()), in.readLine());
+
+        logger.close();
+    }
+
+    @Test
+    public void timedTaskTesting() throws ParseException, IOException {
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        pout = new PipedOutputStream(pin);
+        c = new PrintStream(pout);
+
+        EventLogger.setStream(c);
+        //Tests if logging is accurate for timed tasks operations
+        TimedTask dt = new TimedTask(1337, "Timed Task JUnit Testing",
+                tomorrow, tomorrow);
+
+        assertTrue(logger.storeNewTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertEquals(dt, logger.removeTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertTrue(logger.modifyTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertNull(logger.getTask(dt.getTaskId()));
+        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+                today.getTime(), dt.getTaskId()), in.readLine());
+
+        assertNull(logger.getAllTasks());
+        assertEquals(
+                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                        today.getTime(), today.getTime()), in.readLine());
+
+        logger.logError(dt.getDescription());
+
+        assertEquals(
+                String.format(Messages.ERROR, today.getTime(),
+                        dt.getDescription()), in.readLine());
+
+        logger.close();
+    }
+
+    @Test
+    public void timedTaskAsTaskTesting() throws ParseException, IOException {
+
+        pout = new PipedOutputStream(pin);
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        c = new PrintStream(pout);
+
+        EventLogger.setStream(c);
+
+        Task dt = new TimedTask(1337, "Timed Task as Task JUnit Testing",
+                tomorrow, today);
+        //Tests if logging is accurate for timed tasks stored in task operations
+        assertTrue(logger.storeNewTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertEquals(dt, logger.removeTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertTrue(logger.modifyTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertNull(logger.getTask(dt.getTaskId()));
+        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+                today.getTime(), dt.getTaskId()), in.readLine());
+
+        assertNull(logger.getAllTasks());
+        assertEquals(
+                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                        today.getTime(), today.getTime()), in.readLine());
+
+        logger.logError(dt.getDescription());
+
+        assertEquals(
+                String.format(Messages.ERROR, today.getTime(),
+                        dt.getDescription()), in.readLine());
+
+        logger.close();
+    }
+
+    @Test
+    public void deadlineTaskAsTaskTesting() throws ParseException, IOException {
+
+        pout = new PipedOutputStream(pin);
+        c = new PrintStream(pout);
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+
+        EventLogger.setStream(c);
+
+        Task dt = new DeadlineTask(1337, "Deadline Task As Task JUnit Testing",
+                tomorrow);
+        //Tests if logging is accurate for deadline tasks stored as floating task operations
+        assertTrue(logger.storeNewTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertEquals(dt, logger.removeTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertTrue(logger.modifyTask(dt));
+        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+                today.getTime(), dt.getDate().getTime()), in.readLine());
+
+        assertNull(logger.getTask(dt.getTaskId()));
+        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+                today.getTime(), dt.getTaskId()), in.readLine());
+
+        assertNull(logger.getAllTasks());
+        assertEquals(
+                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                        today.getTime(), today.getTime()), in.readLine());
+
+        logger.logError(dt.getDescription());
+
+        assertEquals(
+                String.format(Messages.ERROR, today.getTime(),
+                        dt.getDescription()), in.readLine());
+
+        logger.close();
+    }
+
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitEventLoggerAtd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitSystemTestingAtd.java
+	 */
+
+package chirptask.testing;
+
+import static org.junit.Assert.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import org.junit.Test;
+
+import chirptask.logic.DisplayView;
+import chirptask.logic.Logic;
+
+public class JUnitSystemTestingAtd {
+
+    @Test
+    public void invalidCommands() {
+        MainGui2 _mainGui = new MainGui2();
+        Logic _logic = new Logic(_mainGui);
+
+        _logic.retrieveInputFromUI("delete 1-");
+        assertEquals("delete 1-", _mainGui._userInput);
+        assertEquals(
+                "Usage: delete <Task no> | delete <Task no>-<Task no>,<Task no>",
+                _mainGui._status);
+
+        _logic.retrieveInputFromUI("logout");
+        assertEquals("You are not logged in.", _mainGui._status);
+
+        _logic.retrieveInputFromUI("Invalid");
+        assertEquals(
+                "Valid commands: add addd addt edit delete done undone display filter clear undo login logout sync",
+                _mainGui._status);
+    }
+
+    @Test
+    public void validCommands() {
+        MainGui2 _mainGui = new MainGui2();
+        Logic _logic = new Logic(_mainGui);
+        Calendar today = Calendar.getInstance();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM");
+        int currentTaskListSize = MainGui2._taskIndexToId.size();
+
+        _logic.retrieveInputFromUI("delete 1-" + currentTaskListSize);
+
+        _logic.retrieveInputFromUI("add normal floating task");
+
+        assertEquals("Successfully Added new task normal floating task.",
+                _mainGui._status);
+        assertEquals(0, _mainGui._categoryList.size());
+        assertEquals(0, _mainGui._contextList.size());
+        assertEquals(
+                1,
+                _mainGui._taskViewDateMap
+                        .get(DisplayView.convertDateToString(Calendar
+                                .getInstance())).size());
+
+        _logic.retrieveInputFromUI("delete 1");
+
+        assertEquals("Successfully Removed task normal floating task.",
+                _mainGui._status);
+        assertNull(_mainGui._taskViewDateMap.get(DisplayView
+                .convertDateToString(Calendar.getInstance())));
+
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+
+        _logic.retrieveInputFromUI("addt #Junit @Testing from 10am to 10pm tomorrow");
+
+        assertEquals(
+                "Successfully Added new task #Junit @Testing.",
+                _mainGui._status);
+        assertEquals(1, _mainGui._categoryList.size());
+        assertEquals(1, _mainGui._contextList.size());
+        assertEquals(
+                1,
+                _mainGui._taskViewDateMap.get(
+                        DisplayView.convertDateToString(tomorrow)).size());
+
+        _logic.retrieveInputFromUI("addd #Junit @Testing2 by 12pm today");
+
+        assertEquals(
+                "Successfully Added new task #Junit @Testing2 by 12:00 "
+        		+ formatter.format(today.getTime()) + "."
+        		,_mainGui._status);
+        assertEquals(2, _mainGui._categoryList.size());
+        assertEquals(1, _mainGui._contextList.size());
+        assertEquals(
+                1,
+                _mainGui._taskViewDateMap
+                        .get(DisplayView.convertDateToString(Calendar
+                                .getInstance())).size());
+
+        _logic.retrieveInputFromUI("done 1");
+        assertEquals("Successfully: Done #Junit @Testing2 by 12:00 "
+        		+ formatter.format(today.getTime()),
+                _mainGui._status);
+
+        _logic.retrieveInputFromUI("undone 1");
+        assertEquals(
+                "Successfully Modified task #Junit @Testing2 by 12:00 "
+                		+ formatter.format(today.getTime()) + ".",
+                _mainGui._status);
+
+        _logic.retrieveInputFromUI("Edit 1 nothing by 1pm today");
+        assertEquals("Successfully Modified task nothing by 13:00 " 
+        		+ formatter.format(today.getTime()) + ".",
+                _mainGui._status);
+
+        _logic.retrieveInputFromUI("undo");
+        assertEquals(
+                "Successfully Modified task #Junit @Testing2 by 12:00 "
+                		+ formatter.format(today.getTime()) + ".",
+                _mainGui._status);
+
+        _logic.retrieveInputFromUI("display #Junit");
+        assertEquals(2, MainGui2._taskIndexToId.size());
+
+        _logic.retrieveInputFromUI("display #Junit @Testing2");
+        assertEquals(1, MainGui2._taskIndexToId.size());
+
+        _logic.retrieveInputFromUI("display");
+        assertEquals(2, MainGui2._taskIndexToId.size());
+
+        // cleaning up
+        _logic.retrieveInputFromUI("delete 1-2");
+
+        assertEquals(
+                "Successfully Removed task #Junit @Testing.",
+                _mainGui._status);
+        assertNull(_mainGui._taskViewDateMap.get(DisplayView
+                .convertDateToString(Calendar.getInstance())));
+
+    }
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitSystemTestingAtd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitTaskSortingAtd.java
+	 */
+
+package chirptask.testing;
+
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.Test;
+
+import chirptask.storage.DeadlineTask;
+import chirptask.storage.Task;
+import chirptask.storage.TimedTask;
+
+public class JUnitTaskSortingAtd {
+
+    @Test
+    public void testSortingOfTask() {
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+
+        List<Task> taskList = new ArrayList<Task>();
+
+        Task task = new Task(0, "Floating Task JUnit Testing");
+        DeadlineTask deadlineTask = new DeadlineTask(1,
+                "Deadline Task JUnit Testing", today);
+        TimedTask timedTask = new TimedTask(2, "Timed Task JUnit Testing",
+                today, today);
+
+        taskList.add(timedTask);
+        taskList.add(deadlineTask);
+        taskList.add(task);
+
+        // before sorting
+        assertEquals(timedTask, taskList.get(0));
+        assertEquals(deadlineTask, taskList.get(1));
+        assertEquals(task, taskList.get(2));
+
+        Collections.sort(taskList);
+
+        // This tests that floating task < deadline < timed
+        // after sorting
+        assertEquals(task, taskList.get(0));
+        assertEquals(deadlineTask, taskList.get(1));
+        assertEquals(timedTask, taskList.get(2));
+
+        // Now tests that they are sorted by time accurately
+        // Currently deadline is at index 1 and timedtask at 2
+        // Set deadline to 13:30hours and it should be at index 2 instead
+        // This tests that timed task is sorted by start time
+        today.set(Calendar.HOUR_OF_DAY, 12);
+        today.set(Calendar.MINUTE, 30);
+        timedTask.setStartTime(today);
+
+        today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 13);
+        today.set(Calendar.MINUTE, 30);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        timedTask.setEndTime(today);
+        deadlineTask.setDate(today);
+
+        Collections.sort(taskList);
+
+        assertEquals(task, taskList.get(0));
+        assertEquals(timedTask, taskList.get(1));
+        assertEquals(deadlineTask, taskList.get(2));
+
+        // Now test that if they are have the same time and type they are sorted
+        // by description
+        Task floatingTask2 = new Task(3, "A Floating Task JUnit Testing");
+        TimedTask timedTask2 = new TimedTask(4, "A Timed Task JUnit Testing",
+                today, today);
+        DeadlineTask deadlineTask2 = new DeadlineTask(5,
+                "A Deadline Task JUnit Testing", today);
+
+        today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 12);
+        today.set(Calendar.MINUTE, 30);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        timedTask2.setStartTime(today);
+
+        today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 13);
+        today.set(Calendar.MINUTE, 30);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        timedTask2.setEndTime(today);
+
+        taskList.add(timedTask2);
+        taskList.add(floatingTask2);
+        taskList.add(deadlineTask2);
+
+        // before sort
+        assertEquals(task, taskList.get(0));
+        assertEquals(timedTask, taskList.get(1));
+        assertEquals(deadlineTask, taskList.get(2));
+        assertEquals(timedTask2, taskList.get(3));
+        assertEquals(floatingTask2, taskList.get(4));
+        assertEquals(deadlineTask2, taskList.get(5));
+
+        Collections.sort(taskList);
+
+        // after sort
+        assertEquals(floatingTask2, taskList.get(0));
+        assertEquals(task, taskList.get(1));
+        assertEquals(timedTask2, taskList.get(2));
+        assertEquals(timedTask, taskList.get(3));
+        assertEquals(deadlineTask2, taskList.get(4));
+        assertEquals(deadlineTask, taskList.get(5));
+    }
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitTaskSortingAtd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\MainGui2.java
+	 */
+
+package chirptask.testing;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import chirptask.gui.MainGui;
+import chirptask.logic.DisplayView;
+
+/*
+ * Class for System Testing. Dependency Injection.
+ */
+public class MainGui2 extends MainGui {
+
+    public String _filter = "";
+    public String _userInput = "";
+    public String _status = "";
+    public List<String> _categoryList = new ArrayList<String>();
+    public List<String> _contextList = new ArrayList<String>();
+    public SortedMap<String, ArrayList<Integer>> _taskViewDateMap = new TreeMap<>();
+    public static List<Integer> _taskIndexToId = new ArrayList<>();
+
+    public String getFilter() {
+        return _filter;
+    }
+
+    public void setFilterText(String text) {
+        _filter = text;
+    }
+
+    public void setUserInputText(String text) {
+        _userInput = text;
+    }
+
+    public String getUserInput() {
+        return _userInput;
+    }
+
+    public void clearTrendingList() {
+        _contextList.clear();
+        _categoryList.clear();
+    }
+
+    public String getStatus() {
+        return _status;
+    }
+
+    public void setStatus(String message) {
+        _status = message;
+    }
+
+    public void setError(String errorMessage) {
+        _status = errorMessage;
+    }
+
+    public void addHashtagIntoList(String Context) {
+        _contextList.add(Context);
+    }
+
+    public void addCategoryIntoList(String Category) {
+        _categoryList.add(Category);
+    }
+
+    public boolean addNewTaskViewDate(Calendar date) {
+        assert date != null;
+        String parseDateToString = DisplayView.convertDateToString(date);
+
+        if (_taskViewDateMap.containsKey(parseDateToString)) {
+            return false;
+        }
+
+        _taskViewDateMap.put(parseDateToString, new ArrayList<Integer>());
+
+        return true;
+    }
+
+    public boolean addNewTaskViewToDate(Calendar date, int taskId,
+            String description, String time, boolean done) {
+        assert date != null && taskId > -1;
+
+        if (_taskIndexToId.contains(taskId)) {
+            return false;
+        }
+
+        _taskIndexToId.add(taskId);
+        _taskViewDateMap.get(DisplayView.convertDateToString(date)).add(taskId);
+
+        return true;
+    }
+
+    public void clearTaskView() {
+        _taskViewDateMap.clear();
+        _taskIndexToId.clear();
+    }
+
+    public static List<Integer> getTaskIndexToId() {
+        return _taskIndexToId;
+    }
+
+    public void refreshUI() {
+        // nothing
+    }
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\MainGui2.java
 
 
 
