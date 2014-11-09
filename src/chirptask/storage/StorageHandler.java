@@ -17,7 +17,7 @@ public class StorageHandler {
     private static IStorage eventStorage;
     private static IStorage googleStorage;
     private static IStorage localStorage;
-    private static IStorage sessionStorage;
+    static IStorage sessionStorage;
 
     private boolean isAutoLogin = false;
 

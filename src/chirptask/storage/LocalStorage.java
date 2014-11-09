@@ -82,8 +82,23 @@ public class LocalStorage implements IStorage {
 	 */
 	private void restartLocalStorage() {
 		addRoot();
+		checkSessionStorage();
 		writeToFile();
 		setIdGenerator(0);
+	}
+
+	private void checkSessionStorage() {
+		if (StorageHandler.sessionStorage == null) {
+			return;
+		}
+		List<Task> sessionList = StorageHandler.sessionStorage.getAllTasks();
+		if (sessionList == null || sessionList.size() == 0) {
+			return;
+		}
+		
+		for (int i = 0; i < sessionList.size(); i++) {
+			this.storeNewTask(sessionList.get(i));
+		}
 	}
 
 	private void clearContent(File file) {
