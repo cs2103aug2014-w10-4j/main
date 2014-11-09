@@ -13,7 +13,7 @@ import chirptask.storage.LocalStorage;
 import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
-//@author A0113022
+//@author A0113022H
 
 public class InputParser {
 	private static final int USER_INPUT_TO_ARRAYLIST = 1;
@@ -25,7 +25,7 @@ public class InputParser {
 	private static final String[] timedKeyword = new String[] { "to", "til", "->" };
 	private static final int INVALID_POSITION = -1;
 	
-	private final DateParser _dateParser = new DateParser();
+	private static final DateParser _dateParser = new DateParser();
 	private String _userInput;
 	private GroupAction _actions;
 
@@ -158,67 +158,17 @@ public class InputParser {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
 		Action negate = new Action();
-
+		Task toDo;
+		
 		if (parameter == null || parameter.equals("")) {
 			return processInvalid(CommandType.ADD);
 		}
 
-		Task toDo = getTaskFromString(parameter);
-		String timeString;
-		List<Calendar> dateList;
-		int taskIndex = LocalStorage.generateId();
-		String description = toDo.getDescription();
-		List<String> categoryList = toDo.getCategories();
-		List<String> contextList = toDo.getContexts();
-
-		switch (command) {
-		case "add":
-			Task floating = new Task(taskIndex, description);
-			toDo = floating;
-			break;
-		case "addd":
-			String[] parameters = getStringToParseDate(parameter, Task.TASK_DEADLINE);
-			timeString = parameters[0];
-
-			dateList = _dateParser.parseDate(timeString);
-			if (dateList == null || dateList.size() != 1) {
-				return processInvalid(CommandType.ADD);
-			}
-			Calendar dueDate = dateList.get(0);
-			if (parameters[1] != null && !parameters[1].equals("")) {
-				String deadline = new SimpleDateFormat("HH:mm dd/MM")
-						.format(dueDate.getTime());
-				description = parameters[1] + " by " + deadline;
-			}
-			Task deadline = new DeadlineTask(taskIndex, description,
-					dueDate);
-			toDo = deadline; 
-			break;
-		case "addt":
-			String[] details = getStringToParseDate(parameter, Task.TASK_TIMED);
-			timeString = details[0];
-
-			dateList = _dateParser.parseDate(timeString);
-			if (dateList == null || dateList.size() != 2) {
-				return processInvalid(CommandType.ADD);
-			}
-			Calendar startTime = dateList.get(0);
-			Calendar endTime = dateList.get(1);
-			
-			if (details[1] != null && !details[1].equals("")) {
-				description = details[1];
-			}
-			Task timed = new TimedTask(taskIndex, description, startTime,
-						endTime);
-			toDo = timed;
-			break;
-		default:
-			actions = processInvalid(CommandType.ADD);
-			return actions;
+		toDo = generateTask(command, parameter);
+		
+		if (toDo == null) {
+			return processInvalid(CommandType.ADD);
 		}
-
-		toDo.setCategories(categoryList);
-		toDo.setContexts(contextList);
 
 		action.setCommandType(Settings.CommandType.ADD);
 		action.setTask(toDo);
@@ -228,6 +178,118 @@ public class InputParser {
 
 		actions.addAction(action);
 		return actions;
+	}
+
+	/**
+	 * @param command
+	 * @param parameter
+	 * @return Task or null if invalid parameter
+	 */
+	private Task generateTask(String command, String parameter) {
+		Task toDo;
+		toDo = getTaskFromString(parameter);
+		String description = toDo.getDescription();
+		List<String> categoryList = toDo.getCategories();
+		List<String> contextList = toDo.getContexts();
+		int taskIndex = LocalStorage.generateId();
+		
+		switch (command) {
+		case "add":
+			toDo = addFloatingTask(description, taskIndex);
+			break;
+		
+		case "addd":
+			toDo = addDeadlineTask(parameter, description, taskIndex);			
+			break;
+		
+		case "addt":
+			toDo = addTimedTask(parameter, description, taskIndex);
+			break;
+		
+		default:
+			return null;
+		}
+		
+		if (toDo == null) {
+			return null;
+		}
+		
+		toDo.setCategories(categoryList);
+		toDo.setContexts(contextList);
+		
+		return toDo;
+	}
+
+	/**
+	 * @param description
+	 * @param taskIndex
+	 * @return FloatingTask
+	 */
+	private static Task addFloatingTask(String description, int taskIndex) {
+		Task toDo;
+		Task floating = new Task(taskIndex, description);
+		toDo = floating;
+		return toDo;
+	}
+
+	/**
+	 * @param parameter
+	 * @param description
+	 * @param taskIndex
+	 * @return TimedTask, or null if parameter is invalid
+	 */
+	private static Task addTimedTask(String parameter, String description,
+			int taskIndex) {
+		String timeString;
+		List<Calendar> dateList;
+		Task toDo;
+		String[] details = getStringToParseDate(parameter, Task.TASK_TIMED);
+		timeString = details[0];
+
+		dateList = _dateParser.parseDate(timeString);
+		if (dateList == null || dateList.size() != 2) {
+			return null;
+		}
+		Calendar startTime = dateList.get(0);
+		Calendar endTime = dateList.get(1);
+		
+		if (details[1] != null && !details[1].equals("")) {
+			description = details[1];
+		}
+		Task timed = new TimedTask(taskIndex, description, startTime,
+					endTime);
+		toDo = timed;
+		return toDo;
+	}
+
+	/**
+	 * @param parameter
+	 * @param description
+	 * @param taskIndex
+	 * @return DeadlineTask, or null if parameter is invalid
+	 */
+	private static Task addDeadlineTask(String parameter, String description,
+			int taskIndex) {
+		String timeString;
+		List<Calendar> dateList;
+		Task toDo;
+		String[] parameters = getStringToParseDate(parameter, Task.TASK_DEADLINE);
+		timeString = parameters[0];
+		dateList = _dateParser.parseDate(timeString);
+		if (dateList == null || dateList.size() != 1) {
+			return null;
+		} 
+		Calendar dueDate = dateList.get(0);
+		if (parameters[1] != null && !parameters[1].equals("")) {
+			String deadline = new SimpleDateFormat("HH:mm dd/MM")
+					.format(dueDate.getTime());
+			description = parameters[1] + " by " + deadline;
+		}
+
+		Task deadline = new DeadlineTask(taskIndex, description,
+				dueDate);
+		toDo = deadline;
+		return toDo;
 	}
 
 	private GroupAction processEdit(String parameter) {
@@ -529,6 +591,27 @@ public class InputParser {
 
 		return newTask;
 	}
+	
+	public static Task getTaskFromString(String command, String parameter) {
+		if (parameter == null || parameter.equals("")) {
+			return null;
+		}
+		Task toDo = getTaskFromString(parameter);
+		String description = toDo.getDescription();
+		int taskId = LocalStorage.generateId();
+		switch (command) {
+		case Task.TASK_FLOATING:
+			toDo = addFloatingTask(description, taskId);
+			break;
+		case Task.TASK_DEADLINE:
+			toDo = addDeadlineTask(parameter, description, taskId);
+		case Task.TASK_TIMED:
+			toDo = addTimedTask(parameter, description, taskId);
+		default:
+			return null;
+		}
+		return toDo;
+	}
 
 	private int getId(String parameter) {
 		String id = parameter.trim().split("\\s+")[0];
@@ -598,7 +681,7 @@ public class InputParser {
 		return taskIndex;
 	}
 
-	private String[] getStringToParseDate(String parameter, String type) {
+	private static String[] getStringToParseDate(String parameter, String type) {
 		String[] timeAndDesc = new String[2];
 	
 		switch (type) {
@@ -624,7 +707,7 @@ public class InputParser {
 	 * @param timeAndDesc
 	 * @param splitSpaces
 	 */
-	private String[] extractDeadline(String parameter) {
+	private static String[] extractDeadline(String parameter) {
 		String[] timeAndDesc = new String[2];
 		timeAndDesc[0] = "";
 		timeAndDesc[1] = parameter;
@@ -671,7 +754,7 @@ public class InputParser {
 	 * @param timeAndDesc
 	 * @param splitSpaces
 	 */
-	private String[] extractTimed(String parameter) {
+	private static String[] extractTimed(String parameter) {
 		String[] timeAndDesc = new String[2];
 		timeAndDesc[0] = "";
 		timeAndDesc[1] = parameter;
@@ -726,7 +809,7 @@ public class InputParser {
 	/**
 	 * @param timeAndDesc
 	 */
-	private String[] extractCategoryAndContext(String[] timeAndDesc) {
+	private static String[] extractCategoryAndContext(String[] timeAndDesc) {
 		StringBuilder time = new StringBuilder();
 		StringBuilder description = new StringBuilder(timeAndDesc[1].trim());
 		String[] hashAndAt = new String[0];

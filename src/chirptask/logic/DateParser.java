@@ -14,7 +14,7 @@ import com.joestelmach.natty.Parser;
  * Acknowledgment: this code uses some methods from 
  * natty 0.9 (author joestelmach)
  */
-//@author A0113022
+//@author A0113022H
 public class DateParser {
 	private List<Calendar> list;
 	private Parser parse;

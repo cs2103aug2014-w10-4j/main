@@ -10,7 +10,7 @@ import org.junit.Test;
 import chirptask.logic.DateParser;
 import com.joestelmach.natty.CalendarSource;
 
-//@author A0113022
+//@author A0113022H
 public class JUnitDateParserAtd {
 	/*
 	 * recognized format: 
