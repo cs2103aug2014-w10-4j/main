@@ -117,7 +117,13 @@ public class MainGui extends Application implements NativeKeyListener {
         launch(args);
     }
 
+    /**
+     * Sets the current status of Google services.
+     * 
+     * @param Status
+     */
     public void setOnlineStatus(final String Status) {
+        assert !Status.isEmpty();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -129,6 +135,12 @@ public class MainGui extends Application implements NativeKeyListener {
         });
     }
 
+    /**
+     * Inserts a category onto the current list of categories showing on the
+     * GUI.
+     * 
+     * @param Category
+     */
     public void addCategoryIntoList(String Category) {
         assert !Category.isEmpty();
         Text categoryText = new Text(Settings.CATEGORY_CHAR + Category);
@@ -137,6 +149,11 @@ public class MainGui extends Application implements NativeKeyListener {
         _categoryList.getChildren().add(categoryText);
     }
 
+    /**
+     * Inserts a hashtag onto the current list of hashtags showing on the GUI.
+     * 
+     * @param hashtag
+     */
     public void addHashtagIntoList(String hashtag) {
         assert !hashtag.isEmpty();
         Text hashtagText = new Text(Settings.HASHTAG_CHAR + hashtag);
@@ -145,24 +162,32 @@ public class MainGui extends Application implements NativeKeyListener {
         _hashtagList.getChildren().add(hashtagText);
     }
 
+    /**
+     * Adds a new Task View Date to the GUI. Task View Date will display all
+     * tasks of a date in it.
+     * 
+     * @param date
+     * @return boolean status of operation
+     */
     public boolean addNewTaskViewDate(Calendar date) {
         assert date != null;
         String parseDateToString = DisplayView.convertDateToString(date);
 
+        // checks if GUI already has a TaskViewDate for the same date
         if (_taskViewDateMap.containsKey(parseDateToString)) {
             return false;
         }
 
-        // Task View Date contains all tasks of that date
+        // Task View Date will contain all tasks of a date
         VBox taskViewDateBox = generateTaskViewDate(date);
 
         _taskViewDateMap.put(parseDateToString, taskViewDateBox);
         _taskViewByDate.getChildren().add(taskViewDateBox);
-
         return true;
     }
 
     private VBox generateTaskViewDate(Calendar date) {
+        assert date != null;
         // Box to contain all tasks of that date
         VBox taskViewDateBox = new VBox();
         taskViewDateBox.setPadding(new Insets(0, 5, 10, 5));
@@ -173,28 +198,48 @@ public class MainGui extends Application implements NativeKeyListener {
         return taskViewDateBox;
     }
 
+    /**
+     * Adds a TaskView to a TaskViewDate.
+     * <p>
+     * Task View is a View that displays all information of a single task in it.
+     * pre-cond: date cannot be null, description cannot be empty, taskId cannot
+     * be negative
+     * </p>
+     * 
+     * @param date
+     * @param taskId
+     * @param description
+     * @param time
+     * @param done
+     * @return boolean status of operation
+     */
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && taskId > -1;
+        assert date != null && !description.isEmpty() && taskId > -1;
 
+        // Checks for duplicate taskId
         if (_taskIndexToId.contains(taskId)) {
             return false;
         }
 
         _taskIndexToId.add(taskId);
 
+        // Concatenate the index of the task to the description
         String descriptionWithIndex = _taskIndexToId.size() + ". "
                 + description;
 
-        BorderPane taskPane = generateTaskView(time, done, descriptionWithIndex);
+        // Generates a Task View
+        BorderPane taskView = generateTaskView(time, done, descriptionWithIndex);
 
         _taskViewDateMap.get(DisplayView.convertDateToString(date))
-                .getChildren().add(taskPane);
+                .getChildren().add(taskView);
         return true;
     }
 
     private BorderPane generateTaskView(String time, boolean done,
             String descriptionWithIndex) {
+        assert !descriptionWithIndex.isEmpty();
+
         // pane that makes up task view
         BorderPane taskPane = new BorderPane();
 
@@ -203,13 +248,16 @@ public class MainGui extends Application implements NativeKeyListener {
                 done);
         Text taskTime = generateTaskTimeText(time, done);
 
-        // formatting task view pane
+        // format the task view
         formatTaskView(taskPane, checkBoxPane, descriptionBox, taskTime);
         return taskPane;
     }
 
     private void formatTaskView(BorderPane taskPane, Pane checkBoxPane,
             HBox descriptionBox, Text taskTime) {
+        assert taskPane != null && checkBoxPane != null
+                && descriptionBox != null && taskTime != null;
+
         taskPane.setPadding(new Insets(10, 5, 8, 10));
         taskPane.getStyleClass().add("task-pane");
         taskPane.setLeft(checkBoxPane);
@@ -217,40 +265,92 @@ public class MainGui extends Application implements NativeKeyListener {
         taskPane.setRight(taskTime);
     }
 
+    /**
+     * Clears all tasks showing in GUI.
+     */
     public void clearTaskView() {
         _taskViewByDate.getChildren().clear();
         _taskViewDateMap.clear();
         _taskIndexToId.clear();
     }
 
+    /**
+     * Clears all hashtags and categories showing in GUI.
+     */
     public void clearTrendingList() {
         _hashtagList.getChildren().clear();
         _categoryList.getChildren().clear();
         generateTrendingList();
     }
 
+    /**
+     * EventHandler for clicking on categories
+     * 
+     * @return method to call when a category is clicked.
+     */
     public EventHandler<MouseEvent> clickOnCategory() {
         return onClickTrendingListText();
     }
 
+    /**
+     * EventHandler for clicking on hashtags
+     * 
+     * @return method to call when a hashtag is clicked.
+     */
     public EventHandler<MouseEvent> clickOnHashtag() {
         return onClickTrendingListText();
     }
 
+    /**
+     * Gets the current filter showing on the GUI.
+     * 
+     * @return String current filter
+     */
     public String getFilter() {
         return _filterField.getText();
     }
 
+    /**
+     * Gets the current user input showing on the CLI of the GUI.
+     * 
+     * @return String current user input
+     */
     public String getUserInput() {
         return _commandLineInterface.getText();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.jnativehook.keyboard.NativeKeyListener#nativeKeyTyped(org.jnativehook
+     * .keyboard.NativeKeyEvent)
+     */
+    @Override
+    public void nativeKeyTyped(NativeKeyEvent e) {
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.jnativehook.keyboard.NativeKeyListener#nativeKeyPressed(org.jnativehook
+     * .keyboard.NativeKeyEvent)
+     */
     @Override
     public void nativeKeyPressed(NativeKeyEvent e) {
         hotKeyToFocusCLI(e);
         hotKeyToScrollTaskView(e);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.jnativehook.keyboard.NativeKeyListener#nativeKeyReleased(org.jnativehook
+     * .keyboard.NativeKeyEvent)
+     */
     @Override
     public void nativeKeyReleased(NativeKeyEvent e) {
         hotKeyToScrollToToday(e);
@@ -258,11 +358,10 @@ public class MainGui extends Application implements NativeKeyListener {
         hotKeyToHideStage(e);
     }
 
-    @Override
-    public void nativeKeyTyped(NativeKeyEvent e) {
-
-    }
-
+    /**
+     * Refreshes the UI after the UI is done with what it is currently busy
+     * with.
+     */
     public void refreshUI() {
         Platform.runLater(new Runnable() {
             @Override
@@ -274,6 +373,12 @@ public class MainGui extends Application implements NativeKeyListener {
         });
     }
 
+    /**
+     * Sets the status of the GUI with the given error message.
+     * Message will be coloured red as it's an error.
+     * 
+     * @param errorMessage
+     */
     public void setError(String errorMessage) {
         assert !errorMessage.isEmpty();
 
@@ -283,12 +388,23 @@ public class MainGui extends Application implements NativeKeyListener {
         _statusText.getStyleClass().add("error-message");
     }
 
+    /**
+     * Sets the current filter input to the given text. Empty strings are
+     * allowed.
+     * 
+     * @param text
+     */
     public void setFilterText(String text) {
         int caretPosition = _filterField.getCaretPosition();
         _filterField.setText(text);
         _filterField.positionCaret(caretPosition);
     }
 
+    /**
+     * Sets the status of the GUI with the given status message.
+     * 
+     * @param message
+     */
     public void setStatus(String message) {
         assert !message.isEmpty();
 
@@ -298,6 +414,11 @@ public class MainGui extends Application implements NativeKeyListener {
         _statusText.getStyleClass().add("status-message");
     }
 
+    /**
+     * Sets the user input text of the CLI. Empty strings are accepted.
+     * 
+     * @param text
+     */
     public void setUserInputText(String text) {
         _commandLineInterface.setText(text);
         _commandLineInterface.positionCaret(text.length());
@@ -325,6 +446,12 @@ public class MainGui extends Application implements NativeKeyListener {
         scrollToToday();
     }
 
+    /**
+     * EventHandler for the clear all button. clears the filter input and sends
+     * an enter action, invoking the filter action.
+     * 
+     * @return
+     */
     private EventHandler<? super MouseEvent> clearAllAction() {
         return new EventHandler<MouseEvent>() {
             @Override
@@ -336,13 +463,18 @@ public class MainGui extends Application implements NativeKeyListener {
             }
 
             private void sendEnterKeyToFilterBar() {
-                filterModified().handle(
-                        new KeyEvent(null, null, null, KeyCode.ENTER, false,
-                                false, false, false));
+                KeyEvent enterEvent = new KeyEvent(null, null, null,
+                        KeyCode.ENTER, false, false, false, false);
+                filterModified().handle(enterEvent);
             }
         };
     }
 
+    /**
+     * EventHandler for CLI input text box.
+     * 
+     * @return
+     */
     private EventHandler<KeyEvent> cliKeyPressHandler() {
         return new EventHandler<KeyEvent>() {
             @Override
@@ -353,82 +485,120 @@ public class MainGui extends Application implements NativeKeyListener {
             }
 
             private void cliKeyEnter(KeyCode keyPressed) {
-                if (keyPressed == KeyCode.ENTER) {
+                boolean pressedEnter = keyPressed == KeyCode.ENTER;
+                if (pressedEnter) {
                     String input = _commandLineInterface.getText();
-                    if (!input.trim().isEmpty()) {
+                    boolean isInputIsNotEmpty = !input.trim().isEmpty();
+
+                    if (isInputIsNotEmpty) {
                         _commandLineInterface.setText("");
-                        _logic.retrieveInputFromUI(input);
+                        sendCommandToLogic(input);
                     }
                 }
             }
 
             private void cliKeyTab(KeyEvent event, KeyCode keyPressed) {
-                if (keyPressed == KeyCode.TAB) {
+                boolean pressedTab = keyPressed == KeyCode.TAB;
+                if (pressedTab) {
                     String input = _commandLineInterface.getText()
                             .toLowerCase().trim();
-                    if (input.startsWith("display")) {
+                    boolean isDisplayCommand = input.startsWith("display");
+                    boolean isFilterCommand = input.startsWith("filter");
+                    boolean isEditCommand = input.startsWith("edit ");
+
+                    if (isDisplayCommand) {
                         event.consume();
                         setUserInputText("display " + getFilter());
-                    } else if (input.startsWith("filter")) {
+
+                    } else if (isFilterCommand) {
                         event.consume();
                         setUserInputText("filter " + getFilter());
-                    } else if (input.startsWith("edit ")) {
+
+                    } else if (isEditCommand) {
                         event.consume();
-                        FilterTasks.editCli(input, _gui);
+                        DisplayView.autocompleteEditWithTaskDescription(input,
+                                _gui);
                     }
                 }
             }
         };
     }
 
+    /**
+     * EventHandler for filter input text box.
+     * 
+     * @return
+     */
     private EventHandler<KeyEvent> filterModified() {
         return new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                // check difference
-                if (event.getCode() == KeyCode.ENTER) {
-                    _logic.retrieveInputFromUI("display "
-                            + _filterField.getText());
+                boolean pressedEnter = event.getCode() == KeyCode.ENTER;
+                if (pressedEnter) {
+                    sendCommandToLogic("display " + _filterField.getText());
                 }
             }
         };
     }
 
+    /**
+     * Sends command to logic for processing and execution.
+     * 
+     * @param command
+     */
+    private void sendCommandToLogic(String command) {
+        assert !command.trim().isEmpty();
+
+        _logic.retrieveInputFromUI(command);
+    }
+
+    /**
+     * Format a label with specified color.
+     * 
+     * @param Label
+     * @param color
+     */
     private void formatTextLabel(Text Label, String color) {
         Label.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 12));
         Label.setFill(Color.web(color));
     }
 
     private ScrollPane generateCategoryList() {
-        Text categoryTitle = new Text("Categories (@)");
-        setTrendingListTitleFont(categoryTitle);
+        Text categoryTitle = generateCategoryLabel();
+        generateCategoryListBox(categoryTitle);
+        ScrollPane categoryScrollPane = generateCategoryScrollPane();
+        VBox.setVgrow(categoryScrollPane, Priority.ALWAYS);
+        categoryScrollPane.setMaxSize(Region.USE_COMPUTED_SIZE,
+                Region.USE_COMPUTED_SIZE);
+        return categoryScrollPane;
+    }
 
-        _categoryList.setPadding(new Insets(8));
-        _categoryList.setSpacing(5);
-        _categoryList.getChildren().add(categoryTitle);
-
+    private ScrollPane generateCategoryScrollPane() {
         ScrollPane categoryScrollPane = new ScrollPane();
         categoryScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         categoryScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         categoryScrollPane.setContent(_categoryList);
         categoryScrollPane.getStyleClass().add("category-scroll");
-
         return categoryScrollPane;
     }
 
+    private void generateCategoryListBox(Text categoryTitle) {
+        _categoryList.setPadding(new Insets(8));
+        _categoryList.setSpacing(5);
+        _categoryList.getChildren().add(categoryTitle);
+    }
+
+    private Text generateCategoryLabel() {
+        Text categoryTitle = new Text(Messages.LABEL_CATEGORIES);
+        setTrendingListTitleFont(categoryTitle);
+        return categoryTitle;
+    }
+
     private HBox generateFilterBox() {
-        _filterField = new TextField();
-        _filterField.setText(Settings.DEFAULT_FILTER);
-        _filterField.setOnKeyReleased(filterModified());
 
-        HBox.setHgrow(_filterField, Priority.ALWAYS);
-
-        Text filterLabel = new Text(Messages.LABEL_FILTER);
-
-        Button clearFilter = new Button();
-        clearFilter.setText("Clear");
-        clearFilter.getStyleClass().add("clear-button");
-        clearFilter.setOnMouseClicked(clearAllAction());
+        generateFilterField();
+        Text filterLabel = generateFilterLabel();
+        Button clearFilter = generateClearAllButton();
 
         HBox filterBox = new HBox();
         filterBox.setAlignment(Pos.CENTER);
@@ -439,20 +609,55 @@ public class MainGui extends Application implements NativeKeyListener {
         return filterBox;
     }
 
-    private ScrollPane generateHashtagList() {
-        Text hashtagTitle = new Text("Hashtags (#)");
-        setTrendingListTitleFont(hashtagTitle);
+    private Text generateFilterLabel() {
+        Text filterLabel = new Text(Messages.LABEL_FILTER);
+        return filterLabel;
+    }
 
-        _hashtagList.setPadding(new Insets(8));
-        _hashtagList.setSpacing(5);
-        _hashtagList.getChildren().add(hashtagTitle);
+    private Button generateClearAllButton() {
+        Button clearFilter = new Button();
+        clearFilter.setText("Clear");
+        clearFilter.getStyleClass().add("clear-button");
+        clearFilter.setOnMouseClicked(clearAllAction());
+        return clearFilter;
+    }
+
+    private void generateFilterField() {
+        _filterField = new TextField();
+        _filterField.setText(Settings.DEFAULT_FILTER);
+        _filterField.setOnKeyReleased(filterModified());
+        HBox.setHgrow(_filterField, Priority.ALWAYS);
+    }
+
+    private ScrollPane generateHashtagList() {
+        Text hashtagTitle = generateHashtagLabel();
+        generateHashtagListBox(hashtagTitle);
+        ScrollPane hashtagScrollPane = generateHashtagScrollPane();
+        VBox.setVgrow(hashtagScrollPane, Priority.ALWAYS);
+        hashtagScrollPane.setMaxSize(Region.USE_COMPUTED_SIZE,
+                Region.USE_COMPUTED_SIZE);
+        return hashtagScrollPane;
+    }
+
+    private ScrollPane generateHashtagScrollPane() {
         ScrollPane hashtagScrollPane = new ScrollPane();
         hashtagScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         hashtagScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         hashtagScrollPane.setContent(_hashtagList);
         hashtagScrollPane.getStyleClass().add("context-scroll");
-
         return hashtagScrollPane;
+    }
+
+    private void generateHashtagListBox(Text hashtagTitle) {
+        _hashtagList.setPadding(new Insets(8));
+        _hashtagList.setSpacing(5);
+        _hashtagList.getChildren().add(hashtagTitle);
+    }
+
+    private Text generateHashtagLabel() {
+        Text hashtagTitle = new Text(Messages.LABEL_HASHTAGS);
+        setTrendingListTitleFont(hashtagTitle);
+        return hashtagTitle;
     }
 
     private BorderPane generateHeaderBar() {
@@ -476,7 +681,6 @@ public class MainGui extends Application implements NativeKeyListener {
         HBox filterBox = generateFilterBox();
         mainDisplay.setTop(filterBox);
 
-        _taskViewScrollPane = new ScrollPane();
         _taskViewScrollPane = generateTasksView();
         mainDisplay.setCenter(_taskViewScrollPane);
 
@@ -506,12 +710,17 @@ public class MainGui extends Application implements NativeKeyListener {
         VBox trendingList = generateTrendingList();
         rootPane.setRight(trendingList);
 
+        beautifyScrollBar(mainDisplay, trendingList);
+
+        return rootPane;
+    }
+
+    private void beautifyScrollBar(BorderPane mainDisplay, VBox trendingList) {
+        assert mainDisplay != null && trendingList != null;
         // scroll bar hack to beautify scroll bar
         makeScrollFadeable(mainDisplay.lookup(".address > .scroll-pane"));
         makeScrollFadeable(trendingList.getChildren().get(0));
         makeScrollFadeable(trendingList.getChildren().get(1));
-
-        return rootPane;
     }
 
     private VBox generateStatusBarInterface() {
@@ -527,6 +736,8 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Pane generateTaskCheckBox(boolean Done, final BorderPane taskPane) {
+        assert taskPane != null;
+
         CheckBox markTaskAsDone = new CheckBox();
         markTaskAsDone.setSelected(Done);
 
@@ -541,22 +752,23 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private HBox generateTaskDescription(String description, boolean done) {
+        assert !description.trim().isEmpty();
+
         HBox descriptionBox = new HBox();
         descriptionBox.setPadding(new Insets(0, 8, 0, 8));
+        descriptionBox.setAlignment(Pos.CENTER_LEFT);
         TextFlow taskDescription = DisplayView.parseDescriptionToTextFlow(
                 description, done, this);
-
-        descriptionBox.setAlignment(Pos.CENTER_LEFT);
         descriptionBox.getChildren().add(taskDescription);
         return descriptionBox;
     }
 
     private ScrollPane generateTasksView() {
+
         ScrollPane taskViewScrollPane = new ScrollPane();
         taskViewScrollPane.setPadding(new Insets(5));
         taskViewScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         taskViewScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
         taskViewScrollPane.setContent(_taskViewByDate);
         taskViewScrollPane.setFitToWidth(true);
 
@@ -564,6 +776,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Text generateTaskTimeText(String time, boolean done) {
+        // time can be empty string.
         Text taskTime = new Text(time);
         taskTime.getStyleClass().add("task-time");
         taskTime.setStrikethrough(done);
@@ -571,19 +784,29 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private BorderPane generateTaskViewHeader(Calendar date) {
+        assert date != null;
 
-        Text dayLabel = new Text();
-        dayLabel.setText(DAY_OF_WEEK[date.get(Calendar.DAY_OF_WEEK) - 1]);
+        String dayOfTheWeek = DAY_OF_WEEK[date.get(Calendar.DAY_OF_WEEK) - 1];
+        Text dayLabel = new Text(dayOfTheWeek);
 
-        Text dateLabel = new Text();
-        dateLabel.setText(date.get(Calendar.DAY_OF_MONTH) + " "
+        String dateString = date.get(Calendar.DAY_OF_MONTH) + " "
                 + MONTH[date.get(Calendar.MONTH)] + ", "
-                + (date.get(Calendar.YEAR)));
+                + (date.get(Calendar.YEAR));
+        Text dateLabel = new Text(dateString);
 
         BorderPane taskViewHeader = new BorderPane();
         taskViewHeader.setPadding(new Insets(5, 5, 3, 5));
         taskViewHeader.setLeft(dayLabel);
         taskViewHeader.setRight(dateLabel);
+        colourDateAndDayIfDateIsToday(date, dayLabel, dateLabel, taskViewHeader);
+
+        return taskViewHeader;
+    }
+
+    private void colourDateAndDayIfDateIsToday(Calendar date, Text dayLabel,
+            Text dateLabel, BorderPane taskViewHeader) {
+        assert date != null && dayLabel != null && dateLabel != null
+                && taskViewHeader != null;
 
         boolean isToday = DisplayView.convertDateToString(date).equals(
                 DisplayView.convertDateToString(Calendar.getInstance()));
@@ -596,7 +819,6 @@ public class MainGui extends Application implements NativeKeyListener {
             formatTextLabel(dayLabel, "#777");
             formatTextLabel(dateLabel, "#777");
         }
-        return taskViewHeader;
     }
 
     private HBox generateTitleBox() {
@@ -628,22 +850,11 @@ public class MainGui extends Application implements NativeKeyListener {
         ScrollPane hashtagPane = generateHashtagList();
         ScrollPane categoryPane = generateCategoryList();
 
-        VBox.setVgrow(hashtagPane, Priority.ALWAYS);
-        VBox.setVgrow(categoryPane, Priority.ALWAYS);
-        hashtagPane.setMaxSize(Region.USE_COMPUTED_SIZE,
-                Region.USE_COMPUTED_SIZE);
-        categoryPane.setMaxSize(Region.USE_COMPUTED_SIZE,
-                Region.USE_COMPUTED_SIZE);
-
         trendingList.getChildren().addAll(categoryPane, hashtagPane);
         return trendingList;
     }
 
     private VBox generateUserInputAndStatusBar() {
-        _commandLineInterface = new TextField();
-        HBox.setHgrow(_commandLineInterface, Priority.ALWAYS);
-        _commandLineInterface.setOnKeyPressed(cliKeyPressHandler());
-
         VBox mainDisplayBottom = new VBox();
 
         HBox userInputBox = generateUserInputInterface();
@@ -654,7 +865,14 @@ public class MainGui extends Application implements NativeKeyListener {
         return mainDisplayBottom;
     }
 
+    private void generateUserInputField() {
+        _commandLineInterface = new TextField();
+        HBox.setHgrow(_commandLineInterface, Priority.ALWAYS);
+        _commandLineInterface.setOnKeyPressed(cliKeyPressHandler());
+    }
+
     private HBox generateUserInputInterface() {
+        generateUserInputField();
         Text userInputLabel = new Text(Messages.LABEL_USERINPUT);
 
         HBox userInputBox = new HBox();
@@ -666,25 +884,44 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void guiClosing(WindowEvent we) {
+        assert we != null;
         // consume the closing request, let logic handle
         we.consume();
-        _logic.retrieveInputFromUI("exit");
+        sendCommandToLogic("exit");
     }
 
+    /**
+     * When user is typing on application, but not focused on CLI and
+     * FilterField, application automatically focuses on CLI for disruption-free
+     * experience.
+     * 
+     * @param e
+     */
     private void hotKeyToFocusCLI(NativeKeyEvent e) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                if (_primaryStage.isFocused() && !_filterField.isFocused()) {
+                boolean applicationIsFocusedButNotOnFilterField = _primaryStage
+                        .isFocused() && !_filterField.isFocused();
+
+                if (applicationIsFocusedButNotOnFilterField) {
                     _commandLineInterface.requestFocus();
                 }
             }
         });
     }
 
+    /**
+     * hotkey to hide the application.
+     * 
+     * @param e
+     */
     private void hotKeyToHideStage(NativeKeyEvent e) {
-        if (_primaryStage.isFocused()
-                && e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE) {
+        assert e != null;
+        boolean applicationIsFocusedAndPressedHotKeyForHide = _primaryStage
+                .isFocused() && e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE;
+
+        if (applicationIsFocusedAndPressedHotKeyForHide) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
@@ -694,64 +931,101 @@ public class MainGui extends Application implements NativeKeyListener {
         }
     }
 
+    /**
+     * Easily scrolls tasks view up and down using keys.
+     * 
+     * @param e
+     */
     private void hotKeyToScrollTaskView(NativeKeyEvent e) {
-        if (_primaryStage.isFocused() && e.getKeyCode() == NativeKeyEvent.VC_UP) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    _taskViewScrollPane.setVvalue(_taskViewScrollPane
-                            .getVvalue()
-                            - (SCROLL_VALUE / (_taskViewByDate.getHeight() - _taskViewScrollPane
-                                    .getHeight())));
-                }
-            });
-        } else if (_primaryStage.isFocused()
-                && e.getKeyCode() == NativeKeyEvent.VC_DOWN) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    _taskViewScrollPane.setVvalue(_taskViewScrollPane
-                            .getVvalue()
-                            + (SCROLL_VALUE / (_taskViewByDate.getHeight() - _taskViewScrollPane
-                                    .getHeight())));
-                }
-            });
-        }
+        assert e != null;
 
+        boolean applicationIsFocused = _primaryStage.isFocused();
+        boolean pressedUpKey = e.getKeyCode() == NativeKeyEvent.VC_UP;
+        boolean pressedDownKey = e.getKeyCode() == NativeKeyEvent.VC_DOWN;
+        final double amountToScroll = SCROLL_VALUE
+                / (_taskViewByDate.getHeight() - _taskViewScrollPane
+                        .getHeight());
+
+        if (applicationIsFocused) {
+            if (pressedUpKey) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        _taskViewScrollPane.setVvalue(_taskViewScrollPane
+                                .getVvalue() - amountToScroll);
+                    }
+                });
+            } else if (pressedDownKey) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        _taskViewScrollPane.setVvalue(_taskViewScrollPane
+                                .getVvalue() + amountToScroll);
+                    }
+                });
+            }
+        }
     }
 
+    /**
+     * Checks whether key is pressed for hotkey to scroll to Task View Date of
+     * current day's date.
+     * 
+     * @param e
+     */
     private void hotKeyToScrollToToday(NativeKeyEvent e) {
+        assert e != null;
         int mod = e.getModifiers();
-        if (_primaryStage.isFocused()
+        boolean holdingCtrlOrCommandKey = mod == NativeInputEvent.CTRL_L_MASK
+                || mod == NativeInputEvent.CTRL_R_MASK
+                || mod == NativeInputEvent.CTRL_MASK
+                || mod == NativeInputEvent.META_L_MASK
+                || mod == NativeInputEvent.META_R_MASK
+                || mod == NativeInputEvent.META_MASK;
+
+        boolean applicationIsFocusedAndPressedTAndCtrlOrCommand = _primaryStage
+                .isFocused()
                 && e.getKeyCode() == NativeKeyEvent.VC_T
-                && (mod == NativeInputEvent.CTRL_L_MASK
-                        || mod == NativeInputEvent.CTRL_R_MASK
-                        || mod == NativeInputEvent.CTRL_MASK
-                        || mod == NativeInputEvent.META_L_MASK
-                        || mod == NativeInputEvent.META_R_MASK || mod == NativeInputEvent.META_MASK)) {
+                && holdingCtrlOrCommandKey;
+
+        if (applicationIsFocusedAndPressedTAndCtrlOrCommand) {
             scrollToToday();
         }
     }
 
+    /**
+     * Toggles out application from minimized state.
+     * 
+     * @param e
+     */
     private void hotKeyToShowStage(NativeKeyEvent e) {
+        assert e != null;
         int mod = e.getModifiers();
-        if (e.getKeyCode() == Settings.HOTKEY_TOGGLE_SHOW
-                && (mod == NativeInputEvent.CTRL_L_MASK
-                        || mod == NativeInputEvent.CTRL_R_MASK
-                        || mod == NativeInputEvent.CTRL_MASK
-                        || mod == NativeInputEvent.META_L_MASK
-                        || mod == NativeInputEvent.META_R_MASK || mod == NativeInputEvent.META_MASK)) {
+        boolean holdingCtrlOrCommandKey = mod == NativeInputEvent.CTRL_L_MASK
+                || mod == NativeInputEvent.CTRL_R_MASK
+                || mod == NativeInputEvent.CTRL_MASK
+                || mod == NativeInputEvent.META_L_MASK
+                || mod == NativeInputEvent.META_R_MASK
+                || mod == NativeInputEvent.META_MASK;
+        boolean pressedHotKeyForTogglingApplication = e.getKeyCode() == Settings.HOTKEY_TOGGLE_SHOW
+                && holdingCtrlOrCommandKey;
+
+        if (pressedHotKeyForTogglingApplication) {
             // focus on CLI
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
+                    toggleOutApplication();
+                    _commandLineInterface.requestFocus();
+                }
+
+                private void toggleOutApplication() {
                     if (!_primaryStage.isFocused()) {
                         _primaryStage.toFront();
                         _primaryStage.setIconified(false);
                         _primaryStage.requestFocus();
                         _primaryStage.getScene().getRoot().requestFocus();
                     }
-                    _commandLineInterface.requestFocus();
                 }
             });
         }
@@ -763,7 +1037,6 @@ public class MainGui extends Application implements NativeKeyListener {
             Logger logger = Logger.getLogger(GlobalScreen.class.getPackage()
                     .getName());
             LogManager.getLogManager().reset();
-            // Set level to off before V0.5.
             logger.setLevel(Level.WARNING);
 
             GlobalScreen.registerNativeHook();
@@ -777,11 +1050,19 @@ public class MainGui extends Application implements NativeKeyListener {
         GlobalScreen.getInstance().addNativeKeyListener(this);
     }
 
+    /**
+     * Listener to check if a task status is changed from done to undone, vice
+     * versa.
+     * 
+     * @param taskPane
+     * @return
+     */
     private ChangeListener<Boolean> listenerForTaskStatusChange(
             final BorderPane taskPane) {
         return new ChangeListener<Boolean>() {
             public void changed(ObservableValue<? extends Boolean> ov,
-                    Boolean old_val, Boolean new_val) {
+                    Boolean oldValue, Boolean newValue) {
+                assert ov != null;
 
                 HBox descriptionBox = (HBox) taskPane.getCenter();
                 TextFlow desc = (TextFlow) descriptionBox.getChildren().get(0);
@@ -789,26 +1070,33 @@ public class MainGui extends Application implements NativeKeyListener {
                         + ((Text) desc.getChildren().get(0)).getText().split(
                                 "\\.")[0];
 
-                if (new_val) {
-                    _logic.retrieveInputFromUI("done " + taskIndex);
+                if (newValue) {
+                    sendCommandToLogic("done " + taskIndex);
                 } else {
-                    _logic.retrieveInputFromUI("undone " + taskIndex);
+                    sendCommandToLogic("undone " + taskIndex);
                 }
+
+                setStrikethroughOfDescription(taskPane, newValue, desc);
+            }
+
+            private void setStrikethroughOfDescription(
+                    final BorderPane taskPane, Boolean newValue, TextFlow desc) {
+                assert taskPane != null && desc != null;
 
                 Iterator<Node> descChildIterator = desc.getChildren()
                         .iterator();
                 Text taskTime = (Text) taskPane.getRight();
                 while (descChildIterator.hasNext()) {
                     Text descChild = (Text) descChildIterator.next();
-                    descChild.setStrikethrough(new_val);
+                    descChild.setStrikethrough(newValue);
                 }
-                taskTime.setStrikethrough(new_val);
-
+                taskTime.setStrikethrough(newValue);
             }
         };
     }
 
     private void macOsXInitialization() {
+        // Sets the icon of application for Mac OS X
         if (System.getProperty("os.name").equals("Mac OS X")) {
             // com.apple.eawt.Application application =
             // com.apple.eawt.Application
@@ -859,20 +1147,30 @@ public class MainGui extends Application implements NativeKeyListener {
         });
     }
 
+    // @author A0111889W
+    /**
+     * Handler for mouse clicks on hashtags/categories.
+     * Sets filter to hashtag or category.
+     * 
+     * @return
+     */
     private EventHandler<MouseEvent> onClickTrendingListText() {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                setFilterText(((Text) event.getSource()).getText());
-                _logic.retrieveInputFromUI("display " + _filterField.getText());
+                String hashtagOrCategoryValue = ((Text) event.getSource())
+                        .getText();
+                setFilterText(hashtagOrCategoryValue);
+                sendCommandToLogic("display " + hashtagOrCategoryValue);
             }
         };
     }
 
     private void prepareScene(Stage primaryStage) {
-
+        assert primaryStage != null;
         _primaryStage = primaryStage;
 
+        // generates the entire gui
         BorderPane rootPane = generateRootPane();
 
         Scene scene = sceneSetUp(rootPane);
@@ -884,6 +1182,8 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void primaryStageSetUp(Stage primaryStage, Scene scene) {
+        assert primaryStage != null && scene != null;
+
         primaryStage.setScene(scene);
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
@@ -899,22 +1199,31 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Scene sceneSetUp(BorderPane rootPane) {
+        assert rootPane != null;
+
         Scene scene = new Scene(rootPane, STARTING_WIDTH, STARTING_HEIGHT);
         scene.getStylesheets().add(
                 getClass().getResource("layoutStyle.css").toExternalForm());
         return scene;
     }
 
+    /**
+     * Scrolls to task view date of today's date if exist.
+     */
     private void scrollToToday() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 VBox Today = (VBox) _taskViewDateMap.get(DisplayView
                         .convertDateToString(Calendar.getInstance()));
-                if (Today != null) {
-                    _taskViewScrollPane.setVvalue((Today.getLayoutY())
+                boolean taskViewDateOfTodayExist = Today != null;
+
+                if (taskViewDateOfTodayExist) {
+                    double scrollPositionOfTaskViewDate = (Today.getLayoutY())
                             / (_taskViewByDate.getHeight() - _taskViewScrollPane
-                                    .getHeight()));
+                                    .getHeight());
+
+                    _taskViewScrollPane.setVvalue(scrollPositionOfTaskViewDate);
                 }
             }
         });
@@ -922,7 +1231,158 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void setTrendingListTitleFont(Text titleText) {
+        assert titleText != null;
         titleText.setFont(Font.font("Lucida Grande", FontWeight.BLACK, 14));
     }
 
 }
+
+// @author A0111889W
+/*
+ * JavaFx CSS files. Inserted here so that collate catches it.
+ * 
+ * .root{
+ * -fx-font-family: "Lucida Grande";
+ * -fx-font-size:11.0px;
+ * }
+ * 
+ * .header-title {
+ * -fx-font-size:20.0px;
+ * }
+ * 
+ * .status-bar, .header-bar {
+ * -fx-background-color: rgb(241.0,241.0,241.0);
+ * }
+ * 
+ * .status-message {
+ * 
+ * }
+ * 
+ * .error-message {
+ * -fx-text-fill:red;
+ * }
+ * 
+ * .clear-button {
+ * -fx-background-radius: 0.0;
+ * -fx-background-insets: 0.0;
+ * -fx-padding:3;
+ * -fx-border-color: -fx-text-box-border;
+ * -fx-border-width: 1.0 1.0 1.0 0.0;
+ * -fx-focus-color: transparent;
+ * }
+ * .clear-button:hover {
+ * -fx-cursor:hand;
+ * }
+ * 
+ * .text-field {
+ * -fx-background-radius: 0.0;
+ * }
+ * 
+ * .text-field:focused {
+ * -fx-background-color:-fx-shadow-highlight-color, -fx-text-box-border,
+ * -fx-control-inner-background;
+ * -fx-background-radius: 0.0;
+ * -fx-background-insets: -1.4, 0.0, 1.0;
+ * }
+ * 
+ * 
+ * .trending-list {
+ * -fx-border-width: 0.0px 0.0px 0.0px 1.0px;
+ * -fx-border-style: solid;
+ * -fx-border-color: transparent transparent transparent #ddd;
+ * }
+ * 
+ * .category-text {
+ * -fx-fill:rgba(68.0,167.0,3.0);
+ * }
+ * 
+ * .category-scroll {
+ * -fx-border-width: 0.0px 0.0px 1.0px 0.0px;
+ * -fx-border-style: solid;
+ * -fx-border-color: transparent transparent #ddd transparent;
+ * }
+ * 
+ * .hashtag-text {
+ * -fx-fill:rgba(14.0,97.0,185.0);
+ * }
+ * 
+ * .hashtag-scroll {
+ * -fx-border-width: 0.0px 0.0px 1.0px 0.0px;
+ * -fx-border-style: solid;
+ * -fx-border-color: transparent transparent #ddd transparent;
+ * }
+ * 
+ * .hashtag-text:hover, .category-text:hover {
+ * -fx-cursor:hand;
+ * -fx-underline:true;
+ * }
+ * 
+ * .task-time {
+ * -fx-fill:#999;
+ * }
+ * 
+ * .taskView-header-today {
+ * -fx-border-width: 0.0px 0.0px 3.0px 0.0px;
+ * -fx-border-style: solid;
+ * -fx-border-color: transparent transparent #CC6C6B transparent;
+ * -fx-border-insets:3.0px;
+ * }
+ * 
+ * 
+ * .taskView-header {
+ * -fx-border-width: 0.0px 0.0px 3.0px 0.0px;
+ * -fx-border-style: solid;
+ * -fx-border-color: transparent transparent #ddd transparent;
+ * -fx-border-insets:3.0px;
+ * }
+ * 
+ * .task-pane {
+ * -fx-border-width: 1.0px 0.0px 1.0px 0.0px;
+ * -fx-border-style: dashed;
+ * -fx-border-color: transparent transparent #ccc transparent;
+ * }
+ * 
+ * .task-pane:hover {
+ * -fx-background-color: rgb(229.0,234.0,238.0);
+ * -fx-background-radius:5.0px;
+ * -fx-border-width:0.0px;
+ * -fx-background-insets:-2.0px -3.0px -2.0px -3.0px;
+ * }
+ * 
+ * .address {
+ * -fx-background-color:white;
+ * }
+ * 
+ * .address .scroll-pane {
+ * -fx-background: transparent;
+ * -fx-background-color: transparent;
+ * }
+ * 
+ * .address .scroll-bar .increment-button {
+ * -fx-opacity: 0.0;
+ * }
+ * 
+ * .address .scroll-bar .decrement-button {
+ * -fx-opacity: 0.0;
+ * }
+ * 
+ * .address .scroll-bar:vertical {
+ * -fx-background-color: transparent;
+ * }
+ * 
+ * .address .scroll-bar:vertical .track-background {
+ * -fx-opacity: 0.0;
+ * }
+ * 
+ * .address .scroll-bar:vertical .track {
+ * -fx-opacity: 0.0;
+ * }
+ * .address .scroll-bar:vertical .thumb {
+ * -fx-background-color: #999;
+ * -fx-opacity: 1.0;
+ * }
+ * 
+ * .address .hide-thumb .scroll-bar:vertical .thumb {
+ * -fx-background-color: transparent;
+ * }
+ */
