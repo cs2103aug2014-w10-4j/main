@@ -36,6 +36,7 @@ import org.junit.Test;
  *
  */
 public class JUnitGoogleAtd {
+    @SuppressWarnings("unused")
     private Settings chirptaskSettings;
     private StorageHandler storageHandler;
     private List<Task> allTasks;
