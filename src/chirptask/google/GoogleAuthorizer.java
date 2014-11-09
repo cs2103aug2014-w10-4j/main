@@ -46,16 +46,10 @@ public class GoogleAuthorizer {
         return accessToken;
     }
     
-    /**
-     * Set up and return a list of scopes that contains scopes for
-     * Google Tasks and Google Calendar.
-     * @return List<String> googleScopes
-     */
-    private static List<String> getGoogleScopesList() {
-        List<String> googleScopes = new ArrayList<String>();
-        googleScopes.add(CalendarScopes.CALENDAR);
-        googleScopes.add(TasksScopes.TASKS);
-        return googleScopes;
+
+    private static String getCredentialUser() {
+        String credentialUser = "ChirpUser";
+        return credentialUser;
     }
     
     private static String getOAuthClientId() {
@@ -69,11 +63,34 @@ public class GoogleAuthorizer {
         return oAuthClientSecret;
     }
     
-    private static String getCredentialUser() {
-        String credentialUser = "ChirpUser";
-        return credentialUser;
+    /**
+     * Set up and return a list of scopes that contains scopes for
+     * Google Tasks and Google Calendar.
+     * @return List<String> googleScopes
+     */
+    private static List<String> getGoogleScopesList() {
+        List<String> googleScopes = new ArrayList<String>();
+        googleScopes.add(CalendarScopes.CALENDAR);
+        googleScopes.add(TasksScopes.TASKS);
+        return googleScopes;
     }
     
+
+    //@author A0111840W-reused
+    /*
+     * Authentication process reused from Google Calendar CMDLINE Sample
+     * https://code.google.com/p/google-api-java-client/source/browse/
+     * calendar-cmdline-sample/src/main/java/com/google/api/services/
+     * samples/calendar/cmdline/CalendarSample.java?repo=samples
+    */
+    /**
+     * Setup the google Authorization Code Flow
+     * @param oAuthClientId The OAuth Client ID
+     * @param oAuthClientSecret The OAuth Client Secret
+     * @param googleScopes The Scopes to include for authorisation
+     * @return GoogleAuthorizationCodeFlow object
+     * @throws IOException Thrown by DataStoreFactory
+     */
     private static GoogleAuthorizationCodeFlow getAuthorizationCodeFlow(
                                                     String oAuthClientId, 
                                                     String oAuthClientSecret,
@@ -100,6 +117,13 @@ public class GoogleAuthorizer {
         return codeFlow;
     }
     
+    /**
+     * Creates the OAuth Credential object from the CodeFlow object
+     * @param codeFlow The GoogleAuthorizationCodeFlow object
+     * @param credentialUser The specified user to lookup for
+     * @return The OAuth Credential object 
+     * @throws IOException If authorization fails midway
+     */
     private static Credential authorizeUsingOAuth(
                                         GoogleAuthorizationCodeFlow codeFlow,
                                         String credentialUser) 

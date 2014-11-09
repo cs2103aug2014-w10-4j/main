@@ -339,7 +339,7 @@ public class StorageHandler {
         }
     }
 
-    // @author A0111889W
+    //@author A0111889W
     static synchronized void deleteFromStorage(Task deletedTask) {
         if (deletedTask == null) {
             return;
@@ -352,7 +352,7 @@ public class StorageHandler {
         }
     }
 
-    // @author A0111840W;
+    //@author A0111840W
     static void deleteFromAllExceptCloud(Task deletedTask) {
         if (deletedTask == null) {
             return;
