@@ -79,7 +79,7 @@ public class MainGui2 extends MainGui {
 
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && !time.isEmpty() && taskId > -1;
+        assert date != null && taskId > -1;
 
         if (_taskIndexToId.contains(taskId)) {
             return false;
