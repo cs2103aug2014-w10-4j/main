@@ -136,6 +136,8 @@ public class LocalStorage implements IStorage {
 	
 	/** 
 	 * Test Stub Helper for JUnitStorage
+	 * This method will overwrite the local storage document to a test storage
+	 * When it is called, it will ensure the storage starts from fresh state
 	 */
     public void setUpJUnitTestXmlWriter() {
         try {

@@ -667,5 +667,13 @@ public class Logic {
     public void setLastGroupAction(GroupAction lastAction) {
         this._lastAction = lastAction;
     }
+    
+    
+    /**
+     * Call this method for JUnit Tests to get a fresh local storage each run
+     */
+    public void useTestLocalStorage() {
+        _storageHandler.setUpJUnitTestXmlWriter();
+    }
 
 }

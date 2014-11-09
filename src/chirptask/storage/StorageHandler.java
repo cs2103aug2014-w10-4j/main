@@ -346,6 +346,7 @@ public class StorageHandler {
         }
     }
     
+    //@author A0111840W;
     static void deleteFromAllExceptCloud(Task deletedTask) {
         if (deletedTask == null) {
             return;
@@ -398,6 +399,20 @@ public class StorageHandler {
 
     private static boolean isGoogleStorageInit() {
         return (googleStorage != null);
+    }
+    
+    /**
+     * This method is provided for Components to set up a local test XML store.
+     * This is to aid testing, and it will ensure a fresh copy of storage 
+     * everytime it runs without affecting the usual "local.xml"
+     */
+    public void setUpJUnitTestXmlWriter() {
+        if (isLocalStorageInit()) {
+            if (localStorage instanceof LocalStorage) {
+                LocalStorage lStorage = (LocalStorage) localStorage;
+                lStorage.setUpJUnitTestXmlWriter();
+            }
+        }
     }
 
 }

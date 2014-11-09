@@ -7,8 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import chirptask.common.Settings.CommandType;
-
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
@@ -111,7 +109,7 @@ public class DateParser {
 		if (list.size() == 2) {
 			long distance = list.get(0).getTimeInMillis() - list.get(1).getTimeInMillis();
 			if (distance >= DAY_IN_MILLI) {
-				list.remove(1);
+				list.remove(1); 
 			} else if (distance > 0) {
 				list.get(1).add(Calendar.DAY_OF_MONTH, 1);
 			}

@@ -25,6 +25,7 @@ public class JUnitLogicAtd {
         // Integration testing with UI and storage
         MainGui2 _mainGui = new MainGui2();
         Logic _logic = new Logic(_mainGui);
+        _logic.useTestLocalStorage();
 
         // Adding a normal floating task
         _logic.retrieveInputFromUI("add normal floating task");
