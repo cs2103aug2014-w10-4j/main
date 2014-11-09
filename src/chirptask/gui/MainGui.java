@@ -59,7 +59,6 @@ import org.jnativehook.keyboard.NativeKeyListener;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.logic.DisplayView;
-import chirptask.logic.FilterTasks;
 import chirptask.logic.Logic;
 
 public class MainGui extends Application implements NativeKeyListener {
@@ -123,7 +122,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * @param Status
      */
     public void setOnlineStatus(final String Status) {
-        assert !Status.isEmpty();
+        assert Status != null && !Status.isEmpty();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -142,7 +141,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * @param Category
      */
     public void addCategoryIntoList(String Category) {
-        assert !Category.isEmpty();
+        assert Category != null && !Category.isEmpty();
         Text categoryText = new Text(Settings.CATEGORY_CHAR + Category);
         categoryText.getStyleClass().add("category-text");
         categoryText.setOnMouseClicked(clickOnCategory());
@@ -155,7 +154,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * @param hashtag
      */
     public void addHashtagIntoList(String hashtag) {
-        assert !hashtag.isEmpty();
+        assert hashtag != null && !hashtag.isEmpty();
         Text hashtagText = new Text(Settings.HASHTAG_CHAR + hashtag);
         hashtagText.getStyleClass().add("hashtag-text");
         hashtagText.setOnMouseClicked(clickOnHashtag());
@@ -215,7 +214,8 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && !description.isEmpty() && taskId > -1;
+        assert date != null && description != null && !description.isEmpty()
+                && taskId > -1;
 
         // Checks for duplicate taskId
         if (_taskIndexToId.contains(taskId)) {
@@ -238,7 +238,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private BorderPane generateTaskView(String time, boolean done,
             String descriptionWithIndex) {
-        assert !descriptionWithIndex.isEmpty();
+        assert descriptionWithIndex != null && !descriptionWithIndex.isEmpty();
 
         // pane that makes up task view
         BorderPane taskPane = new BorderPane();
@@ -380,7 +380,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * @param errorMessage
      */
     public void setError(String errorMessage) {
-        assert !errorMessage.isEmpty();
+        assert errorMessage != null && !errorMessage.trim().isEmpty();
 
         String Status = String.format(Messages.STATUS_ERROR, errorMessage);
         _statusText.setText(Status);
@@ -406,7 +406,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * @param message
      */
     public void setStatus(String message) {
-        assert !message.isEmpty();
+        assert message != null && !message.trim().isEmpty();
 
         String Status = String.format(Messages.STATUS_NORMAL, message);
         _statusText.setText(Status);
@@ -547,7 +547,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * @param command
      */
     private void sendCommandToLogic(String command) {
-        assert !command.trim().isEmpty();
+        assert command != null && !command.trim().isEmpty();
 
         _logic.retrieveInputFromUI(command);
     }
@@ -559,6 +559,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * @param color
      */
     private void formatTextLabel(Text Label, String color) {
+        assert Label != null && color != null && !color.trim().isEmpty();
         Label.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 12));
         Label.setFill(Color.web(color));
     }
@@ -583,6 +584,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void generateCategoryListBox(Text categoryTitle) {
+        assert categoryTitle != null;
         _categoryList.setPadding(new Insets(8));
         _categoryList.setSpacing(5);
         _categoryList.getChildren().add(categoryTitle);
@@ -649,6 +651,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void generateHashtagListBox(Text hashtagTitle) {
+        assert hashtagTitle != null;
         _hashtagList.setPadding(new Insets(8));
         _hashtagList.setSpacing(5);
         _hashtagList.getChildren().add(hashtagTitle);
@@ -752,7 +755,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private HBox generateTaskDescription(String description, boolean done) {
-        assert !description.trim().isEmpty();
+        assert description != null && !description.trim().isEmpty();
 
         HBox descriptionBox = new HBox();
         descriptionBox.setPadding(new Insets(0, 8, 0, 8));
@@ -1113,6 +1116,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     // @author A0111889W-reused
     private void makeScrollFadeable(final Node scroll) {
+        assert scroll != null;
         final Node scrollbar = scroll.lookup(".scroll-bar:vertical");
         final FadeTransition fader = new FadeTransition(Duration.seconds(0.5),
                 scrollbar);

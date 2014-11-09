@@ -14,7 +14,7 @@ public class Task implements Comparable<Task> {
     public static final String TASK_DEADLINE = "deadline";
     public static final String TASK_TIMED = "timedtask";
 
-    private List<String> _contexts;
+    private List<String> _hashtags;
     private List<String> _categories;
 
     private int _taskId;
@@ -31,7 +31,7 @@ public class Task implements Comparable<Task> {
     private Calendar _cal;
 
     public Task() {
-        _contexts = new ArrayList<String>();
+        _hashtags = new ArrayList<String>();
         _categories = new ArrayList<String>();
         _eTag = "";
         _googleId = "";
@@ -49,6 +49,12 @@ public class Task implements Comparable<Task> {
 
     Task(int taskId, String description, String taskType) {
         this();
+        if (taskType == null) {
+            throw new NullPointerException();
+        }
+        if (taskType.trim().isEmpty()) {
+            throw new IllegalArgumentException();
+        }
         _taskId = taskId;
         _description = description;
         _type = taskType;
@@ -58,6 +64,10 @@ public class Task implements Comparable<Task> {
      * Compare by Time then Type then Description (Lexicographically)
      */
     public int compareTo(Task b) {
+        if (b == null) {
+            throw new NullPointerException();
+        }
+
         boolean isSameDateAndTime = this.getDate().compareTo(b.getDate()) == 0;
         boolean isSameType = this.getType().compareTo(b.getType()) == 0;
         if (isSameDateAndTime) {
@@ -87,11 +97,15 @@ public class Task implements Comparable<Task> {
     }
 
     public boolean equals(Object o) {
-        if (o instanceof Task) {
-            Task b = (Task) o;
-            if (this.getTaskId() == b.getTaskId()) {
-                return true;
+        try {
+            if (o instanceof Task) {
+                Task b = (Task) o;
+                if (this.getTaskId() == b.getTaskId()) {
+                    return true;
+                }
             }
+        } catch (Exception e) {
+            // returns false if null value is provided.
         }
         return false;
     }
@@ -157,6 +171,12 @@ public class Task implements Comparable<Task> {
     }
 
     public void setType(String type) {
+        if (type == null) {
+            throw new NullPointerException();
+        }
+        if (type.trim().isEmpty()) {
+            throw new IllegalArgumentException("type cannot be empty");
+        }
         _type = type;
     }
 
@@ -176,23 +196,32 @@ public class Task implements Comparable<Task> {
     }
 
     public List<String> getContexts() {
-        return _contexts;
+        return _hashtags;
     }
 
-    public void setContexts(List<String> _contexts) {
-        this._contexts = _contexts;
+    public void setContexts(List<String> hashtags) {
+        if (hashtags == null) {
+            throw new NullPointerException();
+        }
+        this._hashtags = hashtags;
     }
 
     public List<String> getCategories() {
         return _categories;
     }
 
-    public void setCategories(List<String> _categories) {
-        this._categories = _categories;
+    public void setCategories(List<String> categories) {
+        if (_categories == null) {
+            throw new NullPointerException();
+        }
+        this._categories = categories;
     }
 
-    //@author A0111930W
+    // @author A0111930W
     public void setDate(Calendar doneDate) {
+        if (doneDate == null) {
+            throw new NullPointerException();
+        }
         _cal = doneDate;
         _cal.set(Calendar.HOUR_OF_DAY, 0);
         _cal.set(Calendar.MINUTE, 0);
