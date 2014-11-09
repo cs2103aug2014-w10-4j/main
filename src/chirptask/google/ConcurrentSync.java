@@ -33,9 +33,12 @@ import com.google.api.services.tasks.model.Tasks;
  * The ChirpTask Task will take over the modification remotely in this case.
  */
 class ConcurrentSync implements Callable<Boolean> {
-
+    private static final int sleepTime = 10000; // 10 Second cooldown per sync
+    
     private static final String STRING_DONE_TASK = "completed";
     private static final String STRING_DONE_EVENT = "[Done]";
+    
+    private static boolean isSyncing = false; // Ensure only 1 thread do sync
 
     private List<chirptask.storage.Task> _taskList = null;
     private GoogleController _gController = null;
@@ -83,10 +86,17 @@ class ConcurrentSync implements Callable<Boolean> {
         }
         
         try {
-            sync(_taskList);
-            isSync = true;
+            if (ConcurrentSync.isSyncing == false) { // Unlocked state
+                ConcurrentSync.isSyncing = true; // Keep a lock
+                sync(_taskList);
+                Thread.sleep(sleepTime);
+                ConcurrentSync.isSyncing = false; // Unlock the state
+                isSync = true;
+            }
         } catch (Exception allException) {
             GoogleController.setOnlineStatus(Status.SYNC_FAIL);
+        } finally {
+            ConcurrentSync.isSyncing = false;
         }
         
         return isSync;
