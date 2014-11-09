@@ -671,9 +671,13 @@ public class Logic {
     
     /**
      * Call this method for JUnit Tests to get a fresh local storage each run
+     * This method also ensure that the FilteredList and DisplayView 
+     * are updated with the tasks from JUnit Test XML.
      */
     public void useTestLocalStorage() {
         _storageHandler.setUpJUnitTestXmlWriter();
+        FilterTasks.filter(_gui);
+        DisplayView.updateTaskView(_gui);
     }
 
 }

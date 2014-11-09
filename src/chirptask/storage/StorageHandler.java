@@ -405,12 +405,15 @@ public class StorageHandler {
      * This method is provided for Components to set up a local test XML store.
      * This is to aid testing, and it will ensure a fresh copy of storage 
      * everytime it runs without affecting the usual "local.xml"
+     * 
+     * Method also updates the SessionStorage once JUnit Test XML is loaded
      */
     public void setUpJUnitTestXmlWriter() {
         if (isLocalStorageInit()) {
             if (localStorage instanceof LocalStorage) {
                 LocalStorage lStorage = (LocalStorage) localStorage;
                 lStorage.setUpJUnitTestXmlWriter();
+                setAllTasks(localStorage.getAllTasks());
             }
         }
     }
