@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.text.ParseException;
 import java.util.Calendar;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import chirptask.common.Messages;
@@ -33,6 +34,15 @@ public class JUnitEventLoggerAtd {
     PipedOutputStream pout;
     PrintStream c;
 
+    @Before
+    public void setupTest() throws IOException {
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        pout = new PipedOutputStream(pin);
+        c = new PrintStream(pout);
+
+        EventLogger.setStream(c);
+    }
+
     /*
      * Tests the EventLogger Component
      * 
@@ -42,17 +52,12 @@ public class JUnitEventLoggerAtd {
 
     @Test
     public void deadlineTaskTesting() throws ParseException, IOException {
-        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-        pout = new PipedOutputStream(pin);
-        c = new PrintStream(pout);
-
-        EventLogger.setStream(c);
-
         DeadlineTask dt = new DeadlineTask(111889,
                 "Deadline Task JUnit Testing", tomorrow);
-        
-        //Tests if logging is accurate for deadline tasks operations
-        //More importantly, tests if time and descriptions are accurately logged.
+
+        // Tests if logging is accurate for deadline tasks operations
+        // More importantly, tests if time and descriptions are accurately
+        // logged.
         assertTrue(logger.storeNewTask(dt));
         assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
@@ -84,15 +89,9 @@ public class JUnitEventLoggerAtd {
 
     @Test
     public void taskTesting() throws ParseException, IOException {
-        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-        pout = new PipedOutputStream(pin);
-        c = new PrintStream(pout);
-
-        EventLogger.setStream(c);
-
         Task dt = new Task(111840, "Floating Task JUnit Testing");
 
-        //Tests if logging is accurate for floating tasks operations
+        // Tests if logging is accurate for floating tasks operations
         assertTrue(logger.storeNewTask(dt));
         assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
@@ -125,12 +124,7 @@ public class JUnitEventLoggerAtd {
 
     @Test
     public void timedTaskTesting() throws ParseException, IOException {
-        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-        pout = new PipedOutputStream(pin);
-        c = new PrintStream(pout);
-
-        EventLogger.setStream(c);
-        //Tests if logging is accurate for timed tasks operations
+        // Tests if logging is accurate for timed tasks operations
         TimedTask dt = new TimedTask(1337, "Timed Task JUnit Testing",
                 tomorrow, tomorrow);
 
@@ -166,16 +160,10 @@ public class JUnitEventLoggerAtd {
 
     @Test
     public void timedTaskAsTaskTesting() throws ParseException, IOException {
-
-        pout = new PipedOutputStream(pin);
-        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-        c = new PrintStream(pout);
-
-        EventLogger.setStream(c);
-
         Task dt = new TimedTask(1337, "Timed Task as Task JUnit Testing",
                 tomorrow, today);
-        //Tests if logging is accurate for timed tasks stored in task operations
+        // Tests if logging is accurate for timed tasks stored in task
+        // operations
         assertTrue(logger.storeNewTask(dt));
         assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
@@ -209,15 +197,10 @@ public class JUnitEventLoggerAtd {
     @Test
     public void deadlineTaskAsTaskTesting() throws ParseException, IOException {
 
-        pout = new PipedOutputStream(pin);
-        c = new PrintStream(pout);
-        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-
-        EventLogger.setStream(c);
-
         Task dt = new DeadlineTask(1337, "Deadline Task As Task JUnit Testing",
                 tomorrow);
-        //Tests if logging is accurate for deadline tasks stored as floating task operations
+        // Tests if logging is accurate for deadline tasks stored as floating
+        // task operations
         assertTrue(logger.storeNewTask(dt));
         assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
