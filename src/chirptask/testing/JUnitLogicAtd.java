@@ -98,9 +98,8 @@ public class JUnitLogicAtd {
         assertEquals(FilterTasks.getFilteredList().get(0).isDone(), true);
         assertEquals(FilterTasks.getFilteredList().get(1).isDone(), true);
         //Delete all task
+        //Expect list to be empty
         _logic.retrieveInputFromUI("delete 1-2");
-        //Clear all task, task will be deleted from local storage
-        //_logic.retrieveInputFromUI("clear");
         assertEquals(FilterTasks.getFilteredList().size(), 0);
     }
 

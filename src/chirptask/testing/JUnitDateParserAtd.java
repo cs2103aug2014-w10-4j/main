@@ -131,6 +131,7 @@ public class JUnitDateParserAtd {
 	public void testTime() {
 		Calendar today = Calendar.getInstance();
 		List<Calendar> cals;
+        CalendarSource.setBaseDate(today.getTime());
 		int year = today.get(Calendar.YEAR);
 		int month = today.get(Calendar.MONTH);
 		int date = today.get(Calendar.DAY_OF_MONTH);
