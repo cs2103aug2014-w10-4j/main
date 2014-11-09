@@ -270,7 +270,7 @@ public class LocalStorage implements IStorage {
 		
 		node.appendChild(getElement(doc, "isModified", taskToAdd.isModified()+""));
 
-		List<String> contexts = taskToAdd.getContexts();
+		List<String> contexts = taskToAdd.getHashtags();
 		if (contexts != null && !contexts.isEmpty()) {
 			for (String s : contexts) {
 				node.appendChild(getElement(doc, "contexts", s));
@@ -551,7 +551,7 @@ public class LocalStorage implements IStorage {
 				}
 			}
 
-			task.setContexts(getValues("contexts", item));
+			task.setHashtags(getValues("contexts", item));
 			task.setCategories(getValues("categories", item));
 			task.setGoogleId(googleId);
 			task.setETag(googleETag);

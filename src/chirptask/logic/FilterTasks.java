@@ -428,7 +428,7 @@ public class FilterTasks {
 
     private static void populateHashtag(Task task) {
 
-        for (String hashtag : task.getContexts()) {
+        for (String hashtag : task.getHashtags()) {
             if (!hashtagList.contains(hashtag.toLowerCase())) {
                 hashtagList.add(hashtag.toLowerCase());
             }

@@ -195,11 +195,11 @@ public class Task implements Comparable<Task> {
         _cal = null;
     }
 
-    public List<String> getContexts() {
+    public List<String> getHashtags() {
         return _hashtags;
     }
 
-    public void setContexts(List<String> hashtags) {
+    public void setHashtags(List<String> hashtags) {
         if (hashtags == null) {
             throw new NullPointerException();
         }
@@ -217,7 +217,7 @@ public class Task implements Comparable<Task> {
         this._categories = categories;
     }
 
-    // @author A0111930W
+    //@author A0111930W
     public void setDate(Calendar doneDate) {
         if (doneDate == null) {
             throw new NullPointerException();

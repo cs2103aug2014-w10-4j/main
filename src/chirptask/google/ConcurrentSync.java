@@ -469,7 +469,7 @@ class ConcurrentSync implements Callable<Boolean> {
         
         // push from remote to local
         int taskId = chirpTask.getTaskId();
-        List<String> hashtagList = chirpTask.getContexts();
+        List<String> hashtagList = chirpTask.getHashtags();
         List<String> categoryList = chirpTask.getCategories();
         String doneString = currTask.getStatus();
         String eTag = chirpTask.getETag();
@@ -530,7 +530,7 @@ class ConcurrentSync implements Callable<Boolean> {
         }
         
         taskToSet.setCategories(categoryList);
-        taskToSet.setContexts(hashtagList);
+        taskToSet.setHashtags(hashtagList);
         taskToSet.setDone(isDone);
         taskToSet.setETag(eTag);
         taskToSet.setGoogleId(googleId);
@@ -581,7 +581,7 @@ class ConcurrentSync implements Callable<Boolean> {
 
                 String googleId = gId;
                 String googleETag = currEvent.getEtag();
-                List<String> hashtagList = newTask.getContexts();
+                List<String> hashtagList = newTask.getHashtags();
                 List<String> categoryList = newTask.getCategories();
                 Calendar startDate = getCalendarFromEvent(currEvent.getStart());
                 Calendar endDate = getCalendarFromEvent(currEvent.getEnd());
@@ -639,8 +639,20 @@ class ConcurrentSync implements Callable<Boolean> {
                     continue;
                 }
                 
-                chirptask.storage.Task newTask = InputParser
-                        .getTaskFromString(taskDesc);
+                //chirptask.storage.Task newTask = InputParser
+                //        .getTaskFromString(taskDesc);
+                chirptask.storage.Task newTask = null; 
+                if (currTask.getDue() != null) {
+                    newTask = InputParser.getTaskFromString( 
+                            chirptask.storage.Task.TASK_DEADLINE, taskDesc);
+                    if (newTask == null) {
+                        newTask = InputParser.getTaskFromString(taskDesc);
+                    }
+                } else { 
+                    newTask = InputParser.getTaskFromString(
+                            chirptask.storage.Task.TASK_FLOATING, taskDesc);
+                }
+                
                 newTask.setTaskId(taskId);
                 //Set ETag allows reuse of updateLocalGTask(Task,Task)
                 newTask.setETag(currTask.getEtag()); 

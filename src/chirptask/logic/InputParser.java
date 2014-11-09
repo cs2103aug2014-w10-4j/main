@@ -190,7 +190,7 @@ public class InputParser {
 		toDo = getTaskFromString(parameter);
 		String description = toDo.getDescription();
 		List<String> categoryList = toDo.getCategories();
-		List<String> contextList = toDo.getContexts();
+		List<String> contextList = toDo.getHashtags();
 		int taskIndex = LocalStorage.generateId();
 		
 		switch (command) {
@@ -215,7 +215,7 @@ public class InputParser {
 		}
 		
 		toDo.setCategories(categoryList);
-		toDo.setContexts(contextList);
+		toDo.setHashtags(contextList);
 		
 		return toDo;
 	}
@@ -276,15 +276,16 @@ public class InputParser {
 		String[] parameters = getStringToParseDate(parameter, Task.TASK_DEADLINE);
 		timeString = parameters[0];
 		dateList = _dateParser.parseDate(timeString);
+		
 		if (dateList == null || dateList.size() != 1) {
 			return null;
 		} 
 		Calendar dueDate = dateList.get(0);
 		if (parameters[1] != null && !parameters[1].equals("")) {
-			String deadline = new SimpleDateFormat("HH:mm dd/MM")
+		    String deadline = new SimpleDateFormat("HH:mm dd/MM")
 					.format(dueDate.getTime());
-			description = parameters[1] + " by " + deadline;
-		}
+		    description = parameters[1] + " by " + deadline;
+        }
 
 		Task deadline = new DeadlineTask(taskIndex, description,
 				dueDate);
@@ -450,9 +451,9 @@ public class InputParser {
 		boolean isModified = oldTask.isModified();
 		boolean isDone = oldTask.isDone();
 		List<String> editedCategoryList = editedTask.getCategories();
-		List<String> editedContextList = editedTask.getContexts();
+		List<String> editedContextList = editedTask.getHashtags();
 		newTask.setCategories(editedCategoryList);
-		newTask.setContexts(editedContextList);
+		newTask.setHashtags(editedContextList);
 		newTask.setGoogleId(googleId);
 		newTask.setETag(eTag);
 		newTask.setDeleted(isDeleted);
@@ -587,7 +588,7 @@ public class InputParser {
 			}
 		}
 		newTask.setCategories(categories);
-		newTask.setContexts(contexts);
+		newTask.setHashtags(contexts);
 
 		return newTask;
 	}
@@ -598,6 +599,9 @@ public class InputParser {
 		}
 		Task toDo = getTaskFromString(parameter);
 		String description = toDo.getDescription();
+        List<String> categoryList = toDo.getCategories();
+        List<String> hashtagList = toDo.getHashtags();
+        
 		int taskId = LocalStorage.generateId();
 		switch (command) {
 		case Task.TASK_FLOATING:
@@ -610,6 +614,10 @@ public class InputParser {
 		default:
 			return null;
 		}
+		
+		toDo.setCategories(categoryList);
+		toDo.setHashtags(hashtagList);
+		
 		return toDo;
 	}
 

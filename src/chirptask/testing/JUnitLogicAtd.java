@@ -100,7 +100,7 @@ public class JUnitLogicAtd {
         //Delete all task
         _logic.retrieveInputFromUI("delete 1-2");
         //Clear all task, task will be deleted from local storage
-        _logic.retrieveInputFromUI("clear");
+        //_logic.retrieveInputFromUI("clear");
         assertEquals(FilterTasks.getFilteredList().size(), 0);
     }
 

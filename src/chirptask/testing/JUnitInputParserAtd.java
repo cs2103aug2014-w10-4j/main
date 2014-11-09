@@ -216,7 +216,7 @@ public class JUnitInputParserAtd {
 		DeadlineTask task = new DeadlineTask(0, desc, deadline);
 
 		task.setCategories(categories);
-		task.setContexts(contexts);
+		task.setHashtags(contexts);
 
 		return task;
 	}
@@ -229,7 +229,7 @@ public class JUnitInputParserAtd {
 		Task task = new Task(0, desc);
 
 		task.setCategories(categories);
-		task.setContexts(contexts);
+		task.setHashtags(contexts);
 
 		return task;
 	}
@@ -239,7 +239,7 @@ public class JUnitInputParserAtd {
 		TimedTask task = new TimedTask(0, desc, start, end);
 
 		task.setCategories(categories);
-		task.setContexts(contexts);
+		task.setHashtags(contexts);
 
 		return task;
 	}
@@ -290,7 +290,7 @@ public class JUnitInputParserAtd {
 			default:
 			}
 			assertEquals(result.getDescription(), expected.getDescription());
-			assertEquals(result.getContexts(), expected.getContexts());
+			assertEquals(result.getHashtags(), expected.getHashtags());
 			assertEquals(result.getCategories(), expected.getCategories());
 
 		}
