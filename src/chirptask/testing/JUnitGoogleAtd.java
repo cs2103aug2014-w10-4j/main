@@ -130,6 +130,7 @@ public class JUnitGoogleAtd {
     
     @After
     public void closeGoogle() {
+        logic.retrieveInputFromUI("logout");
         storageHandler.closeStorages();
     }
     
