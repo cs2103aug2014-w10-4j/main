@@ -14,6 +14,10 @@ import chirptask.storage.StorageHandler;
 
 public class Settings {
 
+    /*
+     * These will act as default values in the event that settings does not get
+     * initialized properly.
+     */
     public static String EVENT_LOG_FILENAME = "eventlogs.txt";
     public static String DEFAULT_FILTER = "";
     public static String GOOGLE_CALENDAR_ID = "";
@@ -41,31 +45,20 @@ public class Settings {
     private static final Properties props = new Properties();
     public static boolean hasRead = false;
 
-    // Initialized at the start by UI
+    // Initialized once by MainGui Class
     public Settings() {
         if (configFile.exists()) {
-            readPropertiesFromFile();
+            openFileForReading();
         } else {
-            writeDefaultPropertiesToFile();
+            openFileForWriting();
         }
     }
 
-    private void writeDefaultPropertiesToFile() {
+    private void openFileForWriting() {
         try {
             FileWriter writer = new FileWriter(configFile);
-
-            // write default values
-            props.setProperty("EVENT_LOG_FILENAME", "eventlogs.txt");
-            props.setProperty("DEFAULT_FILTER", "");
-            props.setProperty("CATEGORY_CHAR", "@");
-            props.setProperty("CONTEXT_CHAR", "#");
-            props.setProperty("LOGIN_AUTO", "false");
-            props.setProperty("SYSTEM_EXIT_NORMAL", "0");
-            props.setProperty("HOTKEY_TOGGLE_HIDE", ""
-                    + NativeKeyEvent.VC_ESCAPE);
-            props.setProperty("HOTKEY_TOGGLE_SHOW", "" + NativeKeyEvent.VC_G);
-            props.setProperty("GOOGLE_CALENDAR_ID", "");
-
+            setDefaultValuesIntoProperty();
+            // this writes the settings into the file.
             props.store(writer, "Default Settings");
             writer.close();
         } catch (IOException e) {
@@ -74,43 +67,60 @@ public class Settings {
         }
     }
 
-    public void readPropertiesFromFile() {
+    private void setDefaultValuesIntoProperty() {
+        // write default values
+        props.setProperty("EVENT_LOG_FILENAME", "eventlogs.txt");
+        props.setProperty("DEFAULT_FILTER", "");
+        props.setProperty("CATEGORY_CHAR", "@");
+        props.setProperty("CONTEXT_CHAR", "#");
+        props.setProperty("LOGIN_AUTO", "false");
+        props.setProperty("SYSTEM_EXIT_NORMAL", "0");
+        props.setProperty("HOTKEY_TOGGLE_HIDE", "" + NativeKeyEvent.VC_ESCAPE);
+        props.setProperty("HOTKEY_TOGGLE_SHOW", "" + NativeKeyEvent.VC_G);
+        props.setProperty("GOOGLE_CALENDAR_ID", "");
+    }
+
+    private void openFileForReading() {
         FileReader reader;
         try {
             reader = new FileReader(configFile);
+            // loads property from file
             props.load(reader);
-            
-            EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME");
-            DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER");
-            CATEGORY_CHAR = props.getProperty("CATEGORY_CHAR").charAt(0);
-            HASHTAG_CHAR = props.getProperty("CONTEXT_CHAR").charAt(0);
-            LOGIN_AUTO = Boolean.parseBoolean(props.getProperty("LOGIN_AUTO"));
-            SYSTEM_EXIT_NORMAL = Integer.parseInt(props
-                    .getProperty("SYSTEM_EXIT_NORMAL"));
-            HOTKEY_TOGGLE_HIDE = Integer.parseInt(props
-                    .getProperty("HOTKEY_TOGGLE_HIDE"));
-            HOTKEY_TOGGLE_SHOW = Integer.parseInt(props
-                    .getProperty("HOTKEY_TOGGLE_SHOW"));
-            GOOGLE_CALENDAR_ID = props.getProperty("GOOGLE_CALENDAR_ID");
+            readSettingsFromProperty();
             hasRead = true;
-            
+
             reader.close();
         } catch (FileNotFoundException ex) {
-            writeDefaultPropertiesToFile();
+            openFileForWriting();
         } catch (NullPointerException NPE) {
-            writeDefaultPropertiesToFile();
+            openFileForWriting();
+        } catch (IndexOutOfBoundsException OOB) {
+            // corrupted settings
+            openFileForWriting();
+        } catch (NumberFormatException NFE) {
+            // corrupted settings
+            openFileForWriting();
         } catch (IOException ex) {
             StorageHandler.logError(String.format(Messages.ERROR, "Settings",
                     "while reading from file.\n" + ex.getMessage()));
-        } catch (NumberFormatException NFE) {
-            // corrupted settings
-            writeDefaultPropertiesToFile();
-        } catch (IndexOutOfBoundsException OOB){
-            // corrupted settings
-            writeDefaultPropertiesToFile();
         }
     }
-    
+
+    private void readSettingsFromProperty() {
+        EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME");
+        DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER");
+        CATEGORY_CHAR = props.getProperty("CATEGORY_CHAR").charAt(0);
+        HASHTAG_CHAR = props.getProperty("CONTEXT_CHAR").charAt(0);
+        LOGIN_AUTO = Boolean.parseBoolean(props.getProperty("LOGIN_AUTO"));
+        SYSTEM_EXIT_NORMAL = Integer.parseInt(props
+                .getProperty("SYSTEM_EXIT_NORMAL"));
+        HOTKEY_TOGGLE_HIDE = Integer.parseInt(props
+                .getProperty("HOTKEY_TOGGLE_HIDE"));
+        HOTKEY_TOGGLE_SHOW = Integer.parseInt(props
+                .getProperty("HOTKEY_TOGGLE_SHOW"));
+        GOOGLE_CALENDAR_ID = props.getProperty("GOOGLE_CALENDAR_ID");
+    }
+
     public static void writeGoogleCalendarId(String googleId) {
         try {
             if (props != null && googleId != null) {
