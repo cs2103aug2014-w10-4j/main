@@ -149,12 +149,26 @@ public class LocalStorage implements IStorage {
             localStorage = docBuilder.newDocument();
             trans = TransformerFactory.newInstance().newTransformer();
             trans.setOutputProperty(OutputKeys.INDENT, "yes");
-            restartLocalStorage();
+            restartLocalStorageNoSession();
         } catch (IOException ioException) {
         } catch (ParserConfigurationException e) {
         } catch (TransformerConfigurationException e) {
         } catch (TransformerFactoryConfigurationError e) {
         }
+    }
+    
+    /**
+     * This stub is created for setUpJUnitTestXmlWriter() method
+     * Normal restart local storage will try to copy all tasks in
+     * SessionStorage into LocalStorage.
+     * This stub is created to perform the same stuff without copying
+     * the SessionStorage into LocalStorage to ensure that we get an 
+     * empty JUnit Test XML Storage.
+     */
+    private void restartLocalStorageNoSession() {
+        addRoot();
+        writeToFile();
+        setIdGenerator(0);
     }
 	
 
