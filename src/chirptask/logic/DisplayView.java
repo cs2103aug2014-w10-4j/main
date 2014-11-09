@@ -18,16 +18,15 @@ import chirptask.storage.Task;
 import chirptask.storage.TimedTask;
 
 /**
- * This class handles the processing of filtertask before displaying the results to user
- *  using MainGui methods.
- * 
+ * This class handles the processing of filtertask before displaying the results
+ * to user
+ * using MainGui methods.
  * 
  *
  */
 
 public class DisplayView {
     private static final int START_LIST = 0;
-    
 
     /**
      * This will take in a filtered list and update the taskview, sort to
@@ -51,17 +50,17 @@ public class DisplayView {
         // view.addToTaskView(it.next().getValue());
         // }
 
-
     }
+
     /**
      * Method will sort the task
+     * 
      * @param tasks
      */
     private static void sortTask(List<Task> tasks) {
         Collections.sort(tasks);
     }
 
-    
     /**
      * This method will update the Context and category on the GUI
      * 
@@ -73,7 +72,6 @@ public class DisplayView {
         updateHashtagView(gui);
     }
 
-    
     /**
      * This method will update the user GUI view. The GUI view will be sorted to
      * all tasks under a date.
@@ -93,9 +91,10 @@ public class DisplayView {
         }
 
     }
-    
+
     /**
      * Method will call GUI method to update the task under the respective date
+     * 
      * @param gui
      * @param T
      * @param dateToString
@@ -105,9 +104,10 @@ public class DisplayView {
         gui.addNewTaskViewToDate(T.getDate(), T.getTaskId(),
                 T.getDescription(), dateToString, T.isDone());
     }
-    
+
     /**
      * Method will call GUI method to create a date view
+     * 
      * @param gui
      * @param T
      */
@@ -115,7 +115,7 @@ public class DisplayView {
         gui.addNewTaskViewDate(T.getDate());
     }
 
-    //@author A0111889W
+    // @author A0111889W
     /**
      * Assuming there are only 3 type of task we need to handle
      * 
@@ -126,7 +126,6 @@ public class DisplayView {
         assert task != null && task.getDate() != null;
         String dateToString = "";
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
 
         if (Task.TASK_FLOATING.equals(task.getType())) {
             dateToString = "";
@@ -143,9 +142,10 @@ public class DisplayView {
         return dateToString;
     }
 
-    //@author A0111930W
+    // @author A0111930W
     /**
      * This method will be call during init to display all task
+     * 
      * @param gui
      */
     public static void updateTaskView(MainGui gui) {
@@ -155,8 +155,10 @@ public class DisplayView {
         }
 
     }
+
     /**
      * This method will call gui to update the category view.
+     * 
      * @param gui
      */
     public static void updateCategoryView(MainGui gui) {
@@ -165,9 +167,10 @@ public class DisplayView {
             gui.addCategoryIntoList(category);
         }
     }
-    
+
     /**
      * This method will call gui to update the Hashtag view.
+     * 
      * @param gui
      */
     public static void updateHashtagView(MainGui gui) {
@@ -176,18 +179,20 @@ public class DisplayView {
             gui.addHashtagIntoList(context);
         }
     }
-    
+
     /**
      * Show status to user with the respective message
+     * 
      * @param Message
      * @param gui
      */
     public static void showStatusToUser(String Message, MainGui gui) {
         gui.setStatus(Message);
     }
-    
+
     /**
      * Show status to user depending on the success
+     * 
      * @param Message
      * @param gui
      * @param success
@@ -200,9 +205,10 @@ public class DisplayView {
             gui.setError(Message);
         }
     }
-    
+
     /**
      * Show status to user depending on the execution of display command
+     * 
      * @param type
      * @param gui
      * @param filter
@@ -238,8 +244,10 @@ public class DisplayView {
             processSuccessGui(action, gui, command);
         }
     }
+
     /**
      * Method will display success message to user
+     * 
      * @param action
      * @param gui
      * @param command
@@ -276,8 +284,8 @@ public class DisplayView {
                         Messages.LOG_MESSAGE_SUCCESS);
                 break;
             case LOGOUT :
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS,
-                        true, "");
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS, true,
+                        "");
                 break;
             case DISPLAY :
                 processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
@@ -292,8 +300,10 @@ public class DisplayView {
                 break;
         }
     }
+
     /**
      * Method will display error message to user
+     * 
      * @param action
      * @param gui
      * @param command
@@ -332,8 +342,8 @@ public class DisplayView {
                         Messages.LOG_MESSAGE_FAIL);
                 break;
             case LOGOUT :
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL,
-                        false, "");
+                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL, false,
+                        "");
                 break;
             default:
                 processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
@@ -341,9 +351,10 @@ public class DisplayView {
                 break;
         }
     }
-    
+
     /**
      * Return true if statustype is error, else return true
+     * 
      * @param type
      * @return
      */
@@ -371,8 +382,10 @@ public class DisplayView {
                     logMessageError, filter));
         }
     }
+
     /**
      * Method will return true is is a error message, else false
+     * 
      * @param logMessageError
      * @return
      */
@@ -416,7 +429,7 @@ public class DisplayView {
         }
     }
 
-    //@author A0111889W
+    // @author A0111889W
     public static TextFlow parseDescriptionToTextFlow(String description,
             boolean done, MainGui _gui) {
         TextFlow parsedDesc = new TextFlow();
@@ -446,7 +459,7 @@ public class DisplayView {
                 bufferText.getStyleClass().add("category-text");
                 bufferText.setOnMouseClicked(_gui.clickOnCategory());
             }
-            
+
             // delete parsed text
             descStringBuilder.delete(0, index);
             bufferText.setStrikethrough(done);
@@ -456,17 +469,25 @@ public class DisplayView {
         return parsedDesc;
     }
 
-    //@author A0111889W
+    // @author A0111889W
     public static String convertDateToString(Calendar date) {
         assert date != null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
         String parseDateToString = sdf.format(date.getTime());
         return parseDateToString;
     }
-    
-    //@author A0111930W
+
+    // @author A0111889W
+    public static void autocompleteEditWithTaskDescription(String input,
+            MainGui _gui) {
+        assert !input.trim().isEmpty() && _gui != null;
+        FilterTasks.editCli(input, _gui);
+    }
+
+    // @author A0111930W
     /**
      * Show message and command type to user.
+     * 
      * @param message
      * @param type
      * @param _gui
@@ -476,9 +497,10 @@ public class DisplayView {
         assert _gui != null;
         processGUI(message, type, _gui);
     }
-    
+
     /**
      * Method will call gui and show status to user
+     * 
      * @param message
      * @param type
      * @param _gui
@@ -496,24 +518,26 @@ public class DisplayView {
         }
 
     }
+
     /**
      * Format the success message
+     * 
      * @param type
      * @return
      */
     private static String formatStringSuccess(CommandType type) {
-        return String.format(
-                Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
+        return String.format(Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
                 Messages.LOG_MESSAGE_SUCCESS, type.toString());
     }
+
     /**
      * Format the error message
+     * 
      * @param type
      * @return
      */
     private static String formatStringError(CommandType type) {
-        return String.format(
-                Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
+        return String.format(Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
                 Messages.LOG_MESSAGE_FAIL, type.toString());
     }
 }
