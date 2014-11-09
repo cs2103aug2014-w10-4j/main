@@ -12,7 +12,7 @@ import chirptask.storage.Task;
  * However this can be used for future developement if dev are interested to do a search by date range.
  * 
  * This class keep track of each task belonging to which dates.
- * @author User
+ *
  *
  */
 

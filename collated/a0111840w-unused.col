@@ -1,0 +1,74 @@
+//@author: a0111840w-unused
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\google\CalendarController.java
+	 */
+
+    // Code is unused because we remove the need for this additional file
+    // Now we store Google Calendar ID in the Settings, config.properties file
+    /*private void initializeHostFiles() throws IOException {
+        try {
+            TIMEDTASK_CALENDAR_ID_STORE_FILE.getParentFile().mkdirs();
+            TIMEDTASK_CALENDAR_ID_STORE_FILE.createNewFile();
+        } catch (IOException ioError) {
+            String event = "failed to initialize Google Calendar ID File on Host";
+            StorageHandler.logError(event);
+            throw new IOException();
+        }
+    }*/
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\google\CalendarController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\google\IdHandler.java
+	 */
+
+    // Code is unused because we remove the need for this additional file
+    // Now we store Google Calendar ID in the Settings, config.properties file
+	static String getIdFromFile(File idFile) {
+	    if (idFile == null) {
+	        return null;
+	    }
+	    
+		String id = null;
+		try (BufferedReader idFileReader = new BufferedReader(new FileReader(
+				idFile))) {
+			id = idFileReader.readLine();
+		} catch (FileNotFoundException fileNotFoundError) {
+		    return null;
+		} catch (IOException accessFileError) {
+		    return null;
+		}
+
+		return id;
+	}
+
+	static void saveIdToFile(File idFile, String id) {
+	    if (idFile == null || id == null) {
+	        return;
+	    }
+	    
+		try (BufferedWriter idFileWriter = new BufferedWriter(new FileWriter(
+				idFile))) {
+			idFileWriter.write(id);
+		} catch (FileNotFoundException fileNotFoundError) {
+            StorageHandler.logError("Failed to save ID to File");
+		} catch (IOException accessFileError) {
+		    StorageHandler.logError("Failed to save ID to File");
+		}
+	}
+
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\google\IdHandler.java
+
+
+
+
+

@@ -19,7 +19,7 @@ import chirptask.storage.Task;
  * This class is use to populate the task/hashtag/category list and will be use to display
  * by DisplayView class.
  * 
- * @author A0111930W
+ * 
  *
  */
 public class FilterTasks {
@@ -306,7 +306,7 @@ public class FilterTasks {
     }
 
     /**
-     * @author A0111930W
+     * 
      * @param tempList
      * @param filterdate
      * 

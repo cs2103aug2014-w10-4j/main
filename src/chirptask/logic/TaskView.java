@@ -8,7 +8,7 @@ import java.util.List;
  * Did not think it would be appropriate for our search function as this class allows
  * to retrieve a tasksbydate object.
  * 
- * @author User
+ *
  *
  */
 

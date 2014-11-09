@@ -21,7 +21,7 @@ import chirptask.storage.TimedTask;
  * This class handles the processing of filtertask before displaying the results to user
  *  using MainGui methods.
  * 
- * @author A0111930W
+ * 
  *
  */
 
@@ -33,7 +33,7 @@ public class DisplayView {
      * This will take in a filtered list and update the taskview, sort to
      * date/time, store into List of tasks
      * 
-     * @author a0111930w
+     * 
      * @param _gui
      * @param List
      *            <Task>
@@ -65,7 +65,7 @@ public class DisplayView {
     /**
      * This method will update the Context and category on the GUI
      * 
-     * @author A0111930W
+     * 
      * @param gui
      */
     private static void processUpdateHashtagAndCategoryView(MainGui gui) {
@@ -78,7 +78,7 @@ public class DisplayView {
      * This method will update the user GUI view. The GUI view will be sorted to
      * all tasks under a date.
      * 
-     * @author A0111930W
+     * 
      * @param tasks
      * @param gui
      * @param map
@@ -222,7 +222,7 @@ public class DisplayView {
      * This method will show the status result to user after each action user
      * input.
      * 
-     * @author A0111930W
+     * 
      * @param type
      * @param action
      * @param gui
@@ -355,7 +355,7 @@ public class DisplayView {
      * This method will process the show the user error when a wrong command is
      * input.
      * 
-     * @author A0111930W
+     * 
      * @param action
      * @param gui
      * @param logMessageInvalidCommand

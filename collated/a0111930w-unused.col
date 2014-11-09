@@ -1,0 +1,96 @@
+//@author: a0111930w-unused
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\TasksByDate.java
+	 */
+
+package chirptask.logic;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import chirptask.storage.Task;
+
+/**
+ * Did not used it as it was not appropriate for our search function.
+ * However this can be used for future developement if dev are interested to do a search by date range.
+ * 
+ * This class keep track of each task belonging to which dates.
+ *
+ *
+ */
+
+public class TasksByDate {
+	private Calendar taskDate;
+	private List<Task> taskList;
+
+	public TasksByDate() {
+		taskList = new ArrayList<Task>();
+	}
+
+	public Calendar getTaskDate() {
+		return taskDate;
+	}
+
+	public List<Task> getTaskList() {
+		return taskList;
+	}
+
+	public void setTaskDate(Calendar taskDate) {
+		this.taskDate = taskDate;
+	}
+
+	public void addToTaskList(Task T) {
+		taskList.add(T);
+	}
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\TasksByDate.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\TaskView.java
+	 */
+
+package chirptask.logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Did not think it would be appropriate for our search function as this class allows
+ * to retrieve a tasksbydate object.
+ * 
+ *
+ *
+ */
+
+public class TaskView {
+
+	private List<TasksByDate> listByDate;
+
+	public TaskView() {
+		listByDate = new ArrayList<TasksByDate>();
+	}
+
+	public List<TasksByDate> getListByDates() {
+		return listByDate;
+	}
+
+	public void addToTaskView(TasksByDate task) {
+		listByDate.add(task);
+	}
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\TaskView.java
+
+
+
+
+

@@ -1,0 +1,2178 @@
+//@author: a0113022
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DateParser.java
+	 */
+
+public class DateParser {
+	private List<Calendar> list;
+	private Parser parse;
+
+	private final static String[] patternsDate = { "dd/MM", "dd-MM", "dd.MM",
+			"MM/dd", "MM-dd", "MM.dd", "MMM", "dd-MMM", "EEE" };
+	private final static String[] patternsTime = { "HH:mm", "HHmm", "HHmm'h'",
+			"HHmm'hr'", "hha", "hhmma", "hh:mma", "ha", "hh'a'", "hh'p'" };
+	private final static String relativeKey = "next|last|this";
+	private final static String relativeKeyDate = "now|today|tomorrow|week|month|day|yesterday|weeks|months|days";
+	private final static String relativeKeyTime = "am|pm|hour|hours|hrs|min|minute|mins|minutes";
+	private final static long DAY_IN_MILLI = 24*60*60*1000;
+	
+	public DateParser() {
+		parse = new Parser();
+	}
+
+	public List<Calendar> parseDate(String toParse) {
+		boolean success = false;
+		boolean mayHas = false;
+		boolean isTimeSet = false;
+		boolean isDateSet = false;
+		String seekDate;
+		String seekTime;
+
+		if (toParse == null) {
+			return null;
+		}
+
+		list = new ArrayList<Calendar>();
+		toParse = toParse.replaceAll("\\s+(?=-/.)", "").replaceAll(
+				"(?<=-/.)\\s+", "");
+		String splitSpace[] = toParse.split("\\s+");
+		toParse = "";
+		for (int i = 0; i < splitSpace.length; i++) {
+			seekDate = findDate(splitSpace[i]);
+			if (seekDate != null) {
+				isDateSet = true;
+				splitSpace[i] = seekDate;
+			}
+
+			seekTime = findTime(splitSpace[i]);
+			if (seekTime != null) {
+				isTimeSet = true;
+				splitSpace[i] = seekTime;
+			}
+
+			if (!success) {
+				success = (isDateSet || isTimeSet);
+				if (splitSpace[i].matches(relativeKey)) {
+					mayHas = true;
+				}
+				if (splitSpace[i].matches(relativeKeyDate)) {
+					mayHas = true;
+					isDateSet = true;
+				}
+				if (splitSpace[i].matches(relativeKeyTime)) {
+					mayHas = true;
+					isTimeSet = true;
+				}
+			}
+			
+			toParse = toParse.concat(splitSpace[i]).concat(" ");
+		}
+
+		if (success || mayHas) {
+			parseDateTime(toParse, isTimeSet);
+		}
+		return list;
+	}
+
+	/**
+	 * @param toParse
+	 * @param isTimeSet
+	 */
+	private void parseDateTime(String toParse, boolean isTimeSet) {
+		Calendar today = Calendar.getInstance();
+		today.setTime(new Date());
+		List<DateGroup> dateGroup = parse.parse(toParse);
+		for (int i = 0; i < dateGroup.size(); i++) {
+			List<Date> dates = dateGroup.get(i).getDates();
+			for (int j = 0; j < dates.size(); j++) {
+				Calendar cal = convertToCalendar(dates.get(j));
+				if (!isTimeSet) {
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 59);
+				}
+				list.add(cal);
+			}
+		}
+		
+		if (list.size() == 2) {
+			long distance = list.get(0).getTimeInMillis() - list.get(1).getTimeInMillis();
+			if (distance >= DAY_IN_MILLI) {
+				list.remove(1); 
+			} else if (distance > 0) {
+				list.get(1).add(Calendar.DAY_OF_MONTH, 1);
+			}
+		}
+	}
+
+	private String findTime(String seek) {
+		Date time = null;
+		int pattern = -1;
+		for (int i = 0; i < patternsTime.length; i++) {
+			SimpleDateFormat timeParse = new SimpleDateFormat(patternsTime[i]);
+			timeParse.setLenient(false);
+			try {
+				time = timeParse.parse(seek);
+			} catch (ParseException e) {
+				time = null;
+			}
+			if (time != null) {
+				pattern = i;
+				break;
+			}
+		}
+		//pattern that may be interpreted wrongly by natty
+		if (pattern == 1) {
+			seek += 'h';
+		} else if (pattern == -1) {
+			seek = null;
+		}
+		return seek;
+	}
+
+	private String findDate(String seek) {
+		Date date = null;
+		int pattern = -1;
+		for (int i = 0; i < patternsDate.length; i++) {
+			SimpleDateFormat dateParse = new SimpleDateFormat(patternsDate[i]);
+			dateParse.setLenient(false);
+			try {
+				date = dateParse.parse(seek);
+			} catch (ParseException e) {
+				date = null;
+			}
+			if (date != null) {
+				pattern = i;
+				break;
+			}
+		}
+		//patterns natty does not recognize
+		if (pattern <= 5 && pattern >= 3) {
+			String[] flip = seek.split("[/.-]");
+			if (flip.length == 2) {
+				seek = flip[1] + "/" + flip[0];
+			} else if (flip.length == 3) {
+				seek = flip[1]  + "/" + flip[0] + "/" + flip[2];
+			}
+		} else if (pattern == 2) {
+			seek = seek.replace(".", "/");
+		} else if (pattern == -1) {
+			seek = null;
+		}
+		return seek;
+	}
+
+	private Calendar convertToCalendar(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal;
+	}
+}
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DateParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\InputParser.java
+	 */
+
+
+public class InputParser {
+	private static final int USER_INPUT_TO_ARRAYLIST = 1;
+	private static final int TASK_ID_DISPLAY = -1;
+	private static final int TASK_ID_INVALID = -2;
+	private static final int TASK_ID_PARSE_EXCEPTION = -3;
+	
+	private static final String[] deadlineKeyword = new String[] { "by", "on", "at" };
+	private static final String[] timedKeyword = new String[] { "to", "til", "->" };
+	private static final int INVALID_POSITION = -1;
+	
+	private final DateParser _dateParser = new DateParser();
+	private String _userInput;
+	private GroupAction _actions;
+
+	public InputParser() {
+	}
+
+	public InputParser(String userInput) {
+		_userInput = userInput;
+		_actions = processCommand();
+	}
+
+	public void receiveInput(String userInput) {
+		_userInput = userInput;
+		_actions = processCommand();
+	}
+
+	public GroupAction getActions() {
+		return _actions;
+	}
+
+	public void setActions(GroupAction actions) {
+		_actions = actions;
+	}
+
+	private GroupAction processCommand() {
+		String commandType = getCommandTypeString();
+		String parameter = getParameter();
+		switch (commandType) {
+		case "add":
+		case "addt":
+		case "addd":
+			return processAdd(commandType, parameter);
+		case "edit":
+			return processEdit(parameter);
+		case "delete":
+			return processDelete(parameter);
+		case "done":
+			return processDone(parameter);
+		case "undone":
+			return processUndone(parameter);
+		case "undo":
+			return processUndo();
+		case "display":
+		case "filter":
+			return processDisplay(parameter);
+		case "login":
+			return processLogin();
+		case "exit":
+			return processExit();
+		case "clear":
+			return processClear();
+		case "sync":
+			return processSync();
+		case "logout":
+			return processLogout();
+		default:
+			return processInvalid(CommandType.INVALID);
+		}
+	}
+
+	private GroupAction processLogout() {
+		return processWithNoTask(CommandType.LOGOUT);
+	}
+
+	private GroupAction processSync() {
+		return processWithNoTask(CommandType.SYNC);
+	}
+
+	private GroupAction processClear() {
+		return processWithNoTask(CommandType.CLEAR);
+	}
+
+	private GroupAction processExit() {
+		return processWithNoTask(CommandType.EXIT);
+	}
+
+	private GroupAction processLogin() {
+		return processWithNoTask(CommandType.LOGIN);
+	}
+
+	private GroupAction processUndo() {
+		return processWithNoTask(CommandType.UNDO);
+	}
+
+	private GroupAction processUndone(String parameter) {
+		return processByTaskIndex(CommandType.UNDONE, parameter);
+	}
+
+	private GroupAction processDone(String parameter) {
+		return processByTaskIndex(CommandType.DONE, parameter);
+	}
+
+	private GroupAction processDelete(String parameter) {
+		return processByTaskIndex(CommandType.DELETE, parameter);
+	}
+
+	private GroupAction processInvalid(CommandType command) {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		action.setCommandType(Settings.CommandType.INVALID);
+		action.setInvalidCommandType(command);
+		action.setUserInput(_userInput);
+		action.setUndo(null);
+		actions.addAction(action);
+	
+		return actions;
+	}
+
+	private GroupAction processDisplay(String parameter) {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		Task task = new Task();
+		task.setTaskId(TASK_ID_DISPLAY);
+		action.setCommandType(CommandType.DISPLAY);
+
+		if (parameter != null) {
+			task.setDescription(parameter);
+		} else {
+			task.setDescription("");
+		}
+
+		action.setTask(task);
+		action.setUndo(null);
+		actions.addAction(action);
+
+		return actions;
+	}
+
+	private GroupAction processAdd(String command, String parameter) {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		Action negate = new Action();
+
+		if (parameter == null || parameter.equals("")) {
+			return processInvalid(CommandType.ADD);
+		}
+
+		Task toDo = getTaskFromString(parameter);
+		String timeString;
+		List<Calendar> dateList;
+		int taskIndex = LocalStorage.generateId();
+		String description = toDo.getDescription();
+		List<String> categoryList = toDo.getCategories();
+		List<String> contextList = toDo.getContexts();
+
+		switch (command) {
+		case "add":
+			Task floating = new Task(taskIndex, description);
+			toDo = floating;
+			break;
+		case "addd":
+			String[] parameters = getStringToParseDate(parameter, Task.TASK_DEADLINE);
+			timeString = parameters[0];
+
+			dateList = _dateParser.parseDate(timeString);
+			if (dateList == null || dateList.size() != 1) {
+				return processInvalid(CommandType.ADD);
+			}
+			Calendar dueDate = dateList.get(0);
+			if (parameters[1] != null && !parameters[1].equals("")) {
+				String deadline = new SimpleDateFormat("HH:mm dd/MM")
+						.format(dueDate.getTime());
+				description = parameters[1] + " by " + deadline;
+			}
+			Task deadline = new DeadlineTask(taskIndex, description,
+					dueDate);
+			toDo = deadline; 
+			break;
+		case "addt":
+			String[] details = getStringToParseDate(parameter, Task.TASK_TIMED);
+			timeString = details[0];
+
+			dateList = _dateParser.parseDate(timeString);
+			if (dateList == null || dateList.size() != 2) {
+				return processInvalid(CommandType.ADD);
+			}
+			Calendar startTime = dateList.get(0);
+			Calendar endTime = dateList.get(1);
+			
+			if (details[1] != null && !details[1].equals("")) {
+				description = details[1];
+			}
+			Task timed = new TimedTask(taskIndex, description, startTime,
+						endTime);
+			toDo = timed;
+			break;
+		default:
+			actions = processInvalid(CommandType.ADD);
+			return actions;
+		}
+
+		toDo.setCategories(categoryList);
+		toDo.setContexts(contextList);
+
+		action.setCommandType(Settings.CommandType.ADD);
+		action.setTask(toDo);
+		negate.setCommandType(Settings.CommandType.DELETE);
+		negate.setTask(toDo);
+		action.setUndo(negate);
+
+		actions.addAction(action);
+		return actions;
+	}
+
+	private GroupAction processEdit(String parameter) {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		Action negate = new Action();
+	
+		if (parameter == null || parameter.equals("")) {
+			return processInvalid(CommandType.EDIT);
+		}
+	
+		int taskIndex = getId(parameter);
+	
+		List<Task> taskList = FilterTasks.getFilteredList();
+		int normalizedIndex = normalizeId(taskIndex);
+	
+		if (!isIndexInRange(normalizedIndex)) {
+			return processInvalid(CommandType.EDIT);
+		} 
+			
+		Task oldTask = taskList.get(normalizedIndex);
+		String[] parameters = parameter.trim().split("\\s+", 2);
+		if (parameters.length <= 1) {
+			return processInvalid(CommandType.EDIT);
+		}
+				
+		parameter = parameters[1];
+		Task editedTask = getTaskFromString(parameter);
+		editedTask = getEditedTask(oldTask, editedTask);
+		
+		if (editedTask == null) {
+			return processInvalid(CommandType.EDIT);
+		}
+		
+		action.setCommandType(Settings.CommandType.EDIT);
+		action.setTask(editedTask);
+		negate.setCommandType(Settings.CommandType.EDIT);
+		negate.setTask(oldTask);
+		action.setUndo(negate);
+		actions.addAction(action);
+	
+		return actions;
+	}
+
+	private GroupAction processByTaskIndex(CommandType command, String parameter) {
+		GroupAction actions = new GroupAction();
+		CommandType reverse;
+		List<Task> allTasks = FilterTasks.getFilteredList();
+		List<Integer> list;
+		if (parameter == null || parameter.equals("")) {
+			return processInvalid(command);
+		}
+
+		switch (command) {
+		case DONE:
+			reverse = CommandType.UNDONE;
+			break;
+		case UNDONE:
+			reverse = CommandType.DONE;
+			break;
+		case DELETE:
+			reverse = CommandType.ADD;
+			break;
+		default:
+			command = CommandType.INVALID;
+			reverse = CommandType.INVALID;
+		}
+
+		try {
+			list = getTaskIndexFromString(parameter);
+		} catch (NumberFormatException e) {
+			return processInvalid(command);
+		}
+		
+		if (list == null || list.size() == 0) {
+			return processInvalid(command);
+		}
+		
+		if (allTasks == null || allTasks.size() == 0) {
+			return processInvalid(command);
+		} 	
+		
+		for (Integer i : list) {
+			Action action = new Action();
+			action.setCommandType(command);
+			int normalizedIndex = normalizeId(i);
+			if (!isIndexInRange(normalizedIndex)) {
+				return processInvalid(command);
+			}
+			Task task = allTasks.get(normalizedIndex);
+			action.setTask(task);
+
+			Action negate = new Action();
+			negate.setCommandType(reverse);
+			negate.setTask(task);
+
+			action.setUndo(negate);
+			actions.addAction(action);
+		} 
+			
+		return actions;
+	}
+
+	private GroupAction processWithNoTask(CommandType command) {
+		GroupAction actions = new GroupAction();
+		Action action = new Action();
+		action.setCommandType(command);
+		action.setUndo(null);
+		actions.addAction(action);
+		return actions;
+	}
+
+	private Task getEditedTask(Task oldTask, Task editedTask) {
+		String taskType = oldTask.getType(); // Assumes cannot change task type
+		
+		Task newTask = null;
+		switch (taskType) {
+		case Task.TASK_DEADLINE:
+			newTask = editDeadlineTask(oldTask, editedTask);
+			break;
+		case Task.TASK_TIMED:
+			newTask = editTimedTask(oldTask, editedTask);
+			break;
+		case Task.TASK_FLOATING:
+			newTask = editFloatingtask(oldTask, editedTask);
+			break;
+		default:
+			break;
+		}
+
+		if (newTask != null) {
+			newTask = setEditedTask(oldTask, editedTask, newTask);
+		}
+
+		return newTask;
+	}
+
+	/**
+	 * @param oldTask
+	 * @param editedTask
+	 * @return
+	 */
+	private Task editFloatingtask(Task oldTask, Task editedTask) {
+		int taskId = oldTask.getTaskId();
+		String description = editedTask.getDescription();
+		return new Task(taskId, description);
+	}
+
+	/**
+	 * @param oldTask
+	 * @param editedTask
+	 * @param newTask
+	 */
+	private Task setEditedTask(Task oldTask, Task editedTask, Task newTask) {
+		String googleId = oldTask.getGoogleId();
+		String eTag = oldTask.getETag();
+		boolean isDeleted = oldTask.isDeleted();
+		boolean isModified = oldTask.isModified();
+		boolean isDone = oldTask.isDone();
+		List<String> editedCategoryList = editedTask.getCategories();
+		List<String> editedContextList = editedTask.getContexts();
+		newTask.setCategories(editedCategoryList);
+		newTask.setContexts(editedContextList);
+		newTask.setGoogleId(googleId);
+		newTask.setETag(eTag);
+		newTask.setDeleted(isDeleted);
+		newTask.setModified(isModified);
+		newTask.setDone(isDone);
+		return newTask;
+	}
+
+	private DeadlineTask editDeadlineTask(Task oldTask, Task editedTask) {
+		DeadlineTask newTask = null;
+		Calendar dueDate = oldTask.getDate();
+		String editedDescription = editedTask.getDescription();
+		int taskId = oldTask.getTaskId();
+		String[] details = getStringToParseDate(editedDescription, Task.TASK_DEADLINE);
+		String newDesc = details[1];
+		String timeString = details[0];
+		
+		boolean emptyDate = ((timeString == null) || timeString.equals(""));
+		boolean emptyDesc = ((newDesc == null) || newDesc.equals(""));
+		
+		List<Calendar> editedDateList = _dateParser.parseDate(timeString);
+		
+		if (emptyDate && emptyDesc) {
+			return newTask;
+		}
+		
+		if (emptyDate && !emptyDesc) {
+			String wrongType = getStringToParseDate(newDesc, Task.TASK_TIMED)[0];
+			List<Calendar> testWrongType = _dateParser.parseDate(wrongType);
+			if (testWrongType != null && testWrongType.size() != 0) {
+				return newTask;
+			}
+			editedDescription = newDesc;
+		} else if (!emptyDate && emptyDesc) {
+			if (editedDateList == null || editedDateList.size() != 1) {
+				return newTask;
+			}
+			dueDate = editedDateList.get(0);
+			editedDescription = getStringToParseDate(
+						oldTask.getDescription(), Task.TASK_DEADLINE)[1];
+		} else {
+			if (editedDateList != null && editedDateList.size() == 1) {
+				dueDate = editedDateList.get(0);
+				editedDescription = newDesc;
+			} else {
+				return newTask;
+			}
+		}
+		String deadline = new SimpleDateFormat("HH:mm dd/MM")
+			.format(dueDate.getTime());
+		editedDescription += " by " + deadline;
+		newTask = new DeadlineTask(taskId, editedDescription, dueDate);
+		return newTask;
+	}
+	
+	private TimedTask editTimedTask(Task oldTask, Task editedTask) {
+		TimedTask newTask = null;
+		
+		TimedTask timedTask = (TimedTask) oldTask;
+		int taskId = oldTask.getTaskId();
+		Calendar startDate = timedTask.getStartTime();
+		Calendar endDate = timedTask.getEndTime();
+
+		String editedDescription = editedTask.getDescription();
+		
+		String[] details = getStringToParseDate(editedDescription, Task.TASK_TIMED);
+		String newDesc = details[1];
+		String timeString = details[0];
+		
+		boolean emptyDate = ((timeString == null) || timeString.equals(""));
+		boolean emptyDesc = ((newDesc == null) || newDesc.equals(""));
+		
+		List<Calendar> editedDateList = _dateParser.parseDate(timeString);
+		
+		if (emptyDate && emptyDesc) {
+			return newTask;
+		}
+		
+		if (emptyDate && !emptyDesc) {
+			String wrongType = getStringToParseDate(newDesc, Task.TASK_DEADLINE)[0];
+			List<Calendar> testWrongType = _dateParser.parseDate(wrongType);
+			if (testWrongType != null && testWrongType.size() != 0) {
+				return newTask;
+			}
+			editedDescription = newDesc;
+		} else if (!emptyDate && emptyDesc) {
+			if (editedDateList == null || editedDateList.size() != 2) {
+				return newTask;
+			}
+			startDate = editedDateList.get(0);
+			endDate = editedDateList.get(1);
+			editedDescription = getStringToParseDate(
+					oldTask.getDescription(), Task.TASK_TIMED)[1];
+	
+		} else {
+			if (editedDateList != null && editedDateList.size() == 2) {
+				startDate = editedDateList.get(0);
+				endDate = editedDateList.get(1);
+				editedDescription = newDesc;
+			} else {
+				return newTask;
+			}
+		}
+
+		newTask = new TimedTask(taskId, editedDescription, startDate,
+				endDate);
+		return newTask;
+	}
+	
+	public static Task getTaskFromString(String parameter) {
+		Task newTask = new Task();
+		newTask.setDescription(parameter);
+
+		parameter = parameter.trim();
+	
+		List<String> contexts = new ArrayList<String>();
+		List<String> categories = new ArrayList<String>();
+
+		String[] word = parameter.split("\\s+");
+
+		for (int i = 0; i < word.length; i++) {
+			char firstChar = ' ';
+			if (word[i].length() > 0) {
+				firstChar = word[i].charAt(0);
+			}
+
+			if (firstChar == Settings.HASHTAG_CHAR && word[i].length() > 1) {
+				contexts.add(word[i].substring(1));
+			}
+			if (firstChar == Settings.CATEGORY_CHAR && word[i].length() > 1) {
+				categories.add(word[i].substring(1));
+			}
+		}
+		newTask.setCategories(categories);
+		newTask.setContexts(contexts);
+
+		return newTask;
+	}
+
+	private int getId(String parameter) {
+		String id = parameter.trim().split("\\s+")[0];
+		int listId = TASK_ID_INVALID;
+		try {
+			listId = Integer.parseInt(id);
+		} catch (Exception e) {
+			return TASK_ID_PARSE_EXCEPTION;
+		}
+		return listId;
+	}
+
+	private int normalizeId(int id) {
+		int normalizedId = id - USER_INPUT_TO_ARRAYLIST;
+		return normalizedId;
+	}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\InputParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\InputParser.java
+	 */
+
+	private String getCommandTypeString() {
+		return _userInput.trim().split("\\s+")[0].toLowerCase();
+	}
+
+	private String getParameter() {
+		String[] commands = _userInput.trim().split("\\s+", 2);
+		if (commands.length == 2) {
+			return commands[1];
+		} else {
+			return null;
+		}
+	}
+
+	private boolean isIndexInRange(int index) {
+		boolean isInRange = false;
+		List<Task> allTasks = FilterTasks.getFilteredList();
+		if (index >= 0 && index < allTasks.size()) {
+			isInRange = true;
+		}
+		return isInRange;
+	}
+
+	private List<Integer> getTaskIndexFromString(String parameter)
+			throws NumberFormatException {
+		List<Integer> taskIndex = new ArrayList<Integer>();
+	
+		parameter = parameter.replaceAll("\\s+(?=-)", "").replaceAll(
+				"(?<=-)\\s+", "");
+		String[] split = parameter.trim().split("\\s+|,");
+		for (int i = 0; i < split.length; i++) {
+			if (!split[i].equals("") && split[i].contains("-")) {
+				String[] sequence = split[i].split("-");
+	
+				int size = sequence.length;
+				if (size == 2) {
+					int start = Integer.parseInt(sequence[0]);
+					int end = Integer.parseInt(sequence[1]);
+					for (int j = start; j <= end; j++) {
+						taskIndex.add(j);
+					}
+				} else {
+					Integer.parseInt(split[i]);
+				}
+			} else if (!split[i].equals("")) {
+				taskIndex.add(Integer.parseInt(split[i]));
+			}
+	
+		}
+		return taskIndex;
+	}
+
+	private String[] getStringToParseDate(String parameter, String type) {
+		String[] timeAndDesc = new String[2];
+	
+		switch (type) {
+		case Task.TASK_DEADLINE:
+			timeAndDesc = extractDeadline(parameter);
+			break;
+			
+		case Task.TASK_TIMED:
+			timeAndDesc = extractTimed(parameter);
+			break;
+			
+		default:
+			timeAndDesc[0] = "";
+			timeAndDesc[1] = parameter;
+		}
+	
+		timeAndDesc = extractCategoryAndContext(timeAndDesc);
+	
+		return timeAndDesc;
+	}
+
+	/**
+	 * @param timeAndDesc
+	 * @param splitSpaces
+	 */
+	private String[] extractDeadline(String parameter) {
+		String[] timeAndDesc = new String[2];
+		timeAndDesc[0] = "";
+		timeAndDesc[1] = parameter;
+		StringBuilder description = new StringBuilder(parameter.length());
+		
+		String[] splitSpaces = parameter.split("\\s+");
+		String deadline[];
+		
+		int keywordPos[] = new int[deadlineKeyword.length];
+		Arrays.fill(keywordPos, INVALID_POSITION);
+		int lastKey = INVALID_POSITION;
+	
+		for (int i = 0; i < splitSpaces.length; i++) {
+			for (int j = 0; j < deadlineKeyword.length; j++) {
+				if (splitSpaces[i].equals(deadlineKeyword[j])) {
+					keywordPos[j] = i;
+				}
+			}
+		}
+		
+		for (int i = 0; i < deadlineKeyword.length; i++) {
+			if (keywordPos[i] > lastKey) {
+				lastKey = keywordPos[i];
+			}
+		}
+		
+		if (lastKey != INVALID_POSITION) {
+			String key = splitSpaces[lastKey] + " ";
+			deadline = parameter.split(key);
+	
+			timeAndDesc[0] = deadline[deadline.length - 1];
+			for (int i = 0; i < deadline.length - 1; i++) {
+				description.append(deadline[i]);
+				if (i < deadline.length - 2) {
+					description.append(key);
+				}
+			}
+			timeAndDesc[1] = description.toString();
+		} 
+		return timeAndDesc;
+	}
+
+	/**
+	 * @param timeAndDesc
+	 * @param splitSpaces
+	 */
+	private String[] extractTimed(String parameter) {
+		String[] timeAndDesc = new String[2];
+		timeAndDesc[0] = "";
+		timeAndDesc[1] = parameter;
+		String[] splitSpaces = parameter.split("\\s+");
+		StringBuilder time = new StringBuilder(parameter.length());
+		StringBuilder description = new StringBuilder(parameter.length());
+		
+		int fromPos = INVALID_POSITION;
+		int toPos[] = new int[timedKeyword.length];
+		int lastTo = INVALID_POSITION;
+		Arrays.fill(toPos, INVALID_POSITION);
+		
+		for (int i = 0; i < splitSpaces.length; i++) {
+			for (int j = 0; j < timedKeyword.length; j++) {
+				if (splitSpaces[i].equals(timedKeyword[j])) {
+					toPos[j] = i;
+				}
+			}
+		}
+	
+		for (int i = 0; i < timedKeyword.length; i++) {
+			if (toPos[i] > lastTo) {
+				lastTo = toPos[i];
+			}
+		}
+	
+		for (int i = 0; i < lastTo; i++) {
+			if (splitSpaces[i].equals("from")) {
+					fromPos = i;
+			}
+		}
+		
+		if (fromPos != INVALID_POSITION) {
+			timeAndDesc[1] = "";
+			for (int i = 0; i < fromPos; i++) {
+				description.append(splitSpaces[i] + " ");
+			}
+			
+			for (int i = fromPos; i < splitSpaces.length; i++) {
+				if (i != lastTo) {
+					time.append(splitSpaces[i] + " ");
+				} else {
+					time.append(timedKeyword[0] + " ");
+				}
+			}
+			timeAndDesc[0] = time.toString();
+			timeAndDesc[1] = description.toString();
+		} 
+		return timeAndDesc;
+	}
+
+	/**
+	 * @param timeAndDesc
+	 */
+	private String[] extractCategoryAndContext(String[] timeAndDesc) {
+		StringBuilder time = new StringBuilder();
+		StringBuilder description = new StringBuilder(timeAndDesc[1].trim());
+		String[] hashAndAt = new String[0];
+		if (!timeAndDesc[0].equals("")) {
+			hashAndAt = timeAndDesc[0].split("\\s+");
+		}
+
+		for (int i = 0; i < hashAndAt.length; i++) {
+			if (!(hashAndAt[i].contains(Settings.CATEGORY)
+					|| hashAndAt[i].contains(Settings.CONTEXT))) {
+				time.append(hashAndAt[i] + " ");
+			} else {
+				description.append(" " + hashAndAt[i]);
+			}	
+		}
+		timeAndDesc[0] = time.toString();
+		timeAndDesc[1] = description.toString();
+		
+		return timeAndDesc;
+	}
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\InputParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\LocalStorage.java
+	 */
+
+public class LocalStorage implements IStorage {
+	
+	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
+	private static final String XPATH_EXPRESSION_ID = "//task[@TaskId = '%1$s']";
+	private static final String XPATH_EXPRESSION_SPACE = "//text()[normalize-space(.) = '']";
+
+	private File local;
+	private DocumentBuilder docBuilder;
+	private Transformer trans;
+	private Document localStorage;
+	private static int idGenerator;
+
+	public LocalStorage() {
+		localStorageInit();
+	}
+
+	/**
+	 * Initialize all components of LocalStorage
+	 */
+	private void localStorageInit() {
+		setUpXmlWriter();
+		if (local.exists()) {
+			try {
+				setIdGenerator(getLatestId());
+			} catch (SAXException e) { //if file cannot be parsed
+				clearContent(local);
+				restartLocalStorage();
+			} catch (IOException e) {
+				System.err.println(String.format(Messages.ERROR_LOCAL, 
+						"write to file failed"));
+			}
+		} else {
+			restartLocalStorage();
+		} 
+	}
+
+	/**
+	 * 
+	 */
+	private void restartLocalStorage() {
+		addRoot();
+		checkSessionStorage();
+		writeToFile();
+		setIdGenerator(0);
+	}
+
+	private void checkSessionStorage() {
+		if (StorageHandler.isSessionStorageInit() == false) {
+			return;
+		}
+		List<Task> sessionList = StorageHandler.getAllTasks();
+		if (sessionList == null || sessionList.size() == 0) {
+			return;
+		}
+		
+		for (int i = 0; i < sessionList.size(); i++) {
+			this.storeNewTask(sessionList.get(i));
+		}
+	}
+
+	private void clearContent(File file) {
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(file);
+			writer.print("");
+			writer.close();
+		} catch (FileNotFoundException e) {
+			
+		}
+		
+		
+	}
+
+	/**
+	 * @throws ParserConfigurationException
+	 * @throws TransformerConfigurationException
+	 * @throws TransformerFactoryConfigurationError
+	 */
+	private void setUpXmlWriter() {
+		try {
+			local = new File("local.xml");
+			docBuilder = DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder();
+			localStorage = docBuilder.newDocument();
+			trans = TransformerFactory.newInstance().newTransformer();
+			trans.setOutputProperty(OutputKeys.INDENT, "yes");
+		} catch (ParserConfigurationException
+				| TransformerConfigurationException
+				| TransformerFactoryConfigurationError e) {
+			
+		}
+	}
+	
+	/** 
+	 * Test Stub Helper for JUnitStorage
+	 * This method will overwrite the local storage document to a test storage
+	 * When it is called, it will ensure the storage starts from fresh state
+	 */
+    public void setUpJUnitTestXmlWriter() {
+        try {
+            local = new File("localJUnitTest.xml");
+            local.delete();
+            local.createNewFile();
+            docBuilder = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder();
+            localStorage = docBuilder.newDocument();
+            trans = TransformerFactory.newInstance().newTransformer();
+            trans.setOutputProperty(OutputKeys.INDENT, "yes");
+            restartLocalStorageNoSession();
+        } catch (IOException ioException) {
+        } catch (ParserConfigurationException e) {
+        } catch (TransformerConfigurationException e) {
+        } catch (TransformerFactoryConfigurationError e) {
+        }
+    }
+    
+    /**
+     * This stub is created for setUpJUnitTestXmlWriter() method
+     * Normal restart local storage will try to copy all tasks in
+     * SessionStorage into LocalStorage.
+     * This stub is created to perform the same stuff without copying
+     * the SessionStorage into LocalStorage to ensure that we get an 
+     * empty JUnit Test XML Storage.
+     */
+    private void restartLocalStorageNoSession() {
+        addRoot();
+        writeToFile();
+        setIdGenerator(0);
+    }
+	
+
+	/**
+	 * returns latest ID stored as root attribute
+	 * 
+	 * @throws SAXException
+	 * @throws IOException
+	 */
+	private int getLatestId() throws SAXException, IOException {
+		int id;
+		localStorage = docBuilder.parse(local);
+		Node root = getRoot();
+		id = Integer.parseInt(root.getAttributes().getNamedItem("LatestId")
+				.getNodeValue());
+		return id;
+	}
+
+	private void setIdGenerator(int id) {
+		idGenerator = id;
+	}
+
+	/**
+	 * Add the first element in XML file (<Tasks>)
+	 */
+	private void addRoot() {
+		Element rootElement = localStorage.createElement("Tasks");
+		rootElement.setAttribute("LatestId", "1");
+		localStorage.appendChild(rootElement);
+	}
+
+	/**
+	 * Write from DOMSource to text file
+	 */
+	private void writeToFile() {
+		try {
+			localStorage.normalize();
+			DOMSource source = new DOMSource(localStorage);
+			StreamResult file = new StreamResult(local);
+			trans.transform(source, file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * This methods writes new task to XML file
+	 */
+	public synchronized boolean storeNewTask(Task task) {
+		Element root = getRoot();
+
+		if (root == null) {
+			return false;
+		}
+		root.setAttribute("LatestId", String.valueOf(idGenerator));
+		root.appendChild(generateTaskNode(localStorage, task));
+		writeToFile();
+		return true;
+	}
+
+	/**
+	 * @return root element
+	 * @throws SAXException
+	 * @throws IOException
+	 */
+	private Element getRoot() {
+		try {
+			Element root = localStorage.getDocumentElement();
+			return root;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * This method add a task to the XML file, one attribute at a time
+	 * 
+	 * @param doc
+	 * @param taskToAdd
+	 * @return the corresponding node
+	 */
+	private static Node generateTaskNode(Document doc, Task taskToAdd) {
+	    if (doc == null || taskToAdd == null) {
+	        return null;
+	    }
+	    
+		Element node = doc.createElement("task");
+		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
+		node.setAttribute("done", String.valueOf(taskToAdd.isDone()));
+
+		node.appendChild(getElement(doc, "description",
+				taskToAdd.getDescription()));
+
+		node.appendChild(getElement(doc, "googleId", taskToAdd.getGoogleId()));
+		
+		node.appendChild(getElement(doc, "googleETag", taskToAdd.getETag()));
+		
+		node.appendChild(getElement(doc, "isDeleted", taskToAdd.isDeleted()+""));
+		
+		node.appendChild(getElement(doc, "isModified", taskToAdd.isModified()+""));
+
+		List<String> contexts = taskToAdd.getContexts();
+		if (contexts != null && !contexts.isEmpty()) {
+			for (String s : contexts) {
+				node.appendChild(getElement(doc, "contexts", s));
+			}
+		}
+
+		List<String> categories = taskToAdd.getCategories();
+		if (categories != null && !categories.isEmpty()) {
+			for (String s : categories) {
+				node.appendChild(getElement(doc, "categories", s));
+			}
+		}
+
+		if (taskToAdd instanceof TimedTask) {
+			TimedTask timedTask = (TimedTask) taskToAdd;
+			node.appendChild(getElement(doc, "type", "Timed Task"));
+			node.appendChild(getElement(doc, "start", timedTask.getStartTime()
+					.getTime().toString()));
+			node.appendChild(getElement(doc, "end", timedTask.getEndTime()
+					.getTime().toString()));
+		} else if (taskToAdd instanceof DeadlineTask) {
+			node.appendChild(getElement(doc, "deadline", taskToAdd.getDate()
+					.getTime().toString()));
+			node.appendChild(getElement(doc, "type", "Deadline Task"));
+		} else if (taskToAdd.getType().equalsIgnoreCase("floating")) {
+			node.appendChild(getElement(doc, "type", "Floating Task"));
+			if (taskToAdd.isDone()) {
+	            node.appendChild(getElement(doc, "doneDate", 
+	                    taskToAdd.getDate().getTime().toString()));
+			}
+		}
+
+		return node;
+	}
+
+	/**
+	 * This method writes an attribute of task between its enclosing tags
+	 * 
+	 * @param doc
+	 * @param tag
+	 * @param value
+	 * @return the corresponding node
+	 */
+	private static Node getElement(Document doc, String tag, String value) {
+		Element node = doc.createElement(tag);
+		node.appendChild(doc.createTextNode(value));
+		return node;
+	}
+
+	/**
+	 * This method deletes a task from XML file
+	 */
+	public synchronized Task removeTask(Task task) {
+		if (task == null) {
+		    return null;
+		}
+	    Node taskNode = getTaskNode(task.getTaskId());
+		Task taskToReturn = null;
+
+		if (taskNode == null) {
+			return null;
+		} else {
+			taskToReturn = retrieveTaskFromFile(taskNode);
+			taskNode.getParentNode().removeChild(taskNode);
+			removeWhiteSpace();
+			writeToFile();
+		}
+		return taskToReturn;
+	}
+
+	private void removeWhiteSpace() {
+		XPathFactory xPathfactory = XPathFactory.newInstance();
+		XPath xpath = xPathfactory.newXPath();
+		try {
+			NodeList spaces = (NodeList) xpath.compile(XPATH_EXPRESSION_SPACE)
+					.evaluate(localStorage, XPathConstants.NODESET);
+			for (int i = 0; i < spaces.getLength(); i++) {
+				Node space = spaces.item(i);
+				space.getParentNode().removeChild(space);
+			}
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * This methods deletes a task in XML file and write its updated version
+	 * back.
+	 */
+	public synchronized boolean modifyTask(Task T) {
+	    boolean isModified = false;
+		Task toDelete = getTask(T.getTaskId());
+		Task removedTask = removeTask(toDelete);
+		
+		if (removedTask == null) {
+		    isModified = false;
+		} else {
+	        isModified = storeNewTask(T);
+		}
+		return isModified;
+	}
+
+	/**
+	 * This method takes in a number (taskId) and return the corresponding task
+	 * 
+	 * @param taskId
+	 *            (assume taskId to be unique)
+	 * @return task
+	 */
+	public Task getTask(int taskId) {
+	    if (taskId < 0) {
+	        return null;
+	    }
+		Node taskNode = getTaskNode(taskId);
+		if (taskNode == null) {
+			return null;
+		} else {
+		    Task retrievedTask = retrieveTaskFromFile(taskNode);
+			return retrievedTask;
+		}
+
+	}
+
+	/**
+	 * This method takes in taskId and returns the corresponding node
+	 * 
+	 * @param taskId
+	 * @return node
+	 */
+	private Node getTaskNode(int taskId) {
+	    if (taskId < 0) {
+	        return null;
+	    }
+		Node taskNode = null;
+		try {
+			localStorage = docBuilder.parse(local);
+			localStorage.getDocumentElement().normalize();
+
+			XPathFactory xPathfactory = XPathFactory.newInstance();
+			XPath xpath = xPathfactory.newXPath();
+			String expression = String.format(XPATH_EXPRESSION_ID,
+					String.valueOf(taskId));
+			taskNode = (Node) xpath.compile(expression).evaluate(localStorage,
+					XPathConstants.NODE);
+			if (taskNode == null) {
+				return null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return taskNode;
+	}
+
+	/**
+	 * This method returns a list of tasks stored in XML file
+	 */
+	public synchronized List<Task> getAllTasks() {
+		List<Task> tasks = new ArrayList<Task>();
+		try {
+			localStorage = docBuilder.parse(local);
+			localStorage.getDocumentElement().normalize();
+
+			NodeList taskNodes = localStorage.getElementsByTagName("task");
+			for (int i = 0; i < taskNodes.getLength(); i++) {
+				tasks.add(retrieveTaskFromFile(taskNodes.item(i)));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return tasks;
+	}
+
+	/**
+	 * This method takes in a node and return the corresponding task
+	 * 
+	 * @param node
+	 * @return task
+	 */
+	private Task retrieveTaskFromFile(Node node) {
+		Task task = null;
+		int taskId = -1;
+		if (node.getNodeType() == Node.ELEMENT_NODE) {
+			Element item = (Element) node;
+			try {
+				taskId = Integer.parseInt(item.getAttribute("TaskId"));
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}	
+			
+			if (taskId < 0) {
+				return null;
+			}
+				
+			String typeTask = getValues("type", item).get(0);
+			String description = getValues("description", item).get(0);
+			String googleId = getValues("googleId", item).get(0);
+			String googleETag = getValues("googleETag", item).get(0);
+			String taskStatus = item.getAttribute("done");
+            String deleted = getValues("isDeleted", item).get(0);
+            String modified = getValues("isModified", item).get(0);
+                
+            boolean isDone = false;
+            boolean isDeleted = false;
+            boolean isModified = false;
+                
+            if (taskStatus != null) {
+                if (taskStatus.equals("true")) {
+                   isDone = true;
+                } else {
+                   isDone = false;
+                }
+            }
+                
+            if (deleted != null) {
+                if (deleted.equals("true")) {
+                    isDeleted = true;
+                } else {
+                    isDeleted = false;
+                }
+            }
+                
+            if (modified != null) {
+                 if (modified.equals("true")) {
+                    isModified = true;
+                 } else {
+                    isModified = false;
+                }
+            }
+                
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(
+						DATE_FORMAT);
+
+			if (typeTask.equalsIgnoreCase("Deadline Task")) {
+				Calendar dueDate = Calendar.getInstance();
+				Date deadline;
+				try {
+					deadline = dateFormatter.parse(getValues("deadline",item).get(0));
+				} catch (ParseException e) {
+					return null;
+				}
+				dueDate.setTime(deadline);
+				task = new DeadlineTask(taskId, description, dueDate);
+			} else if (typeTask.equalsIgnoreCase("Timed Task")) {
+				try {
+					Calendar startTime = Calendar.getInstance();
+					startTime.setTime(dateFormatter.parse(getValues("start",
+								item).get(0)));
+					Calendar endTime = Calendar.getInstance();
+					endTime.setTime(dateFormatter.parse(getValues("end", item)
+								.get(0)));
+					task = new TimedTask(taskId, description, startTime,
+								endTime);
+				} catch (ParseException e) {
+					return null;
+				}
+			} else {
+				task = new Task(taskId, description);
+				if (isDone) {
+					Calendar doneDate = Calendar.getInstance();
+					String storedDateString = getValues("doneDate",
+					            item).get(0);
+					if (storedDateString != null) {
+					   try { 
+					        Date storedDate = dateFormatter.parse(
+					                storedDateString);
+					        doneDate.setTime(storedDate);
+					   } catch (ParseException parseException) {
+					            //do nothing, just use today's date above.
+					            //support for older versions.
+					    }
+					}
+					task.setDate(doneDate);
+				}
+			}
+
+			task.setContexts(getValues("contexts", item));
+			task.setCategories(getValues("categories", item));
+			task.setGoogleId(googleId);
+			task.setETag(googleETag);
+			task.setDeleted(isDeleted);
+			task.setModified(isModified);
+			task.setDone(isDone);
+
+		}
+		return task;
+	}
+
+	/**
+	 * This method helps reconstruct Task object by returning an ArrayList of
+	 * values in tags
+	 * 
+	 * @param tag
+	 * @param item
+	 * @return ArrayList<String>
+	 */
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\LocalStorage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\LocalStorage.java
+	 */
+
+	private static List<String> getValues(String tag, Element item) {
+		List<String> contents = new ArrayList<String>();
+		NodeList nodes = item.getElementsByTagName(tag);
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = (Node) nodes.item(i);
+			contents.add(node.getTextContent());
+		}
+		return contents;
+	}
+
+	public void addGoogleId(int taskId, String googleId) {
+		Node node = getTaskNode(taskId);
+		node.appendChild(getElement(localStorage, "googleId", googleId));
+		writeToFile();
+	}
+
+	public void close() {
+
+	}
+
+	public static int generateId() {
+		idGenerator++;
+		return idGenerator;
+	}
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\LocalStorage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitDateParserAtd.java
+	 */
+
+public class JUnitDateParserAtd {
+	/*
+	 * recognized format: 
+	 * Formal date: dd/mm dd-mm dd.mm mm/dd mm-dd mm.dd
+	 * (dd/mm format takes precedence over mm/dd) 
+	 * Relaxed month: dd-MMM, MMM
+	 * Specific time: HH:mm, HHmm, HHmm'h', HHmm'hr', hh:mm am/pm, h am/pm,
+	 * hh'a', hh'p' 
+	 * Relaxed day of week: Mon, Tue, Wed, Thurs, Thur, Fri, Sat, Sun 
+	 * Relative date: now, today, tomorrow, 
+	 * (next/this/last) week, month, day, hour, hrs, minute, min
+	 */
+	DateParser parser = new DateParser();
+
+	@Test
+	public void testFormalDate() {
+
+		Calendar today = Calendar.getInstance();
+		List<Calendar> cals;
+		int year = today.get(Calendar.YEAR);
+
+		cals = parser.parseDate("23/10");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+
+		cals = parser.parseDate("by 23-10-15");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2015, 9, 23, 23, 59);
+
+		cals = parser.parseDate("by 23.10");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+
+		cals = parser.parseDate("by 10.23.13");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2013, 9, 23, 23, 59);
+
+		cals = parser.parseDate("by 10-23");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+
+		cals = parser.parseDate("by 10/23");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+
+		cals = parser.parseDate("by 11.3");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 2, 11, 23, 59);
+
+		cals = parser.parseDate("from 23/10 to 25/11");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+		validateDateTime(cals.get(1), year, 10, 25, 23, 59);
+
+		cals = parser.parseDate("from 23.10 to 11.25");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+		validateDateTime(cals.get(1), year, 10, 25, 23, 59);
+
+		cals = parser.parseDate("from 23.10 to 25.01.15");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+		validateDateTime(cals.get(1), 2015, 0, 25, 23, 59);
+
+		cals = parser.parseDate("from 10-23 to 01.25.15");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+		validateDateTime(cals.get(1), 2015, 0, 25, 23, 59);
+
+		cals = parser.parseDate("from 25.01.15 to 10/23/15");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2015, 0, 25, 23, 59);
+		validateDateTime(cals.get(1), 2015, 9, 23, 23, 59);
+
+	}
+
+	@Test
+	public void testRelaxedMonth() {
+
+		Calendar today = Calendar.getInstance();
+		List<Calendar> cals;
+		int year = today.get(Calendar.YEAR);
+
+		cals = parser.parseDate("by dec");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 11, 1, 23, 59);
+
+		cals = parser.parseDate("23-nov");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 10, 23, 23, 59);
+
+		cals = parser.parseDate("by 1-dec-2015");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2015, 11, 1, 23, 59);
+
+		cals = parser.parseDate("by jan 1st");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 0, 1, 23, 59);
+
+		cals = parser.parseDate("from 23 oct to 11.25");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+		validateDateTime(cals.get(1), year, 10, 25, 23, 59);
+
+		cals = parser.parseDate("from 23 oct to 25 nov");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 9, 23, 23, 59);
+		validateDateTime(cals.get(1), year, 10, 25, 23, 59);
+
+		cals = parser.parseDate("from nov 23rd to nov 25");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 10, 23, 23, 59);
+		validateDateTime(cals.get(1), year, 10, 25, 23, 59);
+
+	}
+
+	@Test
+	public void testTime() {
+		Calendar today = Calendar.getInstance();
+		List<Calendar> cals;
+		int year = today.get(Calendar.YEAR);
+		int month = today.get(Calendar.MONTH);
+		int date = today.get(Calendar.DAY_OF_MONTH);
+	
+		cals = parser.parseDate("by 8a");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 8, 0);
+	
+		cals = parser.parseDate("by 12p");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 12, 0);
+	
+		cals = parser.parseDate("by 06:30");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 6, 30);
+	
+		cals = parser.parseDate("by 0630hr");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 6, 30);
+	
+		cals = parser.parseDate("by 0630h");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 6, 30);
+	
+		cals = parser.parseDate("by 0630");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 6, 30);
+	
+		cals = parser.parseDate("by 0630pm");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 18, 30);
+	
+		cals = parser.parseDate("by 0630am");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 6, 30);
+	
+		cals = parser.parseDate("by 0630 am");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 6, 30);
+	
+		cals = parser.parseDate("by 6 pm");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 18, 0);
+	
+		cals = parser.parseDate("by 6am");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, month, date, 6, 0);
+	
+		cals = parser.parseDate("from 6p to 8p");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, month, date, 18, 0);
+		validateDateTime(cals.get(1), year, month, date, 20, 0);
+	
+		cals = parser.parseDate("from 6p to 0630");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, month, date, 18, 0);
+		validateDateTime(cals.get(1), year, month, date+1, 6, 30);
+	
+		cals = parser.parseDate("from 0600 to 0800");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, month, date, 6, 0);
+		validateDateTime(cals.get(1), year, month, date, 8, 0);
+	}
+	
+	public void testDateTime() {
+		Calendar today = Calendar.getInstance();
+		int year = today.get(Calendar.YEAR);
+		List<Calendar> cals;
+		
+		cals = parser.parseDate("by 5pm 09.11");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 10, 9, 17, 0);
+		
+		cals = parser.parseDate("by 23/10 0600");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 9, 23, 6, 0);
+		
+		cals = parser.parseDate("by 01.01.15 12:00");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2015, 0, 1, 12, 0);
+		
+		cals = parser.parseDate("at 2300hr 01 nov ");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), year, 10, 1, 23, 0);
+		
+		cals = parser.parseDate("on 1530 23.12.15");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2015, 11, 23, 15, 30);
+		
+		cals = parser.parseDate("from 1530 to 1730 01 nov");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 10, 1, 15, 30);
+		validateDateTime(cals.get(1), year, 10, 1, 17, 30);
+		
+		cals = parser.parseDate("from 01 nov 1530 to 1730 03 nov");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 10, 1, 15, 30);
+		validateDateTime(cals.get(1), year, 10, 3, 17, 30);
+		
+		cals = parser.parseDate("from 1530 12/26 to 1730 01 nov");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), year, 11, 26, 15, 30);
+		validateDateTime(cals.get(1), year, 10, 1, 17, 30);
+	}
+	
+	//test relative date from this point onward. 
+	//Base date 4/11/2014, 10am.
+	@Test
+	public void testDayOfWeek() {
+		Calendar today = Calendar.getInstance();
+		List<Calendar> cals;
+		today.set(2014, 10, 4, 10, 0, 0);
+		CalendarSource.setBaseDate(today.getTime());
+		
+		cals = parser.parseDate("by Mon");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 10, 10, 23, 59);
+		
+		cals = parser.parseDate("by next Tues");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 10, 11, 23, 59);
+		
+		cals = parser.parseDate("by this Thur");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 10, 6, 23, 59);
+		
+		cals = parser.parseDate("from last wed to next fri");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2014, 9, 29, 23, 59);
+		validateDateTime(cals.get(1), 2014, 10, 14, 23, 59);
+		
+		cals = parser.parseDate("from tomorrow to wed");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2014, 10, 5, 23, 59);
+		validateDateTime(cals.get(1), 2014, 10, 5, 23, 59);
+	}
+
+	@Test
+	public void testDateRelative() {
+		List<Calendar> cals;
+		Calendar today = Calendar.getInstance();
+		today.set(2014, 10, 4, 10, 0, 0);
+		CalendarSource.setBaseDate(today.getTime());
+		
+		cals = parser.parseDate("by today");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 10, 4, 23, 59);
+		
+		cals = parser.parseDate("from today to tomorrow");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2014, 10, 4, 23, 59);
+		validateDateTime(cals.get(1), 2014, 10, 5, 23, 59);
+		
+		cals = parser.parseDate("by two days from now");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 10, 6, 23, 59);
+		
+		cals = parser.parseDate("by one week from now");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 10, 11, 23, 59);
+		
+		cals = parser.parseDate("by one month from now");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 11, 4, 23, 59);
+		
+		cals = parser.parseDate("by three months from 30/11");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2015, 1, 28, 23, 59);
+		
+		cals = parser.parseDate("on the next hour");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 10, 4, 11, 0);
+		
+		cals = parser.parseDate("at thirty mins from now");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 10, 4, 10, 30);
+		
+		cals = parser.parseDate("from thirty mins to 6 hrs from now");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2014, 10, 4, 10, 30);
+		validateDateTime(cals.get(1), 2014, 10, 4, 16, 30);
+	}
+	
+	@Test
+	public void testDateTimeRelative() {
+		List<Calendar> cals;
+
+		cals = parser.parseDate("from today 5pm to 6pm");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2014, 10, 4, 17, 0);
+		validateDateTime(cals.get(1), 2014, 10, 4, 18, 0);
+
+		cals = parser.parseDate("by 12p tomorrow");
+		assertEquals(cals.size(), 1);
+		validateDateTime(cals.get(0), 2014, 10, 5, 12, 0);
+		
+		cals = parser.parseDate("from 2p to 5p next month");
+		assertEquals(cals.size(), 2);
+		validateDateTime(cals.get(0), 2014, 11, 4, 14, 0);
+		validateDateTime(cals.get(1), 2014, 11, 4, 17, 0);
+	}
+
+	@Test
+	public void testInvalidDate() {
+		List<Calendar> cals;
+		cals = parser.parseDate("32/11");
+		assertEquals(cals.size(), 0);
+
+		cals = parser.parseDate("2.29.15");
+		assertEquals(cals.size(), 0);
+	}
+
+	// code reused from natty
+	private void validateDateTime(Calendar cal, int year, int month, int date,
+			int hour, int minute) {
+		assertEquals(year, cal.get(Calendar.YEAR));
+		assertEquals(month, cal.get(Calendar.MONTH));
+		assertEquals(date, cal.get(Calendar.DAY_OF_MONTH));
+		assertEquals(hour, cal.get(Calendar.HOUR_OF_DAY));
+		assertEquals(minute, cal.get(Calendar.MINUTE));
+	}
+
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitDateParserAtd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitInputParserAtd.java
+	 */
+
+public class JUnitInputParserAtd {
+
+	InputParser parser = new InputParser();
+
+	@Test
+	// Partition: floating task with categories and contexts
+	public void testAddFloating() {
+		List<String> contexts = new ArrayList<String>();
+		List<String> categories = new ArrayList<String>();
+		List<String> empty = new ArrayList<String>();
+		Task task;
+		GroupAction group;
+
+		parser.receiveInput("add task 1 @2103 @2101 #homework");
+		contexts.add("homework");
+		categories.add("2103");
+		categories.add("2101");
+		task = templateTaskFloating("task 1 @2103 @2101 #homework", categories,
+				contexts);
+
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("add @2103 @2101 #homework");
+		task = templateTaskFloating("@2103 @2101 #homework", categories,
+				contexts);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("add @2103 @2101");
+		task = templateTaskFloating("@2103 @2101", categories, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("add watch edge of tomorrow");
+		task = templateTaskFloating("watch edge of tomorrow", empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+	}
+
+	@Test
+	public void testAddInvalid() {
+		parser.receiveInput("add");
+		GroupAction group = templateGroupInvalid("add",
+				Settings.CommandType.ADD);
+
+		compareGroup(group, parser.getActions());
+	}
+
+	@Test
+	// Partition: deadline task, no categories/contexts, relative date
+	public void testAddDeadline() {
+		List<String> contexts = new ArrayList<String>();
+		List<String> categories = new ArrayList<String>();
+		List<String> empty = new ArrayList<String>();
+		DeadlineTask task;
+		GroupAction group;
+		Calendar deadline = Calendar.getInstance();
+		deadline.set(2014, 10, 4, 10, 0);
+		CalendarSource.setBaseDate(deadline.getTime());
+
+		parser.receiveInput("addd finish this by today");
+		deadline.set(Calendar.HOUR_OF_DAY, 23);
+		deadline.set(Calendar.MINUTE, 59);
+		task = templateTaskDeadline("finish this by 23:59 04/11", deadline,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addd finish this on today");
+		task = templateTaskDeadline("finish this by 23:59 04/11", deadline,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addd finish this at today 11pm");
+		deadline.set(Calendar.HOUR_OF_DAY, 23);
+		deadline.set(Calendar.MINUTE, 00);
+		task = templateTaskDeadline("finish this by 23:00 04/11", deadline,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addd v0.2 by next week @2103 #homework");
+		deadline.set(2014, 10, 11, 23, 59);
+		categories.add("2103");
+		contexts.add("homework");
+		task = templateTaskDeadline("v0.2 @2103 #homework by 23:59 11/11", deadline,
+				categories, contexts);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addd watch goodbye tomorrow on 23 oct");
+		deadline.set(2014, 9, 23, 23, 59);
+		task = templateTaskDeadline("watch goodbye tomorrow by 23:59 23/10",
+				deadline, empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addd finish this at school tomorrow by today");
+		deadline.set(2014, 10, 4, 23, 59);
+		task = templateTaskDeadline(
+				"finish this at school tomorrow by 23:59 04/11", deadline,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+	}
+
+	@Test
+	// Partition: timed task, no categories/contexts, absolute date mm/dd
+	// representation
+	public void testAddTimed() {
+		List<String> contexts = new ArrayList<String>();
+		List<String> categories = new ArrayList<String>();
+		List<String> empty = new ArrayList<String>();
+		TimedTask task;
+		GroupAction group;
+		Calendar start = Calendar.getInstance();
+		Calendar end = Calendar.getInstance();
+		start.set(2014, 10, 4, 10, 0);
+		CalendarSource.setBaseDate(start.getTime());
+
+		parser.receiveInput("addt from 2pm to 4pm 23/10");
+		start.set(2014, 9, 23, 14, 00);
+		end.set(2014, 9, 23, 16, 00);
+
+		task = templateTaskTimed("from 2pm to 4pm 23/10", start, end, empty,
+				empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+
+		parser.receiveInput("addt attend talk from code to product "
+				+ "from 3pm til 5pm @2103 @3204 01 nov");
+		start.set(2014, 10, 1, 15, 00);
+		end.set(2014, 10, 1, 17, 00);
+		categories.add("2103");
+		categories.add("3204");
+		task = templateTaskTimed(
+				"attend talk from code to product @2103 @3204", start, end,
+				categories, contexts);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+		
+		parser.receiveInput("addt attend talk from code to product "
+				+ "from 3pm -> 5pm today");
+		start.set(2014, 10, 4, 15, 00);
+		end.set(2014, 10, 4, 17, 00);
+		task = templateTaskTimed(
+				"attend talk from code to product", start, end,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+		
+		parser.receiveInput("addt attend talk from code to product "
+				+ "from 11pm -> 1am");
+		start.set(2014, 10, 4, 23, 00);
+		end.set(2014, 10, 5, 1, 00);
+		task = templateTaskTimed(
+				"attend talk from code to product", start, end,
+				empty, empty);
+		group = templateGroupAdd(task);
+		compareGroup(group, parser.getActions());
+	}
+
+
+	/**
+	 * @param task
+	 * @return
+	 */
+	private GroupAction templateGroupAdd(Task task) {
+		Action toAdd = new Action(Settings.CommandType.ADD, task);
+		Action negate = new Action(Settings.CommandType.DELETE, task);
+		toAdd.setUndo(negate);
+
+		GroupAction group = new GroupAction();
+		group.addAction(toAdd);
+		return group;
+	}
+
+	private GroupAction templateGroupInvalid(String input,
+			Settings.CommandType command) {
+		Action invalid = new Action(Settings.CommandType.INVALID);
+		invalid.setUndo(null);
+		invalid.setInvalidCommandType(command);
+		invalid.setUserInput(input);
+
+		GroupAction group = new GroupAction();
+		group.addAction(invalid);
+		return group;
+	}
+
+	private DeadlineTask templateTaskDeadline(String desc, Calendar deadline,
+			List<String> categories, List<String> contexts) {
+		DeadlineTask task = new DeadlineTask(0, desc, deadline);
+
+		task.setCategories(categories);
+		task.setContexts(contexts);
+
+		return task;
+	}
+
+	/**
+	 * @return
+	 */
+	private Task templateTaskFloating(String desc, List<String> categories,
+			List<String> contexts) {
+		Task task = new Task(0, desc);
+
+		task.setCategories(categories);
+		task.setContexts(contexts);
+
+		return task;
+	}
+
+	private TimedTask templateTaskTimed(String desc, Calendar start,
+			Calendar end, List<String> categories, List<String> contexts) {
+		TimedTask task = new TimedTask(0, desc, start, end);
+
+		task.setCategories(categories);
+		task.setContexts(contexts);
+
+		return task;
+	}
+
+	private void compareGroup(GroupAction result, GroupAction expected) {
+		assertEquals(result.getActionList().size(), expected.getActionList()
+				.size());
+
+		int size = result.getActionList().size();
+		for (int i = 0; i < size; i++) {
+			compareAction(result.getActionList().get(i), expected
+					.getActionList().get(i));
+		}
+	}
+
+	private void compareAction(Action result, Action expected) {
+		if (expected == null) {
+			assertNull(result);
+		} else {
+			assertEquals(result.getCommandType(), expected.getCommandType());
+			compareTask(result.getTask(), expected.getTask());
+			if (result.undo() == null) {
+				assertEquals(expected.undo(), null);
+			} else if (expected.undo() == null) {
+				assertTrue(false);
+			} else {
+				assertEquals(result.undo().getCommandType(), expected.undo()
+						.getCommandType());
+				compareTask(result.undo().getTask(), expected.undo().getTask());
+			}
+		}
+	}
+
+	// ignore task Id
+	private void compareTask(Task result, Task expected) {
+		if (expected == null) {
+			assertNull(result);
+		} else {
+			assertEquals(result.getType(), expected.getType());
+			switch (result.getType()) {
+			case Task.TASK_DEADLINE:
+				compareTime(result.getDate(), expected.getDate());
+				break;
+			case Task.TASK_TIMED:
+				compareTime(result.getDate(), expected.getDate());
+				compareTime(((TimedTask) result).getEndTime(),
+						((TimedTask) expected).getEndTime());
+			default:
+			}
+			assertEquals(result.getDescription(), expected.getDescription());
+			assertEquals(result.getContexts(), expected.getContexts());
+			assertEquals(result.getCategories(), expected.getCategories());
+
+		}
+
+	}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitInputParserAtd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitInputParserAtd.java
+	 */
+
+	private void compareTime(Calendar result, Calendar expected) {
+		if (expected == null) {
+			assertNull(result);
+		} else {
+			assertEquals(result.get(Calendar.YEAR), expected.get(Calendar.YEAR));
+			assertEquals(result.get(Calendar.MONTH),
+					expected.get(Calendar.MONTH));
+			assertEquals(result.get(Calendar.DAY_OF_MONTH),
+					expected.get(Calendar.DAY_OF_MONTH));
+			assertEquals(result.get(Calendar.HOUR_OF_DAY),
+					expected.get(Calendar.HOUR_OF_DAY));
+			assertEquals(result.get(Calendar.MINUTE),
+					expected.get(Calendar.MINUTE));
+		}
+	}
+
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitInputParserAtd.java
+
+
+
+
+
