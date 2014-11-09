@@ -72,7 +72,7 @@ public class JUnitLogicAtd {
         // edit task 1 change desc to dad
         _logic.retrieveInputFromUI("edit 1 eating with dad from 12a to 12p 08/11");
         assertEquals(FilterTasks.getFilteredList().get(0).getDescription(),
-                "eating with dad from 12a to 12p 08/11");
+                "eating with dad");
         
         // Delete out of range tasks
         // This action will not be execute as it delete tasks that are out of range
