@@ -7,11 +7,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import chirptask.common.Settings.CommandType;
+
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
 /**
- * Acknowledgment: this code uses natty 0.9 (author joestelmach)
+ * Acknowledgment: this code uses some methods from 
+ * natty 0.9 (author joestelmach)
  */
 //@author A0113022
 public class DateParser {
@@ -25,7 +28,8 @@ public class DateParser {
 	private final static String relativeKey = "next|last|this";
 	private final static String relativeKeyDate = "now|today|tomorrow|week|month|day|yesterday|weeks|months|days";
 	private final static String relativeKeyTime = "am|pm|hour|hours|hrs|min|minute|mins|minutes";
-
+	private final static long DAY_IN_MILLI = 24*60*60*1000;
+	
 	public DateParser() {
 		parse = new Parser();
 	}
@@ -101,6 +105,15 @@ public class DateParser {
 					cal.set(Calendar.MINUTE, 59);
 				}
 				list.add(cal);
+			}
+		}
+		
+		if (list.size() == 2) {
+			long distance = list.get(0).getTimeInMillis() - list.get(1).getTimeInMillis();
+			if (distance >= DAY_IN_MILLI) {
+				list.remove(1);
+			} else if (distance > 0) {
+				list.get(1).add(Calendar.DAY_OF_MONTH, 1);
 			}
 		}
 	}

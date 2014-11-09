@@ -187,7 +187,7 @@ public class JUnitDateParserAtd {
 		cals = parser.parseDate("from 6p to 0630");
 		assertEquals(cals.size(), 2);
 		validateDateTime(cals.get(0), year, month, date, 18, 0);
-		validateDateTime(cals.get(1), year, month, date, 6, 30);
+		validateDateTime(cals.get(1), year, month, date+1, 6, 30);
 	
 		cals = parser.parseDate("from 0600 to 0800");
 		assertEquals(cals.size(), 2);
