@@ -39,7 +39,8 @@ public class Messages {
 
     public static final String LABEL_FILTER = "Filter: ";
     public static final String LABEL_USERINPUT = "Input: ";
-
+    public static final String LABEL_CATEGORIES = "Categories (@)";
+    public static final String LABEL_HASHTAGS = "Hashtags (#)";
     public static final String STATUS_ERROR = "Error: %1$s";
     public static final String STATUS_NORMAL = "Status: %1$s";
 
