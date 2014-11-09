@@ -20,7 +20,6 @@ import chirptask.storage.TimedTask;
 public class JUnitLogicAtd {
 
     @Test
-    // Before testing u should back up your xml and create a fresh copy
     public void commandtest() {
         // Integration testing with UI and storage
         MainGui2 _mainGui = new MainGui2();
