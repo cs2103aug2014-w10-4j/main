@@ -23,7 +23,7 @@ public class StorageHandler {
         initStorages();
     }
 
-    //@author A0111840W
+    // @author A0111840W
     private void initStorages() {
         addSessionStorage();
         addLocalStorage();
@@ -38,7 +38,7 @@ public class StorageHandler {
         boolean isInit = false;
         if (!isGoogleStorageInit()) {
             addGoogleStorage();
-            
+
             if (isGStorageValid()) {
                 GoogleStorage gStore = (GoogleStorage) googleStorage;
                 isInit = gStore.login();
@@ -48,7 +48,7 @@ public class StorageHandler {
         }
         return isInit;
     }
-    
+
     private static boolean isGStorageValid() {
         boolean isValid = false;
         if (isGoogleStorageInit()) {
@@ -60,7 +60,7 @@ public class StorageHandler {
         }
         return isValid;
     }
-    
+
     private static void addSessionStorage() {
         if (!isSessionStorageInit()) {
             sessionStorage = new SessionStorage();
@@ -110,7 +110,7 @@ public class StorageHandler {
         if (allTasks == null) {
             return;
         }
-        
+
         try {
             SessionStorage sStorage = (SessionStorage) sessionStorage;
             sStorage.setTaskList(allTasks);
@@ -120,7 +120,13 @@ public class StorageHandler {
         }
     }
 
-    //@author A0111889W
+    // @author A0111889W
+    /**
+     * method for other components to log custom error messages. This is to
+     * reduce coupling with EventLogger class
+     * 
+     * @param error
+     */
     public synchronized static void logError(String error) {
         if (error == null) {
             return;
@@ -128,51 +134,54 @@ public class StorageHandler {
         EventLogger.getInstance().logError(error);
     }
 
-    //@author A0111889W
+    // @author A0111889W
+    /**
+     * Close all storages. Run this before application closes.
+     */
     public void closeStorages() {
         for (IStorage individualStorage : _listOfStorages) {
             individualStorage.close();
         }
     }
 
-    //@author A0111889W
+    // @author A0111889W
     public synchronized boolean modifyTask(Task modifiedTask) {
         if (modifiedTask == null) {
             return false;
         }
-        
+
         boolean isModified = false;
         
         for (IStorage individualStorage : _listOfStorages) {
             individualStorage.modifyTask(modifiedTask);
         }
-        
+
         isModified = true;
         return isModified;
     }
 
-    //@author A0111889W
+    // @author A0111889W
     public synchronized boolean addTask(Task addedTask) {
         if (addedTask == null) {
             return false;
         }
-        
+
         boolean isAdded = false;
 
         for (IStorage individualStorage : _listOfStorages) {
             individualStorage.storeNewTask(addedTask);
         }
-        
+
         isAdded = true;
         return isAdded;
     }
 
-    //@author A0111889W
+    // @author A0111889W
     public synchronized Task deleteTask(Task deletedTask) {
         if (deletedTask == null) {
             return null;
         }
-        
+
         boolean isDeleted = false;
 
         if ("".equals(deletedTask.getGoogleId())) {
@@ -180,7 +189,7 @@ public class StorageHandler {
                 individualStorage.removeTask(deletedTask);
             }
         } else {
-            if (isStorageInit()) { //All storages init including Google
+            if (isStorageInit()) { // All storages init including Google
                 for (IStorage individualStorage : _listOfStorages) {
                     individualStorage.removeTask(deletedTask);
                 }
@@ -199,7 +208,7 @@ public class StorageHandler {
         }
     }
 
-    //@author A0111840W
+    // @author A0111840W
     private boolean readAutoLoginSettings() {
         boolean isAutoLogin = false;
         if (Settings.class != null) {
@@ -207,49 +216,49 @@ public class StorageHandler {
         }
         return isAutoLogin;
     }
-    
+
     static void resetGoogleIdAndEtag(GoogleService googleService) {
         if (googleService != null) {
             switch (googleService) {
-            case GOOGLE_CALENDAR :
-                resetCalendarItems();
-                break;
-            case GOOGLE_TASKS :
-                resetTasksItems();
-                break;
-            default :
-                break;
+                case GOOGLE_CALENDAR :
+                    resetCalendarItems();
+                    break;
+                case GOOGLE_TASKS :
+                    resetTasksItems();
+                    break;
+                default:
+                    break;
             }
         }
     }
-    
+
     static void resetCalendarItems() {
         List<Task> allLocalTasks = getAllTasks();
         for (int i = 0; i < allLocalTasks.size(); i++) {
             Task currentTask = allLocalTasks.get(i);
             String taskType = currentTask.getType();
-            
+
             if (Task.TASK_TIMED.equals(taskType)) {
                 resetGoogleProps(currentTask);
             }
         }
     }
-    
+
     static void resetGoogleProps(Task taskToReset) {
         if (taskToReset != null) {
             taskToReset.setGoogleId("");
             taskToReset.setETag("");
         }
     }
-    
+
     static void resetTasksItems() {
         List<Task> allLocalTasks = getAllTasks();
         for (int i = 0; i < allLocalTasks.size(); i++) {
             Task currentTask = allLocalTasks.get(i);
             String taskType = currentTask.getType();
-            
-            if (Task.TASK_DEADLINE.equals(taskType) || 
-                    Task.TASK_FLOATING.equals(taskType)) {
+
+            if (Task.TASK_DEADLINE.equals(taskType)
+                    || Task.TASK_FLOATING.equals(taskType)) {
                 resetGoogleProps(currentTask);
             }
         }
@@ -257,7 +266,7 @@ public class StorageHandler {
 
     public boolean logout() {
         boolean isRanLogout = false;
-        
+
         if (isGoogleStorageInit()) {
             removeCloudStorage();
             GoogleController.setOnlineStatus(Status.OFFLINE);
@@ -265,7 +274,7 @@ public class StorageHandler {
         }
         return isRanLogout;
     }
-    
+
     public void removeCloudStorage() {
         if (isGStorageValid()) {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
@@ -286,7 +295,7 @@ public class StorageHandler {
                     isSyncRunned = gStorage.sync(allTasks);
                 }
             }
-        } else if (isLocalChirpStorageInit()){
+        } else if (isLocalChirpStorageInit()) {
             if (!isGoogleStorageInit()) {
                 isSyncRunned = initCloudStorage();
             }
@@ -299,7 +308,7 @@ public class StorageHandler {
         if (modifiedTask == null) {
             return;
         }
-        
+
         if (isStorageInit()) {
             if ("".equals(modifiedTask.getGoogleId())) {
                 for (IStorage individualStorage : _listOfStorages) {
@@ -311,14 +320,14 @@ public class StorageHandler {
             Logic.refresh(); // need to update GUI
         }
     }
-    
+
     static void updateFromAllExceptCloud(Task modifiedTask) {
         if (modifiedTask == null) {
             return;
         }
-        
+
         List<Task> allTasks = sessionStorage.getAllTasks();
-        
+
         if (allTasks.contains(modifiedTask)) {
             sessionStorage.modifyTask(modifiedTask);
             localStorage.modifyTask(modifiedTask);
@@ -329,28 +338,28 @@ public class StorageHandler {
             eventStorage.storeNewTask(modifiedTask);
         }
     }
-    
-    //@author A0111889W
+
+    // @author A0111889W
     static synchronized void deleteFromStorage(Task deletedTask) {
         if (deletedTask == null) {
             return;
         }
-        
+
         if (isLocalChirpStorageInit()) {
             if (deletedTask != null) {
                 deleteFromAllExceptCloud(deletedTask);
             }
         }
     }
-    
-    //@author A0111840W;
+
+    // @author A0111840W;
     static void deleteFromAllExceptCloud(Task deletedTask) {
         if (deletedTask == null) {
             return;
         }
-        
+
         List<Task> allTasks = sessionStorage.getAllTasks();
-        
+
         if (allTasks.contains(deletedTask)) {
             sessionStorage.removeTask(deletedTask);
             localStorage.removeTask(deletedTask);
@@ -367,7 +376,7 @@ public class StorageHandler {
         init = init && isEventStorageInit();
         return init;
     }
-    
+
     static boolean isStorageInit() {
         boolean init = true;
         init = init && isStoragesListInit();
@@ -381,7 +390,7 @@ public class StorageHandler {
     private static boolean isStoragesListInit() {
         return (_listOfStorages != null);
     }
-    
+
     static boolean isSessionStorageInit() {
         return (sessionStorage != null);
     }
@@ -397,10 +406,10 @@ public class StorageHandler {
     private static boolean isGoogleStorageInit() {
         return (googleStorage != null);
     }
-    
+
     /**
      * This method is provided for Components to set up a local test XML store.
-     * This is to aid testing, and it will ensure a fresh copy of storage 
+     * This is to aid testing, and it will ensure a fresh copy of storage
      * everytime it runs without affecting the usual "local.xml"
      * 
      * Method also updates the SessionStorage once JUnit Test XML is loaded
