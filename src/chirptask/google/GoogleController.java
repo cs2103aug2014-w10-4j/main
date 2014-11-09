@@ -113,7 +113,7 @@ public class GoogleController implements Runnable {
      */
     public void run() {
         initializeRemoteComponents(); 
-        while (!isGoogleLoaded()) { //wait for google to load
+        while (isGoogleLoaded() == false) { //wait for google to load
             sleepThread();
         }
         GoogleStorage.hasBeenInitialized();

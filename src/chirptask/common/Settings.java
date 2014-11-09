@@ -97,6 +97,8 @@ public class Settings {
             reader.close();
         } catch (FileNotFoundException ex) {
             writeDefaultPropertiesToFile();
+        } catch (NullPointerException NPE) {
+            writeDefaultPropertiesToFile();
         } catch (IOException ex) {
             StorageHandler.logError(String.format(Messages.ERROR, "Settings",
                     "while reading from file.\n" + ex.getMessage()));

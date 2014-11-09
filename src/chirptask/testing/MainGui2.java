@@ -14,10 +14,10 @@ import chirptask.logic.DisplayView;
  * Class for System Testing. Dependency Injection.
  */
 public class MainGui2 extends MainGui {
-
     public String _filter = "";
-    public String _userInput = "";
+    public String _onlineStatus = "Offline";
     public String _status = "";
+    public String _userInput = "";
     public List<String> _categoryList = new ArrayList<String>();
     public List<String> _contextList = new ArrayList<String>();
     public SortedMap<String, ArrayList<Integer>> _taskViewDateMap = new TreeMap<>();
@@ -44,6 +44,11 @@ public class MainGui2 extends MainGui {
         _categoryList.clear();
     }
 
+    @Override
+    public void setOnlineStatus(String status) {
+        _onlineStatus = status;
+    }
+    
     public String getStatus() {
         return _status;
     }
