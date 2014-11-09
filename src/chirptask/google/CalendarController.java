@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import chirptask.storage.StorageHandler.GoogleService;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -24,7 +26,6 @@ public class CalendarController {
     private final boolean DEFAULT_DONE_STATUS = false;
     
     private final String DEFAULT_CALENDAR = "ChirpTaskv0.5";
-    private final String GOOGLE_SERVICE_NAME = "calendar";
     private final String JSON_NOT_FOUND = "Not Found";
     
     /**
@@ -134,12 +135,11 @@ public class CalendarController {
             } catch (GoogleJsonResponseException jsonResponseEx) {
                 int responseCode = jsonResponseEx.getStatusCode();
                 String responseMessage = jsonResponseEx.getStatusMessage();
-                
                 if (responseCode == RESOURCE_NOT_FOUND && 
-                        JSON_NOT_FOUND.equals(responseMessage)) {
-                    GoogleController.resetGoogleIdAndEtag(GOOGLE_SERVICE_NAME);
-                    calendarId = "";
-                    throw jsonResponseEx;
+                        JSON_NOT_FOUND.equalsIgnoreCase(responseMessage)) {
+                    GoogleController.resetGoogleIdAndEtag(GoogleService.GOOGLE_CALENDAR);
+                    setCalendarId("");
+                    initializeCalendar(getCalendarId());
                 }
             } 
         }

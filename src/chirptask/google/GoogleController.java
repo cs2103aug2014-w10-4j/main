@@ -11,6 +11,7 @@ import chirptask.common.Messages;
 import chirptask.logic.Logic;
 import chirptask.storage.EventLogger;
 import chirptask.storage.GoogleStorage;
+import chirptask.storage.StorageHandler.GoogleService;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -328,7 +329,7 @@ public class GoogleController implements Runnable {
         return isSyncRunned;
     }
     
-    static void resetGoogleIdAndEtag(String googleService) {
+    static void resetGoogleIdAndEtag(GoogleService googleService) {
         if (googleService == null) {
             return;
         }

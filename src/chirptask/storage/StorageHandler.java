@@ -10,8 +10,9 @@ import chirptask.logic.Logic;
 
 public class StorageHandler {
 
-    private static final String GOOGLE_SERVICE_CALENDAR = "calendar";
-    private static final String GOOGLE_SERVICE_TASKS = "tasks";
+    public enum GoogleService {
+        GOOGLE_CALENDAR, GOOGLE_TASKS;
+    }
     
     private static List<IStorage> _listOfStorages = new ArrayList<IStorage>();
     private static IStorage eventStorage;
@@ -211,13 +212,13 @@ public class StorageHandler {
         return isAutoLogin;
     }
     
-    static void resetGoogleIdAndEtag(String googleService) {
+    static void resetGoogleIdAndEtag(GoogleService googleService) {
         if (googleService != null) {
             switch (googleService) {
-            case GOOGLE_SERVICE_CALENDAR :
+            case GOOGLE_CALENDAR :
                 resetCalendarItems();
                 break;
-            case GOOGLE_SERVICE_TASKS :
+            case GOOGLE_TASKS :
                 resetTasksItems();
                 break;
             default :
