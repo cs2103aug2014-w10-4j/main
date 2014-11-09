@@ -59,7 +59,6 @@ import org.jnativehook.keyboard.NativeKeyListener;
 import chirptask.common.Messages;
 import chirptask.common.Settings;
 import chirptask.logic.DisplayView;
-import chirptask.logic.FilterTasks;
 import chirptask.logic.Logic;
 
 public class MainGui extends Application implements NativeKeyListener {
