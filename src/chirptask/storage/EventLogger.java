@@ -32,9 +32,18 @@ public class EventLogger implements IStorage {
      * @param output
      */
     public static void setStream(PrintStream output) {
+        if (output == null) {
+            throw new NullPointerException();
+        }
         fileWriter = output;
     }
 
+    /**
+     * Implements a singleton class. Eventlogger does not need to be
+     * instantiated multiple times.
+     * 
+     * @return
+     */
     public static EventLogger getInstance() {
         if (instance == null) {
             instance = new EventLogger();
@@ -47,8 +56,15 @@ public class EventLogger implements IStorage {
         fileWriter.close();
     }
 
+    private void checkInputValue(Task T) {
+        if (T == null) {
+            throw new NullPointerException();
+        }
+    }
+
     @Override
     public boolean storeNewTask(Task T) {
+        checkInputValue(T);
         try {
             fileWriter.println(String.format(Messages.LOG_MESSAGE_ADD_TASK,
                     new Date(), T.getDate().getTime(), T.getTaskId(),
@@ -62,6 +78,7 @@ public class EventLogger implements IStorage {
 
     @Override
     public Task removeTask(Task T) {
+        checkInputValue(T);
         try {
             fileWriter.println(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
                     new Date(), T.getDate().getTime(), T.getTaskId(),
@@ -75,6 +92,7 @@ public class EventLogger implements IStorage {
 
     @Override
     public boolean modifyTask(Task T) {
+        checkInputValue(T);
         try {
             fileWriter.println(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
                     new Date(), T.getDate().getTime(), T.getTaskId(),
@@ -88,6 +106,8 @@ public class EventLogger implements IStorage {
 
     @Override
     public Task getTask(int taskId) {
+        // allows negative taskId just for logging purpose.
+
         fileWriter.println(String.format(Messages.LOG_MESSAGE_GET_TASK,
                 new Date(), taskId));
         fileWriter.flush();
@@ -102,7 +122,18 @@ public class EventLogger implements IStorage {
         return null;
     }
 
+    /**
+     * For logging custom error messages.
+     * 
+     * @param error
+     */
     public void logError(String error) {
+        if (error == null) {
+            throw new NullPointerException();
+        }
+        if (error.trim().isEmpty()) {
+            throw new IllegalArgumentException("Error cannot be empty");
+        }
         fileWriter.println(String.format(Messages.ERROR, new Date(), error));
         fileWriter.flush();
     }
