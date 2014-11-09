@@ -47,7 +47,6 @@ public class JUnitGoogleAtd {
         gui = new MainGui2();
         logic = new Logic(gui);
         chirptaskSettings = new Settings();
-        chirptaskSettings.readPropertiesFromFile();
         storageHandler = new StorageHandler();
         allTasks = new ArrayList<Task>();
 
