@@ -164,22 +164,22 @@ public class FilterTasks {
     private static int determineFilterAndExecute(MainGui gui, String[] param,
             List<Task> templist, int pos, String filter) {
         switch (filter) {
-        case Settings.FILTER_DONE:
+        case Constants.FILTER_DONE:
             filterStatus(templist, true);
             break;
-        case Settings.FILTER_UNDONE:
+        case Constants.FILTER_UNDONE:
             filterStatus(templist, false);
             break;
-        case Settings.FILTER_FLOATING:
+        case Constants.FILTER_FLOATING:
             filterTaskType(templist, Task.TASK_FLOATING);
             break;
-        case Settings.FILTER_TIMED:
+        case Constants.FILTER_TIMED:
             filterTaskType(templist, Task.TASK_TIMED);
             break;
-        case Settings.FILTER_DEADLINE:
+        case Constants.FILTER_DEADLINE:
             filterTaskType(templist, Task.TASK_DEADLINE);
             break;
-        case Settings.FILTER_DATE:
+        case Constants.FILTER_DATE:
             filterTaskDate(gui, param, templist, pos);
             pos++;
             break;
