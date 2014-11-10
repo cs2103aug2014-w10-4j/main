@@ -222,7 +222,7 @@ public class Task implements Comparable<Task> {
         return uniqueString.hashCode();
     }
 
-    // @author A0111930W
+    //@author A0111930W
     public void setDate(Calendar doneDate) {
         if (doneDate == null) {
             throw new NullPointerException();

@@ -23,7 +23,7 @@ public class StorageHandler {
         initStorages();
     }
 
-    // @author A0111840W
+    //@author A0111840W
     private void initStorages() {
         addSessionStorage();
         addLocalStorage();
@@ -120,7 +120,7 @@ public class StorageHandler {
         }
     }
 
-    // @author A0111889W
+    //@author A0111889W
     /**
      * method for other components to log custom error messages. This is to
      * reduce coupling with EventLogger class
@@ -134,7 +134,7 @@ public class StorageHandler {
         EventLogger.getInstance().logError(error);
     }
 
-    // @author A0111889W
+    //@author A0111889W
     /**
      * Close all storages. Run this before application closes.
      */
@@ -144,7 +144,7 @@ public class StorageHandler {
         }
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public synchronized boolean modifyTask(Task modifiedTask) {
         if (modifiedTask == null) {
             return false;
@@ -160,7 +160,7 @@ public class StorageHandler {
         return isModified;
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public synchronized boolean addTask(Task addedTask) {
         if (addedTask == null) {
             return false;
@@ -176,7 +176,7 @@ public class StorageHandler {
         return isAdded;
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public synchronized Task deleteTask(Task deletedTask) {
         if (deletedTask == null) {
             return null;
@@ -208,7 +208,7 @@ public class StorageHandler {
         }
     }
 
-    // @author A0111840W
+    //@author A0111840W
     private boolean readAutoLoginSettings() {
         boolean isAutoLogin = false;
         if (Settings.class != null) {
