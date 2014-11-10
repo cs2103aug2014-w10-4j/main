@@ -150,7 +150,8 @@ class ConcurrentSync implements Callable<Boolean> {
                 if (taskList == null) {
                     break;
                 }
-                isStoredOnline = checkTasksOnline(googleId, taskList);
+                isStoredOnline = 
+                        isStoredOnline || checkTasksOnline(googleId, taskList);
                 
                 if (isStoredOnline == false) { //Deleted online
                     deleteTaskLocally(currTask);
