@@ -12,9 +12,9 @@ public class DeadlineTask extends Task {
      * Creates a deadline task with specified description and deadline on the
      * input date.
      * 
-     * @param taskId
-     * @param description
-     * @param deadline
+     * @param taskId taskId of task to create
+     * @param description description of task to create
+     * @param deadline deadline of task to create
      */
     public DeadlineTask(int taskId, String description, Calendar deadline) {
         super(taskId, description, TASK_DEADLINE);

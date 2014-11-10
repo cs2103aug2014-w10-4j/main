@@ -15,8 +15,8 @@ public interface IStorage {
     /**
      * Stores a new task into the storage.
      * 
-     * @param T
-     * @return
+     * @param T Task to store into storage
+     * @return boolean Status of operation
      */
     boolean storeNewTask(Task T);
 
@@ -24,15 +24,15 @@ public interface IStorage {
      * Removes existing task from storage. Returns the task removed, null if
      * don't exist.
      * 
-     * @param T
-     * @return Task
+     * @param T Task to remove from storage
+     * @return Task Task that was removed. Null if doesn't exist.
      */
     Task removeTask(Task T);
 
     /**
      * Modifies an existing task in storage.
      * 
-     * @param T
+     * @param T Task to modify in storage
      * @return boolean status of operation.
      */
     boolean modifyTask(Task T);
@@ -40,15 +40,15 @@ public interface IStorage {
     /**
      * Gets an existing task from storage based on taskId.
      * 
-     * @param taskId
-     * @return Task
+     * @param taskId taskId of task to get from storage
+     * @return Task task with the given taskId
      */
     Task getTask(int taskId);
 
     /**
      * Gets all task from storage.
      * 
-     * @return List%3CTask%3E
+     * @return a list containing all tasks
      */
     List<Task> getAllTasks();
 

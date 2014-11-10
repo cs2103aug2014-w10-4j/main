@@ -125,7 +125,7 @@ public class StorageHandler {
      * method for other components to log custom error messages. This is to
      * reduce coupling with EventLogger class
      * 
-     * @param error
+     * @param error error message to log in EventLogger
      */
     public synchronized static void logError(String error) {
         if (error == null) {

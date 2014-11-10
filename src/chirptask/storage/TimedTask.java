@@ -12,10 +12,10 @@ public class TimedTask extends Task {
     /**
      * Creates a timed task or schedule object.
      * 
-     * @param taskId
-     * @param description
-     * @param startTime
-     * @param endTime
+     * @param taskId taskId of task to create
+     * @param description description of task to create
+     * @param startTime starting time of task to create
+     * @param endTime ending time of task to create
      */
     public TimedTask(int taskId, String description, Calendar startTime,
             Calendar endTime) {
@@ -38,7 +38,7 @@ public class TimedTask extends Task {
     /**
      * Sets the starting time of schedule or timedtask.
      * 
-     * @param startTime
+     * @param startTime calendar object of the starting time
      */
     public void setStartTime(Calendar startTime) {
         if (startTime == null) {
@@ -54,7 +54,7 @@ public class TimedTask extends Task {
     /**
      * Sets the ending time of schedule or timedtask.
      * 
-     * @param endTime
+     * @param endTime calendar object of the ending time
      */
     public void setEndTime(Calendar endTime) {
         if (endTime == null) {

@@ -135,6 +135,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * Sets the current status of Google services.
      * 
      * @param Status
+     *            Current status of Google services.
      */
     public void setOnlineStatus(final String Status) {
         assert Status != null && !Status.isEmpty();
@@ -154,6 +155,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * GUI.
      * 
      * @param Category
+     *            category to be appended into this list
      */
     public void addCategoryIntoList(String Category) {
         assert Category != null && !Category.isEmpty();
@@ -167,6 +169,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * Inserts a hashtag onto the current list of hashtags showing on the GUI.
      * 
      * @param hashtag
+     *            hashtag to be appended to this list
      */
     public void addHashtagIntoList(String hashtag) {
         assert hashtag != null && !hashtag.isEmpty();
@@ -181,6 +184,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * tasks of a date in it.
      * 
      * @param date
+     *            date of task view date to generate and add into GUI.
      * @return boolean status of operation
      */
     public boolean addNewTaskViewDate(Calendar date) {
@@ -224,10 +228,15 @@ public class MainGui extends Application implements NativeKeyListener {
      * </p>
      * 
      * @param date
+     *            date of new task to add
      * @param taskId
+     *            taskid of new task to add
      * @param description
+     *            description of new task to add
      * @param time
+     *            time of new task to add
      * @param done
+     *            status of new task to add
      * @return boolean status of operation
      */
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
@@ -397,6 +406,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * Message will be coloured red as it's an error.
      * 
      * @param errorMessage
+     *            error message to display on GUI.
      */
     public void setError(String errorMessage) {
         assert errorMessage != null && !errorMessage.trim().isEmpty();
@@ -412,6 +422,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * allowed.
      * 
      * @param text
+     *            string to set in filter's text field.
      */
     public void setFilterText(String text) {
         int caretPosition = _filterField.getCaretPosition();
@@ -423,6 +434,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * Sets the status of the GUI with the given status message.
      * 
      * @param message
+     *            status message to display on GUI.
      */
     public void setStatus(String message) {
         assert message != null && !message.trim().isEmpty();
@@ -437,6 +449,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * Sets the user input text of the CLI. Empty strings are accepted.
      * 
      * @param text
+     *            string to show in input text field.
      */
     public void setUserInputText(String text) {
         _commandLineInterface.setText(text);
