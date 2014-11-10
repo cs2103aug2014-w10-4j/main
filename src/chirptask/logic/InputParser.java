@@ -664,8 +664,8 @@ public class InputParser {
 	/**
 	 * This method sets up a new task with the description,
 	 * hashtag and category parsed from parameter
-	 * @param parameter
-	 * @return Task
+	 * @param parameter The parameter to parse
+	 * @return Task The parsed Task
 	 */
 	public static Task getTaskFromString(String parameter) {
 		Task newTask = new Task();
@@ -700,8 +700,8 @@ public class InputParser {
 	/**
 	 * This method returns a Task with attributes id, description, time,
 	 * categories, hashtags set.
-	 * @param command
-	 * @param parameter
+	 * @param command The type of task
+	 * @param parameter The parameter to parse
 	 * @return Task or null if parameter is invalid
 	 */
 	public static Task getTaskFromString(String command, String parameter) {

@@ -38,7 +38,7 @@ public class DateParser {
 	 * date/time formats. If it succeeds in matching, the whole
 	 * string will be passed to Natty NLP parser to get the date 
 	 * @param toParse String
-	 * @return List<Calendar> list of Calendar objects parsed from toParse
+	 * @return List list of Calendar objects parsed from toParse
 	 */
 	public List<Calendar> parseDate(String toParse) {
 		boolean success = false;

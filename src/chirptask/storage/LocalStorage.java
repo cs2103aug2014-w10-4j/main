@@ -149,7 +149,7 @@ public class LocalStorage implements IStorage {
 					"error in setting up transformer"));
 		} catch (TransformerFactoryConfigurationError e) {
 			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
-					"error in setting up"));
+					"error in setting up transformer"));
 		} catch (Exception e) {
             StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
                     "error in setting up"));
