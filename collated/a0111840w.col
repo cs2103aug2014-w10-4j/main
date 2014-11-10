@@ -4103,6 +4103,7 @@ import static org.junit.Assert.assertNotEquals;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 
 import chirptask.common.Settings;
 import chirptask.google.GoogleController;
@@ -4119,19 +4120,15 @@ import org.junit.Test;
 
 /**
  * Warning: JUnitGoogleAtd takes a while to load completely
- * There may be times where it will fail totally as it depends on 
+ * There may be times where it will fail totally as it depends on
  * your internet connection stability.
- * 
  * Do take the factor of how slow/unstable the internet may be if
  * the JUnit Test failed.
- * 
  * The sleep(milliseconds) were added in their positions because
  * there is no easy way to tell when the Google requests are completed.
  * This is because they are running in the background threads.
- * 
  * Note that we MUST finish the initial StorageHandler.initCloudStorage()
  * before starting the test.
- *
  */
 public class JUnitGoogleAtd {
     @SuppressWarnings("unused")
@@ -4150,56 +4147,68 @@ public class JUnitGoogleAtd {
         allTasks = new ArrayList<Task>();
 
         logic.useTestLocalStorage();
-        //Restart the JUnitTest XML file
+        // Restart the JUnitTest XML file
         storageHandler.setUpJUnitTestXmlWriter();
         StorageHandler.initCloudStorage();
 
         while (GoogleController.isGoogleLoaded() == false) {
             sleep(15000);
         }
-        //At this point, the JUnitTest XML file should have all your synced
+        // At this point, the JUnitTest XML file should have all your synced
         // items from Google
-        
-        //Setup floating task
-        Task floatingTask = new Task(LocalStorage.generateId(), "Task Floating - Google Test");
+
+        // Setup floating task
+        Task floatingTask = new Task(LocalStorage.generateId(),
+                "Task Floating - Google Test");
         allTasks.add(floatingTask);
-        
-        //Setup deadline task
-        Long millisA = 1412935810000L; //Fri Oct 10 18:10:10 SGT 2014 in Epoch Millis
-        Calendar dueDate = Calendar.getInstance(); //Assume local time is SGT TimeZone
+
+        // Setup deadline task
+        Long millisA = 1412935810000L; // Fri Oct 10 18:10:10 SGT 2014 in Epoch
+                                       // Millis
+        Calendar dueDate = Calendar.getInstance(); // Assume local time is SGT
+                                                   // TimeZone
         dueDate.setTimeInMillis(millisA);
-        Task deadlineTask = new DeadlineTask(LocalStorage.generateId(), "Task Deadline - Google Test", dueDate);
+        Task deadlineTask = new DeadlineTask(LocalStorage.generateId(),
+                "Task Deadline - Google Test", dueDate);
         allTasks.add(deadlineTask);
-        
-        //Setup timed task
-        Long millisB = 1412763010000L; //Wed Oct 08 18:10:10 SGT 2014 in Epoch Millis
-        Long millisB2 = 1412935810000L; //Fri Oct 10 18:10:10 SGT 2014 in Epoch Millis
-        Calendar startTime = Calendar.getInstance(); //Assume local time is SGT TimeZone
+
+        // Setup timed task
+        Long millisB = 1412763010000L; // Wed Oct 08 18:10:10 SGT 2014 in Epoch
+                                       // Millis
+        Long millisB2 = 1412935810000L; // Fri Oct 10 18:10:10 SGT 2014 in Epoch
+                                        // Millis
+        Calendar startTime = Calendar.getInstance(); // Assume local time is SGT
+                                                     // TimeZone
         startTime.setTimeInMillis(millisB);
-        Calendar endTime = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        Calendar endTime = Calendar.getInstance(); // Assume local time is SGT
+                                                   // TimeZone
         endTime.setTimeInMillis(millisB2);
-        Task timedTask = new TimedTask(LocalStorage.generateId(), "Task Timed - Google Test", startTime, endTime);
+        Task timedTask = new TimedTask(LocalStorage.generateId(),
+                "Task Timed - Google Test", startTime, endTime);
         allTasks.add(timedTask);
-        
-        //Restart the JUnitTest XML file
+
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        threadSet.iterator();
+        // Restart the JUnitTest XML file
         storageHandler.setUpJUnitTestXmlWriter();
+
     }
-    
+
     @Test
     public void testGoogleAddAndDelete() {
-        //Adding all tasks
+        // Adding all tasks
         for (int i = 0; i < allTasks.size(); i++) {
             Task currentTask = allTasks.get(i);
             storageHandler.addTask(currentTask);
         }
-        
+
         sleep(5000);
-        
+
         List<Task> localList = StorageHandler.getAllTasks();
-        
-        //All tasks got added
+
+        // All tasks got added
         assertEquals("same size", allTasks.size(), localList.size());
-        
+
         for (int i = 0; i < localList.size(); i++) {
             Task currentTask = localList.get(i);
             assertNotNull(currentTask);
@@ -4208,36 +4217,36 @@ public class JUnitGoogleAtd {
             assertNotEquals("empty", "", currentTask.getGoogleId());
             assertNotEquals("empty", "", currentTask.getETag());
         }
-        
+
         // Deletion of all tasks
         localList = StorageHandler.getAllTasks();
         List<Task> allTasks = new ArrayList<Task>();
-        
+
         for (Task task : localList) {
             allTasks.add(task);
         }
-        
+
         for (int i = 0; i < allTasks.size(); i++) {
             Task currentTask = allTasks.get(i);
             storageHandler.deleteTask(currentTask);
         }
 
         sleep(5000);
-        
-        //All tasks got deleted
+
+        // All tasks got deleted
         assertEquals("empty list", 0, localList.size());
     }
-    
+
     @After
     public void closeGoogle() {
         logic.retrieveInputFromUI("logout");
         sleep(5000);
         storageHandler.closeStorages();
     }
-    
+
     public void sleep(int sleepTime) {
         try {
-            Thread.sleep(sleepTime); //Wait for request to be done
+            Thread.sleep(sleepTime); // Wait for request to be done
         } catch (InterruptedException e) {
         }
     }
