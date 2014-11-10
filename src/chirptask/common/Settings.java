@@ -27,14 +27,7 @@ public class Settings {
 
     public static int HOTKEY_TOGGLE_HIDE = NativeKeyEvent.VC_ESCAPE;
     public static int HOTKEY_TOGGLE_SHOW = NativeKeyEvent.VC_G;
-    
-    public static final String FILTER_DONE = "/done";
-    public static final String FILTER_UNDONE = "/undone";
-    public static final String FILTER_FLOATING = "/floating";
-    public static final String FILTER_DEADLINE = "/deadline";
-    public static final String FILTER_TIMED = "/timed";
-    public static final String FILTER_DATE = "/date";
-    
+
     public enum CommandType {
         ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT, CLEAR, SYNC, LOGOUT
     }
@@ -108,6 +101,16 @@ public class Settings {
     }
 
     private void readSettingsFromProperty() {
+        if (props.getProperty("EVENT_LOG_FILENAME") == null
+                || props.getProperty("DEFAULT_FILTER") == null
+                || props.getProperty("LOGIN_AUTO") == null
+                || props.getProperty("SYSTEM_EXIT_NORMAL") == null
+                || props.getProperty("HOTKEY_TOGGLE_HIDE") == null
+                || props.getProperty("HOTKEY_TOGGLE_SHOW") == null
+                || props.getProperty("GOOGLE_CALENDAR_ID") == null) {
+            openFileForWriting();
+        }
+        
         EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME");
         DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER");
         LOGIN_AUTO = Boolean.parseBoolean(props.getProperty("LOGIN_AUTO"));
