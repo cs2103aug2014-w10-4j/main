@@ -24,7 +24,6 @@ public class JUnitInputParserAtd {
 	InputParser parser = new InputParser();
 
 	@Test
-	// Partition: floating task with categories and contexts
 	public void testAddFloating() {
 		List<String> contexts = new ArrayList<String>();
 		List<String> categories = new ArrayList<String>();
@@ -70,7 +69,6 @@ public class JUnitInputParserAtd {
 	}
 
 	@Test
-	// Partition: deadline task, no categories/contexts, relative date
 	public void testAddDeadline() {
 		List<String> contexts = new ArrayList<String>();
 		List<String> categories = new ArrayList<String>();
@@ -129,8 +127,6 @@ public class JUnitInputParserAtd {
 	}
 
 	@Test
-	// Partition: timed task, no categories/contexts, absolute date mm/dd
-	// representation
 	public void testAddTimed() {
 		List<String> contexts = new ArrayList<String>();
 		List<String> categories = new ArrayList<String>();
@@ -297,7 +293,7 @@ public class JUnitInputParserAtd {
 
 	}
 
-	// @author A0113022
+	//@author A0113022H
 	private void compareTime(Calendar result, Calendar expected) {
 		if (expected == null) {
 			assertNull(result);

@@ -1,7 +1,7 @@
 //@author A0111889W
 package chirptask.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
@@ -17,7 +17,7 @@ public class JUnitDisplayViewParserTestAtd {
     /*
      * Tests only two methods under DisplayView.
      * These two methods are used by GUI to parse certain object into strings.
-     * 
+     *
      * ConvertDateToString method and ConvertTaskDateToDuration method
      */
     @Test

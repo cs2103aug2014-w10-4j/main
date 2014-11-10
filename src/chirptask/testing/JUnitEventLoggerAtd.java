@@ -1,7 +1,9 @@
 //@author A0111889W
 package chirptask.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,7 +47,7 @@ public class JUnitEventLoggerAtd {
 
     /*
      * Tests the EventLogger Component
-     * 
+     *
      * Not much heuristics to be applied to eventlog testing, code is pretty
      * straightforward, no boundary cases, no equivalence partition either.
      */
