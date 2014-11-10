@@ -71,6 +71,8 @@ public class LocalStorage implements IStorage {
 			} catch (IOException e) {
 				StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
 						"write to file failed"));
+			} catch (Exception exception) {
+                restartLocalStorage();
 			}
 		} else {
 			restartLocalStorage();
@@ -147,6 +149,9 @@ public class LocalStorage implements IStorage {
 		} catch (TransformerFactoryConfigurationError e) {
 			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
 					"error in setting up"));
+		} catch (Exception e) {
+            StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+                    "error in setting up"));
 		}
 	}
 	
@@ -194,7 +199,7 @@ public class LocalStorage implements IStorage {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private int getLatestId() throws SAXException, IOException {
+	private int getLatestId() throws SAXException, IOException, Exception {
 		int id;
 		localStorage = docBuilder.parse(local);
 		Node root = getRoot();
@@ -447,6 +452,8 @@ public class LocalStorage implements IStorage {
 		} catch (SAXException s) {
 			restartLocalStorage();
 			return null;
+		} catch (Exception e) {
+		    return null;
 		}
 		
 		return taskNode;
@@ -472,6 +479,8 @@ public class LocalStorage implements IStorage {
 		} catch (SAXException s) {
 			restartLocalStorage();
 			return null;
+		} catch (Exception e) {
+		    return null;
 		}
 		return tasks;
 	}
@@ -491,7 +500,9 @@ public class LocalStorage implements IStorage {
 				taskId = Integer.parseInt(item.getAttribute("TaskId"));
 			} catch (NumberFormatException e) {
 				return null;
-			}	
+			} catch (Exception e) {
+			    return null;
+			}
 			
 			if (taskId < 0) {
 				return null;
