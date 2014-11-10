@@ -48,7 +48,7 @@ public interface IStorage {
     /**
      * Gets all task from storage.
      * 
-     * @return List<Task>
+     * @return List%3CTask%3E
      */
     List<Task> getAllTasks();
 
