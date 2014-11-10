@@ -165,6 +165,14 @@ public class CalendarHandler {
         return newEvent;
     }
     
+    /**
+     * Google Component will auto add suffix [Done] to the Calendar
+     * so that we do not dirty ChirpTask with [Done] tags all over.
+     * @param eventToSet The Google Calendar Event object
+     * @param desc The current description
+     * @param isDone The boolean flag to indicate whether task is done
+     * @return The modified Google Calendar Event object
+     */
     static Event setDoneTag(Event eventToSet, String desc, boolean isDone) {
         if (eventToSet == null || desc == null) {
             return null;

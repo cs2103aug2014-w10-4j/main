@@ -434,10 +434,9 @@ class ConcurrentSync implements Callable<Boolean> {
                 .getCalendar(start);
         Calendar endDate = DateTimeHandler
                 .getCalendar(end);
-
         boolean isDone = setDoneEvent(eventDescription);
-        eventDescription = removeDoneTag(eventDescription, isDone);
-        updateEventColor(currEvent, isDone);
+        
+        removeDoneAndUpdateEvent(currEvent, isDone);
         
         if (currTask instanceof chirptask.storage.TimedTask) {
             TimedTask timedTask = (TimedTask) currTask;
@@ -447,6 +446,13 @@ class ConcurrentSync implements Callable<Boolean> {
             timedTask.setDone(isDone);
             GoogleStorage.updateStorages(timedTask);
         }
+    }
+    
+    private void removeDoneAndUpdateEvent(Event event, 
+                                boolean isDone) throws IOException {
+        String description = event.getSummary();
+        description = removeDoneTag(description, isDone);
+        updateEventColor(event, isDone);
     }
     
     private String removeDoneTag(String description, boolean isDone) 
@@ -623,8 +629,8 @@ class ConcurrentSync implements Callable<Boolean> {
                 Calendar startDate = getCalendarFromEvent(currEvent.getStart());
                 Calendar endDate = getCalendarFromEvent(currEvent.getEnd());
                 boolean isDone = setDoneEvent(description);
-                description = removeDoneTag(description, isDone);
-                updateEventColor(currEvent, isDone);
+                
+                removeDoneAndUpdateEvent(currEvent, isDone);
                 
                 TimedTask newTimed = 
                         new TimedTask(taskId, description,startDate, endDate);
