@@ -217,12 +217,24 @@ public class Task implements Comparable<Task> {
         this._categories = categories;
     }
 
-    public int hashCode(){
-        String uniqueString = this.getGoogleId()+","+this.getDescription()+","+this.getDate()+","+this.getType();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        String uniqueString = "";
+        if (this.getGoogleId() == null || this.getGoogleId().isEmpty()) {
+            uniqueString = this.getTaskId() + "," + this.getDescription() + ","
+                    + this.getDate() + "," + this.getType();
+        } else {
+            uniqueString = this.getGoogleId() + "," + this.getDescription()
+                    + "," + this.getDate() + "," + this.getType();
+        }
         return uniqueString.hashCode();
     }
 
-    //@author A0111930W
+    // @author A0111930W
     public void setDate(Calendar doneDate) {
         if (doneDate == null) {
             throw new NullPointerException();

@@ -63,10 +63,21 @@ public class TimedTask extends Task {
         _endTime = endTime;
     }
 
+    /* (non-Javadoc)
+     * @see chirptask.storage.Task#hashCode()
+     */
     public int hashCode() {
-        String uniqueString = this.getGoogleId() + "," + this.getDescription()
-                + "," + this.getStartTime() + "," + this.getEndTime() + ","
-                + this.getType();
+        String uniqueString = "";
+        if (this.getGoogleId() == null || this.getGoogleId().isEmpty()) {
+            uniqueString = this.getTaskId() + "," + this.getDescription() + ","
+                    + this.getStartTime() + "," + this.getEndTime() + ","
+                    + this.getType();
+        } else {
+            uniqueString = this.getGoogleId() + "," + this.getDescription()
+                    + "," + this.getStartTime() + "," + this.getEndTime() + ","
+                    + this.getType();
+        }
+
         return uniqueString.hashCode();
     }
 
