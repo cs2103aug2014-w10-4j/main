@@ -1,6 +1,9 @@
 //@author A0111889W
 package chirptask.testing;
 
+public class ManualTestingForGUI {
+    
+}
 /*
  * Manual Testing for GUI:
  *
