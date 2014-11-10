@@ -6,7 +6,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.google.GoogleController.Status;
 import chirptask.storage.EventLogger;
 import chirptask.storage.TimedTask;
@@ -87,7 +87,7 @@ class ConcurrentAdd implements Callable<Boolean> {
             addedGoogleEvent = addTimedTask(task, _taskToAdd);
             break;
         default:
-            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            EventLogger.getInstance().logError(Constants.LOG_MESSAGE_UNEXPECTED);
             assert false;
             break;
         }

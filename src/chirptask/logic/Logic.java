@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.jnativehook.GlobalScreen;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 import chirptask.common.Settings.CommandType;
 import chirptask.gui.MainGui;
@@ -37,7 +37,7 @@ public class Logic {
         FilterTasks.filter(_gui);
         DisplayView.updateTaskView(_gui);
         DisplayView
-                .showStatusToUser(Messages.LOG_MESSAGE_INVALID_COMMAND, _gui);
+                .showStatusToUser(Constants.LOG_MESSAGE_INVALID_COMMAND, _gui);
     }
 
     /**
@@ -267,58 +267,58 @@ public class Logic {
     private void processInvalidTypes(Settings.CommandType type) {
         switch (type) {
         case ADD:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_ADD_USAGE, _gui,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_ADD_USAGE, _gui,
                     false);
             break;
         case DELETE:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DELETE_USAGE,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_DELETE_USAGE,
                     _gui, false);
             break;
         case DISPLAY:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DISPLAY_USAGE,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_DISPLAY_USAGE,
                     _gui, false);
 
             break;
         case EDIT:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_EDIT_USAGE, _gui,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_EDIT_USAGE, _gui,
                     false);
 
             break;
         case UNDO:
             // negate action and run excecuteAction again
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_USAGE, _gui,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_UNDO_USAGE, _gui,
                     false);
 
             break;
         case DONE:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_DONE_USAGE, _gui,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_DONE_USAGE, _gui,
                     false);
 
             break;
         case UNDONE:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDONE_USAGE,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_UNDONE_USAGE,
                     _gui, false);
 
             break;
         case LOGIN:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGIN_USAGE,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_LOGIN_USAGE,
                     _gui, false);
             break;
         case CLEAR:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_CLEAR_USAGE,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_CLEAR_USAGE,
                     _gui, false);
 
             break;
         case SYNC:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_SYNC_USAGE, _gui,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_SYNC_USAGE, _gui,
                     false);
             break;
         case LOGOUT:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_LOGOUT_USAGE,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_LOGOUT_USAGE,
                     _gui, false);
             break;
         case INVALID:
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_INVALID_COMMAND,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_INVALID_COMMAND,
                     _gui, false);
             break;
         default:
@@ -329,8 +329,8 @@ public class Logic {
 
     private void logErrorCommand() {
         StorageHandler.logError(String.format(
-                Messages.LOG_MESSAGE_INVALID_COMMAND,
-                Messages.LOG_MESSAGE_ERROR));
+                Constants.LOG_MESSAGE_INVALID_COMMAND,
+                Constants.LOG_MESSAGE_ERROR));
     }
 
     /**
@@ -414,7 +414,7 @@ public class Logic {
             undoGroupAction(lastAction);
 
         } else {
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_UNDO_NOTHING,
                     _gui);
         }
     }
@@ -432,7 +432,7 @@ public class Logic {
         if (isUndoActionNotNull(action)) {
             setUndoAndAddToGroupAction(tempGroupAction, action);
         } else {
-            DisplayView.showStatusToUser(Messages.LOG_MESSAGE_UNDO_NOTHING,
+            DisplayView.showStatusToUser(Constants.LOG_MESSAGE_UNDO_NOTHING,
                     _gui);
         }
     }

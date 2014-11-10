@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 import chirptask.common.Settings.StatusType;
 import chirptask.gui.MainGui;
@@ -235,7 +235,7 @@ public class FilterTasks {
      */
     private static List<Task> processExceptionLogging(MainGui gui) {
         List<Task> templist;
-        StorageHandler.logError(Messages.LOG_MESSAGE_INVALID_COMMAND);
+        StorageHandler.logError(Constants.LOG_MESSAGE_INVALID_COMMAND);
         DisplayView.showStatusToUser(StatusType.ERROR, gui, "");
 
         templist = new ArrayList<Task>(StorageHandler.getAllTasks());

@@ -21,13 +21,9 @@ public class Settings {
     public static String EVENT_LOG_FILENAME = "eventlogs.txt";
     public static String DEFAULT_FILTER = "";
     public static String GOOGLE_CALENDAR_ID = "";
-    public static char CATEGORY_CHAR = '@';
-    public static char HASHTAG_CHAR = '#';
+
     public static boolean LOGIN_AUTO = false;
     public static int SYSTEM_EXIT_NORMAL = 0;
-
-    public static String CATEGORY = CATEGORY_CHAR + "";
-    public static String CONTEXT = HASHTAG_CHAR + "";
 
     public static int HOTKEY_TOGGLE_HIDE = NativeKeyEvent.VC_ESCAPE;
     public static int HOTKEY_TOGGLE_SHOW = NativeKeyEvent.VC_G;
@@ -62,7 +58,7 @@ public class Settings {
             props.store(writer, "Default Settings");
             writer.close();
         } catch (IOException e) {
-            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+            StorageHandler.logError(String.format(Constants.ERROR, "Settings",
                     "while writing to file.\n" + e.getMessage()));
         }
     }
@@ -71,8 +67,6 @@ public class Settings {
         // write default values
         props.setProperty("EVENT_LOG_FILENAME", "eventlogs.txt");
         props.setProperty("DEFAULT_FILTER", "");
-        props.setProperty("CATEGORY_CHAR", "@");
-        props.setProperty("CONTEXT_CHAR", "#");
         props.setProperty("LOGIN_AUTO", "false");
         props.setProperty("SYSTEM_EXIT_NORMAL", "0");
         props.setProperty("HOTKEY_TOGGLE_HIDE", "" + NativeKeyEvent.VC_ESCAPE);
@@ -101,7 +95,7 @@ public class Settings {
             // corrupted settings
             openFileForWriting();
         } catch (IOException ex) {
-            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+            StorageHandler.logError(String.format(Constants.ERROR, "Settings",
                     "while reading from file.\n" + ex.getMessage()));
         }
     }
@@ -109,8 +103,6 @@ public class Settings {
     private void readSettingsFromProperty() {
         EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME");
         DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER");
-        CATEGORY_CHAR = props.getProperty("CATEGORY_CHAR").charAt(0);
-        HASHTAG_CHAR = props.getProperty("CONTEXT_CHAR").charAt(0);
         LOGIN_AUTO = Boolean.parseBoolean(props.getProperty("LOGIN_AUTO"));
         SYSTEM_EXIT_NORMAL = Integer.parseInt(props
                 .getProperty("SYSTEM_EXIT_NORMAL"));
@@ -130,7 +122,7 @@ public class Settings {
                 writer.close();
             }
         } catch (IOException e) {
-            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+            StorageHandler.logError(String.format(Constants.ERROR, "Settings",
                     "while writing to file.\n" + e.getMessage()));
         }
     }

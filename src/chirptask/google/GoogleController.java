@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.logic.Logic;
 import chirptask.storage.EventLogger;
 import chirptask.storage.GoogleStorage;
@@ -385,7 +385,7 @@ public class GoogleController implements Runnable {
             }
             break;
         default :
-            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            EventLogger.getInstance().logError(Constants.LOG_MESSAGE_UNEXPECTED);
             assert false;
             break;
         }
@@ -402,22 +402,22 @@ public class GoogleController implements Runnable {
         if (newStatus != null) {
             switch (newStatus) {
             case ONLINE :
-                Logic.setOnlineStatus(Messages.TITLE_ONLINE);
+                Logic.setOnlineStatus(Constants.TITLE_ONLINE);
                 break;
             case OFFLINE :
-            Logic.setOnlineStatus(Messages.TITLE_OFFLINE);
+            Logic.setOnlineStatus(Constants.TITLE_OFFLINE);
             break;
             case SYNC :
-                Logic.setOnlineStatus(Messages.TITLE_SYNCING);
+                Logic.setOnlineStatus(Constants.TITLE_SYNCING);
                 break;
             case SYNC_FAIL :
-                Logic.setOnlineStatus(Messages.TITLE_SYNC_FAIL);
+                Logic.setOnlineStatus(Constants.TITLE_SYNC_FAIL);
                 break;
             case LOGIN :
-                Logic.setOnlineStatus(Messages.TITLE_LOGGING_IN);
+                Logic.setOnlineStatus(Constants.TITLE_LOGGING_IN);
                 break;
             default :
-                EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+                EventLogger.getInstance().logError(Constants.LOG_MESSAGE_UNEXPECTED);
                 assert false;
                 break;
             }

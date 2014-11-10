@@ -56,7 +56,7 @@ import org.jnativehook.NativeInputEvent;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 import chirptask.logic.DisplayView;
 import chirptask.logic.Logic;
@@ -142,7 +142,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public void addCategoryIntoList(String Category) {
         assert Category != null && !Category.isEmpty();
-        Text categoryText = new Text(Settings.CATEGORY_CHAR + Category);
+        Text categoryText = new Text(Constants.CATEGORY_CHAR + Category);
         categoryText.getStyleClass().add("category-text");
         categoryText.setOnMouseClicked(clickOnCategory());
         _categoryList.getChildren().add(categoryText);
@@ -155,7 +155,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public void addHashtagIntoList(String hashtag) {
         assert hashtag != null && !hashtag.isEmpty();
-        Text hashtagText = new Text(Settings.HASHTAG_CHAR + hashtag);
+        Text hashtagText = new Text(Constants.HASHTAG_CHAR + hashtag);
         hashtagText.getStyleClass().add("hashtag-text");
         hashtagText.setOnMouseClicked(clickOnHashtag());
         _hashtagList.getChildren().add(hashtagText);
@@ -382,7 +382,7 @@ public class MainGui extends Application implements NativeKeyListener {
     public void setError(String errorMessage) {
         assert errorMessage != null && !errorMessage.trim().isEmpty();
 
-        String Status = String.format(Messages.STATUS_ERROR, errorMessage);
+        String Status = String.format(Constants.STATUS_ERROR, errorMessage);
         _statusText.setText(Status);
         _statusText.getStyleClass().clear();
         _statusText.getStyleClass().add("error-message");
@@ -408,7 +408,7 @@ public class MainGui extends Application implements NativeKeyListener {
     public void setStatus(String message) {
         assert message != null && !message.trim().isEmpty();
 
-        String Status = String.format(Messages.STATUS_NORMAL, message);
+        String Status = String.format(Constants.STATUS_NORMAL, message);
         _statusText.setText(Status);
         _statusText.getStyleClass().clear();
         _statusText.getStyleClass().add("status-message");
@@ -591,7 +591,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Text generateCategoryLabel() {
-        Text categoryTitle = new Text(Messages.LABEL_CATEGORIES);
+        Text categoryTitle = new Text(Constants.LABEL_CATEGORIES);
         setTrendingListTitleFont(categoryTitle);
         return categoryTitle;
     }
@@ -612,7 +612,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Text generateFilterLabel() {
-        Text filterLabel = new Text(Messages.LABEL_FILTER);
+        Text filterLabel = new Text(Constants.LABEL_FILTER);
         return filterLabel;
     }
 
@@ -658,7 +658,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Text generateHashtagLabel() {
-        Text hashtagTitle = new Text(Messages.LABEL_HASHTAGS);
+        Text hashtagTitle = new Text(Constants.LABEL_HASHTAGS);
         setTrendingListTitleFont(hashtagTitle);
         return hashtagTitle;
     }
@@ -695,7 +695,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private Text generateOnlineStatusText() {
         // default is offline.
-        Text onlineStatus = new Text(Messages.TITLE_OFFLINE);
+        Text onlineStatus = new Text(Constants.TITLE_OFFLINE);
         onlineStatus.getStyleClass().add("header-title");
         BorderPane.setAlignment(onlineStatus, Pos.BOTTOM_RIGHT);
         return onlineStatus;
@@ -729,7 +729,7 @@ public class MainGui extends Application implements NativeKeyListener {
     private VBox generateStatusBarInterface() {
         _statusText = new Label();
         _statusText.setTextOverrun(OverrunStyle.ELLIPSIS);
-        setStatus(Messages.DEFAULT_STATUS);
+        setStatus(Constants.DEFAULT_STATUS);
 
         VBox statusBar = new VBox();
         statusBar.getStyleClass().add("status-bar");
@@ -825,7 +825,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private HBox generateTitleBox() {
-        Text sceneTitle = new Text(Messages.TITLE_SOFTWARE);
+        Text sceneTitle = new Text(Constants.TITLE_SOFTWARE);
         sceneTitle.getStyleClass().add("header-title");
         sceneTitle.setTextAlignment(TextAlignment.CENTER);
 
@@ -876,7 +876,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private HBox generateUserInputInterface() {
         generateUserInputField();
-        Text userInputLabel = new Text(Messages.LABEL_USERINPUT);
+        Text userInputLabel = new Text(Constants.LABEL_USERINPUT);
 
         HBox userInputBox = new HBox();
         userInputBox.setPadding(new Insets(5));
@@ -1111,7 +1111,7 @@ public class MainGui extends Application implements NativeKeyListener {
         }
     }
 
-    //@author A0111889W-reused
+    // @author A0111889W-reused
     /*
      * Code re-use from https://gist.github.com/jewelsea/
      */
@@ -1151,7 +1151,7 @@ public class MainGui extends Application implements NativeKeyListener {
         });
     }
 
-    //@author A0111889W
+    // @author A0111889W
     /**
      * Handler for mouse clicks on hashtags/categories.
      * Sets filter to hashtag or category.
@@ -1191,7 +1191,7 @@ public class MainGui extends Application implements NativeKeyListener {
         primaryStage.setScene(scene);
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
-        primaryStage.setTitle(Messages.TITLE_SOFTWARE);
+        primaryStage.setTitle(Constants.TITLE_SOFTWARE);
         primaryStage.getIcons().add(
                 new Image(getClass().getResourceAsStream(
                         "images/chirptask_clear.png")));
@@ -1241,7 +1241,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
 }
 
-//@author A0111889W
+// @author A0111889W
 /*
  * JavaFx CSS files. Inserted here so that collate catches it.
  * 

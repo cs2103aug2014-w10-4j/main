@@ -6,7 +6,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.google.GoogleController.Status;
 import chirptask.storage.EventLogger;
 import chirptask.storage.TimedTask;
@@ -75,7 +75,7 @@ class ConcurrentModify implements Callable<Boolean> {
                             modifyGoogleEvent(_taskToModify);
             break;
         default:
-            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            EventLogger.getInstance().logError(Constants.LOG_MESSAGE_UNEXPECTED);
             assert false;
             break;
         }
@@ -271,7 +271,7 @@ class ConcurrentModify implements Callable<Boolean> {
         default :
             //Should not reach here at all if covers all types of task
             EventLogger.getInstance()
-                .logError(Messages.LOG_MESSAGE_INVALID_TASK_TYPE);
+                .logError(Constants.LOG_MESSAGE_INVALID_TASK_TYPE);
             assert false;
             return null;
         }

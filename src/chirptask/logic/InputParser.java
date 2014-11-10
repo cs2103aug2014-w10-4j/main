@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 import chirptask.common.Settings.CommandType;
 import chirptask.storage.DeadlineTask;
@@ -580,10 +581,10 @@ public class InputParser {
 				firstChar = word[i].charAt(0);
 			}
 
-			if (firstChar == Settings.HASHTAG_CHAR && word[i].length() > 1) {
+			if (firstChar == Constants.HASHTAG_CHAR && word[i].length() > 1) {
 				contexts.add(word[i].substring(1));
 			}
-			if (firstChar == Settings.CATEGORY_CHAR && word[i].length() > 1) {
+			if (firstChar == Constants.CATEGORY_CHAR && word[i].length() > 1) {
 				categories.add(word[i].substring(1));
 			}
 		}
@@ -830,8 +831,8 @@ public class InputParser {
 		}
 
 		for (int i = 0; i < hashAndAt.length; i++) {
-			if (!(hashAndAt[i].contains(Settings.CATEGORY)
-					|| hashAndAt[i].contains(Settings.CONTEXT))) {
+			if (!(hashAndAt[i].contains(Constants.CATEGORY)
+					|| hashAndAt[i].contains(Constants.CONTEXT))) {
 				time.append(hashAndAt[i] + " ");
 			} else {
 				description.append(" " + hashAndAt[i]);

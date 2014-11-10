@@ -15,7 +15,7 @@ import java.util.Calendar;
 import org.junit.Before;
 import org.junit.Test;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.EventLogger;
@@ -59,29 +59,29 @@ public class JUnitEventLoggerAtd {
         // More importantly, tests if time and descriptions are accurately
         // logged.
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();
@@ -93,30 +93,30 @@ public class JUnitEventLoggerAtd {
 
         // Tests if logging is accurate for floating tasks operations
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
 
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();
@@ -129,30 +129,30 @@ public class JUnitEventLoggerAtd {
                 tomorrow, tomorrow);
 
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
 
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();
@@ -165,30 +165,30 @@ public class JUnitEventLoggerAtd {
         // Tests if logging is accurate for timed tasks stored in task
         // operations
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
 
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();
@@ -202,30 +202,30 @@ public class JUnitEventLoggerAtd {
         // Tests if logging is accurate for deadline tasks stored as floating
         // task operations
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
 
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();

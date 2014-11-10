@@ -8,7 +8,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 
 public class EventLogger implements IStorage {
@@ -66,7 +66,7 @@ public class EventLogger implements IStorage {
     public boolean storeNewTask(Task T) {
         checkInputValue(T);
         try {
-            fileWriter.println(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+            fileWriter.println(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                     new Date(), T.getDate().getTime(), T.getTaskId(),
                     T.getDescription()));
             fileWriter.flush();
@@ -80,7 +80,7 @@ public class EventLogger implements IStorage {
     public Task removeTask(Task T) {
         checkInputValue(T);
         try {
-            fileWriter.println(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+            fileWriter.println(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                     new Date(), T.getDate().getTime(), T.getTaskId(),
                     T.getDescription()));
             fileWriter.flush();
@@ -94,7 +94,7 @@ public class EventLogger implements IStorage {
     public boolean modifyTask(Task T) {
         checkInputValue(T);
         try {
-            fileWriter.println(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+            fileWriter.println(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                     new Date(), T.getDate().getTime(), T.getTaskId(),
                     T.getDescription()));
             fileWriter.flush();
@@ -108,7 +108,7 @@ public class EventLogger implements IStorage {
     public Task getTask(int taskId) {
         // allows negative taskId just for logging purpose.
 
-        fileWriter.println(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        fileWriter.println(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 new Date(), taskId));
         fileWriter.flush();
         return null;
@@ -116,7 +116,7 @@ public class EventLogger implements IStorage {
 
     @Override
     public ArrayList<Task> getAllTasks() {
-        fileWriter.println(String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+        fileWriter.println(String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                 new Date()));
         fileWriter.flush();
         return null;
@@ -134,7 +134,7 @@ public class EventLogger implements IStorage {
         if (error.trim().isEmpty()) {
             throw new IllegalArgumentException("Error cannot be empty");
         }
-        fileWriter.println(String.format(Messages.ERROR, new Date(), error));
+        fileWriter.println(String.format(Constants.ERROR, new Date(), error));
         fileWriter.flush();
     }
 

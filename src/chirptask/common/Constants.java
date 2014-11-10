@@ -1,7 +1,7 @@
 //@author A0111889W
 package chirptask.common;
 
-public class Messages {
+public class Constants {
     public static final String LOG_MESSAGE_ADD_TASK = "%1$s Added new task %2$s.";
     public static final String LOG_MESSAGE_REMOVE_TASK = "%1$s Removed task %2$s.";
     public static final String LOG_MESSAGE_MODIFY_TASK = "%1$s Modified task %2$s.";
@@ -57,5 +57,11 @@ public class Messages {
     public static final String ERROR = "%1$s: Error %2$s";
     public static final String ERROR_LOCAL = "Local storage %2$s.";
     public static final String INVALID_INPUT = "Invalid input: %1$s.";
+    
+    public static char CATEGORY_CHAR = '@';
+    public static char HASHTAG_CHAR = '#';
+
+    public static String CATEGORY = CATEGORY_CHAR + "";
+    public static String CONTEXT = HASHTAG_CHAR + "";
 
 }

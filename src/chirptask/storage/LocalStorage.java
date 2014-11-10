@@ -32,7 +32,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 
 /**
  * This class handles the tasks list in XML format. The XML file it manages
@@ -69,7 +69,7 @@ public class LocalStorage implements IStorage {
 				clearContent(local);
 				restartLocalStorage();
 			} catch (IOException e) {
-				System.err.println(String.format(Messages.ERROR_LOCAL, 
+				System.err.println(String.format(Constants.ERROR_LOCAL, 
 						"write to file failed"));
 			}
 		} else {

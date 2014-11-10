@@ -8,7 +8,7 @@ import java.util.List;
 
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 import chirptask.common.Settings.CommandType;
 import chirptask.common.Settings.StatusType;
@@ -210,11 +210,11 @@ public class DisplayView {
     public static void showStatusToUser(Settings.StatusType type, MainGui gui,
             String filter) {
         if (isStatusError(type)) {
-            processGUIError(gui, Messages.LOG_MESSAGE_DISPLAY_USAGE,
-                    Messages.LOG_MESSAGE_ERROR, "");
+            processGUIError(gui, Constants.LOG_MESSAGE_DISPLAY_USAGE,
+                    Constants.LOG_MESSAGE_ERROR, "");
         } else {
-            processGUIError(gui, Messages.LOG_MESSAGE_DISPLAY,
-                    Messages.LOG_MESSAGE_SUCCESS, filter);
+            processGUIError(gui, Constants.LOG_MESSAGE_DISPLAY,
+                    Constants.LOG_MESSAGE_SUCCESS, filter);
         }
     }
 
@@ -250,44 +250,44 @@ public class DisplayView {
             CommandType command) {
         switch (command) {
             case ADD :
-                processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                processGUI(action, gui, Constants.LOG_MESSAGE_ADD_TASK,
+                        Constants.LOG_MESSAGE_SUCCESS);
 
                 break;
             case DELETE :
-                processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                processGUI(action, gui, Constants.LOG_MESSAGE_REMOVE_TASK,
+                        Constants.LOG_MESSAGE_SUCCESS);
                 break;
 
             case EDIT :
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                processGUI(action, gui, Constants.LOG_MESSAGE_MODIFY_TASK,
+                        Constants.LOG_MESSAGE_SUCCESS);
 
                 break;
             case DONE :
-                processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                processGUI(action, gui, Constants.LOG_MESSAGE_DONE,
+                        Constants.LOG_MESSAGE_SUCCESS);
 
                 break;
             case UNDONE :
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                processGUI(action, gui, Constants.LOG_MESSAGE_MODIFY_TASK,
+                        Constants.LOG_MESSAGE_SUCCESS);
                 break;
             case LOGIN :
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, true,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                processGuiLogin(gui, Constants.LOG_MESSAGE_LOGIN, true,
+                        Constants.LOG_MESSAGE_SUCCESS);
                 break;
             case LOGOUT :
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_SUCCESS, true,
+                processGuiLogin(gui, Constants.LOG_MESSAGE_LOGOUT_SUCCESS, true,
                         "");
                 break;
             case DISPLAY :
-                processGUI(action, gui, Messages.LOG_MESSAGE_DISPLAY,
-                        Messages.LOG_MESSAGE_SUCCESS);
+                processGUI(action, gui, Constants.LOG_MESSAGE_DISPLAY,
+                        Constants.LOG_MESSAGE_SUCCESS);
                 break;
             case SYNC :
-                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC, true,
-                        Messages.LOG_MESSAGE_SYN_INIT);
+                processGuiLogin(gui, Constants.LOG_MESSAGE_SYNC, true,
+                        Constants.LOG_MESSAGE_SYN_INIT);
                 break;
             default:
                 assert false;
@@ -306,42 +306,42 @@ public class DisplayView {
             CommandType command) {
         switch (command) {
             case ADD :
-                processGUI(action, gui, Messages.LOG_MESSAGE_ADD_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
+                processGUI(action, gui, Constants.LOG_MESSAGE_ADD_TASK,
+                        Constants.LOG_MESSAGE_ERROR);
                 break;
             case DELETE :
-                processGUI(action, gui, Messages.LOG_MESSAGE_REMOVE_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
+                processGUI(action, gui, Constants.LOG_MESSAGE_REMOVE_TASK,
+                        Constants.LOG_MESSAGE_ERROR);
                 break;
 
             case EDIT :
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
+                processGUI(action, gui, Constants.LOG_MESSAGE_MODIFY_TASK,
+                        Constants.LOG_MESSAGE_ERROR);
 
                 break;
             case DONE :
-                processGUI(action, gui, Messages.LOG_MESSAGE_DONE,
-                        Messages.LOG_MESSAGE_ERROR);
+                processGUI(action, gui, Constants.LOG_MESSAGE_DONE,
+                        Constants.LOG_MESSAGE_ERROR);
                 break;
             case UNDONE :
-                processGUI(action, gui, Messages.LOG_MESSAGE_MODIFY_TASK,
-                        Messages.LOG_MESSAGE_ERROR);
+                processGUI(action, gui, Constants.LOG_MESSAGE_MODIFY_TASK,
+                        Constants.LOG_MESSAGE_ERROR);
                 break;
             case LOGIN :
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGIN, false,
-                        Messages.LOG_MESSAGE_ERROR);
+                processGuiLogin(gui, Constants.LOG_MESSAGE_LOGIN, false,
+                        Constants.LOG_MESSAGE_ERROR);
                 break;
             case SYNC :
-                processGuiLogin(gui, Messages.LOG_MESSAGE_SYNC_FAIL, false,
-                        Messages.LOG_MESSAGE_FAIL);
+                processGuiLogin(gui, Constants.LOG_MESSAGE_SYNC_FAIL, false,
+                        Constants.LOG_MESSAGE_FAIL);
                 break;
             case LOGOUT :
-                processGuiLogin(gui, Messages.LOG_MESSAGE_LOGOUT_FAIL, false,
+                processGuiLogin(gui, Constants.LOG_MESSAGE_LOGOUT_FAIL, false,
                         "");
                 break;
             default:
-                processGUIError(gui, Messages.LOG_MESSAGE_INVALID_COMMAND,
-                        Messages.LOG_MESSAGE_ERROR, "");
+                processGUIError(gui, Constants.LOG_MESSAGE_INVALID_COMMAND,
+                        Constants.LOG_MESSAGE_ERROR, "");
                 break;
         }
     }
@@ -384,7 +384,7 @@ public class DisplayView {
      * @return
      */
     private static boolean isLogMessageError(String logMessageError) {
-        return logMessageError == Messages.LOG_MESSAGE_ERROR;
+        return logMessageError == Constants.LOG_MESSAGE_ERROR;
     }
 
     /**
@@ -414,7 +414,7 @@ public class DisplayView {
      */
     private static void processGUI(Action action, MainGui gui, String message,
             String result) {
-        if (result.equalsIgnoreCase(Messages.LOG_MESSAGE_SUCCESS)) {
+        if (result.equalsIgnoreCase(Constants.LOG_MESSAGE_SUCCESS)) {
             gui.setStatus(String.format(message, result, action.getTask()
                     .getDescription()));
         } else {
@@ -444,11 +444,11 @@ public class DisplayView {
             // obtain description until the first space
             bufferText = new Text(descStringBuilder.substring(0, index));
 
-            if (descStringBuilder.charAt(0) == Settings.HASHTAG_CHAR) {
+            if (descStringBuilder.charAt(0) == Constants.HASHTAG_CHAR) {
                 // Context
                 bufferText.getStyleClass().add("hashtag-text");
                 bufferText.setOnMouseClicked(_gui.clickOnHashtag());
-            } else if (descStringBuilder.charAt(0) == Settings.CATEGORY_CHAR) {
+            } else if (descStringBuilder.charAt(0) == Constants.CATEGORY_CHAR) {
                 // Category
                 bufferText.getStyleClass().add("category-text");
                 bufferText.setOnMouseClicked(_gui.clickOnCategory());
@@ -520,8 +520,8 @@ public class DisplayView {
      * @return
      */
     private static String formatStringSuccess(CommandType type) {
-        return String.format(Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
-                Messages.LOG_MESSAGE_SUCCESS, type.toString());
+        return String.format(Constants.LOG_MESSAGE_SUCCESS_OR_FAILURE,
+                Constants.LOG_MESSAGE_SUCCESS, type.toString());
     }
 
     /**
@@ -531,7 +531,7 @@ public class DisplayView {
      * @return
      */
     private static String formatStringError(CommandType type) {
-        return String.format(Messages.LOG_MESSAGE_SUCCESS_OR_FAILURE,
-                Messages.LOG_MESSAGE_FAIL, type.toString());
+        return String.format(Constants.LOG_MESSAGE_SUCCESS_OR_FAILURE,
+                Constants.LOG_MESSAGE_FAIL, type.toString());
     }
 }
