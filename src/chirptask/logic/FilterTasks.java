@@ -38,8 +38,8 @@ public class FilterTasks {
     /**
      * This method is use to process the current filter entered by user
      * 
-     * @param T
-     * @param gui
+     * @param T The Task containing the filter string
+     * @param gui The MainGui object to manipulate
      */
     public static void filter(Task T, MainGui gui) {
         filteredTask = StorageHandler.getAllTasks();
@@ -56,7 +56,7 @@ public class FilterTasks {
     /**
      * Show appropriate message to user
      * 
-     * @param gui
+     * @param gui The MainGui object to manipulate
      */
     private static void showStatusToUser(MainGui gui) {
         DisplayView.showStatusToUser(StatusType.MESSAGE, gui, "");
@@ -66,8 +66,8 @@ public class FilterTasks {
      * Enables gui component to call this method when user presses tab to show
      * the edited description
      * 
-     * @param editInput
-     * @param gui
+     * @param editInput The user input to search for index number
+     * @param gui The MainGui object to manipulate
      */
     public static void editCli(String editInput, MainGui gui) {
         assert gui != null && !editInput.trim().isEmpty();
@@ -79,8 +79,8 @@ public class FilterTasks {
      * Check if edited task is in the task list range and show the selected task
      * to cli.
      * 
-     * @param gui
-     * @param taskIndex
+     * @param gui The MainGui object to manipulate
+     * @param taskIndex The task index to grab information from
      */
     private static void showEditTaskToUser(MainGui gui, int taskIndex) {
         int oldtaskIndex = taskIndex;
@@ -100,8 +100,8 @@ public class FilterTasks {
      * Method returns true if task key in by user is within the range of the
      * displayed task.
      * 
-     * @param taskIndex
-     * @return
+     * @param taskIndex The task index to check if in range
+     * @return true if in range, false otherwise
      */
     private static boolean isTaskIndexInRange(int taskIndex) {
         return taskIndex > INIT_TASKINDEX && taskIndex < filteredTask.size();
@@ -122,8 +122,8 @@ public class FilterTasks {
     /**
      * Return a list of tasks that is not deleted.
      * 
-     * @param taskList
-     * @return
+     * @param taskList The List of Task objects to hide
+     * @return The List of Task without all the isDeleted=true Task
      */
     public static List<Task> hideDeleted(List<Task> taskList) {
         List<Task> unhiddenList = new ArrayList<Task>();
@@ -142,8 +142,8 @@ public class FilterTasks {
      * Process the user input for filter and populate the list of tasks
      * accordingly
      * 
-     * @param filters
-     * @param gui
+     * @param filters The String containing all filters
+     * @param gui The MainGui object to manipulate
      */
     private static void processFilter(String filters, MainGui gui) {
         String[] param = processFilterParam(filters);
@@ -187,10 +187,10 @@ public class FilterTasks {
     /**
      * Filter the task list by date
      * 
-     * @param gui
-     * @param param
-     * @param templist
-     * @param i
+     * @param gui The MainGui object to manipulate
+     * @param param The filter date parameters 
+     * @param templist The filtered List to manipulate
+     * @param i The index of filter in param
      */
     private static void filterTaskDate(MainGui gui, String[] param,
             List<Task> templist, int i) {
@@ -211,11 +211,11 @@ public class FilterTasks {
     /**
      * Process the date filter and display status to user
      * 
-     * @param gui
-     * @param param
-     * @param templist
-     * @param i
-     * @param filterdate
+     * @param gui The MainGui object to manipulate
+     * @param param The filter data parameters
+     * @param templist The filtered List to manipulate
+     * @param i The index of filter in param
+     * @param filterdate The Calendar Date object to filter by and on
      */
     private static void processFilterDate(MainGui gui, String[] param,
             List<Task> templist, int i, Calendar filterdate) {
@@ -230,8 +230,8 @@ public class FilterTasks {
     /**
      * Log down invalid action by user and set error status.
      * 
-     * @param gui
-     * @return
+     * @param gui The MainGui object to manipulate
+     * @return The List of Task containing all Session tasks
      */
     private static List<Task> processExceptionLogging(MainGui gui) {
         List<Task> templist;
@@ -255,9 +255,9 @@ public class FilterTasks {
     /**
      * Process the user date input and return an calendar object
      * 
-     * @param filter
-     * @return
-     * @throws InvalidParameterException
+     * @param filter The filter date String 
+     * @return The Calendar object that was parsed from filter string
+     * @throws InvalidParameterException If user did not enter ##/##
      */
     public static Calendar processFilterDateParam(String filter)
             throws InvalidParameterException {
@@ -279,8 +279,8 @@ public class FilterTasks {
 
     /**
      * 
-     * @param temp
-     * @param filterdate
+     * @param temp The temp split date array [dd/mm]
+     * @param filterdate The Calendar object to manipulate
      */
     private static void setCalendar(String[] temp, Calendar filterdate) {
         filterdate.set(filterdate.get(Calendar.YEAR),
@@ -306,14 +306,12 @@ public class FilterTasks {
     }
 
     /**
+     * This method will check the filter date with the list of
+     * fliteredtask if the filter date is after and equals to the
+     * Task date add to the list.
      * 
-     * @param tempList
-     * @param filterdate
-     * 
-     *            This method will check the filter date with the list of
-     *            fliteredtask if the filter date is after and equals to the
-     *            Task date add to the list.
-     * 
+     * @param tempList The List of current Task
+     * @param filterdate The date to filter by and on.
      */
 
     private static void populateDateList(List<Task> tempList,
@@ -337,8 +335,8 @@ public class FilterTasks {
      * This method will remove from all the tasks that does not match the user input,
      * final filteredTask list will contains all tasks that matches. 
      * 
-     * @param templist
-     * @param keywords
+     * @param templist The current working List to filter
+     * @param keywords The keywords to search for
      */
     private static void populateStringList(List<Task> templist, String keywords) {
         for (Task T : filteredTask) {
@@ -358,8 +356,8 @@ public class FilterTasks {
     }
     /**
      * 
-     * @param tempList
-     * @param done
+     * @param tempList The current List of Task
+     * @param done If true filter all done task, else filter all undone task
      */
     private static void populateStatusList(List<Task> tempList, boolean done) {
         for (Task T : filteredTask) {
@@ -394,7 +392,7 @@ public class FilterTasks {
     /**
      * This will populate all task and category/hastags into the respective list for display.
      * 
-     * @param gui
+     * @param gui The MainGui object to manipulate
      */
     static void filter(MainGui gui) {
         categoriesList = new ArrayList<String>();

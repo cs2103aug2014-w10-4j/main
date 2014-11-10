@@ -23,7 +23,6 @@ public class CalendarHandler {
     private static final String EVENT_DONE = "transparent";
     private static final String EVENT_UNDONE = "opaque";
     public static final String CALENDAR_DONE = "[Done] ";
-    public static final String CALENDAR_UNDONE = "";
     
     static boolean isNull(Calendar calendar) {
         if (calendar == null) {

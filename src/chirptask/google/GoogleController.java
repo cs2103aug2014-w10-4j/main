@@ -264,7 +264,7 @@ public class GoogleController implements Runnable {
      * ID of the newly created task to update the entry in the local storage
      * (xml file).
      * 
-     * @param taskToAdd
+     * @param taskToAdd The ChirpTask Task object to add
      */
     public void addTask(chirptask.storage.Task taskToAdd) {
         if (taskToAdd == null) {

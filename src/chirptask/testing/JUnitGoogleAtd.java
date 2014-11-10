@@ -55,7 +55,7 @@ public class JUnitGoogleAtd {
         StorageHandler.initCloudStorage();
 
         while (GoogleController.isGoogleLoaded() == false) {
-            sleep();
+            sleep(5000);
         }
         //At this point, the JUnitTest XML file should have all your synced
         // items from Google
@@ -93,7 +93,7 @@ public class JUnitGoogleAtd {
             storageHandler.addTask(currentTask);
         }
         
-        sleep();
+        sleep(8000);
         
         List<Task> localList = StorageHandler.getAllTasks();
         
@@ -122,7 +122,7 @@ public class JUnitGoogleAtd {
             storageHandler.deleteTask(currentTask);
         }
 
-        sleep();
+        sleep(7000);
         
         //All tasks got deleted
         assertEquals("empty list", 0, localList.size());
@@ -131,12 +131,13 @@ public class JUnitGoogleAtd {
     @After
     public void closeGoogle() {
         logic.retrieveInputFromUI("logout");
+        sleep(5000);
         storageHandler.closeStorages();
     }
     
-    public void sleep() {
+    public void sleep(int sleepTime) {
         try {
-            Thread.sleep(10000); //Wait for request to be done
+            Thread.sleep(sleepTime); //Wait for request to be done
         } catch (InterruptedException e) {
         }
     }
