@@ -60,9 +60,9 @@ public class InputParser {
 	 * This method gets the first word in user input
 	 * and tries to determine if that word is a command
 	 * It then calls the appropriate methods to generate 
-	 * GroupAction that will be processed by Logic
+	 * GroupAction
 	 * @param: void
-	 * @return: GroupAction
+	 * @return: GroupAction which will be processed by Logic
 	 */
 	private GroupAction processCommand() {
 		String commandType = getCommandTypeString();
@@ -140,7 +140,7 @@ public class InputParser {
 	 * This method returns an Invalid GroupAction whose
 	 * InvalidCommandType is the same as the corresponding 
 	 * command type that originates this GroupAction.
-	 * @param: CommandType command
+	 * @param: CommandType command from user input
 	 * @return: GroupAction invalid
 	 */
 	private GroupAction processInvalid(CommandType command) {
@@ -158,7 +158,7 @@ public class InputParser {
 	/**
 	 * This method returns a display GroupAction, which has a
 	 * task containing the display parameter in its description
-	 * @param parameter
+	 * @param parameter Filter keywords or empty string
 	 * @return GroupAction display
 	 */
 	private GroupAction processDisplay(String parameter) {
@@ -185,8 +185,8 @@ public class InputParser {
 	 * This method returns an Add GroupAction, provided the parameter
 	 * is valid (if the parameter is not, Invalid GroupAction will
 	 * be returned instead). 
-	 * @param command
-	 * @param parameter
+	 * @param command from user input
+	 * @param parameter from user input
 	 * @return GroupAction Add or Invalid 
 	 */
 	private GroupAction processAdd(String command, String parameter) {
@@ -217,10 +217,9 @@ public class InputParser {
 
 	/**
 	 * This method returns a new Task, DeadlineTask, TimedTask
-	 * or null depending on the command and parameter. The accepted
-	 * commands are "add", "addd" and "addt".
-	 * @param command
-	 * @param parameter
+	 * or null depending on the command and parameter.
+	 * @param command "add", "addd" or "addt"
+	 * @param parameter from user input
 	 * @return Task or null if invalid parameter
 	 */
 	private Task generateTask(String command, String parameter) {
@@ -261,9 +260,9 @@ public class InputParser {
 	/**
 	 * This method creates a new FloatingTask which has the description
 	 * and taskIndex supplied by the caller.
-	 * @param description
-	 * @param taskIndex
-	 * @return FloatingTask
+	 * @param description String to describe the Task
+	 * @param taskIndex The unique id of the Task
+	 * @return FloatingTask 
 	 */
 	private static Task addFloatingTask(String description, int taskIndex) {
 		Task toDo;
@@ -276,9 +275,9 @@ public class InputParser {
 	 * This method creates a new TimedTask which has the description, 
 	 * taskIndex and parameter as supplied by the caller. The parameter
 	 * is included to parse the start time and end time for this Task.
-	 * @param parameter
-	 * @param description
-	 * @param taskIndex
+	 * @param parameter String from user input
+	 * @param description String to describe the Task
+	 * @param taskIndex The unique id of the Task
 	 * @return TimedTask, or null if parameter is invalid
 	 */
 	private static Task addTimedTask(String parameter, String description,
@@ -309,9 +308,9 @@ public class InputParser {
 	 * This methods creates a new DeadlineTask which has the description,
 	 * taskIndex and parameter as supplied by the caller. The parameter
 	 * is included to parse the deadline for this Task.
-	 * @param parameter
-	 * @param description
-	 * @param taskIndex
+	 * @param parameter String from user input
+	 * @param description String to describe the Task
+	 * @param taskIndex The unique id of the Task
 	 * @return DeadlineTask, or null if parameter is invalid
 	 */
 	private static Task addDeadlineTask(String parameter, String description,
@@ -343,7 +342,7 @@ public class InputParser {
 	 * This method returns an Edit GroupAction, provided the parameter
 	 * is valid (in the case it is not, an Invalid GroupAction will be 
 	 * returned instead). 
-	 * @param parameter
+	 * @param parameter String from user input
 	 * @return GroupAction Edit or Invalid
 	 */
 	private GroupAction processEdit(String parameter) {
@@ -394,9 +393,9 @@ public class InputParser {
 	 * of this method, for example delete, done, undone - whose
 	 * main parameter is a string composes of number denoting the affected
 	 * task indexes.
-	 * @param command
-	 * @param parameter
-	 * @return GroupAction
+	 * @param command The command type from user input
+	 * @param parameter String from user input
+	 * @return GroupAction of the type command or invalid 
 	 */
 	private GroupAction processByTaskIndex(CommandType command, String parameter) {
 		GroupAction actions = new GroupAction();
@@ -462,8 +461,8 @@ public class InputParser {
 	 * by caller. There are a few commands that will make use of this 
 	 * method: logout, sync, clear, exit, login and undo; commands 
 	 * whose parameter is empty.
-	 * @param command
-	 * @return GroupAction
+	 * @param command The command types which are not bound to a specific Task 
+	 * @return GroupAction of command type
 	 */
 	private GroupAction processWithNoTask(CommandType command) {
 		GroupAction actions = new GroupAction();
@@ -480,8 +479,8 @@ public class InputParser {
 	 * one if only the date was presented in user's input. The edited task
 	 * shares the same date as the old one if no date was presented in
 	 * user's input. 
-	 * @param oldTask
-	 * @param editedTask
+	 * @param oldTask The old Task user wants to edit
+	 * @param editedTask The new Task created from user input
 	 * @return Task or null if user input is invalid
 	 */
 	private Task getEditedTask(Task oldTask, Task editedTask) {
@@ -512,9 +511,9 @@ public class InputParser {
 	/**
 	 * This method returns the edited floating task with the same
 	 * id as the old task, but different description
-	 * @param oldTask
-	 * @param editedTask
-	 * @return
+	 * @param oldTask The old Task user wants to edit
+	 * @param editedTask The new Task created from user input
+	 * @return the new Task 
 	 */
 	private Task editFloatingtask(Task oldTask, Task editedTask) {
 		int taskId = oldTask.getTaskId();
