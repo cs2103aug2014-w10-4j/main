@@ -9,7 +9,17 @@ ChirpTask is a fast, non-disruptive and seamless software for managing your dail
 </UL>
 
 <h2>Usage</h2>
-Not ready to be used yet.
+You will need:
+<UL>
+<LI>Java SE 8</LI>
+<LI>Eclipse IDE</LI>
+</UL>
+
+To get a copy of this on your machine:
+<UL>
+<LI><code>git clone https://github.com/cs2103aug2014-w10-4j/main.git</code></LI>
+<LI>Import project into your Eclipse IDE</LI>
+</UL>
 
 <h2>Team</h2>
 Pang Yong He<br/>
