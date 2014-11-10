@@ -27,7 +27,14 @@ public class Settings {
 
     public static int HOTKEY_TOGGLE_HIDE = NativeKeyEvent.VC_ESCAPE;
     public static int HOTKEY_TOGGLE_SHOW = NativeKeyEvent.VC_G;
-
+    
+    public static final String FILTER_DONE = "/done";
+    public static final String FILTER_UNDONE = "/undone";
+    public static final String FILTER_FLOATING = "/floating";
+    public static final String FILTER_DEADLINE = "/deadline";
+    public static final String FILTER_TIMED = "/timed";
+    public static final String FILTER_DATE = "/date";
+    
     public enum CommandType {
         ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT, CLEAR, SYNC, LOGOUT
     }

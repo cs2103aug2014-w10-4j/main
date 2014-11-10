@@ -34,7 +34,9 @@ public class FilterTasks {
     private static final int FIRST_POS = 1;
     private static final int START_INDEX = 0;
     private static final int INT_ONE = 1;
-
+    private static final String SPACE = "\\s+";
+    private static final String SLASH = "/";
+    private static final String EDIT = "edit ";
     /**
      * This method is use to process the current filter entered by user
      * 
@@ -92,7 +94,7 @@ public class FilterTasks {
 
     private static void showEditTask(MainGui gui, int taskIndex,
             int oldtaskIndex) {
-        gui.setUserInputText("edit " + oldtaskIndex + " "
+        gui.setUserInputText(EDIT + oldtaskIndex + " "
                 + filteredTask.get(taskIndex).getDescription());
     }
 
@@ -146,42 +148,46 @@ public class FilterTasks {
      * @param gui The MainGui object to manipulate
      */
     private static void processFilter(String filters, MainGui gui) {
-        String[] param = processFilterParam(filters);
+        String[] param = processFilterInput(filters);
 
-        List<Task> templist = new CopyOnWriteArrayList<Task>();
-        templist.addAll(filteredTask);
+        List<Task> processList = new CopyOnWriteArrayList<Task>();
+        processList.addAll(filteredTask);
 
-        for (int i = START_INDEX; i < param.length; i++) {
-            String filter = param[i];
-            switch (filter) {
-            case "/done":
-                // search done task
-                filterStatus(templist, true);
-                break;
-            case "/undone":
-                // search undone task
-                filterStatus(templist, false);
-                break;
-            case "/floating":
-                filterTaskType(templist, Task.TASK_FLOATING);
-                break;
-            case "/timed":
-                filterTaskType(templist, Task.TASK_TIMED);
-                break;
-            case "/deadline":
-                filterTaskType(templist, Task.TASK_DEADLINE);
-                break;
-            case "/date":
-                filterTaskDate(gui, param, templist, i);
-                i++;
-                break;
-            default:
-                filterKeyword(templist, filter);
-                break;
-            }
-            filteredTask = new ArrayList<Task>(templist);
+        for (int paramPos = START_INDEX; paramPos < param.length; paramPos++) {
+            String filter = param[paramPos];
+            paramPos = determineFilterAndExecute(gui, param, processList, paramPos, filter);
+            filteredTask = new ArrayList<Task>(processList);
         }
 
+    }
+
+    private static int determineFilterAndExecute(MainGui gui, String[] param,
+            List<Task> templist, int pos, String filter) {
+        switch (filter) {
+        case Settings.FILTER_DONE:
+            filterStatus(templist, true);
+            break;
+        case Settings.FILTER_UNDONE:
+            filterStatus(templist, false);
+            break;
+        case Settings.FILTER_FLOATING:
+            filterTaskType(templist, Task.TASK_FLOATING);
+            break;
+        case Settings.FILTER_TIMED:
+            filterTaskType(templist, Task.TASK_TIMED);
+            break;
+        case Settings.FILTER_DEADLINE:
+            filterTaskType(templist, Task.TASK_DEADLINE);
+            break;
+        case Settings.FILTER_DATE:
+            filterTaskDate(gui, param, templist, pos);
+            pos++;
+            break;
+        default:
+            filterKeyword(templist, filter);
+            break;
+        }
+        return pos;
     }
 
     /**
@@ -190,17 +196,16 @@ public class FilterTasks {
      * @param gui The MainGui object to manipulate
      * @param param The filter date parameters 
      * @param templist The filtered List to manipulate
-     * @param i The index of filter in param
+     * @param index The index of filter in param
      */
     private static void filterTaskDate(MainGui gui, String[] param,
-            List<Task> templist, int i) {
+            List<Task> templist, int index) {
         try {
-            Calendar filterdate = processFilterDateParam(param[i + INIT_FILTER]);
+            Calendar filterdate = processFilterDateParam(param[index + INIT_FILTER]);
             if (filterdate != null) {
-                processFilterDate(gui, param, templist, i, filterdate);
+                processFilterDate(gui, param, templist, index, filterdate);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            // log down invalid input
             templist = processExceptionLogging(gui);
 
         } catch (InvalidParameterException invalidParameterException) {
@@ -248,8 +253,8 @@ public class FilterTasks {
      * @param filters
      * @return
      */
-    private static String[] processFilterParam(String filters) {
-        return filters.split("\\s+");
+    private static String[] processFilterInput(String filters) {
+        return filters.split(SPACE);
     }
 
     /**
@@ -261,7 +266,7 @@ public class FilterTasks {
      */
     public static Calendar processFilterDateParam(String filter)
             throws InvalidParameterException {
-        String[] temp = filter.split("/");
+        String[] temp = filter.split(SLASH);
         Calendar filterdate = Calendar.getInstance();
         if (isValidDateLength(temp)) {
             try {
