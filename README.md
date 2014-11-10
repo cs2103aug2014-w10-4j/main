@@ -16,10 +16,10 @@ You will need:
 </UL>
 
 To get a copy of this on your machine:
-<UL>
+<OL>
 <LI><code>git clone https://github.com/cs2103aug2014-w10-4j/main.git</code></LI>
 <LI>Import project into your Eclipse IDE</LI>
-</UL>
+</OL>
 
 <h2>Team</h2>
 Pang Yong He<br/>
