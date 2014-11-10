@@ -17,6 +17,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
@@ -140,13 +141,15 @@ public class LocalStorage implements IStorage {
 			trans.setOutputProperty(OutputKeys.INDENT, "yes");
 		} catch (ParserConfigurationException p) {
 			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
-					"error in setting up"));
+					"error in setting up parser"));
 		} catch (TransformerConfigurationException t) {
 			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
-					"error in setting up"));
+					"error in setting up transformer"));
 		} catch (TransformerFactoryConfigurationError e) {
 			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
-					"error in setting up"));
+					"error in setting up transformer"));
+		} catch (NullPointerException n) {
+			return;
 		}
 	}
 	
@@ -170,6 +173,7 @@ public class LocalStorage implements IStorage {
         } catch (ParserConfigurationException e) {
         } catch (TransformerConfigurationException e) {
         } catch (TransformerFactoryConfigurationError e) {
+        } catch (NullPointerException e) {
         }
     }
     
@@ -225,8 +229,10 @@ public class LocalStorage implements IStorage {
 			DOMSource source = new DOMSource(localStorage);
 			StreamResult file = new StreamResult(local);
 			trans.transform(source, file);
-		} catch (Exception e) {
-			
+		} catch (NullPointerException e) {
+			return;
+		} catch (TransformerException t) {
+			return;
 		}
 	}
 
@@ -247,14 +253,12 @@ public class LocalStorage implements IStorage {
 
 	/**
 	 * @return root element
-	 * @throws SAXException
-	 * @throws IOException
 	 */
 	private Element getRoot() {
 		try {
 			Element root = localStorage.getDocumentElement();
 			return root;
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			return null;
 		}
 	}
@@ -262,9 +266,9 @@ public class LocalStorage implements IStorage {
 	/**
 	 * This method add a task to the XML file, one attribute at a time
 	 * 
-	 * @param doc
-	 * @param taskToAdd
-	 * @return the corresponding node
+	 * @param doc represents the whole document
+	 * @param taskToAdd the Task to be added
+	 * @return the corresponding node 
 	 */
 	private static Node generateTaskNode(Document doc, Task taskToAdd) {
 	    if (doc == null || taskToAdd == null) {
@@ -395,10 +399,8 @@ public class LocalStorage implements IStorage {
 
 	/**
 	 * This method takes in a number (taskId) and return the corresponding task
-	 * 
-	 * @param taskId
-	 *            (assume taskId to be unique)
-	 * @return task
+	 * @param taskId the id of Task
+	 * @return a Task object or null if the Task cannot be found 
 	 */
 	public Task getTask(int taskId) {
 	    if (taskId < 0) {
@@ -416,9 +418,8 @@ public class LocalStorage implements IStorage {
 
 	/**
 	 * This method takes in taskId and returns the corresponding node
-	 * 
-	 * @param taskId
-	 * @return node
+	 * @param taskId the Id of the Task
+	 * @return node that represents the Task
 	 */
 	private Node getTaskNode(int taskId) {
 	    if (taskId < 0) {
@@ -478,9 +479,8 @@ public class LocalStorage implements IStorage {
 
 	/**
 	 * This method takes in a node and return the corresponding task
-	 * 
-	 * @param node
-	 * @return task
+	 * @param node represents Task object
+	 * @return task Task object
 	 */
 	private Task retrieveTaskFromFile(Node node) {
 		Task task = null;
@@ -594,10 +594,9 @@ public class LocalStorage implements IStorage {
 	/**
 	 * This method helps reconstruct Task object by returning an ArrayList of
 	 * values in tags
-	 * 
-	 * @param tag
-	 * @param item
-	 * @return ArrayList<String>
+	 * @param tag String
+	 * @param item String
+	 * @return ArrayList<String> of values
 	 */
 	//@author A0113022H
 	private static List<String> getValues(String tag, Element item) {

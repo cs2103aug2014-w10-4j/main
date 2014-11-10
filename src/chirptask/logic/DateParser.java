@@ -37,8 +37,8 @@ public class DateParser {
 	 * and tries to match every one of them with recognized
 	 * date/time formats. If it succeeds in matching, the whole
 	 * string will be passed to Natty NLP parser to get the date 
-	 * @param toParse
-	 * @return List<Calendar>
+	 * @param toParse String
+	 * @return List<Calendar> list of Calendar objects parsed from toParse
 	 */
 	public List<Calendar> parseDate(String toParse) {
 		boolean success = false;
@@ -97,8 +97,8 @@ public class DateParser {
 	/**
 	 * This method passes the String to Natty NLP parser
 	 * and converts what it gets from Natty to Calendar objects.
-	 * @param toParse
-	 * @param isTimeSet
+	 * @param toParse String  
+	 * @param isTimeSet boolean to check if time should be set to default 23:59
 	 */
 	private void parseDateTime(String toParse, boolean isTimeSet) {
 		Calendar today = Calendar.getInstance();
@@ -119,7 +119,7 @@ public class DateParser {
 		if (list.size() == 2) {
 			long distance = list.get(0).getTimeInMillis() - list.get(1).getTimeInMillis();
 			if (distance >= DAY_IN_MILLI) {
-				list.remove(1); 
+				list.remove(1); //to make input parser return invalid GroupAction
 			} else if (distance > 0) {
 				list.get(1).add(Calendar.DAY_OF_MONTH, 1);
 			}
@@ -130,7 +130,7 @@ public class DateParser {
 	 * This method tries to match a token with the recognized
 	 * time formats. If the token is recognized as one accepted
 	 * formats, it is returned, else null is returned
-	 * @param seek
+	 * @param seek a part of the original string
 	 * @return String or null if no match is found
 	 */
 	private String findTime(String seek) {
@@ -162,7 +162,7 @@ public class DateParser {
 	 * This method tries to match a token with the recognized
 	 * date formats. If the token is recognized as one accepted
 	 * formats, it is returned, else null is returned
-	 * @param seek
+	 * @param seek a part of the original string
 	 * @return String or null if no match is found
 	 */
 	private String findDate(String seek) {
