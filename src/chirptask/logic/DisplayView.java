@@ -32,8 +32,10 @@ public class DisplayView {
      * This will take in a filtered list and update the taskview, sort to
      * date/time, store into List of tasks
      * 
-     * @param tasks The list of filtered tasks
-     * @param gui The MainGui object to manipulate
+     * @param tasks
+     *            The list of filtered tasks
+     * @param gui
+     *            The MainGui object to manipulate
      */
     public static void updateTaskView(List<Task> tasks, MainGui gui) {
 
@@ -46,7 +48,8 @@ public class DisplayView {
     /**
      * Method will sort the task
      * 
-     * @param tasks The list of tasks to sort
+     * @param tasks
+     *            The list of tasks to sort
      */
     private static void sortTask(List<Task> tasks) {
         Collections.sort(tasks);
@@ -56,7 +59,8 @@ public class DisplayView {
      * This method will update the Context and category on the GUI
      * 
      * 
-     * @param gui The MainGui object to manipulate
+     * @param gui
+     *            The MainGui object to manipulate
      */
     private static void processUpdateHashtagAndCategoryView(MainGui gui) {
         updateCategoryView(gui);
@@ -68,8 +72,10 @@ public class DisplayView {
      * all tasks under a date.
      * 
      * 
-     * @param tasks The list of tasks to loop through
-     * @param gui The MainGui object to manipulate
+     * @param tasks
+     *            The list of tasks to loop through
+     * @param gui
+     *            The MainGui object to manipulate
      */
     private synchronized static void processUpdateTaskView(List<Task> tasks,
             MainGui gui) {
@@ -85,9 +91,12 @@ public class DisplayView {
     /**
      * Method will call GUI method to update the task under the respective date
      * 
-     * @param gui The MainGui object to manipulate
-     * @param T The Task to update in GUI
-     * @param dateToString The date String to update in GUI
+     * @param gui
+     *            The MainGui object to manipulate
+     * @param T
+     *            The Task to update in GUI
+     * @param dateToString
+     *            The date String to update in GUI
      */
     private static void updateTaskToDate(MainGui gui, Task T,
             String dateToString) {
@@ -98,8 +107,10 @@ public class DisplayView {
     /**
      * Method will call GUI method to create a date view
      * 
-     * @param gui The MainGui object to manipulate
-     * @param T The Task to add the date to GUI
+     * @param gui
+     *            The MainGui object to manipulate
+     * @param T
+     *            The Task to add the date to GUI
      */
     private static void updateTaskViewDate(MainGui gui, Task T) {
         gui.addNewTaskViewDate(T.getDate());
@@ -107,9 +118,13 @@ public class DisplayView {
 
     //@author A0111889W
     /**
-     * Assuming there are only 3 type of task we need to handle
+     * Returns the string representation of the time for a task.
+     * Floating: ""
+     * Timed: start to end
+     * Deadline: due by time
      * 
-     * @param task The task to process
+     * @param task
+     *            The task to process
      * @return String The string to display on the MainGui
      */
     public static String convertTaskDateToDurationString(Task task) {
@@ -137,7 +152,8 @@ public class DisplayView {
     /**
      * This method will be call during init to display all task
      * 
-     * @param gui The MainGui object to manipulate
+     * @param gui
+     *            The MainGui object to manipulate
      */
     public static void updateTaskView(MainGui gui) {
         List<Task> allTasks = FilterTasks.getFilteredList();
@@ -150,7 +166,8 @@ public class DisplayView {
     /**
      * This method will call gui to update the category view.
      * 
-     * @param gui The MainGui object to manipulate
+     * @param gui
+     *            The MainGui object to manipulate
      */
     public static void updateCategoryView(MainGui gui) {
         List<String> categories = FilterTasks.getCategoryList();
@@ -162,7 +179,8 @@ public class DisplayView {
     /**
      * This method will call gui to update the Hashtag view.
      * 
-     * @param gui The MainGui object to manipulate
+     * @param gui
+     *            The MainGui object to manipulate
      */
     public static void updateHashtagView(MainGui gui) {
         List<String> contexts = FilterTasks.getContextList();
@@ -174,8 +192,10 @@ public class DisplayView {
     /**
      * Show status to user with the respective message
      * 
-     * @param Message The status message to update
-     * @param gui The MainGui object to manipulate
+     * @param Message
+     *            The status message to update
+     * @param gui
+     *            The MainGui object to manipulate
      */
     public static void showStatusToUser(String Message, MainGui gui) {
         gui.setStatus(Message);
@@ -184,9 +204,12 @@ public class DisplayView {
     /**
      * Show status to user depending on the success
      * 
-     * @param Message The status message to update
-     * @param gui The MainGui object to manipulate
-     * @param success The flag of whether it is successful or not
+     * @param Message
+     *            The status message to update
+     * @param gui
+     *            The MainGui object to manipulate
+     * @param success
+     *            The flag of whether it is successful or not
      */
     public static void showStatusToUser(String Message, MainGui gui,
             boolean success) {
@@ -200,9 +223,12 @@ public class DisplayView {
     /**
      * Show status to user depending on the execution of display command
      * 
-     * @param type The StatusType to update on GUI
-     * @param gui The MainGui object to manipulate
-     * @param filter The filters applied
+     * @param type
+     *            The StatusType to update on GUI
+     * @param gui
+     *            The MainGui object to manipulate
+     * @param filter
+     *            The filters applied
      */
     public static void showStatusToUser(Settings.StatusType type, MainGui gui,
             String filter) {
@@ -220,9 +246,12 @@ public class DisplayView {
      * input.
      * 
      * 
-     * @param type The StatusType to update on GUI
-     * @param action The Action that was being processed
-     * @param gui The MainGui object to manipulate
+     * @param type
+     *            The StatusType to update on GUI
+     * @param action
+     *            The Action that was being processed
+     * @param gui
+     *            The MainGui object to manipulate
      * 
      * 
      */
@@ -239,9 +268,12 @@ public class DisplayView {
     /**
      * Method will display success message to user
      * 
-     * @param action The Action that was being processed
-     * @param gui The MainGui object to manipulate
-     * @param command The CommandType to process
+     * @param action
+     *            The Action that was being processed
+     * @param gui
+     *            The MainGui object to manipulate
+     * @param command
+     *            The CommandType to process
      */
     private static void processSuccessGui(Action action, MainGui gui,
             CommandType command) {
@@ -295,9 +327,12 @@ public class DisplayView {
     /**
      * Method will display error message to user
      * 
-     * @param action The Action to process
-     * @param gui The MainGui object to manipulate
-     * @param command The CommandType to process
+     * @param action
+     *            The Action to process
+     * @param gui
+     *            The MainGui object to manipulate
+     * @param command
+     *            The CommandType to process
      */
     private static void processErrorGui(Action action, MainGui gui,
             CommandType command) {
@@ -346,7 +381,8 @@ public class DisplayView {
     /**
      * Return true if statustype is error, else return true
      * 
-     * @param type The StatusType to compare
+     * @param type
+     *            The StatusType to compare
      * @return True if error, false otherwise
      */
     private static boolean isStatusError(Settings.StatusType type) {
@@ -358,10 +394,14 @@ public class DisplayView {
      * input.
      * 
      * 
-     * @param action The Action to process
-     * @param gui The MainGui object to manipulate
-     * @param logMessageInvalidCommand The message to log
-     * @param logMessageError The message to log
+     * @param action
+     *            The Action to process
+     * @param gui
+     *            The MainGui object to manipulate
+     * @param logMessageInvalidCommand
+     *            The message to log
+     * @param logMessageError
+     *            The message to log
      */
     private static void processGUIError(MainGui gui,
             String logMessageInvalidCommand, String logMessageError,
@@ -377,7 +417,8 @@ public class DisplayView {
     /**
      * Method will return true is is a error message, else false
      * 
-     * @param logMessageError The message to log
+     * @param logMessageError
+     *            The message to log
      * @return True if error, false otherwise
      */
     private static boolean isLogMessageError(String logMessageError) {
@@ -387,9 +428,12 @@ public class DisplayView {
     /**
      * This method will show the failure or success of login to user.
      * 
-     * @param gui The MainGui object to manipulate
-     * @param message The message to display
-     * @param result The result to display
+     * @param gui
+     *            The MainGui object to manipulate
+     * @param message
+     *            The message to display
+     * @param result
+     *            The result to display
      */
     private static void processGuiLogin(MainGui gui, String message,
             Boolean isSuccess, String result) {
@@ -404,10 +448,14 @@ public class DisplayView {
      * This method will show the failure or success for simple
      * add/delete/done/undone/login/display
      * 
-     * @param action The Action to process
-     * @param gui The MainGui object to manipulate
-     * @param message The message to display
-     * @param result The result to display
+     * @param action
+     *            The Action to process
+     * @param gui
+     *            The MainGui object to manipulate
+     * @param message
+     *            The message to display
+     * @param result
+     *            The result to display
      */
     private static void processGUI(Action action, MainGui gui, String message,
             String result) {
@@ -421,8 +469,26 @@ public class DisplayView {
     }
 
     //@author A0111889W
+    /**
+     * This method converts a description string value into the corresponding
+     * textflow object, with the hashtags and categories coloured accordingly
+     * and their eventhandlers set.
+     * 
+     * @param description
+     *            string value to turn into text flow object.
+     * @param done
+     *            status of task. If true, text will be strikethroughed
+     * @param _gui
+     *            MainGui Object with event for mouse click on category/hashtag
+     * @return TextFlow object of description
+     * @throws NullPointerException
+     *             description and gui cannot be null
+     */
     public static TextFlow parseDescriptionToTextFlow(String description,
-            boolean done, MainGui _gui) {
+            boolean done, MainGui _gui) throws NullPointerException {
+        if (description == null || _gui == null) {
+            throw new NullPointerException();
+        }
         TextFlow parsedDesc = new TextFlow();
         StringBuilder descStringBuilder = new StringBuilder(description);
         Text bufferText = new Text();
@@ -463,8 +529,21 @@ public class DisplayView {
     }
 
     //@author A0111889W
-    public static String convertDateToString(Calendar date) {
-        assert date != null;
+    /**
+     * Converts date object into the corresponding string value with DD/MM/YYYY
+     * format.
+     * 
+     * @param date
+     *            date object to parse into string.
+     * @return String string representation of date object
+     * @throws NullPointerException
+     *             date object cannot be null
+     */
+    public static String convertDateToString(Calendar date)
+            throws NullPointerException {
+        if (date == null) {
+            throw new NullPointerException();
+        }
         SimpleDateFormat sdf = new SimpleDateFormat(
                 Constants.DATE_FORMAT_DD_MM_YYYY);
         String parseDateToString = sdf.format(date.getTime());
@@ -472,6 +551,17 @@ public class DisplayView {
     }
 
     //@author A0111889W
+    /**
+     * Shell method for GUI to invoke logic class to autocomplete user input
+     * field with task description.
+     * 
+     * @param input
+     *            Current user input value. Should be of the form
+     *            "edit [number]"
+     * @param _gui
+     *            MainGui object that contains the user input field to
+     *            autocomplete.
+     */
     public static void autocompleteEditWithTaskDescription(String input,
             MainGui _gui) {
         assert !input.trim().isEmpty() && _gui != null;
@@ -482,9 +572,12 @@ public class DisplayView {
     /**
      * Show message and command type to user.
      * 
-     * @param message The message to display
-     * @param type The CommandType to display
-     * @param _gui The MainGui object to manipulate
+     * @param message
+     *            The message to display
+     * @param type
+     *            The CommandType to display
+     * @param _gui
+     *            The MainGui object to manipulate
      */
     public static void showStatusToUser(StatusType message, CommandType type,
             MainGui _gui) {
@@ -495,9 +588,12 @@ public class DisplayView {
     /**
      * Method will call gui and show status to user
      * 
-     * @param message The StatusType to process
-     * @param type The CommandType to process
-     * @param _gui The MainGui object to manipulate
+     * @param message
+     *            The StatusType to process
+     * @param type
+     *            The CommandType to process
+     * @param _gui
+     *            The MainGui object to manipulate
      */
 
     private static void processGUI(StatusType message, CommandType type,
@@ -516,7 +612,8 @@ public class DisplayView {
     /**
      * Format the success message
      * 
-     * @param type The CommandType to process
+     * @param type
+     *            The CommandType to process
      * @return The formatted success string
      */
     private static String formatStringSuccess(CommandType type) {
@@ -527,7 +624,8 @@ public class DisplayView {
     /**
      * Format the error message
      * 
-     * @param type The CommandType to process
+     * @param type
+     *            The CommandType to process
      * @return The formatted error string
      */
     private static String formatStringError(CommandType type) {
