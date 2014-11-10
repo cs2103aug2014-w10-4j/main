@@ -45,7 +45,7 @@ public class JUnitLogicAtd {
         // add deadline task
         _logic.retrieveInputFromUI("addd go out with parents on 17/11");
         assertEquals(FilterTasks.getFilteredList().get(1).getDescription(),
-                "go out with parents by 23:59 17/11");
+                "go out with parents by 23:59");
         
         // Use a invalid command 
         // Expected task to be in the list 2, since this is a wrong type

@@ -84,13 +84,13 @@ public class JUnitInputParserAtd {
 		parser.receiveInput("addd finish this by today");
 		deadline.set(Calendar.HOUR_OF_DAY, 23);
 		deadline.set(Calendar.MINUTE, 59);
-		task = templateTaskDeadline("finish this by 23:59 04/11", deadline,
+		task = templateTaskDeadline("finish this by 23:59", deadline,
 				empty, empty);
 		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
 
 		parser.receiveInput("addd finish this on today");
-		task = templateTaskDeadline("finish this by 23:59 04/11", deadline,
+		task = templateTaskDeadline("finish this by 23:59", deadline,
 				empty, empty);
 		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
@@ -98,7 +98,7 @@ public class JUnitInputParserAtd {
 		parser.receiveInput("addd finish this at today 11pm");
 		deadline.set(Calendar.HOUR_OF_DAY, 23);
 		deadline.set(Calendar.MINUTE, 00);
-		task = templateTaskDeadline("finish this by 23:00 04/11", deadline,
+		task = templateTaskDeadline("finish this by 23:00", deadline,
 				empty, empty);
 		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
@@ -107,14 +107,14 @@ public class JUnitInputParserAtd {
 		deadline.set(2014, 10, 11, 23, 59);
 		categories.add("2103");
 		contexts.add("homework");
-		task = templateTaskDeadline("v0.2 @2103 #homework by 23:59 11/11", deadline,
+		task = templateTaskDeadline("v0.2 @2103 #homework by 23:59", deadline,
 				categories, contexts);
 		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
 
 		parser.receiveInput("addd watch goodbye tomorrow on 23 oct");
 		deadline.set(2014, 9, 23, 23, 59);
-		task = templateTaskDeadline("watch goodbye tomorrow by 23:59 23/10",
+		task = templateTaskDeadline("watch goodbye tomorrow by 23:59",
 				deadline, empty, empty);
 		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
@@ -122,7 +122,7 @@ public class JUnitInputParserAtd {
 		parser.receiveInput("addd finish this at school tomorrow by today");
 		deadline.set(2014, 10, 4, 23, 59);
 		task = templateTaskDeadline(
-				"finish this at school tomorrow by 23:59 04/11", deadline,
+				"finish this at school tomorrow by 23:59", deadline,
 				empty, empty);
 		group = templateGroupAdd(task);
 		compareGroup(group, parser.getActions());
