@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import chirptask.gui.MainGui;
 import chirptask.logic.DisplayView;
 
-/*
+/**
  * Class for System Testing. Dependency Injection.
  */
 public class MainGui2 extends MainGui {
@@ -19,28 +19,33 @@ public class MainGui2 extends MainGui {
     public String _status = "";
     public String _userInput = "";
     public List<String> _categoryList = new ArrayList<String>();
-    public List<String> _contextList = new ArrayList<String>();
+    public List<String> _hashtagList = new ArrayList<String>();
     public SortedMap<String, ArrayList<Integer>> _taskViewDateMap = new TreeMap<>();
     public static List<Integer> _taskIndexToId = new ArrayList<>();
 
+    @Override
     public String getFilter() {
         return _filter;
     }
 
+    @Override
     public void setFilterText(String text) {
         _filter = text;
     }
 
+    @Override
     public void setUserInputText(String text) {
         _userInput = text;
     }
 
+    @Override
     public String getUserInput() {
         return _userInput;
     }
 
+    @Override
     public void clearTrendingList() {
-        _contextList.clear();
+        _hashtagList.clear();
         _categoryList.clear();
     }
 
@@ -48,27 +53,34 @@ public class MainGui2 extends MainGui {
     public void setOnlineStatus(String status) {
         _onlineStatus = status;
     }
-    
+
     public String getStatus() {
         return _status;
     }
 
+    @Override
     public void setStatus(String message) {
         _status = message;
     }
 
+    @Override
     public void setError(String errorMessage) {
         _status = errorMessage;
     }
 
-    public void addHashtagIntoList(String Context) {
-        _contextList.add(Context);
+    @Override
+    public void addHashtagIntoList(String hashtag) {
+        assert hashtag != null;
+        _hashtagList.add(hashtag);
     }
 
-    public void addCategoryIntoList(String Category) {
-        _categoryList.add(Category);
+    @Override
+    public void addCategoryIntoList(String category) {
+        assert category != null;
+        _categoryList.add(category);
     }
 
+    @Override
     public boolean addNewTaskViewDate(Calendar date) {
         assert date != null;
         String parseDateToString = DisplayView.convertDateToString(date);
@@ -82,9 +94,10 @@ public class MainGui2 extends MainGui {
         return true;
     }
 
+    @Override
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && taskId > -1;
+        assert (date != null) && (taskId > -1);
 
         if (_taskIndexToId.contains(taskId)) {
             return false;
@@ -96,6 +109,7 @@ public class MainGui2 extends MainGui {
         return true;
     }
 
+    @Override
     public void clearTaskView() {
         _taskViewDateMap.clear();
         _taskIndexToId.clear();
@@ -105,6 +119,7 @@ public class MainGui2 extends MainGui {
         return _taskIndexToId;
     }
 
+    @Override
     public void refreshUI() {
         // nothing
     }

@@ -1,7 +1,8 @@
 //@author A0111889W
 package chirptask.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -54,12 +55,12 @@ public class JUnitSystemTestingAtd {
         assertEquals("Successfully Added new task normal floating task.",
                 _mainGui._status);
         assertEquals(0, _mainGui._categoryList.size());
-        assertEquals(0, _mainGui._contextList.size());
+        assertEquals(0, _mainGui._hashtagList.size());
         assertEquals(
                 1,
                 _mainGui._taskViewDateMap
-                        .get(DisplayView.convertDateToString(Calendar
-                                .getInstance())).size());
+                .get(DisplayView.convertDateToString(Calendar
+                        .getInstance())).size());
 
         _logic.retrieveInputFromUI("delete 1");
 
@@ -76,7 +77,7 @@ public class JUnitSystemTestingAtd {
         assertEquals("Successfully Added new task #Junit @Testing.",
                 _mainGui._status);
         assertEquals(1, _mainGui._categoryList.size());
-        assertEquals(1, _mainGui._contextList.size());
+        assertEquals(1, _mainGui._hashtagList.size());
         assertEquals(
                 1,
                 _mainGui._taskViewDateMap.get(
@@ -86,12 +87,12 @@ public class JUnitSystemTestingAtd {
 
         assertEquals("Successfully Added new task #Junit @Testing2 by 12:00.", _mainGui._status);
         assertEquals(2, _mainGui._categoryList.size());
-        assertEquals(1, _mainGui._contextList.size());
+        assertEquals(1, _mainGui._hashtagList.size());
         assertEquals(
                 1,
                 _mainGui._taskViewDateMap
-                        .get(DisplayView.convertDateToString(Calendar
-                                .getInstance())).size());
+                .get(DisplayView.convertDateToString(Calendar
+                        .getInstance())).size());
 
         _logic.retrieveInputFromUI("done 1");
         assertEquals("Successfully: Done #Junit @Testing2 by 12:00", _mainGui._status);
@@ -103,7 +104,7 @@ public class JUnitSystemTestingAtd {
         assertEquals(
                 "Successfully Modified task nothing by 13:00 "
                         + formatter.format(today.getTime()) + ".",
-                _mainGui._status);
+                        _mainGui._status);
 
         _logic.retrieveInputFromUI("undo");
         assertEquals("Successfully Modified task #Junit @Testing2 by 12:00.", _mainGui._status);
