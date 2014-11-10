@@ -21,6 +21,11 @@ To get a copy of this on your machine:
 <LI>Import project into your Eclipse IDE</LI>
 </OL>
 
+To view the Javadoc of ChirpTask:
+<UL>
+<LI><code>http://cs2103aug2014-w10-4j.github.io/main/</code></LI>
+</UL>
+
 <h2>Team</h2>
 Pang Yong He<br/>
 Yeo Quan Yang<br/>
