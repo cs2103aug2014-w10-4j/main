@@ -6,7 +6,11 @@
 	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\gui\MainGui.java
 	 */
 
+    /*
+     * Code re-use from https://gist.github.com/jewelsea/
+     */
     private void makeScrollFadeable(final Node scroll) {
+        assert scroll != null;
         final Node scrollbar = scroll.lookup(".scroll-bar:vertical");
         final FadeTransition fader = new FadeTransition(Duration.seconds(0.5),
                 scrollbar);
@@ -40,74 +44,6 @@
             }
         });
     }
-
-    private EventHandler<MouseEvent> onClickTrendingListText() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                setFilterText(((Text) event.getSource()).getText());
-                _logic.retrieveInputFromUI("display " + _filterField.getText());
-            }
-        };
-    }
-
-    private void prepareScene(Stage primaryStage) {
-
-        _primaryStage = primaryStage;
-
-        BorderPane rootPane = generateRootPane();
-
-        Scene scene = sceneSetUp(rootPane);
-        primaryStageSetUp(primaryStage, scene);
-
-        // focus on CLI
-        _commandLineInterface.requestFocus();
-
-    }
-
-    private void primaryStageSetUp(Stage primaryStage, Scene scene) {
-        primaryStage.setScene(scene);
-        primaryStage.setMinHeight(MIN_HEIGHT);
-        primaryStage.setMinWidth(MIN_WIDTH);
-        primaryStage.setTitle(Messages.TITLE_SOFTWARE);
-        primaryStage.getIcons().add(
-                new Image(getClass().getResourceAsStream(
-                        "images/chirptask_clear.png")));
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            public void handle(WindowEvent we) {
-                guiClosing(we);
-            }
-        });
-    }
-
-    private Scene sceneSetUp(BorderPane rootPane) {
-        Scene scene = new Scene(rootPane, STARTING_WIDTH, STARTING_HEIGHT);
-        scene.getStylesheets().add(
-                getClass().getResource("layoutStyle.css").toExternalForm());
-        return scene;
-    }
-
-    private void scrollToToday() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                VBox Today = (VBox) _taskViewDateMap.get(DisplayView
-                        .convertDateToString(Calendar.getInstance()));
-                if (Today != null) {
-                    _taskViewScrollPane.setVvalue((Today.getLayoutY())
-                            / (_taskViewByDate.getHeight() - _taskViewScrollPane
-                                    .getHeight()));
-                }
-            }
-        });
-
-    }
-
-    private void setTrendingListTitleFont(Text titleText) {
-        titleText.setFont(Font.font("Lucida Grande", FontWeight.BLACK, 14));
-    }
-
-}
 
 	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\gui\MainGui.java
 

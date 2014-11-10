@@ -1,0 +1,81 @@
+//@author: a0111840w-reused
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\google\GoogleAuthorizer.java
+	 */
+
+    /*
+     * Authentication process reused from Google Calendar CMDLINE Sample
+     * https://code.google.com/p/google-api-java-client/source/browse/
+     * calendar-cmdline-sample/src/main/java/com/google/api/services/
+     * samples/calendar/cmdline/CalendarSample.java?repo=samples
+    */
+    /**
+     * Setup the google Authorization Code Flow
+     * @param oAuthClientId The OAuth Client ID
+     * @param oAuthClientSecret The OAuth Client Secret
+     * @param googleScopes The Scopes to include for authorisation
+     * @return GoogleAuthorizationCodeFlow object
+     * @throws IOException Thrown by DataStoreFactory
+     */
+    private static GoogleAuthorizationCodeFlow getAuthorizationCodeFlow(
+                                                    String oAuthClientId, 
+                                                    String oAuthClientSecret,
+                                                    List<String> googleScopes)
+                                                    throws IOException {
+        if (oAuthClientId == null || oAuthClientSecret == null || 
+                googleScopes == null) {
+            return null;
+        }
+        
+        FileDataStoreFactory dataStoreFactory = GoogleController._dataStoreFactory;
+        HttpTransport httpTransport = GoogleController._httpTransport;
+        JsonFactory jsonFactory = GoogleController.JSON_FACTORY;
+        
+        GoogleAuthorizationCodeFlow codeFlow = 
+                new GoogleAuthorizationCodeFlow.Builder(httpTransport, 
+                                                        jsonFactory, 
+                                                        oAuthClientId, 
+                                                        oAuthClientSecret, 
+                                                        googleScopes)
+                                                .setDataStoreFactory(
+                                                        dataStoreFactory)
+                                                .build();
+        return codeFlow;
+    }
+    
+    /**
+     * Creates the OAuth Credential object from the CodeFlow object
+     * @param codeFlow The GoogleAuthorizationCodeFlow object
+     * @param credentialUser The specified user to lookup for
+     * @return The OAuth Credential object 
+     * @throws IOException If authorization fails midway
+     */
+    private static Credential authorizeUsingOAuth(
+                                        GoogleAuthorizationCodeFlow codeFlow,
+                                        String credentialUser) 
+                                                throws IOException{
+        if (codeFlow == null) { // if credentialUser null, non-persistent mode.
+            return null;
+        }
+        
+        VerificationCodeReceiver codeReceiver = new LocalServerReceiver();
+        AuthorizationCodeInstalledApp authorizer = 
+                                            new AuthorizationCodeInstalledApp(
+                                                codeFlow,
+                                                codeReceiver);
+
+        Credential accessToken = authorizer.authorize(credentialUser);
+        
+        return accessToken;
+    }
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\google\GoogleAuthorizer.java
+
+
+
+
+

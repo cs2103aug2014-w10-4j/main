@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import chirptask.google.GoogleController.GoogleService;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -31,7 +33,6 @@ public class CalendarController {
     private final boolean DEFAULT_DONE_STATUS = false;
     
     private final String DEFAULT_CALENDAR = "ChirpTaskv0.5";
-    private final String GOOGLE_SERVICE_NAME = "calendar";
     private final String JSON_NOT_FOUND = "Not Found";
     
     /**
@@ -136,12 +137,11 @@ public class CalendarController {
             } catch (GoogleJsonResponseException jsonResponseEx) {
                 int responseCode = jsonResponseEx.getStatusCode();
                 String responseMessage = jsonResponseEx.getStatusMessage();
-                
                 if (responseCode == RESOURCE_NOT_FOUND && 
-                        JSON_NOT_FOUND.equals(responseMessage)) {
-                    GoogleController.resetGoogleIdAndEtag(GOOGLE_SERVICE_NAME);
-                    calendarId = "";
-                    throw jsonResponseEx;
+                        JSON_NOT_FOUND.equalsIgnoreCase(responseMessage)) {
+                    GoogleController.resetGoogleIdAndEtag(GoogleService.GOOGLE_CALENDAR);
+                    setCalendarId("");
+                    initializeCalendar(getCalendarId());
                 }
             } 
         }
@@ -1733,7 +1733,8 @@ class ConcurrentSync implements Callable<Boolean> {
                 if (taskList == null) {
                     break;
                 }
-                isStoredOnline = checkTasksOnline(googleId, taskList);
+                isStoredOnline = 
+                        isStoredOnline || checkTasksOnline(googleId, taskList);
                 
                 if (isStoredOnline == false) { //Deleted online
                     deleteTaskLocally(currTask);
@@ -1994,12 +1995,7 @@ class ConcurrentSync implements Callable<Boolean> {
         Calendar endDate = DateTimeHandler
                 .getCalendar(end);
 
-        boolean isDone = false;
-        if (eventDescription != null) {
-            if (eventDescription.startsWith(STRING_DONE_EVENT)) {
-                isDone = true;
-            }
-        }
+        boolean isDone = setDoneEvent(eventDescription);
 
         if (currTask instanceof chirptask.storage.TimedTask) {
             TimedTask timedTask = (TimedTask) currTask;
@@ -2052,44 +2048,37 @@ class ConcurrentSync implements Callable<Boolean> {
         
         // push from remote to local
         int taskId = chirpTask.getTaskId();
-        List<String> hashtagList = chirpTask.getContexts();
+        List<String> hashtagList = chirpTask.getHashtags();
         List<String> categoryList = chirpTask.getCategories();
         String doneString = currTask.getStatus();
         String eTag = chirpTask.getETag();
         String googleId = currTask.getId();
         String taskDesc = currTask.getTitle();
-        DateTime dueDate = currTask.getDue();
+        boolean isDone = setDoneTasks(doneString);
                 
-        boolean isDone = false;
-        if (STRING_DONE_TASK.equalsIgnoreCase(doneString)) {
-            isDone = true;
-        }
-                
-        chirptask.storage.Task newTask = null;
-                
-        if (dueDate != null) {
-            Calendar dueCalendar = DateTimeHandler.getDateFromDateTime(dueDate);
-            
-            Calendar chirpDate = chirpTask.getDate();
-            dueCalendar.set(Calendar.HOUR_OF_DAY, chirpDate.get(Calendar.HOUR_OF_DAY));
-            dueCalendar.set(Calendar.MINUTE, chirpDate.get(Calendar.MINUTE));
-            
-            DeadlineTask newDeadline = 
-                            new DeadlineTask(taskId, taskDesc, dueCalendar);
-            setMiscTaskDetails(newDeadline, categoryList, hashtagList,
-                            isDone, eTag, googleId);
-            newTask = newDeadline;
-        } else {
-            chirptask.storage.Task newFloating = 
-                            new chirptask.storage.Task(taskId, taskDesc);
-            setMiscTaskDetails(newFloating, categoryList, hashtagList,
-                            isDone, eTag, googleId);
-            newTask = newFloating;
-        }
+        chirptask.storage.Task newTask = 
+                makeDeadlineOrFloating(currTask, taskDesc);
                 
         if (newTask != null) {
+            newTask.setTaskId(taskId); 
+            setMiscTaskDetails(newTask, categoryList, hashtagList,
+                    isDone, eTag, googleId);
             GoogleStorage.updateStorages(newTask);
         }
+    }
+    
+    /**
+     * Set done if the Google Tasks Task status is completed
+     * @param doneStatus The Google Tasks Task status
+     * @return true if doneStatus is completed, false otherwise
+     */
+    private boolean setDoneTasks(String doneStatus) {
+        boolean isDone = false;
+        
+        if (STRING_DONE_TASK.equalsIgnoreCase(doneStatus)) {
+            isDone = true;
+        }
+        return isDone;
     }
     
     /**
@@ -2113,7 +2102,7 @@ class ConcurrentSync implements Callable<Boolean> {
         }
         
         taskToSet.setCategories(categoryList);
-        taskToSet.setContexts(hashtagList);
+        taskToSet.setHashtags(hashtagList);
         taskToSet.setDone(isDone);
         taskToSet.setETag(eTag);
         taskToSet.setGoogleId(googleId);
@@ -2164,22 +2153,20 @@ class ConcurrentSync implements Callable<Boolean> {
 
                 String googleId = gId;
                 String googleETag = currEvent.getEtag();
-                List<String> hashtagList = newTask.getContexts();
+                List<String> hashtagList = newTask.getHashtags();
                 List<String> categoryList = newTask.getCategories();
                 Calendar startDate = getCalendarFromEvent(currEvent.getStart());
                 Calendar endDate = getCalendarFromEvent(currEvent.getEnd());
-
-                boolean isDone = false;
-                if (description != null) {
-                    if (description.startsWith(STRING_DONE_EVENT)) {
-                        isDone = true;
-                    }
-                }
+                boolean isDone = setDoneEvent(description);
+                
                 TimedTask newTimed = 
                         new TimedTask(taskId, description,startDate, endDate);
-                setMiscTaskDetails(newTimed, categoryList, hashtagList, 
-                        isDone, googleETag, googleId);
-                GoogleStorage.updateStorages(newTimed);
+                
+                if (newTimed != null) {
+                    setMiscTaskDetails(newTimed, categoryList, hashtagList, 
+                            isDone, googleETag, googleId);
+                    GoogleStorage.updateStorages(newTimed);
+                }
             }
         }
     }
@@ -2200,6 +2187,22 @@ class ConcurrentSync implements Callable<Boolean> {
     }
     
     /**
+     * Set done if the Google Calendar Event Title begins with [Done]
+     * @param description The Google Calendar Event Title
+     * @return true if description starts with [Done], false otherwise
+     */
+    private boolean setDoneEvent(String description) {
+        boolean isDone = false;
+        
+        if (description != null) {
+            if (description.startsWith(STRING_DONE_EVENT)) {
+                isDone = true;
+            }
+        }
+        return isDone;
+    }
+    
+    /**
      * This method adds from a new, unknown, Google Task task,
      * only if the Google ID from the Google Task task is new and unknown
      * @param taskList Google Tasks' List
@@ -2215,22 +2218,80 @@ class ConcurrentSync implements Callable<Boolean> {
             String gId = currTask.getId();
             
             if (!googleIdMap.containsKey(gId)) {
-                int taskId = LocalStorage.generateId();
                 String taskDesc = currTask.getTitle();
                 
                 if (taskDesc.trim().isEmpty()) {
-                    continue;
+                    continue; //skip, don't consider empty desc
                 }
+                chirptask.storage.Task newTask = 
+                        makeDeadlineOrFloating(currTask, taskDesc);
                 
-                chirptask.storage.Task newTask = InputParser
-                        .getTaskFromString(taskDesc);
-                newTask.setTaskId(taskId);
-                //Set ETag allows reuse of updateLocalGTask(Task,Task)
-                newTask.setETag(currTask.getEtag()); 
-                
-                updateLocalGTasks(newTask, currTask);
+                if (newTask != null) {
+                    //Set ETag allows reuse of updateLocalGTask(Task,Task)
+                    newTask.setETag(currTask.getEtag()); 
+                    updateLocalGTasks(newTask, currTask);
+                }
             }
         }
+    }
+    
+    /**
+     * Decide to make Deadline or Floating by checking dueDate of Task
+     * @param currTask The Google Tasks Task object
+     * @param desc The description to set for the Chirptask Task
+     * @return The newly created ChirpTask Task object
+     */
+    private chirptask.storage.Task makeDeadlineOrFloating(
+                    Task currTask, String desc) {
+        chirptask.storage.Task newTask = null;
+        DateTime dueDate = currTask.getDue(); 
+        
+        if (dueDate != null) {
+            newTask = InputParser.getTaskFromString( 
+                    chirptask.storage.Task.TASK_DEADLINE, desc);
+            if (newTask == null) { // Task did not contain Time
+                newTask = InputParser.getTaskFromString(
+                        chirptask.storage.Task.TASK_FLOATING, desc);
+                newTask = makeDeadlineWithNoTime(newTask, dueDate);
+            } else { // Copy date from Google
+                setDateFromGoogle(newTask, dueDate);
+            }
+        } else { 
+            newTask = InputParser.getTaskFromString(
+                    chirptask.storage.Task.TASK_FLOATING, desc);
+        }
+        return newTask;
+    }
+    
+    /**
+     * Makes a Deadline Task without a specified Time if not given
+     * @param task The ChirpTask Task
+     * @param dueDate The DateTime object from Google Tasks Task
+     * @return A DeadlineTask object with a due date without time
+     */
+    private chirptask.storage.Task makeDeadlineWithNoTime(
+            chirptask.storage.Task task, DateTime dueDate) {
+        int taskId = task.getTaskId();
+        String taskDesc = task.getDescription();
+        Calendar dueCalendar = 
+                DateTimeHandler.getDateFromDateTime(dueDate);
+        DeadlineTask newDeadline = new DeadlineTask(taskId, taskDesc, dueCalendar);
+        
+        return newDeadline;
+    }
+    
+    /**
+     * Sets the date from Google Tasks Task to ChirpTask Task
+     * @param task The ChirpTask Task
+     * @param dueDate The Google Tasks Task DateTime object
+     */
+    private void setDateFromGoogle(
+            chirptask.storage.Task task, DateTime dueDate) {
+        Calendar dueCalendar = DateTimeHandler.getDateFromDateTime(dueDate);
+        Calendar chirpDate = task.getDate();
+        chirpDate.set(Calendar.DATE, dueCalendar.get(Calendar.DATE));
+        chirpDate.set(Calendar.MONTH, dueCalendar.get(Calendar.MONTH));
+        chirpDate.set(Calendar.YEAR, dueCalendar.get(Calendar.YEAR));
     }
 }
 
@@ -2440,16 +2501,10 @@ public class GoogleAuthorizer {
         return accessToken;
     }
     
-    /**
-     * Set up and return a list of scopes that contains scopes for
-     * Google Tasks and Google Calendar.
-     * @return List<String> googleScopes
-     */
-    private static List<String> getGoogleScopesList() {
-        List<String> googleScopes = new ArrayList<String>();
-        googleScopes.add(CalendarScopes.CALENDAR);
-        googleScopes.add(TasksScopes.TASKS);
-        return googleScopes;
+
+    private static String getCredentialUser() {
+        String credentialUser = "ChirpUser";
+        return credentialUser;
     }
     
     private static String getOAuthClientId() {
@@ -2463,56 +2518,18 @@ public class GoogleAuthorizer {
         return oAuthClientSecret;
     }
     
-    private static String getCredentialUser() {
-        String credentialUser = "ChirpUser";
-        return credentialUser;
+    /**
+     * Set up and return a list of scopes that contains scopes for
+     * Google Tasks and Google Calendar.
+     * @return List<String> googleScopes
+     */
+    private static List<String> getGoogleScopesList() {
+        List<String> googleScopes = new ArrayList<String>();
+        googleScopes.add(CalendarScopes.CALENDAR);
+        googleScopes.add(TasksScopes.TASKS);
+        return googleScopes;
     }
     
-    private static GoogleAuthorizationCodeFlow getAuthorizationCodeFlow(
-                                                    String oAuthClientId, 
-                                                    String oAuthClientSecret,
-                                                    List<String> googleScopes)
-                                                    throws IOException {
-        if (oAuthClientId == null || oAuthClientSecret == null || 
-                googleScopes == null) {
-            return null;
-        }
-        
-        FileDataStoreFactory dataStoreFactory = GoogleController._dataStoreFactory;
-        HttpTransport httpTransport = GoogleController._httpTransport;
-        JsonFactory jsonFactory = GoogleController.JSON_FACTORY;
-        
-        GoogleAuthorizationCodeFlow codeFlow = 
-                new GoogleAuthorizationCodeFlow.Builder(httpTransport, 
-                                                        jsonFactory, 
-                                                        oAuthClientId, 
-                                                        oAuthClientSecret, 
-                                                        googleScopes)
-                                                .setDataStoreFactory(
-                                                        dataStoreFactory)
-                                                .build();
-        return codeFlow;
-    }
-    
-    private static Credential authorizeUsingOAuth(
-                                        GoogleAuthorizationCodeFlow codeFlow,
-                                        String credentialUser) 
-                                                throws IOException{
-        if (codeFlow == null) { // if credentialUser null, non-persistent mode.
-            return null;
-        }
-        
-        VerificationCodeReceiver codeReceiver = new LocalServerReceiver();
-        AuthorizationCodeInstalledApp authorizer = 
-                                            new AuthorizationCodeInstalledApp(
-                                                codeFlow,
-                                                codeReceiver);
-
-        Credential accessToken = authorizer.authorize(credentialUser);
-        
-        return accessToken;
-    }
-}
 
 	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\google\GoogleAuthorizer.java
 
@@ -2563,7 +2580,10 @@ import com.google.api.services.tasks.model.Task;
  */
 
 public class GoogleController implements Runnable {
-
+    public enum GoogleService {
+        GOOGLE_CALENDAR, GOOGLE_TASKS;
+    }
+    
     public enum Status {
         ONLINE, OFFLINE, SYNC, SYNC_FAIL, LOGIN
     }
@@ -2638,7 +2658,7 @@ public class GoogleController implements Runnable {
      */
     public void run() {
         initializeRemoteComponents(); 
-        while (!isGoogleLoaded()) { //wait for google to load
+        while (isGoogleLoaded() == false) { //wait for google to load
             sleepThread();
         }
         GoogleStorage.hasBeenInitialized();
@@ -2853,7 +2873,7 @@ public class GoogleController implements Runnable {
         return isSyncRunned;
     }
     
-    static void resetGoogleIdAndEtag(String googleService) {
+    static void resetGoogleIdAndEtag(GoogleService googleService) {
         if (googleService == null) {
             return;
         }
@@ -3346,6 +3366,153 @@ class TasksHandler {
 
 
 	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\GoogleStorage.java
+	 */
+
+package chirptask.storage;
+
+import java.util.List;
+
+import chirptask.google.GoogleController;
+import chirptask.google.GoogleController.GoogleService;
+
+public class GoogleStorage implements IStorage {
+    private static GoogleController _gController;
+
+    public GoogleStorage() {
+        _gController = new GoogleController();
+    }
+    
+    @Override
+    public boolean storeNewTask(Task newTask) {
+        boolean isAdded = false;
+        _gController.addTask(newTask);
+        isAdded = true;
+        return isAdded;
+    }
+
+    @Override
+    public Task removeTask(Task taskToRemove) {
+        boolean isRemoved = false;
+        _gController.removeTask(taskToRemove);
+        isRemoved = true;
+        
+        if (isRemoved) {
+            return taskToRemove;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean modifyTask(Task modifiedTask) {
+        boolean isModified = false;
+        _gController.modifyTask(modifiedTask);
+        isModified = true;
+        return isModified;
+    }
+
+    @Override
+    public Task getTask(int taskId) {
+        return null;
+    }
+
+    @Override
+    public List<Task> getAllTasks() {
+        return null;
+    }
+
+    @Override
+    public void close() {
+        if (_gController != null) {
+            _gController.close();
+        }
+    }
+    
+    /**
+     * After login, GoogleController will use this to signal the 
+     * StorageHandler that it is available and can add GoogleStorage
+     * into the List of Storages.
+     */
+    public static void hasBeenInitialized() {
+        StorageHandler.addGoogleStorageUponReady();
+    }
+    
+    /**
+     * This method is called by the background pool of threads
+     * Keep updateStorages synchronized to only allow 1 thread to execute 
+     * at a point of time
+     * @param newTask The ChirpTask task to be updated
+     */
+    public synchronized static void updateStorages(Task newTask) {
+        //Talk to storage handler to call add google id
+        if (StorageHandler.isStorageInit()) {
+            StorageHandler.updateStorages(newTask);
+        } 
+    }
+    
+    /**
+     * This method is called by the background pool of threads
+     * Keep deleteFromLocalStorage synchronized to only allow 1 thread to 
+     * execute at a point of time
+     * @param deleteTask The ChirpTask task to be updated
+     */
+    public synchronized static void deleteFromLocalStorage(Task deleteTask) {
+        if (StorageHandler.isLocalChirpStorageInit()) {
+            StorageHandler.deleteFromStorage(deleteTask);
+        }
+    }
+    
+    /**
+     * This method is called by StorageHandler
+     * Keep sync synchronized to only allow 1 thread to execute at a point of time
+     * @param allTasks The List of Task to be sync-ed against/with
+     * @return true if sync is runned, false otherwise
+     */
+    synchronized boolean sync(List<Task> allTasks) {
+        boolean isSyncRunned = false;
+        if (allTasks != null) {
+            isSyncRunned = _gController.sync(allTasks);
+        }
+        return isSyncRunned;
+    }
+    
+    /**
+     * Calls the login function for Google Component
+     * @return true if login function is called, false otherwise
+     */
+    boolean login() {
+        boolean isLoginRun = false;
+        if (_gController != null) {
+            _gController.login();
+            isLoginRun = true;
+        }
+        return isLoginRun;
+    }
+    
+    /**
+     * This is called by Google Component in the Event where the 
+     * Google Calendar ID or Google Task ID got corrupted and ChirpTask 
+     * cannot find the Calendar or Google Tasks list
+     * Thus it creates a new Google Calendar or Google Tasks List.
+     * 
+     * This is called to allow ChirpTask to re-sync all the affected tasks to
+     * the newly created Google Calendar / Google Tasks object
+     * @param googleService The Google Service that got affected.
+     */
+    public static void resetGoogleIdAndEtag(GoogleService googleService) {
+        StorageHandler.resetGoogleIdAndEtag(googleService);
+    }
+    
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\GoogleStorage.java
+
+
+
+
+
+	/**
 	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\SessionStorage.java
 	 */
 
@@ -3448,7 +3615,7 @@ public class SessionStorage implements IStorage {
         boolean isInit = false;
         if (!isGoogleStorageInit()) {
             addGoogleStorage();
-            
+
             if (isGStorageValid()) {
                 GoogleStorage gStore = (GoogleStorage) googleStorage;
                 isInit = gStore.login();
@@ -3458,7 +3625,7 @@ public class SessionStorage implements IStorage {
         }
         return isInit;
     }
-    
+
     private static boolean isGStorageValid() {
         boolean isValid = false;
         if (isGoogleStorageInit()) {
@@ -3470,7 +3637,7 @@ public class SessionStorage implements IStorage {
         }
         return isValid;
     }
-    
+
     private static void addSessionStorage() {
         if (!isSessionStorageInit()) {
             sessionStorage = new SessionStorage();
@@ -3520,7 +3687,7 @@ public class SessionStorage implements IStorage {
         if (allTasks == null) {
             return;
         }
-        
+
         try {
             SessionStorage sStorage = (SessionStorage) sessionStorage;
             sStorage.setTaskList(allTasks);
@@ -3547,49 +3714,49 @@ public class SessionStorage implements IStorage {
         }
         return isAutoLogin;
     }
-    
-    static void resetGoogleIdAndEtag(String googleService) {
+
+    static void resetGoogleIdAndEtag(GoogleService googleService) {
         if (googleService != null) {
             switch (googleService) {
-            case GOOGLE_SERVICE_CALENDAR :
-                resetCalendarItems();
-                break;
-            case GOOGLE_SERVICE_TASKS :
-                resetTasksItems();
-                break;
-            default :
-                break;
+                case GOOGLE_CALENDAR :
+                    resetCalendarItems();
+                    break;
+                case GOOGLE_TASKS :
+                    resetTasksItems();
+                    break;
+                default:
+                    break;
             }
         }
     }
-    
+
     static void resetCalendarItems() {
         List<Task> allLocalTasks = getAllTasks();
         for (int i = 0; i < allLocalTasks.size(); i++) {
             Task currentTask = allLocalTasks.get(i);
             String taskType = currentTask.getType();
-            
+
             if (Task.TASK_TIMED.equals(taskType)) {
                 resetGoogleProps(currentTask);
             }
         }
     }
-    
+
     static void resetGoogleProps(Task taskToReset) {
         if (taskToReset != null) {
             taskToReset.setGoogleId("");
             taskToReset.setETag("");
         }
     }
-    
+
     static void resetTasksItems() {
         List<Task> allLocalTasks = getAllTasks();
         for (int i = 0; i < allLocalTasks.size(); i++) {
             Task currentTask = allLocalTasks.get(i);
             String taskType = currentTask.getType();
-            
-            if (Task.TASK_DEADLINE.equals(taskType) || 
-                    Task.TASK_FLOATING.equals(taskType)) {
+
+            if (Task.TASK_DEADLINE.equals(taskType)
+                    || Task.TASK_FLOATING.equals(taskType)) {
                 resetGoogleProps(currentTask);
             }
         }
@@ -3597,7 +3764,7 @@ public class SessionStorage implements IStorage {
 
     public boolean logout() {
         boolean isRanLogout = false;
-        
+
         if (isGoogleStorageInit()) {
             removeCloudStorage();
             GoogleController.setOnlineStatus(Status.OFFLINE);
@@ -3605,7 +3772,7 @@ public class SessionStorage implements IStorage {
         }
         return isRanLogout;
     }
-    
+
     public void removeCloudStorage() {
         if (isGStorageValid()) {
             GoogleStorage gStorage = (GoogleStorage) googleStorage;
@@ -3626,7 +3793,7 @@ public class SessionStorage implements IStorage {
                     isSyncRunned = gStorage.sync(allTasks);
                 }
             }
-        } else if (isLocalChirpStorageInit()){
+        } else if (isLocalChirpStorageInit()) {
             if (!isGoogleStorageInit()) {
                 isSyncRunned = initCloudStorage();
             }
@@ -3639,7 +3806,7 @@ public class SessionStorage implements IStorage {
         if (modifiedTask == null) {
             return;
         }
-        
+
         if (isStorageInit()) {
             if ("".equals(modifiedTask.getGoogleId())) {
                 for (IStorage individualStorage : _listOfStorages) {
@@ -3651,14 +3818,14 @@ public class SessionStorage implements IStorage {
             Logic.refresh(); // need to update GUI
         }
     }
-    
+
     static void updateFromAllExceptCloud(Task modifiedTask) {
         if (modifiedTask == null) {
             return;
         }
-        
+
         List<Task> allTasks = sessionStorage.getAllTasks();
-        
+
         if (allTasks.contains(modifiedTask)) {
             sessionStorage.modifyTask(modifiedTask);
             localStorage.modifyTask(modifiedTask);
@@ -3669,8 +3836,244 @@ public class SessionStorage implements IStorage {
             eventStorage.storeNewTask(modifiedTask);
         }
     }
-    
+
 	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+	 */
+
+    static void deleteFromAllExceptCloud(Task deletedTask) {
+        if (deletedTask == null) {
+            return;
+        }
+
+        List<Task> allTasks = sessionStorage.getAllTasks();
+
+        if (allTasks.contains(deletedTask)) {
+            sessionStorage.removeTask(deletedTask);
+            localStorage.removeTask(deletedTask);
+            eventStorage.removeTask(deletedTask);
+            Logic.refresh(); // need to update GUI
+        }
+    }
+
+    static boolean isLocalChirpStorageInit() {
+        boolean init = true;
+        init = init && isStoragesListInit();
+        init = init && isSessionStorageInit();
+        init = init && isLocalStorageInit();
+        init = init && isEventStorageInit();
+        return init;
+    }
+
+    static boolean isStorageInit() {
+        boolean init = true;
+        init = init && isStoragesListInit();
+        init = init && isSessionStorageInit();
+        init = init && isLocalStorageInit();
+        init = init && isEventStorageInit();
+        init = init && isGoogleStorageInit();
+        return init;
+    }
+
+    private static boolean isStoragesListInit() {
+        return (_listOfStorages != null);
+    }
+
+    static boolean isSessionStorageInit() {
+        return (sessionStorage != null);
+    }
+
+    private static boolean isLocalStorageInit() {
+        return (localStorage != null);
+    }
+
+    private static boolean isEventStorageInit() {
+        return (eventStorage != null);
+    }
+
+    private static boolean isGoogleStorageInit() {
+        return (googleStorage != null);
+    }
+
+    /**
+     * This method is provided for Components to set up a local test XML store.
+     * This is to aid testing, and it will ensure a fresh copy of storage
+     * everytime it runs without affecting the usual "local.xml"
+     * 
+     * Method also updates the SessionStorage once JUnit Test XML is loaded
+     */
+    public void setUpJUnitTestXmlWriter() {
+        if (isLocalStorageInit()) {
+            if (localStorage instanceof LocalStorage) {
+                LocalStorage lStorage = (LocalStorage) localStorage;
+                lStorage.setUpJUnitTestXmlWriter();
+                setAllTasks(localStorage.getAllTasks());
+            }
+        }
+    }
+
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitGoogleAtd.java
+	 */
+
+package chirptask.testing;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import chirptask.common.Settings;
+import chirptask.google.GoogleController;
+import chirptask.logic.Logic;
+import chirptask.storage.LocalStorage;
+import chirptask.storage.StorageHandler;
+import chirptask.storage.Task;
+import chirptask.storage.DeadlineTask;
+import chirptask.storage.TimedTask;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * Warning: JUnitGoogleAtd takes a while to load completely
+ * There may be times where it will fail totally as it depends on 
+ * your internet connection stability.
+ * 
+ * Do take the factor of how slow/unstable the internet may be if
+ * the JUnit Test failed.
+ * 
+ * The Thread.sleep(10000) were added in their positions because
+ * there is no easy way to tell when the Google requests are completed.
+ * This is because they are running in the background threads.
+ *
+ */
+public class JUnitGoogleAtd {
+    @SuppressWarnings("unused")
+    private Settings chirptaskSettings;
+    private StorageHandler storageHandler;
+    private List<Task> allTasks;
+    private MainGui2 gui;
+    private Logic logic;
+
+    @Before
+    public void setupGoogle() {
+        gui = new MainGui2();
+        logic = new Logic(gui);
+        chirptaskSettings = new Settings();
+        storageHandler = new StorageHandler();
+        allTasks = new ArrayList<Task>();
+
+        logic.useTestLocalStorage();
+        StorageHandler.initCloudStorage();
+
+        while (GoogleController.isGoogleLoaded() == false) {
+            sleep();
+        }
+        //At this point, the JUnitTest XML file should have all your synced
+        // items from Google
+        
+        //Setup floating task
+        Task floatingTask = new Task(LocalStorage.generateId(), "Task Floating - Google Test");
+        allTasks.add(floatingTask);
+        
+        //Setup deadline task
+        Long millisA = 1412935810000L; //Fri Oct 10 18:10:10 SGT 2014 in Epoch Millis
+        Calendar dueDate = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        dueDate.setTimeInMillis(millisA);
+        Task deadlineTask = new DeadlineTask(LocalStorage.generateId(), "Task Deadline - Google Test", dueDate);
+        allTasks.add(deadlineTask);
+        
+        //Setup timed task
+        Long millisB = 1412763010000L; //Wed Oct 08 18:10:10 SGT 2014 in Epoch Millis
+        Long millisB2 = 1412935810000L; //Fri Oct 10 18:10:10 SGT 2014 in Epoch Millis
+        Calendar startTime = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        startTime.setTimeInMillis(millisB);
+        Calendar endTime = Calendar.getInstance(); //Assume local time is SGT TimeZone
+        endTime.setTimeInMillis(millisB2);
+        Task timedTask = new TimedTask(LocalStorage.generateId(), "Task Timed - Google Test", startTime, endTime);
+        allTasks.add(timedTask);
+        
+        //Restart the JUnitTest XML file
+        storageHandler.setUpJUnitTestXmlWriter();
+    }
+    
+    @Test
+    public void testGoogleAddAndDelete() {
+        //Adding all tasks
+        for (int i = 0; i < allTasks.size(); i++) {
+            Task currentTask = allTasks.get(i);
+            storageHandler.addTask(currentTask);
+        }
+        
+        sleep();
+        
+        List<Task> localList = StorageHandler.getAllTasks();
+        
+        //All tasks got added
+        assertEquals("same size", allTasks.size(), localList.size());
+        
+        for (int i = 0; i < localList.size(); i++) {
+            Task currentTask = localList.get(i);
+            assertNotNull(currentTask);
+            assertNotNull(currentTask.getGoogleId());
+            assertNotNull(currentTask.getETag());
+            assertNotEquals("empty", "", currentTask.getGoogleId());
+            assertNotEquals("empty", "", currentTask.getETag());
+        }
+        
+        // Deletion of all tasks
+        localList = StorageHandler.getAllTasks();
+        List<Task> allTasks = new ArrayList<Task>();
+        
+        for (Task task : localList) {
+            allTasks.add(task);
+        }
+        
+        for (int i = 0; i < allTasks.size(); i++) {
+            Task currentTask = allTasks.get(i);
+            storageHandler.deleteTask(currentTask);
+        }
+
+        sleep();
+        
+        //All tasks got deleted
+        assertEquals("empty list", 0, localList.size());
+    }
+    
+    @After
+    public void closeGoogle() {
+        logic.retrieveInputFromUI("logout");
+        storageHandler.closeStorages();
+    }
+    
+    public void sleep() {
+        try {
+            Thread.sleep(10000); //Wait for request to be done
+        } catch (InterruptedException e) {
+        }
+    }
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitGoogleAtd.java
 
 
 
