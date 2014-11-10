@@ -43,7 +43,7 @@ public class DisplayView {
         sortTask(tasks);
         processUpdateTaskView(tasks, gui);
         processUpdateHashtagAndCategoryView(gui);
-        
+
     }
 
     /**
@@ -109,7 +109,7 @@ public class DisplayView {
         gui.addNewTaskViewDate(T.getDate());
     }
 
-    // @author A0111889W
+    //@author A0111889W
     /**
      * Assuming there are only 3 type of task we need to handle
      * 
@@ -119,13 +119,14 @@ public class DisplayView {
     public static String convertTaskDateToDurationString(Task task) {
         assert task != null && task.getDate() != null;
         String dateToString = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT_HH_MM);
 
         if (Task.TASK_FLOATING.equals(task.getType())) {
             dateToString = "";
         } else if (Task.TASK_DEADLINE.equals(task.getType())) {
             DeadlineTask dTask = (DeadlineTask) task;
-            dateToString = "due by " + sdf.format(dTask.getDate().getTime());
+            dateToString = "due by" + " "
+                    + sdf.format(dTask.getDate().getTime());
         } else if (Task.TASK_TIMED.equals(task.getType())) {
             TimedTask tTask = (TimedTask) task;
             dateToString = sdf.format(tTask.getStartTime().getTime()) + " to "
@@ -136,7 +137,7 @@ public class DisplayView {
         return dateToString;
     }
 
-    // @author A0111930W
+    //@author A0111930W
     /**
      * This method will be call during init to display all task
      * 
@@ -278,8 +279,8 @@ public class DisplayView {
                         Constants.LOG_MESSAGE_SUCCESS);
                 break;
             case LOGOUT :
-                processGuiLogin(gui, Constants.LOG_MESSAGE_LOGOUT_SUCCESS, true,
-                        "");
+                processGuiLogin(gui, Constants.LOG_MESSAGE_LOGOUT_SUCCESS,
+                        true, "");
                 break;
             case DISPLAY :
                 processGUI(action, gui, Constants.LOG_MESSAGE_DISPLAY,
@@ -423,39 +424,41 @@ public class DisplayView {
         }
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public static TextFlow parseDescriptionToTextFlow(String description,
             boolean done, MainGui _gui) {
         TextFlow parsedDesc = new TextFlow();
         StringBuilder descStringBuilder = new StringBuilder(description);
         Text bufferText = new Text();
+        String singleSpace = " ";
+        int zero = 0;
 
-        while (descStringBuilder.length() > 0) {
+        while (descStringBuilder.length() > zero) {
             int index = descStringBuilder.length();
 
-            boolean hasSpaceCharInDesc = descStringBuilder.indexOf(" ") > 0;
+            boolean hasSpaceCharInDesc = descStringBuilder.indexOf(singleSpace) > zero;
 
             if (hasSpaceCharInDesc) {
-                index = descStringBuilder.indexOf(" ");
-            } else if (descStringBuilder.indexOf(" ") == 0) {
+                index = descStringBuilder.indexOf(singleSpace);
+            } else if (descStringBuilder.indexOf(singleSpace) == zero) {
                 index = 1;
             }
 
             // obtain description until the first space
-            bufferText = new Text(descStringBuilder.substring(0, index));
+            bufferText = new Text(descStringBuilder.substring(zero, index));
 
-            if (descStringBuilder.charAt(0) == Constants.HASHTAG_CHAR) {
+            if (descStringBuilder.charAt(zero) == Constants.HASHTAG_CHAR) {
                 // Context
                 bufferText.getStyleClass().add("hashtag-text");
                 bufferText.setOnMouseClicked(_gui.clickOnHashtag());
-            } else if (descStringBuilder.charAt(0) == Constants.CATEGORY_CHAR) {
+            } else if (descStringBuilder.charAt(zero) == Constants.CATEGORY_CHAR) {
                 // Category
                 bufferText.getStyleClass().add("category-text");
                 bufferText.setOnMouseClicked(_gui.clickOnCategory());
             }
 
             // delete parsed text
-            descStringBuilder.delete(0, index);
+            descStringBuilder.delete(zero, index);
             bufferText.setStrikethrough(done);
             parsedDesc.getChildren().add(bufferText);
         }
@@ -463,22 +466,23 @@ public class DisplayView {
         return parsedDesc;
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public static String convertDateToString(Calendar date) {
         assert date != null;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+        SimpleDateFormat sdf = new SimpleDateFormat(
+                Constants.DATE_FORMAT_DD_MM_YYYY);
         String parseDateToString = sdf.format(date.getTime());
         return parseDateToString;
     }
 
-    // @author A0111889W
+    //@author A0111889W
     public static void autocompleteEditWithTaskDescription(String input,
             MainGui _gui) {
         assert !input.trim().isEmpty() && _gui != null;
         FilterTasks.editCli(input, _gui);
     }
 
-    // @author A0111930W
+    //@author A0111930W
     /**
      * Show message and command type to user.
      * 
