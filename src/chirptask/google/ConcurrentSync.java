@@ -38,6 +38,8 @@ class ConcurrentSync implements Callable<Boolean> {
     
     private static final String STRING_DONE_TASK = "completed";
     private static final String STRING_DONE_EVENT = "[Done]";
+    private static final String STRING_DONE_EVENT_REGEX = "^\\[Done\\]";
+    private static final String STRING_EMPTY = "";
     
     private static boolean isSyncing = false; // Ensure only 1 thread do sync
 
@@ -381,7 +383,8 @@ class ConcurrentSync implements Callable<Boolean> {
      * @param googleIdMap ChirpTask list of known Google ID
      */
     private void checkAllEventsEdit(List<Event> events,
-                        Map<String, chirptask.storage.Task> googleIdMap ) {
+                     Map<String, 
+                     chirptask.storage.Task> googleIdMap ) throws IOException {
         if (events == null || googleIdMap == null) {
             return;
         }
@@ -418,7 +421,7 @@ class ConcurrentSync implements Callable<Boolean> {
         return isRequired;
     }
     private void updateLocalEvents(chirptask.storage.Task currTask, 
-                                                    Event currEvent) {
+                                         Event currEvent) throws IOException {
         if (currTask == null || currEvent == null) {
             return;
         }
@@ -433,7 +436,9 @@ class ConcurrentSync implements Callable<Boolean> {
                 .getCalendar(end);
 
         boolean isDone = setDoneEvent(eventDescription);
-
+        eventDescription = removeDoneTag(eventDescription, isDone);
+        updateEventColor(currEvent, isDone);
+        
         if (currTask instanceof chirptask.storage.TimedTask) {
             TimedTask timedTask = (TimedTask) currTask;
             timedTask.setDescription(eventDescription);
@@ -442,6 +447,27 @@ class ConcurrentSync implements Callable<Boolean> {
             timedTask.setDone(isDone);
             GoogleStorage.updateStorages(timedTask);
         }
+    }
+    
+    private String removeDoneTag(String description, boolean isDone) 
+                                            throws NullPointerException {
+        if (description == null) {
+            throw new NullPointerException();
+        }
+        String newDesc = description.trim();
+        if (isDone) {
+            newDesc = description.replaceFirst(
+                                STRING_DONE_EVENT_REGEX, STRING_EMPTY);
+            newDesc = newDesc.trim();
+        }
+        return newDesc;
+    }
+    
+    private void updateEventColor(Event event, 
+                                        boolean isDone) throws IOException {
+        event = CalendarHandler.setColorAndLook(event, isDone);
+        CalendarHandler.updateEvent(CalendarController.getCalendarId(), 
+                                    event.getId(), event);
     }
     
     /**
@@ -478,7 +504,8 @@ class ConcurrentSync implements Callable<Boolean> {
      * @param chirpTask The local task
      * @param currTask The Google Task
      */
-    private void updateLocalGTasks(chirptask.storage.Task chirpTask, Task currTask) {
+    private void updateLocalGTasks(chirptask.storage.Task chirpTask, 
+                                                    Task currTask) {
         if (chirpTask == null || currTask == null) {
             return;
         }
@@ -557,7 +584,8 @@ class ConcurrentSync implements Callable<Boolean> {
     private void syncPhaseFour(List<chirptask.storage.Task> allTasks)
             throws UnknownHostException, IOException {
         if (allTasks != null) {
-            Map<String, chirptask.storage.Task> googleIdMap = createMap(allTasks);
+            Map<String, chirptask.storage.Task> googleIdMap = 
+                                                    createMap(allTasks);
             List<Event> events = _calendarController.getEvents();
             Tasks tasks = _tasksController.getTasks();
             List<Task> taskList = tasks.getItems();
@@ -574,7 +602,7 @@ class ConcurrentSync implements Callable<Boolean> {
      * @param googleIdMap ChirpTask List of known Google ID
      */
     private void addFromNewGoogleEvent(List<Event> events, 
-            Map<String, chirptask.storage.Task> googleIdMap) {
+          Map<String, chirptask.storage.Task> googleIdMap) throws IOException {
         if (events == null || googleIdMap == null) {
             return;
         }
@@ -595,6 +623,8 @@ class ConcurrentSync implements Callable<Boolean> {
                 Calendar startDate = getCalendarFromEvent(currEvent.getStart());
                 Calendar endDate = getCalendarFromEvent(currEvent.getEnd());
                 boolean isDone = setDoneEvent(description);
+                description = removeDoneTag(description, isDone);
+                updateEventColor(currEvent, isDone);
                 
                 TimedTask newTimed = 
                         new TimedTask(taskId, description,startDate, endDate);
@@ -634,6 +664,8 @@ class ConcurrentSync implements Callable<Boolean> {
         if (description != null) {
             if (description.startsWith(STRING_DONE_EVENT)) {
                 isDone = true;
+            } else {
+                isDone = false;
             }
         }
         return isDone;

@@ -193,14 +193,20 @@ class ConcurrentModify implements Callable<Boolean> {
             return null;
         }
         
+        boolean isDone = modifiedTask.isDone();
         Event modifiedGoogleEvent = modifiedEvent;
         String calendarId = CalendarController.getCalendarId();
         String googleId = modifiedTask.getGoogleId();
         String newDesc = modifiedTask.getDescription();
         TimedTask modifyTimeTask = (TimedTask) modifiedTask;
         
+        
         modifiedGoogleEvent = 
                 CalendarHandler.setSummary(modifiedGoogleEvent, newDesc);
+        if (isDone) {
+            modifiedGoogleEvent =
+                    CalendarHandler.setDoneTag(modifiedGoogleEvent, newDesc, isDone);
+        }
         modifiedGoogleEvent = 
                 CalendarHandler.setStartAndEnd(modifyTimeTask, modifiedGoogleEvent);
         modifiedGoogleEvent = 

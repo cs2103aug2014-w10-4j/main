@@ -265,8 +265,6 @@ public class GoogleController implements Runnable {
      * (xml file).
      * 
      * @param taskToAdd
-     * @return
-     * @throws IOException
      */
     public void addTask(chirptask.storage.Task taskToAdd) {
         if (taskToAdd == null) {

@@ -22,6 +22,8 @@ public class CalendarHandler {
     private static final String DEFAULT_TIME_ZONE = "Asia/Singapore";
     private static final String EVENT_DONE = "transparent";
     private static final String EVENT_UNDONE = "opaque";
+    public static final String CALENDAR_DONE = "[Done] ";
+    public static final String CALENDAR_UNDONE = "";
     
     static boolean isNull(Calendar calendar) {
         if (calendar == null) {
@@ -161,6 +163,18 @@ public class CalendarHandler {
         Event newEvent = new Event();
         newEvent = setSummary(newEvent, eventName);
         return newEvent;
+    }
+    
+    static Event setDoneTag(Event eventToSet, String desc, boolean isDone) {
+        if (eventToSet == null || desc == null) {
+            return null;
+        }
+        
+        if (isDone) {
+            String descWithDone = CALENDAR_DONE + desc;
+            eventToSet.setSummary(descWithDone);
+        } 
+        return eventToSet;
     }
     
     /**

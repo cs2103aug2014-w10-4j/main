@@ -32,10 +32,8 @@ public class DisplayView {
      * This will take in a filtered list and update the taskview, sort to
      * date/time, store into List of tasks
      * 
-     * 
+     * @param tasks
      * @param _gui
-     * @param List
-     *            <Task>
      * 
      * */
     public static void updateTaskView(List<Task> tasks, MainGui gui) {

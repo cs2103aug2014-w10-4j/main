@@ -480,13 +480,15 @@ public class Logic {
      */
     private void processEdit(Action command, Task task) {
         assert command != null && task != null;
-        processGoogleIdTasks(task);
+        //processGoogleIdTasks(task);
         boolean isSuccess;
         task.setModified(true);
         isSuccess = _storageHandler.modifyTask(task);
         filterAndDisplay(command, isSuccess);
     }
 
+    //@author A0111930W-unused
+    // unused because edited Google to set [Done] instead
     /**
      * Edit a done timed google task will auto include a [Done] infront of the
      * task description. Eg, edit 1 abc -> [Done] abc for undone, edit 1 abc ->
@@ -494,6 +496,7 @@ public class Logic {
      * 
      * @param task
      */
+    @SuppressWarnings("unused")
     private void processGoogleIdTasks(Task task) {
         if (!isGoogleIdEmpty(task)) {
             if (isDoneTimedTasked(task)) {
@@ -504,6 +507,7 @@ public class Logic {
         }
     }
 
+    //@author A0111930W
     private boolean isUndoneTimedTask(Task task) {
         return Task.TASK_TIMED.equalsIgnoreCase(task.getType())
                 && !task.isDone();
