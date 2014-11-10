@@ -63,4 +63,11 @@ public class TimedTask extends Task {
         _endTime = endTime;
     }
 
+    public int hashCode() {
+        String uniqueString = this.getGoogleId() + "," + this.getDescription()
+                + "," + this.getStartTime() + "," + this.getEndTime() + ","
+                + this.getType();
+        return uniqueString.hashCode();
+    }
+
 }

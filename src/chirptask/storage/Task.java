@@ -217,7 +217,12 @@ public class Task implements Comparable<Task> {
         this._categories = categories;
     }
 
-    //@author A0111930W
+    public int hashCode(){
+        String uniqueString = this.getGoogleId()+","+this.getDescription()+","+this.getDate()+","+this.getType();
+        return uniqueString.hashCode();
+    }
+
+    // @author A0111930W
     public void setDate(Calendar doneDate) {
         if (doneDate == null) {
             throw new NullPointerException();
