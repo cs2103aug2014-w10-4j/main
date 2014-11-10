@@ -63,6 +63,21 @@ import chirptask.logic.Logic;
 
 public class MainGui extends Application implements NativeKeyListener {
 
+    private static final String COMMAND_DISPLAY = "display";
+    private static final String COMMAND_UNDONE = "undone";
+    private static final String COMMAND_DONE = "done";
+    private static final String COMMAND_EXIT = "exit";
+
+    private static final String CSS_SCENE_NAME = "layoutStyle.css";
+    private static final String OS_NAME_MAC_OS_X = "Mac OS X";
+    private static final String IMAGES_CHIRPTASK_CLEAR_PNG = "images/chirptask_clear.png";
+    private static final String COLOR_TASKVIEW_HEADER_NORMAL = "#777";
+    private static final String COLOR_TASKVIEW_HEADER_TODAY = "#CC6C6B";
+    private static final String BUTTON_CLEAR_LABEL = "Clear";
+    private static final String FONT_FAMILY = "Lucida Grande";
+    private static final String LABEL_FILTER = "Filter: ";
+    private static final String LABEL_USERINPUT = "Input: ";
+
     private static List<Integer> _taskIndexToId = new ArrayList<>();
     private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
             "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
@@ -187,9 +202,12 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private VBox generateTaskViewDate(Calendar date) {
         assert date != null;
+
+        Insets taskViewDateBoxPadding = new Insets(0, 5, 10, 5);
+
         // Box to contain all tasks of that date
         VBox taskViewDateBox = new VBox();
-        taskViewDateBox.setPadding(new Insets(0, 5, 10, 5));
+        taskViewDateBox.setPadding(taskViewDateBoxPadding);
 
         // header that shows day of the week and date
         BorderPane taskViewHeader = generateTaskViewHeader(date);
@@ -258,7 +276,8 @@ public class MainGui extends Application implements NativeKeyListener {
         assert taskPane != null && checkBoxPane != null
                 && descriptionBox != null && taskTime != null;
 
-        taskPane.setPadding(new Insets(10, 5, 8, 10));
+        Insets taskPanePadding = new Insets(10, 5, 8, 10);
+        taskPane.setPadding(taskPanePadding);
         taskPane.getStyleClass().add("task-pane");
         taskPane.setLeft(checkBoxPane);
         taskPane.setCenter(descriptionBox);
@@ -456,7 +475,8 @@ public class MainGui extends Application implements NativeKeyListener {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (event.getButton() == MouseButton.PRIMARY) {
+                boolean isLeftClick = event.getButton() == MouseButton.PRIMARY;
+                if (isLeftClick) {
                     setFilterText("");
                     sendEnterKeyToFilterBar();
                 }
@@ -486,6 +506,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
             private void cliKeyEnter(KeyCode keyPressed) {
                 boolean pressedEnter = keyPressed == KeyCode.ENTER;
+
                 if (pressedEnter) {
                     String input = _commandLineInterface.getText();
                     boolean isInputIsNotEmpty = !input.trim().isEmpty();
@@ -502,7 +523,8 @@ public class MainGui extends Application implements NativeKeyListener {
                 if (pressedTab) {
                     String input = _commandLineInterface.getText()
                             .toLowerCase().trim();
-                    boolean isDisplayCommand = input.startsWith("display");
+                    boolean isDisplayCommand = input
+                            .startsWith(COMMAND_DISPLAY);
                     boolean isFilterCommand = input.startsWith("filter");
                     boolean isEditCommand = input.startsWith("edit ");
 
@@ -535,7 +557,8 @@ public class MainGui extends Application implements NativeKeyListener {
             public void handle(KeyEvent event) {
                 boolean pressedEnter = event.getCode() == KeyCode.ENTER;
                 if (pressedEnter) {
-                    sendCommandToLogic("display " + _filterField.getText());
+                    sendCommandToLogic(COMMAND_DISPLAY + " "
+                            + _filterField.getText());
                 }
             }
         };
@@ -560,7 +583,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     private void formatTextLabel(Text Label, String color) {
         assert Label != null && color != null && !color.trim().isEmpty();
-        Label.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 12));
+        Label.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 12));
         Label.setFill(Color.web(color));
     }
 
@@ -612,13 +635,13 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Text generateFilterLabel() {
-        Text filterLabel = new Text(Constants.LABEL_FILTER);
+        Text filterLabel = new Text(LABEL_FILTER);
         return filterLabel;
     }
 
     private Button generateClearAllButton() {
         Button clearFilter = new Button();
-        clearFilter.setText("Clear");
+        clearFilter.setText(BUTTON_CLEAR_LABEL);
         clearFilter.getStyleClass().add("clear-button");
         clearFilter.setOnMouseClicked(clearAllAction());
         return clearFilter;
@@ -815,12 +838,12 @@ public class MainGui extends Application implements NativeKeyListener {
                 DisplayView.convertDateToString(Calendar.getInstance()));
         if (isToday) {
             taskViewHeader.getStyleClass().add("taskView-header-today");
-            formatTextLabel(dayLabel, "#CC6C6B");
-            formatTextLabel(dateLabel, "#CC6C6B");
+            formatTextLabel(dayLabel, COLOR_TASKVIEW_HEADER_TODAY);
+            formatTextLabel(dateLabel, COLOR_TASKVIEW_HEADER_TODAY);
         } else {
             taskViewHeader.getStyleClass().add("taskView-header");
-            formatTextLabel(dayLabel, "#777");
-            formatTextLabel(dateLabel, "#777");
+            formatTextLabel(dayLabel, COLOR_TASKVIEW_HEADER_NORMAL);
+            formatTextLabel(dateLabel, COLOR_TASKVIEW_HEADER_NORMAL);
         }
     }
 
@@ -830,7 +853,7 @@ public class MainGui extends Application implements NativeKeyListener {
         sceneTitle.setTextAlignment(TextAlignment.CENTER);
 
         ImageView imgView = new ImageView(new Image(this.getClass()
-                .getResourceAsStream("images/chirptask_clear.png")));
+                .getResourceAsStream(IMAGES_CHIRPTASK_CLEAR_PNG)));
         imgView.setFitHeight(30);
         imgView.setPreserveRatio(true);
         imgView.setSmooth(true);
@@ -876,7 +899,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private HBox generateUserInputInterface() {
         generateUserInputField();
-        Text userInputLabel = new Text(Constants.LABEL_USERINPUT);
+        Text userInputLabel = new Text(LABEL_USERINPUT);
 
         HBox userInputBox = new HBox();
         userInputBox.setPadding(new Insets(5));
@@ -890,7 +913,7 @@ public class MainGui extends Application implements NativeKeyListener {
         assert we != null;
         // consume the closing request, let logic handle
         we.consume();
-        sendCommandToLogic("exit");
+        sendCommandToLogic(COMMAND_EXIT);
     }
 
     /**
@@ -1063,6 +1086,7 @@ public class MainGui extends Application implements NativeKeyListener {
     private ChangeListener<Boolean> listenerForTaskStatusChange(
             final BorderPane taskPane) {
         return new ChangeListener<Boolean>() {
+            @Override
             public void changed(ObservableValue<? extends Boolean> ov,
                     Boolean oldValue, Boolean newValue) {
                 assert ov != null;
@@ -1074,9 +1098,9 @@ public class MainGui extends Application implements NativeKeyListener {
                                 "\\.")[0];
 
                 if (newValue) {
-                    sendCommandToLogic("done " + taskIndex);
+                    sendCommandToLogic(COMMAND_DONE + " " + taskIndex);
                 } else {
-                    sendCommandToLogic("undone " + taskIndex);
+                    sendCommandToLogic(COMMAND_UNDONE + " " + taskIndex);
                 }
 
                 setStrikethroughOfDescription(taskPane, newValue, desc);
@@ -1100,7 +1124,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void macOsXInitialization() {
         // Sets the icon of application for Mac OS X
-        if (System.getProperty("os.name").equals("Mac OS X")) {
+        if (System.getProperty("os.name").equals(OS_NAME_MAC_OS_X)) {
             // com.apple.eawt.Application application =
             // com.apple.eawt.Application
             // .getApplication();
@@ -1165,7 +1189,8 @@ public class MainGui extends Application implements NativeKeyListener {
                 String hashtagOrCategoryValue = ((Text) event.getSource())
                         .getText();
                 setFilterText(hashtagOrCategoryValue);
-                sendCommandToLogic("display " + hashtagOrCategoryValue);
+                sendCommandToLogic(COMMAND_DISPLAY + " "
+                        + hashtagOrCategoryValue);
             }
         };
     }
@@ -1194,8 +1219,9 @@ public class MainGui extends Application implements NativeKeyListener {
         primaryStage.setTitle(Constants.TITLE_SOFTWARE);
         primaryStage.getIcons().add(
                 new Image(getClass().getResourceAsStream(
-                        "images/chirptask_clear.png")));
+                        IMAGES_CHIRPTASK_CLEAR_PNG)));
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
             public void handle(WindowEvent we) {
                 guiClosing(we);
             }
@@ -1207,7 +1233,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
         Scene scene = new Scene(rootPane, STARTING_WIDTH, STARTING_HEIGHT);
         scene.getStylesheets().add(
-                getClass().getResource("layoutStyle.css").toExternalForm());
+                getClass().getResource(CSS_SCENE_NAME).toExternalForm());
         return scene;
     }
 
@@ -1218,7 +1244,7 @@ public class MainGui extends Application implements NativeKeyListener {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                VBox Today = (VBox) _taskViewDateMap.get(DisplayView
+                VBox Today = _taskViewDateMap.get(DisplayView
                         .convertDateToString(Calendar.getInstance()));
                 boolean taskViewDateOfTodayExist = Today != null;
 
@@ -1236,7 +1262,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void setTrendingListTitleFont(Text titleText) {
         assert titleText != null;
-        titleText.setFont(Font.font("Lucida Grande", FontWeight.BLACK, 14));
+        titleText.setFont(Font.font(FONT_FAMILY, FontWeight.BLACK, 14));
     }
 
 }

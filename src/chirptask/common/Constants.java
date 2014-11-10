@@ -43,8 +43,6 @@ public class Constants {
     public static String CATEGORY = CATEGORY_CHAR + "";
     public static String CONTEXT = HASHTAG_CHAR + "";
 
-    public static final String LABEL_FILTER = "Filter: ";
-    public static final String LABEL_USERINPUT = "Input: ";
     public static final String LABEL_CATEGORIES = "Categories ("
             + CATEGORY_CHAR + ")";
     public static final String LABEL_HASHTAGS = "Hashtags (" + HASHTAG_CHAR
