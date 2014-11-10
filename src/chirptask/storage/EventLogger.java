@@ -13,6 +13,7 @@ import chirptask.common.Settings;
 
 public class EventLogger implements IStorage {
 
+    private static final String EXCEPTION_EMPTY_ERROR = "Error cannot be empty";
     private static PrintStream fileWriter;
     private static EventLogger instance = null;
 
@@ -132,7 +133,7 @@ public class EventLogger implements IStorage {
             throw new NullPointerException();
         }
         if (error.trim().isEmpty()) {
-            throw new IllegalArgumentException("Error cannot be empty");
+            throw new IllegalArgumentException(EXCEPTION_EMPTY_ERROR);
         }
         fileWriter.println(String.format(Constants.ERROR, new Date(), error));
         fileWriter.flush();
