@@ -3,6 +3,35 @@
 
 
 	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\Logic.java
+	 */
+
+    // unused because edited Google to set [Done] instead
+    /**
+     * Edit a done timed google task will auto include a [Done] infront of the
+     * task description. Eg, edit 1 abc -> [Done] abc for undone, edit 1 abc ->
+     * abc
+     * 
+     * @param task
+     */
+    @SuppressWarnings("unused")
+    private void processGoogleIdTasks(Task task) {
+        if (!isGoogleIdEmpty(task)) {
+            if (isDoneTimedTasked(task)) {
+                processEditDone(task);
+            } else if (isUndoneTimedTask(task)) {
+                processEditUndone(task);
+            }
+        }
+    }
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\Logic.java
+
+
+
+
+
+	/**
 	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\TasksByDate.java
 	 */
 

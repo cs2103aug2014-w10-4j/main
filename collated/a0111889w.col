@@ -3,12 +3,12 @@
 
 
 	/**
-	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\common\Messages.java
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\common\Constants.java
 	 */
 
 package chirptask.common;
 
-public class Messages {
+public class Constants {
     public static final String LOG_MESSAGE_ADD_TASK = "%1$s Added new task %2$s.";
     public static final String LOG_MESSAGE_REMOVE_TASK = "%1$s Removed task %2$s.";
     public static final String LOG_MESSAGE_MODIFY_TASK = "%1$s Modified task %2$s.";
@@ -44,10 +44,16 @@ public class Messages {
     public static final String LOG_MESSAGE_SYNC_USAGE = "Usage: sync";
     public static final String LOG_MESSAGE_CLEAR_USAGE = "Usage: clear";
 
-    public static final String LABEL_FILTER = "Filter: ";
-    public static final String LABEL_USERINPUT = "Input: ";
-    public static final String LABEL_CATEGORIES = "Categories (@)";
-    public static final String LABEL_HASHTAGS = "Hashtags (#)";
+    public static char CATEGORY_CHAR = '@';
+    public static char HASHTAG_CHAR = '#';
+
+    public static String CATEGORY = CATEGORY_CHAR + "";
+    public static String CONTEXT = HASHTAG_CHAR + "";
+
+    public static final String LABEL_CATEGORIES = "Categories ("
+            + CATEGORY_CHAR + ")";
+    public static final String LABEL_HASHTAGS = "Hashtags (" + HASHTAG_CHAR
+            + ")";
     public static final String STATUS_ERROR = "Error: %1$s";
     public static final String STATUS_NORMAL = "Status: %1$s";
 
@@ -59,6 +65,9 @@ public class Messages {
     public static final String TITLE_SYNCING = "Syncing";
     public static final String TITLE_SYNC_FAIL = "Sync failed";
 
+    public static final String DATE_FORMAT_HH_MM = "HH:mm";
+    public static final String DATE_FORMAT_DD_MM_YYYY = "dd/MM/YYYY";
+
     public static final String DEFAULT_STATUS = "Nothing is happening.";
 
     public static final String ERROR = "%1$s: Error %2$s";
@@ -67,7 +76,7 @@ public class Messages {
 
 }
 
-	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\common\Messages.java
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\common\Constants.java
 
 
 
@@ -99,17 +108,20 @@ public class Settings {
     public static String EVENT_LOG_FILENAME = "eventlogs.txt";
     public static String DEFAULT_FILTER = "";
     public static String GOOGLE_CALENDAR_ID = "";
-    public static char CATEGORY_CHAR = '@';
-    public static char HASHTAG_CHAR = '#';
+
     public static boolean LOGIN_AUTO = false;
     public static int SYSTEM_EXIT_NORMAL = 0;
 
-    public static String CATEGORY = CATEGORY_CHAR + "";
-    public static String CONTEXT = HASHTAG_CHAR + "";
-
     public static int HOTKEY_TOGGLE_HIDE = NativeKeyEvent.VC_ESCAPE;
     public static int HOTKEY_TOGGLE_SHOW = NativeKeyEvent.VC_G;
-
+    
+    public static final String FILTER_DONE = "/done";
+    public static final String FILTER_UNDONE = "/undone";
+    public static final String FILTER_FLOATING = "/floating";
+    public static final String FILTER_DEADLINE = "/deadline";
+    public static final String FILTER_TIMED = "/timed";
+    public static final String FILTER_DATE = "/date";
+    
     public enum CommandType {
         ADD, DISPLAY, DELETE, EDIT, UNDO, DONE, UNDONE, LOGIN, INVALID, EXIT, CLEAR, SYNC, LOGOUT
     }
@@ -140,7 +152,7 @@ public class Settings {
             props.store(writer, "Default Settings");
             writer.close();
         } catch (IOException e) {
-            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+            StorageHandler.logError(String.format(Constants.ERROR, "Settings",
                     "while writing to file.\n" + e.getMessage()));
         }
     }
@@ -149,8 +161,6 @@ public class Settings {
         // write default values
         props.setProperty("EVENT_LOG_FILENAME", "eventlogs.txt");
         props.setProperty("DEFAULT_FILTER", "");
-        props.setProperty("CATEGORY_CHAR", "@");
-        props.setProperty("CONTEXT_CHAR", "#");
         props.setProperty("LOGIN_AUTO", "false");
         props.setProperty("SYSTEM_EXIT_NORMAL", "0");
         props.setProperty("HOTKEY_TOGGLE_HIDE", "" + NativeKeyEvent.VC_ESCAPE);
@@ -179,7 +189,7 @@ public class Settings {
             // corrupted settings
             openFileForWriting();
         } catch (IOException ex) {
-            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+            StorageHandler.logError(String.format(Constants.ERROR, "Settings",
                     "while reading from file.\n" + ex.getMessage()));
         }
     }
@@ -187,8 +197,6 @@ public class Settings {
     private void readSettingsFromProperty() {
         EVENT_LOG_FILENAME = props.getProperty("EVENT_LOG_FILENAME");
         DEFAULT_FILTER = props.getProperty("DEFAULT_FILTER");
-        CATEGORY_CHAR = props.getProperty("CATEGORY_CHAR").charAt(0);
-        HASHTAG_CHAR = props.getProperty("CONTEXT_CHAR").charAt(0);
         LOGIN_AUTO = Boolean.parseBoolean(props.getProperty("LOGIN_AUTO"));
         SYSTEM_EXIT_NORMAL = Integer.parseInt(props
                 .getProperty("SYSTEM_EXIT_NORMAL"));
@@ -208,7 +216,7 @@ public class Settings {
                 writer.close();
             }
         } catch (IOException e) {
-            StorageHandler.logError(String.format(Messages.ERROR, "Settings",
+            StorageHandler.logError(String.format(Constants.ERROR, "Settings",
                     "while writing to file.\n" + e.getMessage()));
         }
     }
@@ -281,12 +289,27 @@ import org.jnativehook.NativeInputEvent;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 import chirptask.logic.DisplayView;
 import chirptask.logic.Logic;
 
 public class MainGui extends Application implements NativeKeyListener {
+
+    private static final String COMMAND_DISPLAY = "display";
+    private static final String COMMAND_UNDONE = "undone";
+    private static final String COMMAND_DONE = "done";
+    private static final String COMMAND_EXIT = "exit";
+
+    private static final String CSS_SCENE_NAME = "layoutStyle.css";
+    private static final String OS_NAME_MAC_OS_X = "Mac OS X";
+    private static final String IMAGES_CHIRPTASK_CLEAR_PNG = "images/chirptask_clear.png";
+    private static final String COLOR_TASKVIEW_HEADER_NORMAL = "#777";
+    private static final String COLOR_TASKVIEW_HEADER_TODAY = "#CC6C6B";
+    private static final String BUTTON_CLEAR_LABEL = "Clear";
+    private static final String FONT_FAMILY = "Lucida Grande";
+    private static final String LABEL_FILTER = "Filter: ";
+    private static final String LABEL_USERINPUT = "Input: ";
 
     private static List<Integer> _taskIndexToId = new ArrayList<>();
     private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
@@ -345,6 +368,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * Sets the current status of Google services.
      * 
      * @param Status
+     *            Current status of Google services.
      */
     public void setOnlineStatus(final String Status) {
         assert Status != null && !Status.isEmpty();
@@ -364,10 +388,11 @@ public class MainGui extends Application implements NativeKeyListener {
      * GUI.
      * 
      * @param Category
+     *            category to be appended into this list
      */
     public void addCategoryIntoList(String Category) {
         assert Category != null && !Category.isEmpty();
-        Text categoryText = new Text(Settings.CATEGORY_CHAR + Category);
+        Text categoryText = new Text(Constants.CATEGORY_CHAR + Category);
         categoryText.getStyleClass().add("category-text");
         categoryText.setOnMouseClicked(clickOnCategory());
         _categoryList.getChildren().add(categoryText);
@@ -377,10 +402,11 @@ public class MainGui extends Application implements NativeKeyListener {
      * Inserts a hashtag onto the current list of hashtags showing on the GUI.
      * 
      * @param hashtag
+     *            hashtag to be appended to this list
      */
     public void addHashtagIntoList(String hashtag) {
         assert hashtag != null && !hashtag.isEmpty();
-        Text hashtagText = new Text(Settings.HASHTAG_CHAR + hashtag);
+        Text hashtagText = new Text(Constants.HASHTAG_CHAR + hashtag);
         hashtagText.getStyleClass().add("hashtag-text");
         hashtagText.setOnMouseClicked(clickOnHashtag());
         _hashtagList.getChildren().add(hashtagText);
@@ -391,6 +417,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * tasks of a date in it.
      * 
      * @param date
+     *            date of task view date to generate and add into GUI.
      * @return boolean status of operation
      */
     public boolean addNewTaskViewDate(Calendar date) {
@@ -412,9 +439,12 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private VBox generateTaskViewDate(Calendar date) {
         assert date != null;
+
+        Insets taskViewDateBoxPadding = new Insets(0, 5, 10, 5);
+
         // Box to contain all tasks of that date
         VBox taskViewDateBox = new VBox();
-        taskViewDateBox.setPadding(new Insets(0, 5, 10, 5));
+        taskViewDateBox.setPadding(taskViewDateBoxPadding);
 
         // header that shows day of the week and date
         BorderPane taskViewHeader = generateTaskViewHeader(date);
@@ -431,15 +461,20 @@ public class MainGui extends Application implements NativeKeyListener {
      * </p>
      * 
      * @param date
+     *            date of new task to add
      * @param taskId
+     *            taskid of new task to add
      * @param description
+     *            description of new task to add
      * @param time
+     *            time of new task to add
      * @param done
+     *            status of new task to add
      * @return boolean status of operation
      */
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && description != null && !description.isEmpty()
+        assert date != null && description != null 
                 && taskId > -1;
 
         // Checks for duplicate taskId
@@ -483,7 +518,8 @@ public class MainGui extends Application implements NativeKeyListener {
         assert taskPane != null && checkBoxPane != null
                 && descriptionBox != null && taskTime != null;
 
-        taskPane.setPadding(new Insets(10, 5, 8, 10));
+        Insets taskPanePadding = new Insets(10, 5, 8, 10);
+        taskPane.setPadding(taskPanePadding);
         taskPane.getStyleClass().add("task-pane");
         taskPane.setLeft(checkBoxPane);
         taskPane.setCenter(descriptionBox);
@@ -603,11 +639,12 @@ public class MainGui extends Application implements NativeKeyListener {
      * Message will be coloured red as it's an error.
      * 
      * @param errorMessage
+     *            error message to display on GUI.
      */
     public void setError(String errorMessage) {
         assert errorMessage != null && !errorMessage.trim().isEmpty();
 
-        String Status = String.format(Messages.STATUS_ERROR, errorMessage);
+        String Status = String.format(Constants.STATUS_ERROR, errorMessage);
         _statusText.setText(Status);
         _statusText.getStyleClass().clear();
         _statusText.getStyleClass().add("error-message");
@@ -618,6 +655,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * allowed.
      * 
      * @param text
+     *            string to set in filter's text field.
      */
     public void setFilterText(String text) {
         int caretPosition = _filterField.getCaretPosition();
@@ -629,11 +667,12 @@ public class MainGui extends Application implements NativeKeyListener {
      * Sets the status of the GUI with the given status message.
      * 
      * @param message
+     *            status message to display on GUI.
      */
     public void setStatus(String message) {
         assert message != null && !message.trim().isEmpty();
 
-        String Status = String.format(Messages.STATUS_NORMAL, message);
+        String Status = String.format(Constants.STATUS_NORMAL, message);
         _statusText.setText(Status);
         _statusText.getStyleClass().clear();
         _statusText.getStyleClass().add("status-message");
@@ -643,6 +682,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * Sets the user input text of the CLI. Empty strings are accepted.
      * 
      * @param text
+     *            string to show in input text field.
      */
     public void setUserInputText(String text) {
         _commandLineInterface.setText(text);
@@ -681,7 +721,8 @@ public class MainGui extends Application implements NativeKeyListener {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (event.getButton() == MouseButton.PRIMARY) {
+                boolean isLeftClick = event.getButton() == MouseButton.PRIMARY;
+                if (isLeftClick) {
                     setFilterText("");
                     sendEnterKeyToFilterBar();
                 }
@@ -711,6 +752,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
             private void cliKeyEnter(KeyCode keyPressed) {
                 boolean pressedEnter = keyPressed == KeyCode.ENTER;
+
                 if (pressedEnter) {
                     String input = _commandLineInterface.getText();
                     boolean isInputIsNotEmpty = !input.trim().isEmpty();
@@ -727,7 +769,8 @@ public class MainGui extends Application implements NativeKeyListener {
                 if (pressedTab) {
                     String input = _commandLineInterface.getText()
                             .toLowerCase().trim();
-                    boolean isDisplayCommand = input.startsWith("display");
+                    boolean isDisplayCommand = input
+                            .startsWith(COMMAND_DISPLAY);
                     boolean isFilterCommand = input.startsWith("filter");
                     boolean isEditCommand = input.startsWith("edit ");
 
@@ -760,7 +803,8 @@ public class MainGui extends Application implements NativeKeyListener {
             public void handle(KeyEvent event) {
                 boolean pressedEnter = event.getCode() == KeyCode.ENTER;
                 if (pressedEnter) {
-                    sendCommandToLogic("display " + _filterField.getText());
+                    sendCommandToLogic(COMMAND_DISPLAY + " "
+                            + _filterField.getText());
                 }
             }
         };
@@ -785,7 +829,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     private void formatTextLabel(Text Label, String color) {
         assert Label != null && color != null && !color.trim().isEmpty();
-        Label.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 12));
+        Label.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 12));
         Label.setFill(Color.web(color));
     }
 
@@ -816,7 +860,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Text generateCategoryLabel() {
-        Text categoryTitle = new Text(Messages.LABEL_CATEGORIES);
+        Text categoryTitle = new Text(Constants.LABEL_CATEGORIES);
         setTrendingListTitleFont(categoryTitle);
         return categoryTitle;
     }
@@ -837,13 +881,13 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Text generateFilterLabel() {
-        Text filterLabel = new Text(Messages.LABEL_FILTER);
+        Text filterLabel = new Text(LABEL_FILTER);
         return filterLabel;
     }
 
     private Button generateClearAllButton() {
         Button clearFilter = new Button();
-        clearFilter.setText("Clear");
+        clearFilter.setText(BUTTON_CLEAR_LABEL);
         clearFilter.getStyleClass().add("clear-button");
         clearFilter.setOnMouseClicked(clearAllAction());
         return clearFilter;
@@ -883,7 +927,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private Text generateHashtagLabel() {
-        Text hashtagTitle = new Text(Messages.LABEL_HASHTAGS);
+        Text hashtagTitle = new Text(Constants.LABEL_HASHTAGS);
         setTrendingListTitleFont(hashtagTitle);
         return hashtagTitle;
     }
@@ -920,7 +964,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private Text generateOnlineStatusText() {
         // default is offline.
-        Text onlineStatus = new Text(Messages.TITLE_OFFLINE);
+        Text onlineStatus = new Text(Constants.TITLE_OFFLINE);
         onlineStatus.getStyleClass().add("header-title");
         BorderPane.setAlignment(onlineStatus, Pos.BOTTOM_RIGHT);
         return onlineStatus;
@@ -954,7 +998,7 @@ public class MainGui extends Application implements NativeKeyListener {
     private VBox generateStatusBarInterface() {
         _statusText = new Label();
         _statusText.setTextOverrun(OverrunStyle.ELLIPSIS);
-        setStatus(Messages.DEFAULT_STATUS);
+        setStatus(Constants.DEFAULT_STATUS);
 
         VBox statusBar = new VBox();
         statusBar.getStyleClass().add("status-bar");
@@ -1040,22 +1084,22 @@ public class MainGui extends Application implements NativeKeyListener {
                 DisplayView.convertDateToString(Calendar.getInstance()));
         if (isToday) {
             taskViewHeader.getStyleClass().add("taskView-header-today");
-            formatTextLabel(dayLabel, "#CC6C6B");
-            formatTextLabel(dateLabel, "#CC6C6B");
+            formatTextLabel(dayLabel, COLOR_TASKVIEW_HEADER_TODAY);
+            formatTextLabel(dateLabel, COLOR_TASKVIEW_HEADER_TODAY);
         } else {
             taskViewHeader.getStyleClass().add("taskView-header");
-            formatTextLabel(dayLabel, "#777");
-            formatTextLabel(dateLabel, "#777");
+            formatTextLabel(dayLabel, COLOR_TASKVIEW_HEADER_NORMAL);
+            formatTextLabel(dateLabel, COLOR_TASKVIEW_HEADER_NORMAL);
         }
     }
 
     private HBox generateTitleBox() {
-        Text sceneTitle = new Text(Messages.TITLE_SOFTWARE);
+        Text sceneTitle = new Text(Constants.TITLE_SOFTWARE);
         sceneTitle.getStyleClass().add("header-title");
         sceneTitle.setTextAlignment(TextAlignment.CENTER);
 
         ImageView imgView = new ImageView(new Image(this.getClass()
-                .getResourceAsStream("images/chirptask_clear.png")));
+                .getResourceAsStream(IMAGES_CHIRPTASK_CLEAR_PNG)));
         imgView.setFitHeight(30);
         imgView.setPreserveRatio(true);
         imgView.setSmooth(true);
@@ -1101,7 +1145,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private HBox generateUserInputInterface() {
         generateUserInputField();
-        Text userInputLabel = new Text(Messages.LABEL_USERINPUT);
+        Text userInputLabel = new Text(LABEL_USERINPUT);
 
         HBox userInputBox = new HBox();
         userInputBox.setPadding(new Insets(5));
@@ -1115,7 +1159,7 @@ public class MainGui extends Application implements NativeKeyListener {
         assert we != null;
         // consume the closing request, let logic handle
         we.consume();
-        sendCommandToLogic("exit");
+        sendCommandToLogic(COMMAND_EXIT);
     }
 
     /**
@@ -1288,6 +1332,7 @@ public class MainGui extends Application implements NativeKeyListener {
     private ChangeListener<Boolean> listenerForTaskStatusChange(
             final BorderPane taskPane) {
         return new ChangeListener<Boolean>() {
+            @Override
             public void changed(ObservableValue<? extends Boolean> ov,
                     Boolean oldValue, Boolean newValue) {
                 assert ov != null;
@@ -1299,9 +1344,9 @@ public class MainGui extends Application implements NativeKeyListener {
                                 "\\.")[0];
 
                 if (newValue) {
-                    sendCommandToLogic("done " + taskIndex);
+                    sendCommandToLogic(COMMAND_DONE + " " + taskIndex);
                 } else {
-                    sendCommandToLogic("undone " + taskIndex);
+                    sendCommandToLogic(COMMAND_UNDONE + " " + taskIndex);
                 }
 
                 setStrikethroughOfDescription(taskPane, newValue, desc);
@@ -1325,7 +1370,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void macOsXInitialization() {
         // Sets the icon of application for Mac OS X
-        if (System.getProperty("os.name").equals("Mac OS X")) {
+        if (System.getProperty("os.name").equals(OS_NAME_MAC_OS_X)) {
             // com.apple.eawt.Application application =
             // com.apple.eawt.Application
             // .getApplication();
@@ -1359,7 +1404,8 @@ public class MainGui extends Application implements NativeKeyListener {
                 String hashtagOrCategoryValue = ((Text) event.getSource())
                         .getText();
                 setFilterText(hashtagOrCategoryValue);
-                sendCommandToLogic("display " + hashtagOrCategoryValue);
+                sendCommandToLogic(COMMAND_DISPLAY + " "
+                        + hashtagOrCategoryValue);
             }
         };
     }
@@ -1385,11 +1431,12 @@ public class MainGui extends Application implements NativeKeyListener {
         primaryStage.setScene(scene);
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMinWidth(MIN_WIDTH);
-        primaryStage.setTitle(Messages.TITLE_SOFTWARE);
+        primaryStage.setTitle(Constants.TITLE_SOFTWARE);
         primaryStage.getIcons().add(
                 new Image(getClass().getResourceAsStream(
-                        "images/chirptask_clear.png")));
+                        IMAGES_CHIRPTASK_CLEAR_PNG)));
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
             public void handle(WindowEvent we) {
                 guiClosing(we);
             }
@@ -1401,7 +1448,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
         Scene scene = new Scene(rootPane, STARTING_WIDTH, STARTING_HEIGHT);
         scene.getStylesheets().add(
-                getClass().getResource("layoutStyle.css").toExternalForm());
+                getClass().getResource(CSS_SCENE_NAME).toExternalForm());
         return scene;
     }
 
@@ -1412,7 +1459,7 @@ public class MainGui extends Application implements NativeKeyListener {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                VBox Today = (VBox) _taskViewDateMap.get(DisplayView
+                VBox Today = _taskViewDateMap.get(DisplayView
                         .convertDateToString(Calendar.getInstance()));
                 boolean taskViewDateOfTodayExist = Today != null;
 
@@ -1430,7 +1477,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void setTrendingListTitleFont(Text titleText) {
         assert titleText != null;
-        titleText.setFont(Font.font("Lucida Grande", FontWeight.BLACK, 14));
+        titleText.setFont(Font.font(FONT_FAMILY, FontWeight.BLACK, 14));
     }
 
 }
@@ -1606,19 +1653,20 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Assuming there are only 3 type of task we need to handle
      * 
-     * @param task
-     * @return String
+     * @param task The task to process
+     * @return String The string to display on the MainGui
      */
     public static String convertTaskDateToDurationString(Task task) {
         assert task != null && task.getDate() != null;
         String dateToString = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT_HH_MM);
 
         if (Task.TASK_FLOATING.equals(task.getType())) {
             dateToString = "";
         } else if (Task.TASK_DEADLINE.equals(task.getType())) {
             DeadlineTask dTask = (DeadlineTask) task;
-            dateToString = "due by " + sdf.format(dTask.getDate().getTime());
+            dateToString = "due by" + " "
+                    + sdf.format(dTask.getDate().getTime());
         } else if (Task.TASK_TIMED.equals(task.getType())) {
             TimedTask tTask = (TimedTask) task;
             dateToString = sdf.format(tTask.getStartTime().getTime()) + " to "
@@ -1644,33 +1692,35 @@ public class MainGui extends Application implements NativeKeyListener {
         TextFlow parsedDesc = new TextFlow();
         StringBuilder descStringBuilder = new StringBuilder(description);
         Text bufferText = new Text();
+        String singleSpace = " ";
+        int zero = 0;
 
-        while (descStringBuilder.length() > 0) {
+        while (descStringBuilder.length() > zero) {
             int index = descStringBuilder.length();
 
-            boolean hasSpaceCharInDesc = descStringBuilder.indexOf(" ") > 0;
+            boolean hasSpaceCharInDesc = descStringBuilder.indexOf(singleSpace) > zero;
 
             if (hasSpaceCharInDesc) {
-                index = descStringBuilder.indexOf(" ");
-            } else if (descStringBuilder.indexOf(" ") == 0) {
+                index = descStringBuilder.indexOf(singleSpace);
+            } else if (descStringBuilder.indexOf(singleSpace) == zero) {
                 index = 1;
             }
 
             // obtain description until the first space
-            bufferText = new Text(descStringBuilder.substring(0, index));
+            bufferText = new Text(descStringBuilder.substring(zero, index));
 
-            if (descStringBuilder.charAt(0) == Settings.HASHTAG_CHAR) {
+            if (descStringBuilder.charAt(zero) == Constants.HASHTAG_CHAR) {
                 // Context
                 bufferText.getStyleClass().add("hashtag-text");
                 bufferText.setOnMouseClicked(_gui.clickOnHashtag());
-            } else if (descStringBuilder.charAt(0) == Settings.CATEGORY_CHAR) {
+            } else if (descStringBuilder.charAt(zero) == Constants.CATEGORY_CHAR) {
                 // Category
                 bufferText.getStyleClass().add("category-text");
                 bufferText.setOnMouseClicked(_gui.clickOnCategory());
             }
 
             // delete parsed text
-            descStringBuilder.delete(0, index);
+            descStringBuilder.delete(zero, index);
             bufferText.setStrikethrough(done);
             parsedDesc.getChildren().add(bufferText);
         }
@@ -1690,7 +1740,8 @@ public class MainGui extends Application implements NativeKeyListener {
 
     public static String convertDateToString(Calendar date) {
         assert date != null;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+        SimpleDateFormat sdf = new SimpleDateFormat(
+                Constants.DATE_FORMAT_DD_MM_YYYY);
         String parseDateToString = sdf.format(date.getTime());
         return parseDateToString;
     }
@@ -1734,9 +1785,9 @@ public class DeadlineTask extends Task {
      * Creates a deadline task with specified description and deadline on the
      * input date.
      * 
-     * @param taskId
-     * @param description
-     * @param deadline
+     * @param taskId taskId of task to create
+     * @param description description of task to create
+     * @param deadline deadline of task to create
      */
     public DeadlineTask(int taskId, String description, Calendar deadline) {
         super(taskId, description, TASK_DEADLINE);
@@ -1786,11 +1837,12 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 
 public class EventLogger implements IStorage {
 
+    private static final String EXCEPTION_EMPTY_ERROR = "Error cannot be empty";
     private static PrintStream fileWriter;
     private static EventLogger instance = null;
 
@@ -1807,7 +1859,7 @@ public class EventLogger implements IStorage {
      * Set a printstream to the fileWriter variable, allowing printing of logs
      * to other output streams like system.out
      * 
-     * @param output
+     * @param output output stream to print logs to.
      */
     public static void setStream(PrintStream output) {
         if (output == null) {
@@ -1820,7 +1872,7 @@ public class EventLogger implements IStorage {
      * Implements a singleton class. Eventlogger does not need to be
      * instantiated multiple times.
      * 
-     * @return
+     * @return instance of EventLogger
      */
     public static EventLogger getInstance() {
         if (instance == null) {
@@ -1844,7 +1896,7 @@ public class EventLogger implements IStorage {
     public boolean storeNewTask(Task T) {
         checkInputValue(T);
         try {
-            fileWriter.println(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+            fileWriter.println(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                     new Date(), T.getDate().getTime(), T.getTaskId(),
                     T.getDescription()));
             fileWriter.flush();
@@ -1858,7 +1910,7 @@ public class EventLogger implements IStorage {
     public Task removeTask(Task T) {
         checkInputValue(T);
         try {
-            fileWriter.println(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+            fileWriter.println(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                     new Date(), T.getDate().getTime(), T.getTaskId(),
                     T.getDescription()));
             fileWriter.flush();
@@ -1872,7 +1924,7 @@ public class EventLogger implements IStorage {
     public boolean modifyTask(Task T) {
         checkInputValue(T);
         try {
-            fileWriter.println(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+            fileWriter.println(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                     new Date(), T.getDate().getTime(), T.getTaskId(),
                     T.getDescription()));
             fileWriter.flush();
@@ -1886,7 +1938,7 @@ public class EventLogger implements IStorage {
     public Task getTask(int taskId) {
         // allows negative taskId just for logging purpose.
 
-        fileWriter.println(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        fileWriter.println(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 new Date(), taskId));
         fileWriter.flush();
         return null;
@@ -1894,7 +1946,7 @@ public class EventLogger implements IStorage {
 
     @Override
     public ArrayList<Task> getAllTasks() {
-        fileWriter.println(String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+        fileWriter.println(String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                 new Date()));
         fileWriter.flush();
         return null;
@@ -1903,16 +1955,16 @@ public class EventLogger implements IStorage {
     /**
      * For logging custom error messages.
      * 
-     * @param error
+     * @param error Error message to log.
      */
     public void logError(String error) {
         if (error == null) {
             throw new NullPointerException();
         }
         if (error.trim().isEmpty()) {
-            throw new IllegalArgumentException("Error cannot be empty");
+            throw new IllegalArgumentException(EXCEPTION_EMPTY_ERROR);
         }
-        fileWriter.println(String.format(Messages.ERROR, new Date(), error));
+        fileWriter.println(String.format(Constants.ERROR, new Date(), error));
         fileWriter.flush();
     }
 
@@ -1943,8 +1995,8 @@ public interface IStorage {
     /**
      * Stores a new task into the storage.
      * 
-     * @param T
-     * @return
+     * @param T Task to store into storage
+     * @return boolean Status of operation
      */
     boolean storeNewTask(Task T);
 
@@ -1952,15 +2004,15 @@ public interface IStorage {
      * Removes existing task from storage. Returns the task removed, null if
      * don't exist.
      * 
-     * @param T
-     * @return Task
+     * @param T Task to remove from storage
+     * @return Task Task that was removed. Null if doesn't exist.
      */
     Task removeTask(Task T);
 
     /**
      * Modifies an existing task in storage.
      * 
-     * @param T
+     * @param T Task to modify in storage
      * @return boolean status of operation.
      */
     boolean modifyTask(Task T);
@@ -1968,15 +2020,15 @@ public interface IStorage {
     /**
      * Gets an existing task from storage based on taskId.
      * 
-     * @param taskId
-     * @return Task
+     * @param taskId taskId of task to get from storage
+     * @return Task task with the given taskId
      */
     Task getTask(int taskId);
 
     /**
      * Gets all task from storage.
      * 
-     * @return List<Task>
+     * @return a list containing all tasks
      */
     List<Task> getAllTasks();
 
@@ -2001,7 +2053,7 @@ public interface IStorage {
      * method for other components to log custom error messages. This is to
      * reduce coupling with EventLogger class
      * 
-     * @param error
+     * @param error error message to log in EventLogger
      */
     public synchronized static void logError(String error) {
         if (error == null) {
@@ -2163,6 +2215,7 @@ import java.util.List;
  */
 
 public class Task implements Comparable<Task> {
+    private static final String EXCEPTION_EMPTY_TYPE = "type cannot be empty";
     public static final String TASK_FLOATING = "floating";
     public static final String TASK_DEADLINE = "deadline";
     public static final String TASK_TIMED = "timedtask";
@@ -2236,10 +2289,10 @@ public class Task implements Comparable<Task> {
                  * of different type. With that, if either is a floating type,
                  * the floating type must be shown first.
                  */
-                if (this.getType().equals("floating")) {
-                    return -1;
-                } else if (b.getType().equals("floating")) {
-                    return 1;
+                if (this.getType().equals(TASK_FLOATING)) {
+                    return Integer.MIN_VALUE;
+                } else if (b.getType().equals(TASK_FLOATING)) {
+                    return Integer.MAX_VALUE;
                 } else {
                     return this.getType().compareTo(b.getType());
                 }
@@ -2328,7 +2381,7 @@ public class Task implements Comparable<Task> {
             throw new NullPointerException();
         }
         if (type.trim().isEmpty()) {
-            throw new IllegalArgumentException("type cannot be empty");
+            throw new IllegalArgumentException(EXCEPTION_EMPTY_TYPE);
         }
         _type = type;
     }
@@ -2370,8 +2423,20 @@ public class Task implements Comparable<Task> {
         this._categories = categories;
     }
 
-    public int hashCode(){
-        String uniqueString = this.getGoogleId()+","+this.getDescription()+","+this.getDate()+","+this.getType();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        String uniqueString = "";
+        if (this.getGoogleId() == null || this.getGoogleId().isEmpty()) {
+            uniqueString = this.getTaskId() + "," + this.getDescription() + ","
+                    + this.getDate() + "," + this.getType();
+        } else {
+            uniqueString = this.getGoogleId() + "," + this.getDescription()
+                    + "," + this.getDate() + "," + this.getType();
+        }
         return uniqueString.hashCode();
     }
 
@@ -2398,10 +2463,10 @@ public class TimedTask extends Task {
     /**
      * Creates a timed task or schedule object.
      * 
-     * @param taskId
-     * @param description
-     * @param startTime
-     * @param endTime
+     * @param taskId taskId of task to create
+     * @param description description of task to create
+     * @param startTime starting time of task to create
+     * @param endTime ending time of task to create
      */
     public TimedTask(int taskId, String description, Calendar startTime,
             Calendar endTime) {
@@ -2424,7 +2489,7 @@ public class TimedTask extends Task {
     /**
      * Sets the starting time of schedule or timedtask.
      * 
-     * @param startTime
+     * @param startTime calendar object of the starting time
      */
     public void setStartTime(Calendar startTime) {
         if (startTime == null) {
@@ -2440,7 +2505,7 @@ public class TimedTask extends Task {
     /**
      * Sets the ending time of schedule or timedtask.
      * 
-     * @param endTime
+     * @param endTime calendar object of the ending time
      */
     public void setEndTime(Calendar endTime) {
         if (endTime == null) {
@@ -2449,10 +2514,21 @@ public class TimedTask extends Task {
         _endTime = endTime;
     }
 
+    /* (non-Javadoc)
+     * @see chirptask.storage.Task#hashCode()
+     */
     public int hashCode() {
-        String uniqueString = this.getGoogleId() + "," + this.getDescription()
-                + "," + this.getStartTime() + "," + this.getEndTime() + ","
-                + this.getType();
+        String uniqueString = "";
+        if (this.getGoogleId() == null || this.getGoogleId().isEmpty()) {
+            uniqueString = this.getTaskId() + "," + this.getDescription() + ","
+                    + this.getStartTime() + "," + this.getEndTime() + ","
+                    + this.getType();
+        } else {
+            uniqueString = this.getGoogleId() + "," + this.getDescription()
+                    + "," + this.getStartTime() + "," + this.getEndTime() + ","
+                    + this.getType();
+        }
+
         return uniqueString.hashCode();
     }
 
@@ -2568,7 +2644,7 @@ import java.util.Calendar;
 import org.junit.Before;
 import org.junit.Test;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.common.Settings;
 import chirptask.storage.DeadlineTask;
 import chirptask.storage.EventLogger;
@@ -2612,29 +2688,29 @@ public class JUnitEventLoggerAtd {
         // More importantly, tests if time and descriptions are accurately
         // logged.
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();
@@ -2646,30 +2722,30 @@ public class JUnitEventLoggerAtd {
 
         // Tests if logging is accurate for floating tasks operations
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
 
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();
@@ -2682,30 +2758,30 @@ public class JUnitEventLoggerAtd {
                 tomorrow, tomorrow);
 
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
 
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();
@@ -2718,30 +2794,30 @@ public class JUnitEventLoggerAtd {
         // Tests if logging is accurate for timed tasks stored in task
         // operations
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
 
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();
@@ -2755,30 +2831,30 @@ public class JUnitEventLoggerAtd {
         // Tests if logging is accurate for deadline tasks stored as floating
         // task operations
         assertTrue(logger.storeNewTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_ADD_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_ADD_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertEquals(dt, logger.removeTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_REMOVE_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_REMOVE_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertTrue(logger.modifyTask(dt));
-        assertEquals(String.format(Messages.LOG_MESSAGE_MODIFY_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_MODIFY_TASK,
                 today.getTime(), dt.getDate().getTime()), in.readLine());
 
         assertNull(logger.getTask(dt.getTaskId()));
-        assertEquals(String.format(Messages.LOG_MESSAGE_GET_TASK,
+        assertEquals(String.format(Constants.LOG_MESSAGE_GET_TASK,
                 today.getTime(), dt.getTaskId()), in.readLine());
 
         assertNull(logger.getAllTasks());
         assertEquals(
-                String.format(Messages.LOG_MESSAGE_GET_ALL_TASKS,
+                String.format(Constants.LOG_MESSAGE_GET_ALL_TASKS,
                         today.getTime(), today.getTime()), in.readLine());
 
         logger.logError(dt.getDescription());
 
         assertEquals(
-                String.format(Messages.ERROR, today.getTime(),
+                String.format(Constants.ERROR, today.getTime(),
                         dt.getDescription()), in.readLine());
 
         logger.close();
