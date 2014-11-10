@@ -282,7 +282,7 @@ public class InputParser {
 		} 
 		Calendar dueDate = dateList.get(0);
 		if (parameters[1] != null && !parameters[1].equals("")) {
-		    String deadline = new SimpleDateFormat("HH:mm dd/MM")
+		    String deadline = new SimpleDateFormat("HH:mm")
 					.format(dueDate.getTime());
 		    description = parameters[1] + " by " + deadline;
         }
