@@ -241,8 +241,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && description != null 
-                && taskId > -1;
+        assert date != null && description != null && taskId > -1;
 
         // Checks for duplicate taskId
         if (_taskIndexToId.contains(taskId)) {
@@ -581,6 +580,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * Sends command to logic for processing and execution.
      * 
      * @param command
+     *            command string to send to logic component for parsing.
      */
     private void sendCommandToLogic(String command) {
         assert command != null && !command.trim().isEmpty();
@@ -592,7 +592,9 @@ public class MainGui extends Application implements NativeKeyListener {
      * Format a label with specified color.
      * 
      * @param Label
+     *            Text object whose font will be colored
      * @param color
+     *            String value of color ("#FFFFFF") to color font with.
      */
     private void formatTextLabel(Text Label, String color) {
         assert Label != null && color != null && !color.trim().isEmpty();
@@ -791,7 +793,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private HBox generateTaskDescription(String description, boolean done) {
-        assert description != null && !description.trim().isEmpty();
+        assert description != null;
 
         HBox descriptionBox = new HBox();
         descriptionBox.setPadding(new Insets(0, 8, 0, 8));
