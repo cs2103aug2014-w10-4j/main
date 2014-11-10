@@ -411,12 +411,7 @@ class ConcurrentSync implements Callable<Boolean> {
         Calendar endDate = DateTimeHandler
                 .getCalendar(end);
 
-        boolean isDone = false;
-        if (eventDescription != null) {
-            if (eventDescription.startsWith(STRING_DONE_EVENT)) {
-                isDone = true;
-            }
-        }
+        boolean isDone = setDoneEvent(eventDescription);
 
         if (currTask instanceof chirptask.storage.TimedTask) {
             TimedTask timedTask = (TimedTask) currTask;
@@ -475,38 +470,31 @@ class ConcurrentSync implements Callable<Boolean> {
         String eTag = chirpTask.getETag();
         String googleId = currTask.getId();
         String taskDesc = currTask.getTitle();
-        DateTime dueDate = currTask.getDue();
+        boolean isDone = setDoneTasks(doneString);
                 
-        boolean isDone = false;
-        if (STRING_DONE_TASK.equalsIgnoreCase(doneString)) {
-            isDone = true;
-        }
-                
-        chirptask.storage.Task newTask = null;
-                
-        if (dueDate != null) {
-            Calendar dueCalendar = DateTimeHandler.getDateFromDateTime(dueDate);
-            
-            Calendar chirpDate = chirpTask.getDate();
-            dueCalendar.set(Calendar.HOUR_OF_DAY, chirpDate.get(Calendar.HOUR_OF_DAY));
-            dueCalendar.set(Calendar.MINUTE, chirpDate.get(Calendar.MINUTE));
-            
-            DeadlineTask newDeadline = 
-                            new DeadlineTask(taskId, taskDesc, dueCalendar);
-            setMiscTaskDetails(newDeadline, categoryList, hashtagList,
-                            isDone, eTag, googleId);
-            newTask = newDeadline;
-        } else {
-            chirptask.storage.Task newFloating = 
-                            new chirptask.storage.Task(taskId, taskDesc);
-            setMiscTaskDetails(newFloating, categoryList, hashtagList,
-                            isDone, eTag, googleId);
-            newTask = newFloating;
-        }
+        chirptask.storage.Task newTask = 
+                makeDeadlineOrFloating(currTask, taskDesc);
                 
         if (newTask != null) {
+            newTask.setTaskId(taskId); 
+            setMiscTaskDetails(newTask, categoryList, hashtagList,
+                    isDone, eTag, googleId);
             GoogleStorage.updateStorages(newTask);
         }
+    }
+    
+    /**
+     * Set done if the Google Tasks Task status is completed
+     * @param doneStatus The Google Tasks Task status
+     * @return true if doneStatus is completed, false otherwise
+     */
+    private boolean setDoneTasks(String doneStatus) {
+        boolean isDone = false;
+        
+        if (STRING_DONE_TASK.equalsIgnoreCase(doneStatus)) {
+            isDone = true;
+        }
+        return isDone;
     }
     
     /**
@@ -585,18 +573,16 @@ class ConcurrentSync implements Callable<Boolean> {
                 List<String> categoryList = newTask.getCategories();
                 Calendar startDate = getCalendarFromEvent(currEvent.getStart());
                 Calendar endDate = getCalendarFromEvent(currEvent.getEnd());
-
-                boolean isDone = false;
-                if (description != null) {
-                    if (description.startsWith(STRING_DONE_EVENT)) {
-                        isDone = true;
-                    }
-                }
+                boolean isDone = setDoneEvent(description);
+                
                 TimedTask newTimed = 
                         new TimedTask(taskId, description,startDate, endDate);
-                setMiscTaskDetails(newTimed, categoryList, hashtagList, 
-                        isDone, googleETag, googleId);
-                GoogleStorage.updateStorages(newTimed);
+                
+                if (newTimed != null) {
+                    setMiscTaskDetails(newTimed, categoryList, hashtagList, 
+                            isDone, googleETag, googleId);
+                    GoogleStorage.updateStorages(newTimed);
+                }
             }
         }
     }
@@ -617,6 +603,22 @@ class ConcurrentSync implements Callable<Boolean> {
     }
     
     /**
+     * Set done if the Google Calendar Event Title begins with [Done]
+     * @param description The Google Calendar Event Title
+     * @return true if description starts with [Done], false otherwise
+     */
+    private boolean setDoneEvent(String description) {
+        boolean isDone = false;
+        
+        if (description != null) {
+            if (description.startsWith(STRING_DONE_EVENT)) {
+                isDone = true;
+            }
+        }
+        return isDone;
+    }
+    
+    /**
      * This method adds from a new, unknown, Google Task task,
      * only if the Google ID from the Google Task task is new and unknown
      * @param taskList Google Tasks' List
@@ -632,33 +634,79 @@ class ConcurrentSync implements Callable<Boolean> {
             String gId = currTask.getId();
             
             if (!googleIdMap.containsKey(gId)) {
-                int taskId = LocalStorage.generateId();
                 String taskDesc = currTask.getTitle();
                 
                 if (taskDesc.trim().isEmpty()) {
-                    continue;
+                    continue; //skip, don't consider empty desc
                 }
+                chirptask.storage.Task newTask = 
+                        makeDeadlineOrFloating(currTask, taskDesc);
                 
-                //chirptask.storage.Task newTask = InputParser
-                //        .getTaskFromString(taskDesc);
-                chirptask.storage.Task newTask = null; 
-                if (currTask.getDue() != null) {
-                    newTask = InputParser.getTaskFromString( 
-                            chirptask.storage.Task.TASK_DEADLINE, taskDesc);
-                    if (newTask == null) {
-                        newTask = InputParser.getTaskFromString(taskDesc);
-                    }
-                } else { 
-                    newTask = InputParser.getTaskFromString(
-                            chirptask.storage.Task.TASK_FLOATING, taskDesc);
+                if (newTask != null) {
+                    //Set ETag allows reuse of updateLocalGTask(Task,Task)
+                    newTask.setETag(currTask.getEtag()); 
+                    updateLocalGTasks(newTask, currTask);
                 }
-                
-                newTask.setTaskId(taskId);
-                //Set ETag allows reuse of updateLocalGTask(Task,Task)
-                newTask.setETag(currTask.getEtag()); 
-                
-                updateLocalGTasks(newTask, currTask);
             }
         }
+    }
+    
+    /**
+     * Decide to make Deadline or Floating by checking dueDate of Task
+     * @param currTask The Google Tasks Task object
+     * @param desc The description to set for the Chirptask Task
+     * @return The newly created ChirpTask Task object
+     */
+    private chirptask.storage.Task makeDeadlineOrFloating(
+                    Task currTask, String desc) {
+        chirptask.storage.Task newTask = null;
+        DateTime dueDate = currTask.getDue(); 
+        
+        if (dueDate != null) {
+            newTask = InputParser.getTaskFromString( 
+                    chirptask.storage.Task.TASK_DEADLINE, desc);
+            if (newTask == null) { // Task did not contain Time
+                newTask = InputParser.getTaskFromString(
+                        chirptask.storage.Task.TASK_FLOATING, desc);
+                newTask = makeDeadlineWithNoTime(newTask, dueDate);
+            } else { // Copy date from Google
+                setDateFromGoogle(newTask, dueDate);
+            }
+        } else { 
+            newTask = InputParser.getTaskFromString(
+                    chirptask.storage.Task.TASK_FLOATING, desc);
+        }
+        return newTask;
+    }
+    
+    /**
+     * Makes a Deadline Task without a specified Time if not given
+     * @param task The ChirpTask Task
+     * @param dueDate The DateTime object from Google Tasks Task
+     * @return A DeadlineTask object with a due date without time
+     */
+    private chirptask.storage.Task makeDeadlineWithNoTime(
+            chirptask.storage.Task task, DateTime dueDate) {
+        int taskId = task.getTaskId();
+        String taskDesc = task.getDescription();
+        Calendar dueCalendar = 
+                DateTimeHandler.getDateFromDateTime(dueDate);
+        DeadlineTask newDeadline = new DeadlineTask(taskId, taskDesc, dueCalendar);
+        
+        return newDeadline;
+    }
+    
+    /**
+     * Sets the date from Google Tasks Task to ChirpTask Task
+     * @param task The ChirpTask Task
+     * @param dueDate The Google Tasks Task DateTime object
+     */
+    private void setDateFromGoogle(
+            chirptask.storage.Task task, DateTime dueDate) {
+        Calendar dueCalendar = DateTimeHandler.getDateFromDateTime(dueDate);
+        Calendar chirpDate = task.getDate();
+        chirpDate.set(Calendar.DATE, dueCalendar.get(Calendar.DATE));
+        chirpDate.set(Calendar.MONTH, dueCalendar.get(Calendar.MONTH));
+        chirpDate.set(Calendar.YEAR, dueCalendar.get(Calendar.YEAR));
     }
 }

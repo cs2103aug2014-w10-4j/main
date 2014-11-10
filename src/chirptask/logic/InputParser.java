@@ -609,14 +609,18 @@ public class InputParser {
 			break;
 		case Task.TASK_DEADLINE:
 			toDo = addDeadlineTask(parameter, description, taskId);
+			break;
 		case Task.TASK_TIMED:
 			toDo = addTimedTask(parameter, description, taskId);
+			break;
 		default:
 			return null;
 		}
 		
-		toDo.setCategories(categoryList);
-		toDo.setHashtags(hashtagList);
+		if (toDo != null) {
+		    toDo.setCategories(categoryList);
+		    toDo.setHashtags(hashtagList);
+		}
 		
 		return toDo;
 	}
