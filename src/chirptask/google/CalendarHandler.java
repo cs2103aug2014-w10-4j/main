@@ -32,6 +32,13 @@ public class CalendarHandler {
     }
     
     //Methods related to Calendars
+    /**
+     * Adds a new Calendar into the account with the specified calendar name
+     * @param calendarName The new calendar name
+     * @return The newly added Google Calendar
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static Calendar addCalendar(String calendarName) 
             throws UnknownHostException, IOException {
         if (calendarName == null) {
@@ -87,6 +94,13 @@ public class CalendarHandler {
         return insertedCalendar;
     }
     
+    /**
+     * Gets the Google Calendar by its ID
+     * @param calendarId The Google Calendar ID
+     * @return The retrieved Google Calendar 
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static Calendar retrieveCalendarById(String calendarId) 
             throws UnknownHostException, IOException {
         if (calendarId == null) {
@@ -149,6 +163,12 @@ public class CalendarHandler {
         return newEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's title
+     * @param eventToSet The Google Calendar Event object
+     * @param eventSummary The new title to set
+     * @return The updated Google Calendar Event object
+     */
     static Event setSummary(Event eventToSet, String eventSummary) {
         if (eventToSet == null || eventSummary == null) {
             return null;
@@ -158,6 +178,12 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's description
+     * @param eventToSet The Google Calendar Event object
+     * @param eventDescription The new description to set
+     * @return The updated Google Calendar Event object
+     */
     static Event setDescription(Event eventToSet, String eventDescription) {
         if (eventToSet == null || eventDescription == null) {
             return null;
@@ -167,6 +193,12 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's start and end times
+     * @param modifiedTask The ChirpTask Task object
+     * @param modifiedEvent The Google Calendar Event object
+     * @return The updated Google Calendar Event object
+     */
     static Event setStartAndEnd(TimedTask modifiedTask, Event modifiedEvent) {
         if (modifiedTask == null || modifiedEvent == null || 
                 modifiedTask instanceof TimedTask == false) {
@@ -184,6 +216,12 @@ public class CalendarHandler {
         return modifiedGoogleEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's start time
+     * @param eventToSet The Google Calendar Event object
+     * @param startTime The Start Time's Date object
+     * @return The updated Google Calendar Event object
+     */
     static Event setStart(Event eventToSet, Date startTime) {
         if (eventToSet == null || startTime == null) {
             return null;
@@ -198,6 +236,12 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's end time
+     * @param eventToSet The Google Calendar Event object
+     * @param endTime The End Time's Date object
+     * @return The updated Google Calendar Event object
+     */
     static Event setEnd(Event eventToSet, Date endTime) {
         if (eventToSet == null || endTime == null) {
             return null;
@@ -212,6 +256,12 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's Color and Opaqueness
+     * @param eventToSet The Google Calendar Event object to set
+     * @param isDone The boolean flag to indicate if is done
+     * @return The updated Google Calendar Event
+     */
     static Event setColorAndLook(Event eventToSet, boolean isDone) {
         if (eventToSet == null) {
             return null;
@@ -230,6 +280,14 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Inserts the Google Calendar Event to the specified Calendar ID
+     * @param calendarId The specified Google Calendar ID
+     * @param eventToInsert The Google Calendar Event object
+     * @return The inserted Google Calendar Event object
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static Event insertToCalendar(String calendarId, Event eventToInsert) 
             throws UnknownHostException, IOException {
         if (calendarId == null || eventToInsert == null) {
@@ -246,6 +304,15 @@ public class CalendarHandler {
         return insertedEvent;
     }
     
+    /**
+     * Updates the Google Calendar Event online from its ID
+     * @param calendarId The specified Google Calendar ID
+     * @param eventId The Google Calendar Event ID
+     * @param newEvent The updated Google Calendar Event
+     * @return The updated Google Calendar Event upon success
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad repsonse or transmission error
+     */
     static Event updateEvent(String calendarId, String eventId, Event newEvent) 
             throws UnknownHostException, IOException {
         if (calendarId == null || eventId == null || newEvent == null) {
@@ -262,6 +329,14 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Gets a specific Google Calendar Event ID with the specified ID
+     * @param calendarId The Google Calendar ID
+     * @param eventId The Google Calendar Event ID
+     * @return The Google Calendar Event that was found
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static Event getEventFromId(String calendarId, String eventId) 
             throws UnknownHostException, IOException {
         if (calendarId == null || eventId == null) {
@@ -278,6 +353,12 @@ public class CalendarHandler {
         return foundEvent;
     }
     
+    /**
+     * Deletes the specified Google Calendar Event with its specified ID
+     * @param calendarId The Google Calendar ID
+     * @param eventId The Google Calendar Event ID
+     * @return true if deleted, false if otherwise
+     */
     static boolean deleteEvent(String calendarId, String eventId) {
         if (calendarId == null || eventId == null) {
             return false;

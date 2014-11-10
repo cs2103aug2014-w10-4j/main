@@ -34,6 +34,7 @@ import com.google.api.services.tasks.model.Tasks;
  */
 class ConcurrentSync implements Callable<Boolean> {
     private static final int sleepTime = 10000; // 10 Second cooldown per sync
+    private static final int sleepAfterSync = 2000; // 2 Second cooldown
     
     private static final String STRING_DONE_TASK = "completed";
     private static final String STRING_DONE_EVENT = "[Done]";
@@ -89,7 +90,7 @@ class ConcurrentSync implements Callable<Boolean> {
             if (ConcurrentSync.isSyncing == false) { // Unlocked state
                 ConcurrentSync.isSyncing = true; // Keep a lock
                 sync(_taskList);
-                Thread.sleep(sleepTime);
+                sleepThread(sleepTime);
                 ConcurrentSync.isSyncing = false; // Unlock the state
                 isSync = true;
             }
@@ -102,14 +103,33 @@ class ConcurrentSync implements Callable<Boolean> {
         return isSync;
     }
     
+    /**
+     * The general sync method that will call all phases of sync
+     * @param allTasks A List of ChirpTask Task
+     * @throws Exception If any sync phase throws any exception
+     */
     private void sync(List<chirptask.storage.Task> allTasks) throws Exception {
         if (allTasks != null) {
             GoogleController.setOnlineStatus(Status.SYNC);
             syncPhaseOne(_taskList);
+            sleepThread(sleepAfterSync);
             syncPhaseTwo(_taskList);
+            sleepThread(sleepAfterSync);
             syncPhaseThree(_taskList);
+            sleepThread(sleepAfterSync);
             syncPhaseFour(_taskList); 
             GoogleController.setOnlineStatus(Status.ONLINE);
+        }
+    }
+    
+    /**
+     * Common method to be called for sleeping threads
+     * @param timeToSleep Amount of time to sleep in milliseconds
+     */
+    private void sleepThread(int timeToSleep) {
+        try {
+            Thread.sleep(timeToSleep);
+        } catch (InterruptedException e) {
         }
     }
     
