@@ -3,6 +3,7 @@ package chirptask.storage;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -10,6 +11,7 @@ import java.util.List;
  */
 
 public class Task implements Comparable<Task> {
+    private static final String EXCEPTION_EMPTY_TYPE = "type cannot be empty";
     public static final String TASK_FLOATING = "floating";
     public static final String TASK_DEADLINE = "deadline";
     public static final String TASK_TIMED = "timedtask";
@@ -83,10 +85,10 @@ public class Task implements Comparable<Task> {
                  * of different type. With that, if either is a floating type,
                  * the floating type must be shown first.
                  */
-                if (this.getType().equals("floating")) {
-                    return -1;
-                } else if (b.getType().equals("floating")) {
-                    return 1;
+                if (this.getType().equals(TASK_FLOATING)) {
+                    return Integer.MIN_VALUE;
+                } else if (b.getType().equals(TASK_FLOATING)) {
+                    return Integer.MAX_VALUE;
                 } else {
                     return this.getType().compareTo(b.getType());
                 }
@@ -175,7 +177,7 @@ public class Task implements Comparable<Task> {
             throw new NullPointerException();
         }
         if (type.trim().isEmpty()) {
-            throw new IllegalArgumentException("type cannot be empty");
+            throw new IllegalArgumentException(EXCEPTION_EMPTY_TYPE);
         }
         _type = type;
     }
@@ -234,7 +236,7 @@ public class Task implements Comparable<Task> {
         return uniqueString.hashCode();
     }
 
-    // @author A0111930W
+    //@author A0111930W
     public void setDate(Calendar doneDate) {
         if (doneDate == null) {
             throw new NullPointerException();
