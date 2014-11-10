@@ -66,5 +66,12 @@ public class Constants {
     public static final String ERROR = "%1$s: Error %2$s";
     public static final String ERROR_LOCAL = "Local storage %2$s.";
     public static final String INVALID_INPUT = "Invalid input: %1$s.";
+    
+    public static final String FILTER_DONE = "/done";
+    public static final String FILTER_UNDONE = "/undone";
+    public static final String FILTER_FLOATING = "/floating";
+    public static final String FILTER_DEADLINE = "/deadline";
+    public static final String FILTER_TIMED = "/timed";
+    public static final String FILTER_DATE = "/date";
 
 }
