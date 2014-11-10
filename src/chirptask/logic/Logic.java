@@ -30,7 +30,7 @@ public class Logic {
      * Init of logic which will display all tasks and show user what are the
      * available commands for the program.
      * 
-     * @param gui
+     * @param gui The MainGui object to pass in
      */
     public Logic(MainGui gui) {
         _gui = gui;
@@ -52,7 +52,7 @@ public class Logic {
      * Method for GUI to call to interpret user input and display the command
      * results.
      * 
-     * @param input
+     * @param input The user's input String
      */
     public void retrieveInputFromUI(String input) {
         _parser.receiveInput(input);
@@ -78,7 +78,7 @@ public class Logic {
     /**
      * Execute the list of actions
      * 
-     * @param list
+     * @param list The List of Action objects to execute
      */
     public void processGroupAction(List<Action> list) {
         for (Action a : list) {
@@ -89,7 +89,7 @@ public class Logic {
     /**
      * Execute the command given.
      * 
-     * @param command
+     * @param command The Action object which holds the command
      */
     public void executeAction(Action command) {
         Settings.CommandType actionType = command.getCommandType();
@@ -656,7 +656,7 @@ public class Logic {
     /**
      * Method for Google component to call when sync is successful
      * 
-     * @param status
+     * @param status The status string to set on the GUI
      */
     public static void setOnlineStatus(String status) {
         if (status != null && _gui != null) {

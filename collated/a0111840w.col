@@ -285,6 +285,7 @@ public class CalendarHandler {
     private static final String DEFAULT_TIME_ZONE = "Asia/Singapore";
     private static final String EVENT_DONE = "transparent";
     private static final String EVENT_UNDONE = "opaque";
+    public static final String CALENDAR_DONE = "[Done] ";
     
     static boolean isNull(Calendar calendar) {
         if (calendar == null) {
@@ -295,6 +296,13 @@ public class CalendarHandler {
     }
     
     //Methods related to Calendars
+    /**
+     * Adds a new Calendar into the account with the specified calendar name
+     * @param calendarName The new calendar name
+     * @return The newly added Google Calendar
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static Calendar addCalendar(String calendarName) 
             throws UnknownHostException, IOException {
         if (calendarName == null) {
@@ -350,6 +358,13 @@ public class CalendarHandler {
         return insertedCalendar;
     }
     
+    /**
+     * Gets the Google Calendar by its ID
+     * @param calendarId The Google Calendar ID
+     * @return The retrieved Google Calendar 
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static Calendar retrieveCalendarById(String calendarId) 
             throws UnknownHostException, IOException {
         if (calendarId == null) {
@@ -412,6 +427,32 @@ public class CalendarHandler {
         return newEvent;
     }
     
+    /**
+     * Google Component will auto add suffix [Done] to the Calendar
+     * so that we do not dirty ChirpTask with [Done] tags all over.
+     * @param eventToSet The Google Calendar Event object
+     * @param desc The current description
+     * @param isDone The boolean flag to indicate whether task is done
+     * @return The modified Google Calendar Event object
+     */
+    static Event setDoneTag(Event eventToSet, String desc, boolean isDone) {
+        if (eventToSet == null || desc == null) {
+            return null;
+        }
+        
+        if (isDone) {
+            String descWithDone = CALENDAR_DONE + desc;
+            eventToSet.setSummary(descWithDone);
+        } 
+        return eventToSet;
+    }
+    
+    /**
+     * Sets the Google Calendar Event's title
+     * @param eventToSet The Google Calendar Event object
+     * @param eventSummary The new title to set
+     * @return The updated Google Calendar Event object
+     */
     static Event setSummary(Event eventToSet, String eventSummary) {
         if (eventToSet == null || eventSummary == null) {
             return null;
@@ -421,6 +462,12 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's description
+     * @param eventToSet The Google Calendar Event object
+     * @param eventDescription The new description to set
+     * @return The updated Google Calendar Event object
+     */
     static Event setDescription(Event eventToSet, String eventDescription) {
         if (eventToSet == null || eventDescription == null) {
             return null;
@@ -430,6 +477,12 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's start and end times
+     * @param modifiedTask The ChirpTask Task object
+     * @param modifiedEvent The Google Calendar Event object
+     * @return The updated Google Calendar Event object
+     */
     static Event setStartAndEnd(TimedTask modifiedTask, Event modifiedEvent) {
         if (modifiedTask == null || modifiedEvent == null || 
                 modifiedTask instanceof TimedTask == false) {
@@ -447,6 +500,12 @@ public class CalendarHandler {
         return modifiedGoogleEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's start time
+     * @param eventToSet The Google Calendar Event object
+     * @param startTime The Start Time's Date object
+     * @return The updated Google Calendar Event object
+     */
     static Event setStart(Event eventToSet, Date startTime) {
         if (eventToSet == null || startTime == null) {
             return null;
@@ -461,6 +520,12 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's end time
+     * @param eventToSet The Google Calendar Event object
+     * @param endTime The End Time's Date object
+     * @return The updated Google Calendar Event object
+     */
     static Event setEnd(Event eventToSet, Date endTime) {
         if (eventToSet == null || endTime == null) {
             return null;
@@ -475,6 +540,12 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Sets the Google Calendar Event's Color and Opaqueness
+     * @param eventToSet The Google Calendar Event object to set
+     * @param isDone The boolean flag to indicate if is done
+     * @return The updated Google Calendar Event
+     */
     static Event setColorAndLook(Event eventToSet, boolean isDone) {
         if (eventToSet == null) {
             return null;
@@ -493,6 +564,14 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Inserts the Google Calendar Event to the specified Calendar ID
+     * @param calendarId The specified Google Calendar ID
+     * @param eventToInsert The Google Calendar Event object
+     * @return The inserted Google Calendar Event object
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static Event insertToCalendar(String calendarId, Event eventToInsert) 
             throws UnknownHostException, IOException {
         if (calendarId == null || eventToInsert == null) {
@@ -509,6 +588,15 @@ public class CalendarHandler {
         return insertedEvent;
     }
     
+    /**
+     * Updates the Google Calendar Event online from its ID
+     * @param calendarId The specified Google Calendar ID
+     * @param eventId The Google Calendar Event ID
+     * @param newEvent The updated Google Calendar Event
+     * @return The updated Google Calendar Event upon success
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad repsonse or transmission error
+     */
     static Event updateEvent(String calendarId, String eventId, Event newEvent) 
             throws UnknownHostException, IOException {
         if (calendarId == null || eventId == null || newEvent == null) {
@@ -525,6 +613,14 @@ public class CalendarHandler {
         return updatedEvent;
     }
     
+    /**
+     * Gets a specific Google Calendar Event ID with the specified ID
+     * @param calendarId The Google Calendar ID
+     * @param eventId The Google Calendar Event ID
+     * @return The Google Calendar Event that was found
+     * @throws UnknownHostException If Google host is unreachable
+     * @throws IOException If bad response or transmission error
+     */
     static Event getEventFromId(String calendarId, String eventId) 
             throws UnknownHostException, IOException {
         if (calendarId == null || eventId == null) {
@@ -541,6 +637,12 @@ public class CalendarHandler {
         return foundEvent;
     }
     
+    /**
+     * Deletes the specified Google Calendar Event with its specified ID
+     * @param calendarId The Google Calendar ID
+     * @param eventId The Google Calendar Event ID
+     * @return true if deleted, false if otherwise
+     */
     static boolean deleteEvent(String calendarId, String eventId) {
         if (calendarId == null || eventId == null) {
             return false;
@@ -581,7 +683,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.google.GoogleController.Status;
 import chirptask.storage.EventLogger;
 import chirptask.storage.TimedTask;
@@ -662,7 +764,7 @@ class ConcurrentAdd implements Callable<Boolean> {
             addedGoogleEvent = addTimedTask(task, _taskToAdd);
             break;
         default:
-            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            EventLogger.getInstance().logError(Constants.LOG_MESSAGE_UNEXPECTED);
             assert false;
             break;
         }
@@ -845,7 +947,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.google.GoogleController.Status;
 import chirptask.storage.EventLogger;
 
@@ -938,7 +1040,7 @@ public class ConcurrentDelete implements Callable<Boolean> {
             isDeleted = deleteGoogleEvent(googleId);
             break;
         default :
-            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            EventLogger.getInstance().logError(Constants.LOG_MESSAGE_UNEXPECTED);
             assert false;
             break;
         }
@@ -1284,7 +1386,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.google.GoogleController.Status;
 import chirptask.storage.EventLogger;
 import chirptask.storage.TimedTask;
@@ -1353,7 +1455,7 @@ class ConcurrentModify implements Callable<Boolean> {
                             modifyGoogleEvent(_taskToModify);
             break;
         default:
-            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            EventLogger.getInstance().logError(Constants.LOG_MESSAGE_UNEXPECTED);
             assert false;
             break;
         }
@@ -1471,14 +1573,20 @@ class ConcurrentModify implements Callable<Boolean> {
             return null;
         }
         
+        boolean isDone = modifiedTask.isDone();
         Event modifiedGoogleEvent = modifiedEvent;
         String calendarId = CalendarController.getCalendarId();
         String googleId = modifiedTask.getGoogleId();
         String newDesc = modifiedTask.getDescription();
         TimedTask modifyTimeTask = (TimedTask) modifiedTask;
         
+        
         modifiedGoogleEvent = 
                 CalendarHandler.setSummary(modifiedGoogleEvent, newDesc);
+        if (isDone) {
+            modifiedGoogleEvent =
+                    CalendarHandler.setDoneTag(modifiedGoogleEvent, newDesc, isDone);
+        }
         modifiedGoogleEvent = 
                 CalendarHandler.setStartAndEnd(modifyTimeTask, modifiedGoogleEvent);
         modifiedGoogleEvent = 
@@ -1549,7 +1657,7 @@ class ConcurrentModify implements Callable<Boolean> {
         default :
             //Should not reach here at all if covers all types of task
             EventLogger.getInstance()
-                .logError(Messages.LOG_MESSAGE_INVALID_TASK_TYPE);
+                .logError(Constants.LOG_MESSAGE_INVALID_TASK_TYPE);
             assert false;
             return null;
         }
@@ -1617,9 +1725,12 @@ import com.google.api.services.tasks.model.Tasks;
  */
 class ConcurrentSync implements Callable<Boolean> {
     private static final int sleepTime = 10000; // 10 Second cooldown per sync
+    private static final int sleepAfterSync = 2000; // 2 Second cooldown
     
     private static final String STRING_DONE_TASK = "completed";
     private static final String STRING_DONE_EVENT = "[Done]";
+    private static final String STRING_DONE_EVENT_REGEX = "^\\[Done\\]";
+    private static final String STRING_EMPTY = "";
     
     private static boolean isSyncing = false; // Ensure only 1 thread do sync
 
@@ -1672,7 +1783,7 @@ class ConcurrentSync implements Callable<Boolean> {
             if (ConcurrentSync.isSyncing == false) { // Unlocked state
                 ConcurrentSync.isSyncing = true; // Keep a lock
                 sync(_taskList);
-                Thread.sleep(sleepTime);
+                sleepThread(sleepTime);
                 ConcurrentSync.isSyncing = false; // Unlock the state
                 isSync = true;
             }
@@ -1685,14 +1796,33 @@ class ConcurrentSync implements Callable<Boolean> {
         return isSync;
     }
     
+    /**
+     * The general sync method that will call all phases of sync
+     * @param allTasks A List of ChirpTask Task
+     * @throws Exception If any sync phase throws any exception
+     */
     private void sync(List<chirptask.storage.Task> allTasks) throws Exception {
         if (allTasks != null) {
             GoogleController.setOnlineStatus(Status.SYNC);
             syncPhaseOne(_taskList);
+            sleepThread(sleepAfterSync);
             syncPhaseTwo(_taskList);
+            sleepThread(sleepAfterSync);
             syncPhaseThree(_taskList);
+            sleepThread(sleepAfterSync);
             syncPhaseFour(_taskList); 
             GoogleController.setOnlineStatus(Status.ONLINE);
+        }
+    }
+    
+    /**
+     * Common method to be called for sleeping threads
+     * @param timeToSleep Amount of time to sleep in milliseconds
+     */
+    private void sleepThread(int timeToSleep) {
+        try {
+            Thread.sleep(timeToSleep);
+        } catch (InterruptedException e) {
         }
     }
     
@@ -1944,7 +2074,8 @@ class ConcurrentSync implements Callable<Boolean> {
      * @param googleIdMap ChirpTask list of known Google ID
      */
     private void checkAllEventsEdit(List<Event> events,
-                        Map<String, chirptask.storage.Task> googleIdMap ) {
+                     Map<String, 
+                     chirptask.storage.Task> googleIdMap ) throws IOException {
         if (events == null || googleIdMap == null) {
             return;
         }
@@ -1981,7 +2112,7 @@ class ConcurrentSync implements Callable<Boolean> {
         return isRequired;
     }
     private void updateLocalEvents(chirptask.storage.Task currTask, 
-                                                    Event currEvent) {
+                                         Event currEvent) throws IOException {
         if (currTask == null || currEvent == null) {
             return;
         }
@@ -1994,9 +2125,10 @@ class ConcurrentSync implements Callable<Boolean> {
                 .getCalendar(start);
         Calendar endDate = DateTimeHandler
                 .getCalendar(end);
-
         boolean isDone = setDoneEvent(eventDescription);
-
+        
+        removeDoneAndUpdateEvent(currEvent, isDone);
+        
         if (currTask instanceof chirptask.storage.TimedTask) {
             TimedTask timedTask = (TimedTask) currTask;
             timedTask.setDescription(eventDescription);
@@ -2005,6 +2137,34 @@ class ConcurrentSync implements Callable<Boolean> {
             timedTask.setDone(isDone);
             GoogleStorage.updateStorages(timedTask);
         }
+    }
+    
+    private void removeDoneAndUpdateEvent(Event event, 
+                                boolean isDone) throws IOException {
+        String description = event.getSummary();
+        description = removeDoneTag(description, isDone);
+        updateEventColor(event, isDone);
+    }
+    
+    private String removeDoneTag(String description, boolean isDone) 
+                                            throws NullPointerException {
+        if (description == null) {
+            throw new NullPointerException();
+        }
+        String newDesc = description.trim();
+        if (isDone) {
+            newDesc = description.replaceFirst(
+                                STRING_DONE_EVENT_REGEX, STRING_EMPTY);
+            newDesc = newDesc.trim();
+        }
+        return newDesc;
+    }
+    
+    private void updateEventColor(Event event, 
+                                        boolean isDone) throws IOException {
+        event = CalendarHandler.setColorAndLook(event, isDone);
+        CalendarHandler.updateEvent(CalendarController.getCalendarId(), 
+                                    event.getId(), event);
     }
     
     /**
@@ -2041,7 +2201,8 @@ class ConcurrentSync implements Callable<Boolean> {
      * @param chirpTask The local task
      * @param currTask The Google Task
      */
-    private void updateLocalGTasks(chirptask.storage.Task chirpTask, Task currTask) {
+    private void updateLocalGTasks(chirptask.storage.Task chirpTask, 
+                                                    Task currTask) {
         if (chirpTask == null || currTask == null) {
             return;
         }
@@ -2120,7 +2281,8 @@ class ConcurrentSync implements Callable<Boolean> {
     private void syncPhaseFour(List<chirptask.storage.Task> allTasks)
             throws UnknownHostException, IOException {
         if (allTasks != null) {
-            Map<String, chirptask.storage.Task> googleIdMap = createMap(allTasks);
+            Map<String, chirptask.storage.Task> googleIdMap = 
+                                                    createMap(allTasks);
             List<Event> events = _calendarController.getEvents();
             Tasks tasks = _tasksController.getTasks();
             List<Task> taskList = tasks.getItems();
@@ -2137,7 +2299,7 @@ class ConcurrentSync implements Callable<Boolean> {
      * @param googleIdMap ChirpTask List of known Google ID
      */
     private void addFromNewGoogleEvent(List<Event> events, 
-            Map<String, chirptask.storage.Task> googleIdMap) {
+          Map<String, chirptask.storage.Task> googleIdMap) throws IOException {
         if (events == null || googleIdMap == null) {
             return;
         }
@@ -2158,6 +2320,8 @@ class ConcurrentSync implements Callable<Boolean> {
                 Calendar startDate = getCalendarFromEvent(currEvent.getStart());
                 Calendar endDate = getCalendarFromEvent(currEvent.getEnd());
                 boolean isDone = setDoneEvent(description);
+                
+                removeDoneAndUpdateEvent(currEvent, isDone);
                 
                 TimedTask newTimed = 
                         new TimedTask(taskId, description,startDate, endDate);
@@ -2197,6 +2361,8 @@ class ConcurrentSync implements Callable<Boolean> {
         if (description != null) {
             if (description.startsWith(STRING_DONE_EVENT)) {
                 isDone = true;
+            } else {
+                isDone = false;
             }
         }
         return isDone;
@@ -2549,7 +2715,7 @@ import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-import chirptask.common.Messages;
+import chirptask.common.Constants;
 import chirptask.logic.Logic;
 import chirptask.storage.EventLogger;
 import chirptask.storage.GoogleStorage;
@@ -2806,9 +2972,7 @@ public class GoogleController implements Runnable {
      * ID of the newly created task to update the entry in the local storage
      * (xml file).
      * 
-     * @param taskToAdd
-     * @return
-     * @throws IOException
+     * @param taskToAdd The ChirpTask Task object to add
      */
     public void addTask(chirptask.storage.Task taskToAdd) {
         if (taskToAdd == null) {
@@ -2927,7 +3091,7 @@ public class GoogleController implements Runnable {
             }
             break;
         default :
-            EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+            EventLogger.getInstance().logError(Constants.LOG_MESSAGE_UNEXPECTED);
             assert false;
             break;
         }
@@ -2944,22 +3108,22 @@ public class GoogleController implements Runnable {
         if (newStatus != null) {
             switch (newStatus) {
             case ONLINE :
-                Logic.setOnlineStatus(Messages.TITLE_ONLINE);
+                Logic.setOnlineStatus(Constants.TITLE_ONLINE);
                 break;
             case OFFLINE :
-            Logic.setOnlineStatus(Messages.TITLE_OFFLINE);
+            Logic.setOnlineStatus(Constants.TITLE_OFFLINE);
             break;
             case SYNC :
-                Logic.setOnlineStatus(Messages.TITLE_SYNCING);
+                Logic.setOnlineStatus(Constants.TITLE_SYNCING);
                 break;
             case SYNC_FAIL :
-                Logic.setOnlineStatus(Messages.TITLE_SYNC_FAIL);
+                Logic.setOnlineStatus(Constants.TITLE_SYNC_FAIL);
                 break;
             case LOGIN :
-                Logic.setOnlineStatus(Messages.TITLE_LOGGING_IN);
+                Logic.setOnlineStatus(Constants.TITLE_LOGGING_IN);
                 break;
             default :
-                EventLogger.getInstance().logError(Messages.LOG_MESSAGE_UNEXPECTED);
+                EventLogger.getInstance().logError(Constants.LOG_MESSAGE_UNEXPECTED);
                 assert false;
                 break;
             }
@@ -3961,9 +4125,12 @@ import org.junit.Test;
  * Do take the factor of how slow/unstable the internet may be if
  * the JUnit Test failed.
  * 
- * The Thread.sleep(10000) were added in their positions because
+ * The sleep(milliseconds) were added in their positions because
  * there is no easy way to tell when the Google requests are completed.
  * This is because they are running in the background threads.
+ * 
+ * Note that we MUST finish the initial StorageHandler.initCloudStorage()
+ * before starting the test.
  *
  */
 public class JUnitGoogleAtd {
@@ -3983,10 +4150,12 @@ public class JUnitGoogleAtd {
         allTasks = new ArrayList<Task>();
 
         logic.useTestLocalStorage();
+        //Restart the JUnitTest XML file
+        storageHandler.setUpJUnitTestXmlWriter();
         StorageHandler.initCloudStorage();
 
         while (GoogleController.isGoogleLoaded() == false) {
-            sleep();
+            sleep(15000);
         }
         //At this point, the JUnitTest XML file should have all your synced
         // items from Google
@@ -4024,7 +4193,7 @@ public class JUnitGoogleAtd {
             storageHandler.addTask(currentTask);
         }
         
-        sleep();
+        sleep(5000);
         
         List<Task> localList = StorageHandler.getAllTasks();
         
@@ -4053,7 +4222,7 @@ public class JUnitGoogleAtd {
             storageHandler.deleteTask(currentTask);
         }
 
-        sleep();
+        sleep(5000);
         
         //All tasks got deleted
         assertEquals("empty list", 0, localList.size());
@@ -4062,12 +4231,13 @@ public class JUnitGoogleAtd {
     @After
     public void closeGoogle() {
         logic.retrieveInputFromUI("logout");
+        sleep(5000);
         storageHandler.closeStorages();
     }
     
-    public void sleep() {
+    public void sleep(int sleepTime) {
         try {
-            Thread.sleep(10000); //Wait for request to be done
+            Thread.sleep(sleepTime); //Wait for request to be done
         } catch (InterruptedException e) {
         }
     }

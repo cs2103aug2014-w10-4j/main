@@ -11,7 +11,7 @@ public class DeadlineTask extends Task {
     /**
      * Creates a deadline task with specified description and deadline on the
      * input date.
-     * 
+     *
      * @param taskId taskId of task to create
      * @param description description of task to create
      * @param deadline deadline of task to create
@@ -26,18 +26,20 @@ public class DeadlineTask extends Task {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see chirptask.storage.Task#getDate()
      */
+    @Override
     public Calendar getDate() {
         return _deadline;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see chirptask.storage.Task#setDate(java.util.Calendar)
      */
+    @Override
     public void setDate(Calendar deadline) {
         if (deadline == null) {
             throw new NullPointerException();

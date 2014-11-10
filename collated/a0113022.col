@@ -194,8 +194,8 @@
 		}
 
 		for (int i = 0; i < hashAndAt.length; i++) {
-			if (!(hashAndAt[i].contains(Settings.CATEGORY)
-					|| hashAndAt[i].contains(Settings.CONTEXT))) {
+			if (!(hashAndAt[i].contains(Constants.CATEGORY)
+					|| hashAndAt[i].contains(Constants.CONTEXT))) {
 				time.append(hashAndAt[i] + " ");
 			} else {
 				description.append(" " + hashAndAt[i]);
@@ -246,7 +246,7 @@ public class LocalStorage implements IStorage {
 				clearContent(local);
 				restartLocalStorage();
 			} catch (IOException e) {
-				System.err.println(String.format(Messages.ERROR_LOCAL, 
+				System.err.println(String.format(Constants.ERROR_LOCAL, 
 						"write to file failed"));
 			}
 		} else {

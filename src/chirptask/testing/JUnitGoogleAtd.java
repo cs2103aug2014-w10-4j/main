@@ -30,9 +30,12 @@ import org.junit.Test;
  * Do take the factor of how slow/unstable the internet may be if
  * the JUnit Test failed.
  * 
- * The Thread.sleep(10000) were added in their positions because
+ * The sleep(milliseconds) were added in their positions because
  * there is no easy way to tell when the Google requests are completed.
  * This is because they are running in the background threads.
+ * 
+ * Note that we MUST finish the initial StorageHandler.initCloudStorage()
+ * before starting the test.
  *
  */
 public class JUnitGoogleAtd {
@@ -52,10 +55,12 @@ public class JUnitGoogleAtd {
         allTasks = new ArrayList<Task>();
 
         logic.useTestLocalStorage();
+        //Restart the JUnitTest XML file
+        storageHandler.setUpJUnitTestXmlWriter();
         StorageHandler.initCloudStorage();
 
         while (GoogleController.isGoogleLoaded() == false) {
-            sleep();
+            sleep(15000);
         }
         //At this point, the JUnitTest XML file should have all your synced
         // items from Google
@@ -93,7 +98,7 @@ public class JUnitGoogleAtd {
             storageHandler.addTask(currentTask);
         }
         
-        sleep();
+        sleep(5000);
         
         List<Task> localList = StorageHandler.getAllTasks();
         
@@ -122,7 +127,7 @@ public class JUnitGoogleAtd {
             storageHandler.deleteTask(currentTask);
         }
 
-        sleep();
+        sleep(5000);
         
         //All tasks got deleted
         assertEquals("empty list", 0, localList.size());
@@ -131,12 +136,13 @@ public class JUnitGoogleAtd {
     @After
     public void closeGoogle() {
         logic.retrieveInputFromUI("logout");
+        sleep(5000);
         storageHandler.closeStorages();
     }
     
-    public void sleep() {
+    public void sleep(int sleepTime) {
         try {
-            Thread.sleep(10000); //Wait for request to be done
+            Thread.sleep(sleepTime); //Wait for request to be done
         } catch (InterruptedException e) {
         }
     }

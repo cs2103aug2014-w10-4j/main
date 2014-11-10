@@ -64,6 +64,7 @@ public class Task implements Comparable<Task> {
     /*
      * Compare by Time then Type then Description (Lexicographically)
      */
+    @Override
     public int compareTo(Task b) {
         if (b == null) {
             throw new NullPointerException();
@@ -97,6 +98,7 @@ public class Task implements Comparable<Task> {
         }
     }
 
+    @Override
     public boolean equals(Object o) {
         try {
             if (o instanceof Task) {
@@ -220,12 +222,13 @@ public class Task implements Comparable<Task> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         String uniqueString = "";
-        if (this.getGoogleId() == null || this.getGoogleId().isEmpty()) {
+        if ((this.getGoogleId() == null) || this.getGoogleId().isEmpty()) {
             uniqueString = this.getTaskId() + "," + this.getDescription() + ","
                     + this.getDate() + "," + this.getType();
         } else {

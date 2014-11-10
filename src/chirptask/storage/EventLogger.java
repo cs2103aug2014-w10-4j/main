@@ -29,7 +29,7 @@ public class EventLogger implements IStorage {
     /**
      * Set a printstream to the fileWriter variable, allowing printing of logs
      * to other output streams like system.out
-     * 
+     *
      * @param output output stream to print logs to.
      */
     public static void setStream(PrintStream output) {
@@ -42,7 +42,7 @@ public class EventLogger implements IStorage {
     /**
      * Implements a singleton class. Eventlogger does not need to be
      * instantiated multiple times.
-     * 
+     *
      * @return instance of EventLogger
      */
     public static EventLogger getInstance() {
@@ -125,7 +125,7 @@ public class EventLogger implements IStorage {
 
     /**
      * For logging custom error messages.
-     * 
+     *
      * @param error Error message to log.
      */
     public void logError(String error) {

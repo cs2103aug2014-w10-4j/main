@@ -80,14 +80,14 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private static List<Integer> _taskIndexToId = new ArrayList<>();
     private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
-            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
     private static final int MIN_HEIGHT = 300;
     private static final int MIN_WIDTH = 500;
 
     private static final String[] MONTH = new String[] { "January", "February",
-            "March", "April", "May", "June", "July", "August", "September",
-            "October", "November", "December" };
+        "March", "April", "May", "June", "July", "August", "September",
+        "October", "November", "December" };
     private static final double SCROLL_VALUE = 50;
 
     private static final int STARTING_HEIGHT = 600;
@@ -133,12 +133,12 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Sets the current status of Google services.
-     * 
+     *
      * @param Status
      *            Current status of Google services.
      */
     public void setOnlineStatus(final String Status) {
-        assert Status != null && !Status.isEmpty();
+        assert (Status != null) && !Status.isEmpty();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -153,12 +153,12 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Inserts a category onto the current list of categories showing on the
      * GUI.
-     * 
+     *
      * @param Category
      *            category to be appended into this list
      */
     public void addCategoryIntoList(String Category) {
-        assert Category != null && !Category.isEmpty();
+        assert (Category != null) && !Category.isEmpty();
         Text categoryText = new Text(Constants.CATEGORY_CHAR + Category);
         categoryText.getStyleClass().add("category-text");
         categoryText.setOnMouseClicked(clickOnCategory());
@@ -167,12 +167,12 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Inserts a hashtag onto the current list of hashtags showing on the GUI.
-     * 
+     *
      * @param hashtag
      *            hashtag to be appended to this list
      */
     public void addHashtagIntoList(String hashtag) {
-        assert hashtag != null && !hashtag.isEmpty();
+        assert (hashtag != null) && !hashtag.isEmpty();
         Text hashtagText = new Text(Constants.HASHTAG_CHAR + hashtag);
         hashtagText.getStyleClass().add("hashtag-text");
         hashtagText.setOnMouseClicked(clickOnHashtag());
@@ -182,7 +182,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Adds a new Task View Date to the GUI. Task View Date will display all
      * tasks of a date in it.
-     * 
+     *
      * @param date
      *            date of task view date to generate and add into GUI.
      * @return boolean status of operation
@@ -226,7 +226,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * pre-cond: date cannot be null, description cannot be empty, taskId cannot
      * be negative
      * </p>
-     * 
+     *
      * @param date
      *            date of new task to add
      * @param taskId
@@ -241,8 +241,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && description != null 
-                && taskId > -1;
+        assert (date != null) && (description != null) && (taskId > -1);
 
         // Checks for duplicate taskId
         if (_taskIndexToId.contains(taskId)) {
@@ -259,13 +258,13 @@ public class MainGui extends Application implements NativeKeyListener {
         BorderPane taskView = generateTaskView(time, done, descriptionWithIndex);
 
         _taskViewDateMap.get(DisplayView.convertDateToString(date))
-                .getChildren().add(taskView);
+        .getChildren().add(taskView);
         return true;
     }
 
     private BorderPane generateTaskView(String time, boolean done,
             String descriptionWithIndex) {
-        assert descriptionWithIndex != null && !descriptionWithIndex.isEmpty();
+        assert (descriptionWithIndex != null) && !descriptionWithIndex.isEmpty();
 
         // pane that makes up task view
         BorderPane taskPane = new BorderPane();
@@ -282,8 +281,8 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void formatTaskView(BorderPane taskPane, Pane checkBoxPane,
             HBox descriptionBox, Text taskTime) {
-        assert taskPane != null && checkBoxPane != null
-                && descriptionBox != null && taskTime != null;
+        assert (taskPane != null) && (checkBoxPane != null)
+        && (descriptionBox != null) && (taskTime != null);
 
         Insets taskPanePadding = new Insets(10, 5, 8, 10);
         taskPane.setPadding(taskPanePadding);
@@ -313,7 +312,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * EventHandler for clicking on categories
-     * 
+     *
      * @return method to call when a category is clicked.
      */
     public EventHandler<MouseEvent> clickOnCategory() {
@@ -322,7 +321,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * EventHandler for clicking on hashtags
-     * 
+     *
      * @return method to call when a hashtag is clicked.
      */
     public EventHandler<MouseEvent> clickOnHashtag() {
@@ -331,7 +330,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Gets the current filter showing on the GUI.
-     * 
+     *
      * @return String current filter
      */
     public String getFilter() {
@@ -340,7 +339,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Gets the current user input showing on the CLI of the GUI.
-     * 
+     *
      * @return String current user input
      */
     public String getUserInput() {
@@ -349,7 +348,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.jnativehook.keyboard.NativeKeyListener#nativeKeyTyped(org.jnativehook
      * .keyboard.NativeKeyEvent)
@@ -361,7 +360,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.jnativehook.keyboard.NativeKeyListener#nativeKeyPressed(org.jnativehook
      * .keyboard.NativeKeyEvent)
@@ -374,7 +373,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.jnativehook.keyboard.NativeKeyListener#nativeKeyReleased(org.jnativehook
      * .keyboard.NativeKeyEvent)
@@ -404,12 +403,12 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Sets the status of the GUI with the given error message.
      * Message will be coloured red as it's an error.
-     * 
+     *
      * @param errorMessage
      *            error message to display on GUI.
      */
     public void setError(String errorMessage) {
-        assert errorMessage != null && !errorMessage.trim().isEmpty();
+        assert (errorMessage != null) && !errorMessage.trim().isEmpty();
 
         String Status = String.format(Constants.STATUS_ERROR, errorMessage);
         _statusText.setText(Status);
@@ -420,7 +419,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Sets the current filter input to the given text. Empty strings are
      * allowed.
-     * 
+     *
      * @param text
      *            string to set in filter's text field.
      */
@@ -432,12 +431,12 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Sets the status of the GUI with the given status message.
-     * 
+     *
      * @param message
      *            status message to display on GUI.
      */
     public void setStatus(String message) {
-        assert message != null && !message.trim().isEmpty();
+        assert (message != null) && !message.trim().isEmpty();
 
         String Status = String.format(Constants.STATUS_NORMAL, message);
         _statusText.setText(Status);
@@ -447,7 +446,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Sets the user input text of the CLI. Empty strings are accepted.
-     * 
+     *
      * @param text
      *            string to show in input text field.
      */
@@ -460,7 +459,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /*
      * Actual starting point of application
      * (non-Javadoc)
-     * 
+     *
      * @see javafx.application.Application#start(javafx.stage.Stage)
      */
     public void start(Stage primaryStage) {
@@ -481,7 +480,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * EventHandler for the clear all button. clears the filter input and sends
      * an enter action, invoking the filter action.
-     * 
+     *
      * @return
      */
     private EventHandler<? super MouseEvent> clearAllAction() {
@@ -505,7 +504,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * EventHandler for CLI input text box.
-     * 
+     *
      * @return
      */
     private EventHandler<KeyEvent> cliKeyPressHandler() {
@@ -561,7 +560,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * EventHandler for filter input text box.
-     * 
+     *
      * @return
      */
     private EventHandler<KeyEvent> filterModified() {
@@ -579,23 +578,26 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Sends command to logic for processing and execution.
-     * 
+     *
      * @param command
+     *            command string to send to logic component for parsing.
      */
     private void sendCommandToLogic(String command) {
-        assert command != null && !command.trim().isEmpty();
+        assert (command != null) && !command.trim().isEmpty();
 
         _logic.retrieveInputFromUI(command);
     }
 
     /**
      * Format a label with specified color.
-     * 
+     *
      * @param Label
+     *            Text object whose font will be colored
      * @param color
+     *            String value of color ("#FFFFFF") to color font with.
      */
     private void formatTextLabel(Text Label, String color) {
-        assert Label != null && color != null && !color.trim().isEmpty();
+        assert (Label != null) && (color != null) && !color.trim().isEmpty();
         Label.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 12));
         Label.setFill(Color.web(color));
     }
@@ -755,7 +757,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void beautifyScrollBar(BorderPane mainDisplay, VBox trendingList) {
-        assert mainDisplay != null && trendingList != null;
+        assert (mainDisplay != null) && (trendingList != null);
         // scroll bar hack to beautify scroll bar
         makeScrollFadeable(mainDisplay.lookup(".address > .scroll-pane"));
         makeScrollFadeable(trendingList.getChildren().get(0));
@@ -791,7 +793,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private HBox generateTaskDescription(String description, boolean done) {
-        assert description != null && !description.trim().isEmpty();
+        assert description != null;
 
         HBox descriptionBox = new HBox();
         descriptionBox.setPadding(new Insets(0, 8, 0, 8));
@@ -844,8 +846,8 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void colourDateAndDayIfDateIsToday(Calendar date, Text dayLabel,
             Text dateLabel, BorderPane taskViewHeader) {
-        assert date != null && dayLabel != null && dateLabel != null
-                && taskViewHeader != null;
+        assert (date != null) && (dayLabel != null) && (dateLabel != null)
+        && (taskViewHeader != null);
 
         boolean isToday = DisplayView.convertDateToString(date).equals(
                 DisplayView.convertDateToString(Calendar.getInstance()));
@@ -933,7 +935,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * When user is typing on application, but not focused on CLI and
      * FilterField, application automatically focuses on CLI for disruption-free
      * experience.
-     * 
+     *
      * @param e
      */
     private void hotKeyToFocusCLI(NativeKeyEvent e) {
@@ -952,13 +954,13 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * hotkey to hide the application.
-     * 
+     *
      * @param e
      */
     private void hotKeyToHideStage(NativeKeyEvent e) {
         assert e != null;
         boolean applicationIsFocusedAndPressedHotKeyForHide = _primaryStage
-                .isFocused() && e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE;
+                .isFocused() && (e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE);
 
         if (applicationIsFocusedAndPressedHotKeyForHide) {
             Platform.runLater(new Runnable() {
@@ -972,7 +974,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Easily scrolls tasks view up and down using keys.
-     * 
+     *
      * @param e
      */
     private void hotKeyToScrollTaskView(NativeKeyEvent e) {
@@ -1009,22 +1011,22 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Checks whether key is pressed for hotkey to scroll to Task View Date of
      * current day's date.
-     * 
+     *
      * @param e
      */
     private void hotKeyToScrollToToday(NativeKeyEvent e) {
         assert e != null;
         int mod = e.getModifiers();
-        boolean holdingCtrlOrCommandKey = mod == NativeInputEvent.CTRL_L_MASK
-                || mod == NativeInputEvent.CTRL_R_MASK
-                || mod == NativeInputEvent.CTRL_MASK
-                || mod == NativeInputEvent.META_L_MASK
-                || mod == NativeInputEvent.META_R_MASK
-                || mod == NativeInputEvent.META_MASK;
+        boolean holdingCtrlOrCommandKey = (mod == NativeInputEvent.CTRL_L_MASK)
+                || (mod == NativeInputEvent.CTRL_R_MASK)
+                || (mod == NativeInputEvent.CTRL_MASK)
+                || (mod == NativeInputEvent.META_L_MASK)
+                || (mod == NativeInputEvent.META_R_MASK)
+                || (mod == NativeInputEvent.META_MASK);
 
         boolean applicationIsFocusedAndPressedTAndCtrlOrCommand = _primaryStage
                 .isFocused()
-                && e.getKeyCode() == NativeKeyEvent.VC_T
+                && (e.getKeyCode() == NativeKeyEvent.VC_T)
                 && holdingCtrlOrCommandKey;
 
         if (applicationIsFocusedAndPressedTAndCtrlOrCommand) {
@@ -1034,19 +1036,19 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Toggles out application from minimized state.
-     * 
+     *
      * @param e
      */
     private void hotKeyToShowStage(NativeKeyEvent e) {
         assert e != null;
         int mod = e.getModifiers();
-        boolean holdingCtrlOrCommandKey = mod == NativeInputEvent.CTRL_L_MASK
-                || mod == NativeInputEvent.CTRL_R_MASK
-                || mod == NativeInputEvent.CTRL_MASK
-                || mod == NativeInputEvent.META_L_MASK
-                || mod == NativeInputEvent.META_R_MASK
-                || mod == NativeInputEvent.META_MASK;
-        boolean pressedHotKeyForTogglingApplication = e.getKeyCode() == Settings.HOTKEY_TOGGLE_SHOW
+        boolean holdingCtrlOrCommandKey = (mod == NativeInputEvent.CTRL_L_MASK)
+                || (mod == NativeInputEvent.CTRL_R_MASK)
+                || (mod == NativeInputEvent.CTRL_MASK)
+                || (mod == NativeInputEvent.META_L_MASK)
+                || (mod == NativeInputEvent.META_R_MASK)
+                || (mod == NativeInputEvent.META_MASK);
+        boolean pressedHotKeyForTogglingApplication = (e.getKeyCode() == Settings.HOTKEY_TOGGLE_SHOW)
                 && holdingCtrlOrCommandKey;
 
         if (pressedHotKeyForTogglingApplication) {
@@ -1084,7 +1086,7 @@ public class MainGui extends Application implements NativeKeyListener {
             // Occasionally the hook will fail, this issue is with the library,
             // we are unable to solve it.
             System.err
-                    .println("There was a problem registering the native hook.");
+            .println("There was a problem registering the native hook.");
         }
         GlobalScreen.getInstance().addNativeKeyListener(this);
     }
@@ -1092,7 +1094,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Listener to check if a task status is changed from done to undone, vice
      * versa.
-     * 
+     *
      * @param taskPane
      * @return
      */
@@ -1121,7 +1123,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
             private void setStrikethroughOfDescription(
                     final BorderPane taskPane, Boolean newValue, TextFlow desc) {
-                assert taskPane != null && desc != null;
+                assert (taskPane != null) && (desc != null);
 
                 Iterator<Node> descChildIterator = desc.getChildren()
                         .iterator();
@@ -1192,7 +1194,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Handler for mouse clicks on hashtags/categories.
      * Sets filter to hashtag or category.
-     * 
+     *
      * @return
      */
     private EventHandler<MouseEvent> onClickTrendingListText() {
@@ -1224,7 +1226,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void primaryStageSetUp(Stage primaryStage, Scene scene) {
-        assert primaryStage != null && scene != null;
+        assert (primaryStage != null) && (scene != null);
 
         primaryStage.setScene(scene);
         primaryStage.setMinHeight(MIN_HEIGHT);
@@ -1283,28 +1285,28 @@ public class MainGui extends Application implements NativeKeyListener {
 //@author A0111889W
 /*
  * JavaFx CSS files. Inserted here so that collate catches it.
- * 
+ *
  * .root{
  * -fx-font-family: "Lucida Grande";
  * -fx-font-size:11.0px;
  * }
- * 
+ *
  * .header-title {
  * -fx-font-size:20.0px;
  * }
- * 
+ *
  * .status-bar, .header-bar {
  * -fx-background-color: rgb(241.0,241.0,241.0);
  * }
- * 
+ *
  * .status-message {
- * 
+ *
  * }
- * 
+ *
  * .error-message {
  * -fx-text-fill:red;
  * }
- * 
+ *
  * .clear-button {
  * -fx-background-radius: 0.0;
  * -fx-background-insets: 0.0;
@@ -1316,107 +1318,107 @@ public class MainGui extends Application implements NativeKeyListener {
  * .clear-button:hover {
  * -fx-cursor:hand;
  * }
- * 
+ *
  * .text-field {
  * -fx-background-radius: 0.0;
  * }
- * 
+ *
  * .text-field:focused {
  * -fx-background-color:-fx-shadow-highlight-color, -fx-text-box-border,
  * -fx-control-inner-background;
  * -fx-background-radius: 0.0;
  * -fx-background-insets: -1.4, 0.0, 1.0;
  * }
- * 
- * 
+ *
+ *
  * .trending-list {
  * -fx-border-width: 0.0px 0.0px 0.0px 1.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent transparent #ddd;
  * }
- * 
+ *
  * .category-text {
  * -fx-fill:rgba(68.0,167.0,3.0);
  * }
- * 
+ *
  * .category-scroll {
  * -fx-border-width: 0.0px 0.0px 1.0px 0.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent #ddd transparent;
  * }
- * 
+ *
  * .hashtag-text {
  * -fx-fill:rgba(14.0,97.0,185.0);
  * }
- * 
+ *
  * .hashtag-scroll {
  * -fx-border-width: 0.0px 0.0px 1.0px 0.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent #ddd transparent;
  * }
- * 
+ *
  * .hashtag-text:hover, .category-text:hover {
  * -fx-cursor:hand;
  * -fx-underline:true;
  * }
- * 
+ *
  * .task-time {
  * -fx-fill:#999;
  * }
- * 
+ *
  * .taskView-header-today {
  * -fx-border-width: 0.0px 0.0px 3.0px 0.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent #CC6C6B transparent;
  * -fx-border-insets:3.0px;
  * }
- * 
- * 
+ *
+ *
  * .taskView-header {
  * -fx-border-width: 0.0px 0.0px 3.0px 0.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent #ddd transparent;
  * -fx-border-insets:3.0px;
  * }
- * 
+ *
  * .task-pane {
  * -fx-border-width: 1.0px 0.0px 1.0px 0.0px;
  * -fx-border-style: dashed;
  * -fx-border-color: transparent transparent #ccc transparent;
  * }
- * 
+ *
  * .task-pane:hover {
  * -fx-background-color: rgb(229.0,234.0,238.0);
  * -fx-background-radius:5.0px;
  * -fx-border-width:0.0px;
  * -fx-background-insets:-2.0px -3.0px -2.0px -3.0px;
  * }
- * 
+ *
  * .address {
  * -fx-background-color:white;
  * }
- * 
+ *
  * .address .scroll-pane {
  * -fx-background: transparent;
  * -fx-background-color: transparent;
  * }
- * 
+ *
  * .address .scroll-bar .increment-button {
  * -fx-opacity: 0.0;
  * }
- * 
+ *
  * .address .scroll-bar .decrement-button {
  * -fx-opacity: 0.0;
  * }
- * 
+ *
  * .address .scroll-bar:vertical {
  * -fx-background-color: transparent;
  * }
- * 
+ *
  * .address .scroll-bar:vertical .track-background {
  * -fx-opacity: 0.0;
  * }
- * 
+ *
  * .address .scroll-bar:vertical .track {
  * -fx-opacity: 0.0;
  * }
@@ -1424,7 +1426,7 @@ public class MainGui extends Application implements NativeKeyListener {
  * -fx-background-color: #999;
  * -fx-opacity: 1.0;
  * }
- * 
+ *
  * .address .hide-thumb .scroll-bar:vertical .thumb {
  * -fx-background-color: transparent;
  * }
