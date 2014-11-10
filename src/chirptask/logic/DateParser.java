@@ -32,6 +32,14 @@ public class DateParser {
 		parse = new Parser();
 	}
 
+	/**
+	 * This method breaks down the string into small tokens
+	 * and tries to match every one of them with recognized
+	 * date/time formats. If it succeeds in matching, the whole
+	 * string will be passed to Natty NLP parser to get the date 
+	 * @param toParse
+	 * @return List<Calendar>
+	 */
 	public List<Calendar> parseDate(String toParse) {
 		boolean success = false;
 		boolean mayHas = false;
@@ -87,6 +95,8 @@ public class DateParser {
 	}
 
 	/**
+	 * This method passes the String to Natty NLP parser
+	 * and converts what it gets from Natty to Calendar objects.
 	 * @param toParse
 	 * @param isTimeSet
 	 */
@@ -116,6 +126,13 @@ public class DateParser {
 		}
 	}
 
+	/**
+	 * This method tries to match a token with the recognized
+	 * time formats. If the token is recognized as one accepted
+	 * formats, it is returned, else null is returned
+	 * @param seek
+	 * @return String or null if no match is found
+	 */
 	private String findTime(String seek) {
 		Date time = null;
 		int pattern = -1;
@@ -141,6 +158,13 @@ public class DateParser {
 		return seek;
 	}
 
+	/**
+	 * This method tries to match a token with the recognized
+	 * date formats. If the token is recognized as one accepted
+	 * formats, it is returned, else null is returned
+	 * @param seek
+	 * @return String or null if no match is found
+	 */
 	private String findDate(String seek) {
 		Date date = null;
 		int pattern = -1;

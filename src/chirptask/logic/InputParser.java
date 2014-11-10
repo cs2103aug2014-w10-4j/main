@@ -753,7 +753,7 @@ public class InputParser {
 		return normalizedId;
 	}
 
-	//@author A0113022
+	//@author A0113022H
 	private String getCommandTypeString() {
 		return _userInput.trim().split("\\s+")[0].toLowerCase();
 	}

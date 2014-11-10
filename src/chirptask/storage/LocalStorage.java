@@ -40,7 +40,7 @@ import chirptask.common.Constants;
  * - end time
  * 
  */
-//@author A0113022
+//@author A0113022H
 public class LocalStorage implements IStorage {
 	
 	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
@@ -69,7 +69,7 @@ public class LocalStorage implements IStorage {
 				clearContent(local);
 				restartLocalStorage();
 			} catch (IOException e) {
-				System.err.println(String.format(Constants.ERROR_LOCAL, 
+				StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
 						"write to file failed"));
 			}
 		} else {
@@ -78,7 +78,8 @@ public class LocalStorage implements IStorage {
 	}
 
 	/**
-	 * 
+	 * Clear the file and write current session's
+	 * task list to it.
 	 */
 	private void restartLocalStorage() {
 		addRoot();
@@ -87,6 +88,9 @@ public class LocalStorage implements IStorage {
 		setIdGenerator(0);
 	}
 
+	/**
+	 * Get the current session's task list
+	 */
 	private void checkSessionStorage() {
 		if (StorageHandler.isSessionStorageInit() == false) {
 			return;
@@ -101,6 +105,10 @@ public class LocalStorage implements IStorage {
 		}
 	}
 
+	/**
+	 * Empty the file
+	 * @param file
+	 */
 	private void clearContent(File file) {
 		PrintWriter writer;
 		try {
@@ -108,13 +116,16 @@ public class LocalStorage implements IStorage {
 			writer.print("");
 			writer.close();
 		} catch (FileNotFoundException e) {
-			
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"file does not exist"));
+			return;
 		}
 		
 		
 	}
 
 	/**
+	 * This method sets up XML writer
 	 * @throws ParserConfigurationException
 	 * @throws TransformerConfigurationException
 	 * @throws TransformerFactoryConfigurationError
@@ -127,10 +138,15 @@ public class LocalStorage implements IStorage {
 			localStorage = docBuilder.newDocument();
 			trans = TransformerFactory.newInstance().newTransformer();
 			trans.setOutputProperty(OutputKeys.INDENT, "yes");
-		} catch (ParserConfigurationException
-				| TransformerConfigurationException
-				| TransformerFactoryConfigurationError e) {
-			
+		} catch (ParserConfigurationException p) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"error in setting up"));
+		} catch (TransformerConfigurationException t) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"error in setting up"));
+		} catch (TransformerFactoryConfigurationError e) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"error in setting up"));
 		}
 	}
 	
@@ -210,7 +226,7 @@ public class LocalStorage implements IStorage {
 			StreamResult file = new StreamResult(local);
 			trans.transform(source, file);
 		} catch (Exception e) {
-			e.printStackTrace();
+			
 		}
 	}
 
@@ -341,6 +357,9 @@ public class LocalStorage implements IStorage {
 		return taskToReturn;
 	}
 
+	/**
+	 * This method deletes the whitespace left after deleting tasks
+	 */
 	private void removeWhiteSpace() {
 		XPathFactory xPathfactory = XPathFactory.newInstance();
 		XPath xpath = xPathfactory.newXPath();
@@ -352,7 +371,7 @@ public class LocalStorage implements IStorage {
 				space.getParentNode().removeChild(space);
 			}
 		} catch (XPathExpressionException e) {
-			e.printStackTrace();
+			return;
 		}
 
 	}
@@ -419,8 +438,14 @@ public class LocalStorage implements IStorage {
 			if (taskNode == null) {
 				return null;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"get task node failed"));
+			return null;
+		} catch (XPathExpressionException x) {
+			return null;
+		} catch (SAXException s) {
+			restartLocalStorage();
 			return null;
 		}
 		
@@ -440,8 +465,12 @@ public class LocalStorage implements IStorage {
 			for (int i = 0; i < taskNodes.getLength(); i++) {
 				tasks.add(retrieveTaskFromFile(taskNodes.item(i)));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"get task node failed"));
+			return null;
+		} catch (SAXException s) {
+			restartLocalStorage();
 			return null;
 		}
 		return tasks;
@@ -460,8 +489,7 @@ public class LocalStorage implements IStorage {
 			Element item = (Element) node;
 			try {
 				taskId = Integer.parseInt(item.getAttribute("TaskId"));
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (NumberFormatException e) {
 				return null;
 			}	
 			
@@ -571,7 +599,7 @@ public class LocalStorage implements IStorage {
 	 * @param item
 	 * @return ArrayList<String>
 	 */
-	//@author A0113022
+	//@author A0113022H
 	private static List<String> getValues(String tag, Element item) {
 		List<String> contents = new ArrayList<String>();
 		NodeList nodes = item.getElementsByTagName(tag);
