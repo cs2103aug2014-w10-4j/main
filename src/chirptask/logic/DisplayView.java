@@ -43,13 +43,7 @@ public class DisplayView {
         sortTask(tasks);
         processUpdateTaskView(tasks, gui);
         processUpdateHashtagAndCategoryView(gui);
-        // Iterator<Map.Entry<Date, TasksByDate>> it =
-        // map.entrySet().iterator();
-        // TaskView view = new TaskView();
-        // while (it.hasNext()) {
-        // view.addToTaskView(it.next().getValue());
-        // }
-
+        
     }
 
     /**

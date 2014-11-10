@@ -7,7 +7,7 @@ import java.util.List;
  * Storage interface provides default methods for storage type classes.
  * Methods: storeNewTask, removeTask, modifyTask, getTask, getAllTasks, close.
  * 
- * @author quanyang
+ * 
  *
  */
 public interface IStorage {
