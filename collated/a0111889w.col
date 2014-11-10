@@ -313,14 +313,14 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private static List<Integer> _taskIndexToId = new ArrayList<>();
     private static final String[] DAY_OF_WEEK = new String[] { "Sunday",
-            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
     private static final int MIN_HEIGHT = 300;
     private static final int MIN_WIDTH = 500;
 
     private static final String[] MONTH = new String[] { "January", "February",
-            "March", "April", "May", "June", "July", "August", "September",
-            "October", "November", "December" };
+        "March", "April", "May", "June", "July", "August", "September",
+        "October", "November", "December" };
     private static final double SCROLL_VALUE = 50;
 
     private static final int STARTING_HEIGHT = 600;
@@ -366,12 +366,12 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Sets the current status of Google services.
-     * 
+     *
      * @param Status
      *            Current status of Google services.
      */
     public void setOnlineStatus(final String Status) {
-        assert Status != null && !Status.isEmpty();
+        assert (Status != null) && !Status.isEmpty();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -386,12 +386,12 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Inserts a category onto the current list of categories showing on the
      * GUI.
-     * 
+     *
      * @param Category
      *            category to be appended into this list
      */
     public void addCategoryIntoList(String Category) {
-        assert Category != null && !Category.isEmpty();
+        assert (Category != null) && !Category.isEmpty();
         Text categoryText = new Text(Constants.CATEGORY_CHAR + Category);
         categoryText.getStyleClass().add("category-text");
         categoryText.setOnMouseClicked(clickOnCategory());
@@ -400,12 +400,12 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Inserts a hashtag onto the current list of hashtags showing on the GUI.
-     * 
+     *
      * @param hashtag
      *            hashtag to be appended to this list
      */
     public void addHashtagIntoList(String hashtag) {
-        assert hashtag != null && !hashtag.isEmpty();
+        assert (hashtag != null) && !hashtag.isEmpty();
         Text hashtagText = new Text(Constants.HASHTAG_CHAR + hashtag);
         hashtagText.getStyleClass().add("hashtag-text");
         hashtagText.setOnMouseClicked(clickOnHashtag());
@@ -415,7 +415,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Adds a new Task View Date to the GUI. Task View Date will display all
      * tasks of a date in it.
-     * 
+     *
      * @param date
      *            date of task view date to generate and add into GUI.
      * @return boolean status of operation
@@ -459,7 +459,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * pre-cond: date cannot be null, description cannot be empty, taskId cannot
      * be negative
      * </p>
-     * 
+     *
      * @param date
      *            date of new task to add
      * @param taskId
@@ -474,8 +474,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && description != null 
-                && taskId > -1;
+        assert (date != null) && (description != null) && (taskId > -1);
 
         // Checks for duplicate taskId
         if (_taskIndexToId.contains(taskId)) {
@@ -492,13 +491,13 @@ public class MainGui extends Application implements NativeKeyListener {
         BorderPane taskView = generateTaskView(time, done, descriptionWithIndex);
 
         _taskViewDateMap.get(DisplayView.convertDateToString(date))
-                .getChildren().add(taskView);
+        .getChildren().add(taskView);
         return true;
     }
 
     private BorderPane generateTaskView(String time, boolean done,
             String descriptionWithIndex) {
-        assert descriptionWithIndex != null && !descriptionWithIndex.isEmpty();
+        assert (descriptionWithIndex != null) && !descriptionWithIndex.isEmpty();
 
         // pane that makes up task view
         BorderPane taskPane = new BorderPane();
@@ -515,8 +514,8 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void formatTaskView(BorderPane taskPane, Pane checkBoxPane,
             HBox descriptionBox, Text taskTime) {
-        assert taskPane != null && checkBoxPane != null
-                && descriptionBox != null && taskTime != null;
+        assert (taskPane != null) && (checkBoxPane != null)
+        && (descriptionBox != null) && (taskTime != null);
 
         Insets taskPanePadding = new Insets(10, 5, 8, 10);
         taskPane.setPadding(taskPanePadding);
@@ -546,7 +545,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * EventHandler for clicking on categories
-     * 
+     *
      * @return method to call when a category is clicked.
      */
     public EventHandler<MouseEvent> clickOnCategory() {
@@ -555,7 +554,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * EventHandler for clicking on hashtags
-     * 
+     *
      * @return method to call when a hashtag is clicked.
      */
     public EventHandler<MouseEvent> clickOnHashtag() {
@@ -564,7 +563,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Gets the current filter showing on the GUI.
-     * 
+     *
      * @return String current filter
      */
     public String getFilter() {
@@ -573,7 +572,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Gets the current user input showing on the CLI of the GUI.
-     * 
+     *
      * @return String current user input
      */
     public String getUserInput() {
@@ -582,7 +581,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.jnativehook.keyboard.NativeKeyListener#nativeKeyTyped(org.jnativehook
      * .keyboard.NativeKeyEvent)
@@ -594,7 +593,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.jnativehook.keyboard.NativeKeyListener#nativeKeyPressed(org.jnativehook
      * .keyboard.NativeKeyEvent)
@@ -607,7 +606,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.jnativehook.keyboard.NativeKeyListener#nativeKeyReleased(org.jnativehook
      * .keyboard.NativeKeyEvent)
@@ -637,12 +636,12 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Sets the status of the GUI with the given error message.
      * Message will be coloured red as it's an error.
-     * 
+     *
      * @param errorMessage
      *            error message to display on GUI.
      */
     public void setError(String errorMessage) {
-        assert errorMessage != null && !errorMessage.trim().isEmpty();
+        assert (errorMessage != null) && !errorMessage.trim().isEmpty();
 
         String Status = String.format(Constants.STATUS_ERROR, errorMessage);
         _statusText.setText(Status);
@@ -653,7 +652,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Sets the current filter input to the given text. Empty strings are
      * allowed.
-     * 
+     *
      * @param text
      *            string to set in filter's text field.
      */
@@ -665,12 +664,12 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Sets the status of the GUI with the given status message.
-     * 
+     *
      * @param message
      *            status message to display on GUI.
      */
     public void setStatus(String message) {
-        assert message != null && !message.trim().isEmpty();
+        assert (message != null) && !message.trim().isEmpty();
 
         String Status = String.format(Constants.STATUS_NORMAL, message);
         _statusText.setText(Status);
@@ -680,7 +679,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Sets the user input text of the CLI. Empty strings are accepted.
-     * 
+     *
      * @param text
      *            string to show in input text field.
      */
@@ -693,7 +692,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /*
      * Actual starting point of application
      * (non-Javadoc)
-     * 
+     *
      * @see javafx.application.Application#start(javafx.stage.Stage)
      */
     public void start(Stage primaryStage) {
@@ -714,7 +713,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * EventHandler for the clear all button. clears the filter input and sends
      * an enter action, invoking the filter action.
-     * 
+     *
      * @return
      */
     private EventHandler<? super MouseEvent> clearAllAction() {
@@ -738,7 +737,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * EventHandler for CLI input text box.
-     * 
+     *
      * @return
      */
     private EventHandler<KeyEvent> cliKeyPressHandler() {
@@ -794,7 +793,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * EventHandler for filter input text box.
-     * 
+     *
      * @return
      */
     private EventHandler<KeyEvent> filterModified() {
@@ -812,23 +811,26 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Sends command to logic for processing and execution.
-     * 
+     *
      * @param command
+     *            command string to send to logic component for parsing.
      */
     private void sendCommandToLogic(String command) {
-        assert command != null && !command.trim().isEmpty();
+        assert (command != null) && !command.trim().isEmpty();
 
         _logic.retrieveInputFromUI(command);
     }
 
     /**
      * Format a label with specified color.
-     * 
+     *
      * @param Label
+     *            Text object whose font will be colored
      * @param color
+     *            String value of color ("#FFFFFF") to color font with.
      */
     private void formatTextLabel(Text Label, String color) {
-        assert Label != null && color != null && !color.trim().isEmpty();
+        assert (Label != null) && (color != null) && !color.trim().isEmpty();
         Label.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 12));
         Label.setFill(Color.web(color));
     }
@@ -988,7 +990,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void beautifyScrollBar(BorderPane mainDisplay, VBox trendingList) {
-        assert mainDisplay != null && trendingList != null;
+        assert (mainDisplay != null) && (trendingList != null);
         // scroll bar hack to beautify scroll bar
         makeScrollFadeable(mainDisplay.lookup(".address > .scroll-pane"));
         makeScrollFadeable(trendingList.getChildren().get(0));
@@ -1024,7 +1026,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private HBox generateTaskDescription(String description, boolean done) {
-        assert description != null && !description.trim().isEmpty();
+        assert description != null;
 
         HBox descriptionBox = new HBox();
         descriptionBox.setPadding(new Insets(0, 8, 0, 8));
@@ -1077,8 +1079,8 @@ public class MainGui extends Application implements NativeKeyListener {
 
     private void colourDateAndDayIfDateIsToday(Calendar date, Text dayLabel,
             Text dateLabel, BorderPane taskViewHeader) {
-        assert date != null && dayLabel != null && dateLabel != null
-                && taskViewHeader != null;
+        assert (date != null) && (dayLabel != null) && (dateLabel != null)
+        && (taskViewHeader != null);
 
         boolean isToday = DisplayView.convertDateToString(date).equals(
                 DisplayView.convertDateToString(Calendar.getInstance()));
@@ -1166,7 +1168,7 @@ public class MainGui extends Application implements NativeKeyListener {
      * When user is typing on application, but not focused on CLI and
      * FilterField, application automatically focuses on CLI for disruption-free
      * experience.
-     * 
+     *
      * @param e
      */
     private void hotKeyToFocusCLI(NativeKeyEvent e) {
@@ -1185,13 +1187,13 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * hotkey to hide the application.
-     * 
+     *
      * @param e
      */
     private void hotKeyToHideStage(NativeKeyEvent e) {
         assert e != null;
         boolean applicationIsFocusedAndPressedHotKeyForHide = _primaryStage
-                .isFocused() && e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE;
+                .isFocused() && (e.getKeyCode() == Settings.HOTKEY_TOGGLE_HIDE);
 
         if (applicationIsFocusedAndPressedHotKeyForHide) {
             Platform.runLater(new Runnable() {
@@ -1205,7 +1207,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Easily scrolls tasks view up and down using keys.
-     * 
+     *
      * @param e
      */
     private void hotKeyToScrollTaskView(NativeKeyEvent e) {
@@ -1242,22 +1244,22 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Checks whether key is pressed for hotkey to scroll to Task View Date of
      * current day's date.
-     * 
+     *
      * @param e
      */
     private void hotKeyToScrollToToday(NativeKeyEvent e) {
         assert e != null;
         int mod = e.getModifiers();
-        boolean holdingCtrlOrCommandKey = mod == NativeInputEvent.CTRL_L_MASK
-                || mod == NativeInputEvent.CTRL_R_MASK
-                || mod == NativeInputEvent.CTRL_MASK
-                || mod == NativeInputEvent.META_L_MASK
-                || mod == NativeInputEvent.META_R_MASK
-                || mod == NativeInputEvent.META_MASK;
+        boolean holdingCtrlOrCommandKey = (mod == NativeInputEvent.CTRL_L_MASK)
+                || (mod == NativeInputEvent.CTRL_R_MASK)
+                || (mod == NativeInputEvent.CTRL_MASK)
+                || (mod == NativeInputEvent.META_L_MASK)
+                || (mod == NativeInputEvent.META_R_MASK)
+                || (mod == NativeInputEvent.META_MASK);
 
         boolean applicationIsFocusedAndPressedTAndCtrlOrCommand = _primaryStage
                 .isFocused()
-                && e.getKeyCode() == NativeKeyEvent.VC_T
+                && (e.getKeyCode() == NativeKeyEvent.VC_T)
                 && holdingCtrlOrCommandKey;
 
         if (applicationIsFocusedAndPressedTAndCtrlOrCommand) {
@@ -1267,19 +1269,19 @@ public class MainGui extends Application implements NativeKeyListener {
 
     /**
      * Toggles out application from minimized state.
-     * 
+     *
      * @param e
      */
     private void hotKeyToShowStage(NativeKeyEvent e) {
         assert e != null;
         int mod = e.getModifiers();
-        boolean holdingCtrlOrCommandKey = mod == NativeInputEvent.CTRL_L_MASK
-                || mod == NativeInputEvent.CTRL_R_MASK
-                || mod == NativeInputEvent.CTRL_MASK
-                || mod == NativeInputEvent.META_L_MASK
-                || mod == NativeInputEvent.META_R_MASK
-                || mod == NativeInputEvent.META_MASK;
-        boolean pressedHotKeyForTogglingApplication = e.getKeyCode() == Settings.HOTKEY_TOGGLE_SHOW
+        boolean holdingCtrlOrCommandKey = (mod == NativeInputEvent.CTRL_L_MASK)
+                || (mod == NativeInputEvent.CTRL_R_MASK)
+                || (mod == NativeInputEvent.CTRL_MASK)
+                || (mod == NativeInputEvent.META_L_MASK)
+                || (mod == NativeInputEvent.META_R_MASK)
+                || (mod == NativeInputEvent.META_MASK);
+        boolean pressedHotKeyForTogglingApplication = (e.getKeyCode() == Settings.HOTKEY_TOGGLE_SHOW)
                 && holdingCtrlOrCommandKey;
 
         if (pressedHotKeyForTogglingApplication) {
@@ -1317,7 +1319,7 @@ public class MainGui extends Application implements NativeKeyListener {
             // Occasionally the hook will fail, this issue is with the library,
             // we are unable to solve it.
             System.err
-                    .println("There was a problem registering the native hook.");
+            .println("There was a problem registering the native hook.");
         }
         GlobalScreen.getInstance().addNativeKeyListener(this);
     }
@@ -1325,7 +1327,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Listener to check if a task status is changed from done to undone, vice
      * versa.
-     * 
+     *
      * @param taskPane
      * @return
      */
@@ -1354,7 +1356,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
             private void setStrikethroughOfDescription(
                     final BorderPane taskPane, Boolean newValue, TextFlow desc) {
-                assert taskPane != null && desc != null;
+                assert (taskPane != null) && (desc != null);
 
                 Iterator<Node> descChildIterator = desc.getChildren()
                         .iterator();
@@ -1394,7 +1396,7 @@ public class MainGui extends Application implements NativeKeyListener {
     /**
      * Handler for mouse clicks on hashtags/categories.
      * Sets filter to hashtag or category.
-     * 
+     *
      * @return
      */
     private EventHandler<MouseEvent> onClickTrendingListText() {
@@ -1426,7 +1428,7 @@ public class MainGui extends Application implements NativeKeyListener {
     }
 
     private void primaryStageSetUp(Stage primaryStage, Scene scene) {
-        assert primaryStage != null && scene != null;
+        assert (primaryStage != null) && (scene != null);
 
         primaryStage.setScene(scene);
         primaryStage.setMinHeight(MIN_HEIGHT);
@@ -1494,28 +1496,28 @@ public class MainGui extends Application implements NativeKeyListener {
 
 /*
  * JavaFx CSS files. Inserted here so that collate catches it.
- * 
+ *
  * .root{
  * -fx-font-family: "Lucida Grande";
  * -fx-font-size:11.0px;
  * }
- * 
+ *
  * .header-title {
  * -fx-font-size:20.0px;
  * }
- * 
+ *
  * .status-bar, .header-bar {
  * -fx-background-color: rgb(241.0,241.0,241.0);
  * }
- * 
+ *
  * .status-message {
- * 
+ *
  * }
- * 
+ *
  * .error-message {
  * -fx-text-fill:red;
  * }
- * 
+ *
  * .clear-button {
  * -fx-background-radius: 0.0;
  * -fx-background-insets: 0.0;
@@ -1527,107 +1529,107 @@ public class MainGui extends Application implements NativeKeyListener {
  * .clear-button:hover {
  * -fx-cursor:hand;
  * }
- * 
+ *
  * .text-field {
  * -fx-background-radius: 0.0;
  * }
- * 
+ *
  * .text-field:focused {
  * -fx-background-color:-fx-shadow-highlight-color, -fx-text-box-border,
  * -fx-control-inner-background;
  * -fx-background-radius: 0.0;
  * -fx-background-insets: -1.4, 0.0, 1.0;
  * }
- * 
- * 
+ *
+ *
  * .trending-list {
  * -fx-border-width: 0.0px 0.0px 0.0px 1.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent transparent #ddd;
  * }
- * 
+ *
  * .category-text {
  * -fx-fill:rgba(68.0,167.0,3.0);
  * }
- * 
+ *
  * .category-scroll {
  * -fx-border-width: 0.0px 0.0px 1.0px 0.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent #ddd transparent;
  * }
- * 
+ *
  * .hashtag-text {
  * -fx-fill:rgba(14.0,97.0,185.0);
  * }
- * 
+ *
  * .hashtag-scroll {
  * -fx-border-width: 0.0px 0.0px 1.0px 0.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent #ddd transparent;
  * }
- * 
+ *
  * .hashtag-text:hover, .category-text:hover {
  * -fx-cursor:hand;
  * -fx-underline:true;
  * }
- * 
+ *
  * .task-time {
  * -fx-fill:#999;
  * }
- * 
+ *
  * .taskView-header-today {
  * -fx-border-width: 0.0px 0.0px 3.0px 0.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent #CC6C6B transparent;
  * -fx-border-insets:3.0px;
  * }
- * 
- * 
+ *
+ *
  * .taskView-header {
  * -fx-border-width: 0.0px 0.0px 3.0px 0.0px;
  * -fx-border-style: solid;
  * -fx-border-color: transparent transparent #ddd transparent;
  * -fx-border-insets:3.0px;
  * }
- * 
+ *
  * .task-pane {
  * -fx-border-width: 1.0px 0.0px 1.0px 0.0px;
  * -fx-border-style: dashed;
  * -fx-border-color: transparent transparent #ccc transparent;
  * }
- * 
+ *
  * .task-pane:hover {
  * -fx-background-color: rgb(229.0,234.0,238.0);
  * -fx-background-radius:5.0px;
  * -fx-border-width:0.0px;
  * -fx-background-insets:-2.0px -3.0px -2.0px -3.0px;
  * }
- * 
+ *
  * .address {
  * -fx-background-color:white;
  * }
- * 
+ *
  * .address .scroll-pane {
  * -fx-background: transparent;
  * -fx-background-color: transparent;
  * }
- * 
+ *
  * .address .scroll-bar .increment-button {
  * -fx-opacity: 0.0;
  * }
- * 
+ *
  * .address .scroll-bar .decrement-button {
  * -fx-opacity: 0.0;
  * }
- * 
+ *
  * .address .scroll-bar:vertical {
  * -fx-background-color: transparent;
  * }
- * 
+ *
  * .address .scroll-bar:vertical .track-background {
  * -fx-opacity: 0.0;
  * }
- * 
+ *
  * .address .scroll-bar:vertical .track {
  * -fx-opacity: 0.0;
  * }
@@ -1635,7 +1637,7 @@ public class MainGui extends Application implements NativeKeyListener {
  * -fx-background-color: #999;
  * -fx-opacity: 1.0;
  * }
- * 
+ *
  * .address .hide-thumb .scroll-bar:vertical .thumb {
  * -fx-background-color: transparent;
  * }
@@ -1651,9 +1653,13 @@ public class MainGui extends Application implements NativeKeyListener {
 	 */
 
     /**
-     * Assuming there are only 3 type of task we need to handle
+     * Returns the string representation of the time for a task.
+     * Floating: ""
+     * Timed: start to end
+     * Deadline: due by time
      * 
-     * @param task The task to process
+     * @param task
+     *            The task to process
      * @return String The string to display on the MainGui
      */
     public static String convertTaskDateToDurationString(Task task) {
@@ -1687,8 +1693,26 @@ public class MainGui extends Application implements NativeKeyListener {
 	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DisplayView.java
 	 */
 
+    /**
+     * This method converts a description string value into the corresponding
+     * textflow object, with the hashtags and categories coloured accordingly
+     * and their eventhandlers set.
+     * 
+     * @param description
+     *            string value to turn into text flow object.
+     * @param done
+     *            status of task. If true, text will be strikethroughed
+     * @param _gui
+     *            MainGui Object with event for mouse click on category/hashtag
+     * @return TextFlow object of description
+     * @throws NullPointerException
+     *             description and gui cannot be null
+     */
     public static TextFlow parseDescriptionToTextFlow(String description,
-            boolean done, MainGui _gui) {
+            boolean done, MainGui _gui) throws NullPointerException {
+        if (description == null || _gui == null) {
+            throw new NullPointerException();
+        }
         TextFlow parsedDesc = new TextFlow();
         StringBuilder descStringBuilder = new StringBuilder(description);
         Text bufferText = new Text();
@@ -1738,8 +1762,21 @@ public class MainGui extends Application implements NativeKeyListener {
 	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DisplayView.java
 	 */
 
-    public static String convertDateToString(Calendar date) {
-        assert date != null;
+    /**
+     * Converts date object into the corresponding string value with DD/MM/YYYY
+     * format.
+     * 
+     * @param date
+     *            date object to parse into string.
+     * @return String string representation of date object
+     * @throws NullPointerException
+     *             date object cannot be null
+     */
+    public static String convertDateToString(Calendar date)
+            throws NullPointerException {
+        if (date == null) {
+            throw new NullPointerException();
+        }
         SimpleDateFormat sdf = new SimpleDateFormat(
                 Constants.DATE_FORMAT_DD_MM_YYYY);
         String parseDateToString = sdf.format(date.getTime());
@@ -1756,6 +1793,17 @@ public class MainGui extends Application implements NativeKeyListener {
 	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\DisplayView.java
 	 */
 
+    /**
+     * Shell method for GUI to invoke logic class to autocomplete user input
+     * field with task description.
+     * 
+     * @param input
+     *            Current user input value. Should be of the form
+     *            "edit [number]"
+     * @param _gui
+     *            MainGui object that contains the user input field to
+     *            autocomplete.
+     */
     public static void autocompleteEditWithTaskDescription(String input,
             MainGui _gui) {
         assert !input.trim().isEmpty() && _gui != null;
@@ -1784,7 +1832,7 @@ public class DeadlineTask extends Task {
     /**
      * Creates a deadline task with specified description and deadline on the
      * input date.
-     * 
+     *
      * @param taskId taskId of task to create
      * @param description description of task to create
      * @param deadline deadline of task to create
@@ -1799,18 +1847,20 @@ public class DeadlineTask extends Task {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see chirptask.storage.Task#getDate()
      */
+    @Override
     public Calendar getDate() {
         return _deadline;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see chirptask.storage.Task#setDate(java.util.Calendar)
      */
+    @Override
     public void setDate(Calendar deadline) {
         if (deadline == null) {
             throw new NullPointerException();
@@ -1858,7 +1908,7 @@ public class EventLogger implements IStorage {
     /**
      * Set a printstream to the fileWriter variable, allowing printing of logs
      * to other output streams like system.out
-     * 
+     *
      * @param output output stream to print logs to.
      */
     public static void setStream(PrintStream output) {
@@ -1871,7 +1921,7 @@ public class EventLogger implements IStorage {
     /**
      * Implements a singleton class. Eventlogger does not need to be
      * instantiated multiple times.
-     * 
+     *
      * @return instance of EventLogger
      */
     public static EventLogger getInstance() {
@@ -1954,7 +2004,7 @@ public class EventLogger implements IStorage {
 
     /**
      * For logging custom error messages.
-     * 
+     *
      * @param error Error message to log.
      */
     public void logError(String error) {
@@ -2269,6 +2319,7 @@ public class Task implements Comparable<Task> {
     /*
      * Compare by Time then Type then Description (Lexicographically)
      */
+    @Override
     public int compareTo(Task b) {
         if (b == null) {
             throw new NullPointerException();
@@ -2302,6 +2353,7 @@ public class Task implements Comparable<Task> {
         }
     }
 
+    @Override
     public boolean equals(Object o) {
         try {
             if (o instanceof Task) {
@@ -2425,12 +2477,13 @@ public class Task implements Comparable<Task> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         String uniqueString = "";
-        if (this.getGoogleId() == null || this.getGoogleId().isEmpty()) {
+        if ((this.getGoogleId() == null) || this.getGoogleId().isEmpty()) {
             uniqueString = this.getTaskId() + "," + this.getDescription() + ","
                     + this.getDate() + "," + this.getType();
         } else {
@@ -2462,7 +2515,7 @@ public class TimedTask extends Task {
 
     /**
      * Creates a timed task or schedule object.
-     * 
+     *
      * @param taskId taskId of task to create
      * @param description description of task to create
      * @param startTime starting time of task to create
@@ -2471,13 +2524,14 @@ public class TimedTask extends Task {
     public TimedTask(int taskId, String description, Calendar startTime,
             Calendar endTime) {
         super(taskId, description, TASK_TIMED);
-        if (startTime == null || endTime == null) {
+        if ((startTime == null) || (endTime == null)) {
             throw new NullPointerException();
         }
         _startTime = startTime;
         _endTime = endTime;
     }
 
+    @Override
     public Calendar getDate() {
         return getStartTime();
     }
@@ -2488,7 +2542,7 @@ public class TimedTask extends Task {
 
     /**
      * Sets the starting time of schedule or timedtask.
-     * 
+     *
      * @param startTime calendar object of the starting time
      */
     public void setStartTime(Calendar startTime) {
@@ -2504,7 +2558,7 @@ public class TimedTask extends Task {
 
     /**
      * Sets the ending time of schedule or timedtask.
-     * 
+     *
      * @param endTime calendar object of the ending time
      */
     public void setEndTime(Calendar endTime) {
@@ -2517,9 +2571,10 @@ public class TimedTask extends Task {
     /* (non-Javadoc)
      * @see chirptask.storage.Task#hashCode()
      */
+    @Override
     public int hashCode() {
         String uniqueString = "";
-        if (this.getGoogleId() == null || this.getGoogleId().isEmpty()) {
+        if ((this.getGoogleId() == null) || this.getGoogleId().isEmpty()) {
             uniqueString = this.getTaskId() + "," + this.getDescription() + ","
                     + this.getStartTime() + "," + this.getEndTime() + ","
                     + this.getType();
@@ -2546,7 +2601,7 @@ public class TimedTask extends Task {
 
 package chirptask.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
@@ -2562,7 +2617,7 @@ public class JUnitDisplayViewParserTestAtd {
     /*
      * Tests only two methods under DisplayView.
      * These two methods are used by GUI to parse certain object into strings.
-     * 
+     *
      * ConvertDateToString method and ConvertTaskDateToDuration method
      */
     @Test
@@ -2630,7 +2685,9 @@ public class JUnitDisplayViewParserTestAtd {
 
 package chirptask.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -2674,7 +2731,7 @@ public class JUnitEventLoggerAtd {
 
     /*
      * Tests the EventLogger Component
-     * 
+     *
      * Not much heuristics to be applied to eventlog testing, code is pretty
      * straightforward, no boundary cases, no equivalence partition either.
      */
@@ -2874,7 +2931,8 @@ public class JUnitEventLoggerAtd {
 
 package chirptask.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -2927,12 +2985,12 @@ public class JUnitSystemTestingAtd {
         assertEquals("Successfully Added new task normal floating task.",
                 _mainGui._status);
         assertEquals(0, _mainGui._categoryList.size());
-        assertEquals(0, _mainGui._contextList.size());
+        assertEquals(0, _mainGui._hashtagList.size());
         assertEquals(
                 1,
                 _mainGui._taskViewDateMap
-                        .get(DisplayView.convertDateToString(Calendar
-                                .getInstance())).size());
+                .get(DisplayView.convertDateToString(Calendar
+                        .getInstance())).size());
 
         _logic.retrieveInputFromUI("delete 1");
 
@@ -2949,7 +3007,7 @@ public class JUnitSystemTestingAtd {
         assertEquals("Successfully Added new task #Junit @Testing.",
                 _mainGui._status);
         assertEquals(1, _mainGui._categoryList.size());
-        assertEquals(1, _mainGui._contextList.size());
+        assertEquals(1, _mainGui._hashtagList.size());
         assertEquals(
                 1,
                 _mainGui._taskViewDateMap.get(
@@ -2959,12 +3017,12 @@ public class JUnitSystemTestingAtd {
 
         assertEquals("Successfully Added new task #Junit @Testing2 by 12:00.", _mainGui._status);
         assertEquals(2, _mainGui._categoryList.size());
-        assertEquals(1, _mainGui._contextList.size());
+        assertEquals(1, _mainGui._hashtagList.size());
         assertEquals(
                 1,
                 _mainGui._taskViewDateMap
-                        .get(DisplayView.convertDateToString(Calendar
-                                .getInstance())).size());
+                .get(DisplayView.convertDateToString(Calendar
+                        .getInstance())).size());
 
         _logic.retrieveInputFromUI("done 1");
         assertEquals("Successfully: Done #Junit @Testing2 by 12:00", _mainGui._status);
@@ -2976,7 +3034,7 @@ public class JUnitSystemTestingAtd {
         assertEquals(
                 "Successfully Modified task nothing by 13:00 "
                         + formatter.format(today.getTime()) + ".",
-                _mainGui._status);
+                        _mainGui._status);
 
         _logic.retrieveInputFromUI("undo");
         assertEquals("Successfully Modified task #Junit @Testing2 by 12:00.", _mainGui._status);
@@ -3013,7 +3071,7 @@ public class JUnitSystemTestingAtd {
 
 package chirptask.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -3150,7 +3208,7 @@ import java.util.TreeMap;
 import chirptask.gui.MainGui;
 import chirptask.logic.DisplayView;
 
-/*
+/**
  * Class for System Testing. Dependency Injection.
  */
 public class MainGui2 extends MainGui {
@@ -3159,28 +3217,33 @@ public class MainGui2 extends MainGui {
     public String _status = "";
     public String _userInput = "";
     public List<String> _categoryList = new ArrayList<String>();
-    public List<String> _contextList = new ArrayList<String>();
+    public List<String> _hashtagList = new ArrayList<String>();
     public SortedMap<String, ArrayList<Integer>> _taskViewDateMap = new TreeMap<>();
     public static List<Integer> _taskIndexToId = new ArrayList<>();
 
+    @Override
     public String getFilter() {
         return _filter;
     }
 
+    @Override
     public void setFilterText(String text) {
         _filter = text;
     }
 
+    @Override
     public void setUserInputText(String text) {
         _userInput = text;
     }
 
+    @Override
     public String getUserInput() {
         return _userInput;
     }
 
+    @Override
     public void clearTrendingList() {
-        _contextList.clear();
+        _hashtagList.clear();
         _categoryList.clear();
     }
 
@@ -3188,27 +3251,34 @@ public class MainGui2 extends MainGui {
     public void setOnlineStatus(String status) {
         _onlineStatus = status;
     }
-    
+
     public String getStatus() {
         return _status;
     }
 
+    @Override
     public void setStatus(String message) {
         _status = message;
     }
 
+    @Override
     public void setError(String errorMessage) {
         _status = errorMessage;
     }
 
-    public void addHashtagIntoList(String Context) {
-        _contextList.add(Context);
+    @Override
+    public void addHashtagIntoList(String hashtag) {
+        assert hashtag != null;
+        _hashtagList.add(hashtag);
     }
 
-    public void addCategoryIntoList(String Category) {
-        _categoryList.add(Category);
+    @Override
+    public void addCategoryIntoList(String category) {
+        assert category != null;
+        _categoryList.add(category);
     }
 
+    @Override
     public boolean addNewTaskViewDate(Calendar date) {
         assert date != null;
         String parseDateToString = DisplayView.convertDateToString(date);
@@ -3222,9 +3292,10 @@ public class MainGui2 extends MainGui {
         return true;
     }
 
+    @Override
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && taskId > -1;
+        assert (date != null) && (taskId > -1);
 
         if (_taskIndexToId.contains(taskId)) {
             return false;
@@ -3236,6 +3307,7 @@ public class MainGui2 extends MainGui {
         return true;
     }
 
+    @Override
     public void clearTaskView() {
         _taskViewDateMap.clear();
         _taskIndexToId.clear();
@@ -3245,6 +3317,7 @@ public class MainGui2 extends MainGui {
         return _taskIndexToId;
     }
 
+    @Override
     public void refreshUI() {
         // nothing
     }
@@ -3262,40 +3335,43 @@ public class MainGui2 extends MainGui {
 
 package chirptask.testing;
 
+public class ManualTestingForGUI {
+    
+}
 /*
  * Manual Testing for GUI:
- * 
- * Step 1: Run the program 
+ *
+ * Step 1: Run the program
  * Observe: 1.  The UI should have started running.
- *          2.  You should be able to see the ChirpTask icon beside the word “ChirpTask”. 
+ *          2.  You should be able to see the ChirpTask icon beside the word “ChirpTask”.
  *          3.  The default Google status should be “offline”.
- * 
+ *
  * Step 2: Resize the window
  * Observe:     The UI should resize itself elegantly.
- * 
+ *
  * Step 3: Type “add todo #work @task” into the input field and press enter
  * Observe: 1.  You should observe that the task has appeared on today’s date.
  *          2.  The date and day of the task view task should be red in color.
  *          3.  You should observe a @task category and a #work hashtag in their respective list.
- * 
+ *
  * Step 4: Click on the checkbox beside the task you just added
  * Observe: 1.  You should observe that the task has been struck out.
  *          2.  You should observe that the status should show “Status: Successfully: Done todo #word @task”.
- *          
+ *
  * Step 5: Type “/undone” into the filter input box and press enter
  * Observe:     You should observe that no task would be displayed on the UI.
- * 
+ *
  * Step 6: Click on the @task category on the category list.
  * Observe:    You should observe that the filter box’s input has changed to “@task”.
- * 
+ *
  * Step 7: Click on the Clear button beside the filter box.
  * Observe:    You should observe that the filter box’s input is empty.
- * 
+ *
  * Step 8: Type “delete 1” into the input field.
  * Observe:    You should observe that the task has been deleted and removed from the UI.
- * 
+ *
  * End of manual testing for GUI.
- * 
+ *
  */
 
 	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\ManualTestingForGUI.java

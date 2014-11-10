@@ -23,6 +23,14 @@ public class DateParser {
 		parse = new Parser();
 	}
 
+	/**
+	 * This method breaks down the string into small tokens
+	 * and tries to match every one of them with recognized
+	 * date/time formats. If it succeeds in matching, the whole
+	 * string will be passed to Natty NLP parser to get the date 
+	 * @param toParse String
+	 * @return List list of Calendar objects parsed from toParse
+	 */
 	public List<Calendar> parseDate(String toParse) {
 		boolean success = false;
 		boolean mayHas = false;
@@ -78,8 +86,10 @@ public class DateParser {
 	}
 
 	/**
-	 * @param toParse
-	 * @param isTimeSet
+	 * This method passes the String to Natty NLP parser
+	 * and converts what it gets from Natty to Calendar objects.
+	 * @param toParse String  
+	 * @param isTimeSet boolean to check if time should be set to default 23:59
 	 */
 	private void parseDateTime(String toParse, boolean isTimeSet) {
 		Calendar today = Calendar.getInstance();
@@ -100,13 +110,20 @@ public class DateParser {
 		if (list.size() == 2) {
 			long distance = list.get(0).getTimeInMillis() - list.get(1).getTimeInMillis();
 			if (distance >= DAY_IN_MILLI) {
-				list.remove(1); 
+				list.remove(1); //to make input parser return invalid GroupAction
 			} else if (distance > 0) {
 				list.get(1).add(Calendar.DAY_OF_MONTH, 1);
 			}
 		}
 	}
 
+	/**
+	 * This method tries to match a token with the recognized
+	 * time formats. If the token is recognized as one accepted
+	 * formats, it is returned, else null is returned
+	 * @param seek a part of the original string
+	 * @return String or null if no match is found
+	 */
 	private String findTime(String seek) {
 		Date time = null;
 		int pattern = -1;
@@ -132,6 +149,13 @@ public class DateParser {
 		return seek;
 	}
 
+	/**
+	 * This method tries to match a token with the recognized
+	 * date formats. If the token is recognized as one accepted
+	 * formats, it is returned, else null is returned
+	 * @param seek a part of the original string
+	 * @return String or null if no match is found
+	 */
 	private String findDate(String seek) {
 		Date date = null;
 		int pattern = -1;
@@ -181,6 +205,11 @@ public class DateParser {
 	 */
 
 
+/**
+ * This class takes in user input and generate appropriate 
+ * GroupAction that will be processed by Logic
+ *
+ */
 public class InputParser {
 	private static final int USER_INPUT_TO_ARRAYLIST = 1;
 	private static final int TASK_ID_DISPLAY = -1;
@@ -216,6 +245,14 @@ public class InputParser {
 		_actions = actions;
 	}
 
+	/**
+	 * This method gets the first word in user input
+	 * and tries to determine if that word is a command
+	 * It then calls the appropriate methods to generate 
+	 * GroupAction
+	 * @param: void
+	 * @return: GroupAction which will be processed by Logic
+	 */
 	private GroupAction processCommand() {
 		String commandType = getCommandTypeString();
 		String parameter = getParameter();
@@ -288,6 +325,13 @@ public class InputParser {
 		return processByTaskIndex(CommandType.DELETE, parameter);
 	}
 
+	/**
+	 * This method returns an Invalid GroupAction whose
+	 * InvalidCommandType is the same as the corresponding 
+	 * command type that originates this GroupAction.
+	 * @param: CommandType command from user input
+	 * @return: GroupAction invalid
+	 */
 	private GroupAction processInvalid(CommandType command) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -299,7 +343,13 @@ public class InputParser {
 	
 		return actions;
 	}
-
+	
+	/**
+	 * This method returns a display GroupAction, which has a
+	 * task containing the display parameter in its description
+	 * @param parameter Filter keywords or empty string
+	 * @return GroupAction display
+	 */
 	private GroupAction processDisplay(String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -320,6 +370,14 @@ public class InputParser {
 		return actions;
 	}
 
+	/**
+	 * This method returns an Add GroupAction, provided the parameter
+	 * is valid (if the parameter is not, Invalid GroupAction will
+	 * be returned instead). 
+	 * @param command from user input
+	 * @param parameter from user input
+	 * @return GroupAction Add or Invalid 
+	 */
 	private GroupAction processAdd(String command, String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -347,8 +405,10 @@ public class InputParser {
 	}
 
 	/**
-	 * @param command
-	 * @param parameter
+	 * This method returns a new Task, DeadlineTask, TimedTask
+	 * or null depending on the command and parameter.
+	 * @param command "add", "addd" or "addt"
+	 * @param parameter from user input
 	 * @return Task or null if invalid parameter
 	 */
 	private Task generateTask(String command, String parameter) {
@@ -387,9 +447,11 @@ public class InputParser {
 	}
 
 	/**
-	 * @param description
-	 * @param taskIndex
-	 * @return FloatingTask
+	 * This method creates a new FloatingTask which has the description
+	 * and taskIndex supplied by the caller.
+	 * @param description String to describe the Task
+	 * @param taskIndex The unique id of the Task
+	 * @return FloatingTask 
 	 */
 	private static Task addFloatingTask(String description, int taskIndex) {
 		Task toDo;
@@ -399,9 +461,12 @@ public class InputParser {
 	}
 
 	/**
-	 * @param parameter
-	 * @param description
-	 * @param taskIndex
+	 * This method creates a new TimedTask which has the description, 
+	 * taskIndex and parameter as supplied by the caller. The parameter
+	 * is included to parse the start time and end time for this Task.
+	 * @param parameter String from user input
+	 * @param description String to describe the Task
+	 * @param taskIndex The unique id of the Task
 	 * @return TimedTask, or null if parameter is invalid
 	 */
 	private static Task addTimedTask(String parameter, String description,
@@ -429,9 +494,12 @@ public class InputParser {
 	}
 
 	/**
-	 * @param parameter
-	 * @param description
-	 * @param taskIndex
+	 * This methods creates a new DeadlineTask which has the description,
+	 * taskIndex and parameter as supplied by the caller. The parameter
+	 * is included to parse the deadline for this Task.
+	 * @param parameter String from user input
+	 * @param description String to describe the Task
+	 * @param taskIndex The unique id of the Task
 	 * @return DeadlineTask, or null if parameter is invalid
 	 */
 	private static Task addDeadlineTask(String parameter, String description,
@@ -459,6 +527,13 @@ public class InputParser {
 		return toDo;
 	}
 
+	/**
+	 * This method returns an Edit GroupAction, provided the parameter
+	 * is valid (in the case it is not, an Invalid GroupAction will be 
+	 * returned instead). 
+	 * @param parameter String from user input
+	 * @return GroupAction Edit or Invalid
+	 */
 	private GroupAction processEdit(String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -501,6 +576,16 @@ public class InputParser {
 		return actions;
 	}
 
+	/**
+	 * This method creates a GroupAction with the command type
+	 * supplied by caller. There are a few commands that will make use
+	 * of this method, for example delete, done, undone - whose
+	 * main parameter is a string composes of number denoting the affected
+	 * task indexes.
+	 * @param command The command type from user input
+	 * @param parameter String from user input
+	 * @return GroupAction of the type command or invalid 
+	 */
 	private GroupAction processByTaskIndex(CommandType command, String parameter) {
 		GroupAction actions = new GroupAction();
 		CommandType reverse;
@@ -560,6 +645,14 @@ public class InputParser {
 		return actions;
 	}
 
+	/**
+	 * This method creates a GroupAction with the command type supplied
+	 * by caller. There are a few commands that will make use of this 
+	 * method: logout, sync, clear, exit, login and undo; commands 
+	 * whose parameter is empty.
+	 * @param command The command types which are not bound to a specific Task 
+	 * @return GroupAction of command type
+	 */
 	private GroupAction processWithNoTask(CommandType command) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -569,6 +662,16 @@ public class InputParser {
 		return actions;
 	}
 
+	/**
+	 * This method returns the edited task with the same type as the
+	 * old task. The edited task shares the same description with the old
+	 * one if only the date was presented in user's input. The edited task
+	 * shares the same date as the old one if no date was presented in
+	 * user's input. 
+	 * @param oldTask The old Task user wants to edit
+	 * @param editedTask The new Task created from user input
+	 * @return Task or null if user input is invalid
+	 */
 	private Task getEditedTask(Task oldTask, Task editedTask) {
 		String taskType = oldTask.getType(); // Assumes cannot change task type
 		
@@ -595,9 +698,11 @@ public class InputParser {
 	}
 
 	/**
-	 * @param oldTask
-	 * @param editedTask
-	 * @return
+	 * This method returns the edited floating task with the same
+	 * id as the old task, but different description
+	 * @param oldTask The old Task user wants to edit
+	 * @param editedTask The new Task created from user input
+	 * @return the new Task 
 	 */
 	private Task editFloatingtask(Task oldTask, Task editedTask) {
 		int taskId = oldTask.getTaskId();
@@ -606,6 +711,8 @@ public class InputParser {
 	}
 
 	/**
+	 * This method sets all attributes (except for id, description
+	 * and time) of the edited task 
 	 * @param oldTask
 	 * @param editedTask
 	 * @param newTask
@@ -628,6 +735,13 @@ public class InputParser {
 		return newTask;
 	}
 
+	/**
+	 * This method returns the edited deadline task with the
+	 * same id as the old task
+	 * @param oldTask
+	 * @param editedTask
+	 * @return a new DeadlineTask, or null if parameter is invalid
+	 */
 	private DeadlineTask editDeadlineTask(Task oldTask, Task editedTask) {
 		DeadlineTask newTask = null;
 		Calendar dueDate = oldTask.getDate();
@@ -675,6 +789,13 @@ public class InputParser {
 		return newTask;
 	}
 	
+	/**
+	 * This method returns the edited timed task with the
+	 * same id as the old task
+	 * @param oldTask
+	 * @param editedTask
+	 * @return a new TimedTask, or null if parameter is invalid
+	 */
 	private TimedTask editTimedTask(Task oldTask, Task editedTask) {
 		TimedTask newTask = null;
 		
@@ -729,6 +850,12 @@ public class InputParser {
 		return newTask;
 	}
 	
+	/**
+	 * This method sets up a new task with the description,
+	 * hashtag and category parsed from parameter
+	 * @param parameter The parameter to parse
+	 * @return Task The parsed Task
+	 */
 	public static Task getTaskFromString(String parameter) {
 		Task newTask = new Task();
 		newTask.setDescription(parameter);
@@ -759,6 +886,13 @@ public class InputParser {
 		return newTask;
 	}
 	
+	/**
+	 * This method returns a Task with attributes id, description, time,
+	 * categories, hashtags set.
+	 * @param command The type of task
+	 * @param parameter The parameter to parse
+	 * @return Task or null if parameter is invalid
+	 */
 	public static Task getTaskFromString(String command, String parameter) {
 		if (parameter == null || parameter.equals("")) {
 			return null;
@@ -808,6 +942,857 @@ public class InputParser {
 	}
 
 	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\InputParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\InputParser.java
+	 */
+
+	private String getCommandTypeString() {
+		return _userInput.trim().split("\\s+")[0].toLowerCase();
+	}
+
+	private String getParameter() {
+		String[] commands = _userInput.trim().split("\\s+", 2);
+		if (commands.length == 2) {
+			return commands[1];
+		} else {
+			return null;
+		}
+	}
+
+	private boolean isIndexInRange(int index) {
+		boolean isInRange = false;
+		List<Task> allTasks = FilterTasks.getFilteredList();
+		if (index >= 0 && index < allTasks.size()) {
+			isInRange = true;
+		}
+		return isInRange;
+	}
+
+	/**
+	 * This method parses a string to a list of task indexes
+	 * @param parameter
+	 * @return List<Integer>
+	 * @throws NumberFormatException
+	 */
+	private List<Integer> getTaskIndexFromString(String parameter)
+			throws NumberFormatException {
+		List<Integer> taskIndex = new ArrayList<Integer>();
+	
+		parameter = parameter.replaceAll("\\s+(?=-)", "").replaceAll(
+				"(?<=-)\\s+", "");
+		String[] split = parameter.trim().split("\\s+|,");
+		for (int i = 0; i < split.length; i++) {
+			if (!split[i].equals("") && split[i].contains("-")) {
+				String[] sequence = split[i].split("-");
+	
+				int size = sequence.length;
+				if (size == 2) {
+					int start = Integer.parseInt(sequence[0]);
+					int end = Integer.parseInt(sequence[1]);
+					for (int j = start; j <= end; j++) {
+						taskIndex.add(j);
+					}
+				} else {
+					Integer.parseInt(split[i]);
+				}
+			} else if (!split[i].equals("")) {
+				taskIndex.add(Integer.parseInt(split[i]));
+			}
+	
+		}
+		return taskIndex;
+	}
+
+	/**
+	 * This method extracts the part of the input that
+	 * contains date information from the description
+	 * @param parameter
+	 * @param type
+	 * @return String[2], first String contains the date, second
+	 * String contains the remaining part of the input 
+	 */
+	private static String[] getStringToParseDate(String parameter, String type) {
+		String[] timeAndDesc = new String[2];
+	
+		switch (type) {
+		case Task.TASK_DEADLINE:
+			timeAndDesc = extractDeadline(parameter);
+			break;
+			
+		case Task.TASK_TIMED:
+			timeAndDesc = extractTimed(parameter);
+			break;
+			
+		default:
+			timeAndDesc[0] = "";
+			timeAndDesc[1] = parameter;
+		}
+	
+		timeAndDesc = extractCategoryAndHashtag(timeAndDesc);
+	
+		return timeAndDesc;
+	}
+
+	/**
+	 * This method extracts the part of input that contains
+	 * deadline information from description
+	 * @param timeAndDesc
+	 * @param splitSpaces
+	 * @return String[2], first String contains the deadline, second 
+	 * String holds the remaining part of the input
+	 */
+	private static String[] extractDeadline(String parameter) {
+		String[] timeAndDesc = new String[2];
+		timeAndDesc[0] = "";
+		timeAndDesc[1] = parameter;
+		StringBuilder description = new StringBuilder(parameter.length());
+		
+		String[] splitSpaces = parameter.split("\\s+");
+		String deadline[];
+		
+		int keywordPos[] = new int[deadlineKeyword.length];
+		Arrays.fill(keywordPos, INVALID_POSITION);
+		int lastKey = INVALID_POSITION;
+	
+		for (int i = 0; i < splitSpaces.length; i++) {
+			for (int j = 0; j < deadlineKeyword.length; j++) {
+				if (splitSpaces[i].equals(deadlineKeyword[j])) {
+					keywordPos[j] = i;
+				}
+			}
+		}
+		
+		for (int i = 0; i < deadlineKeyword.length; i++) {
+			if (keywordPos[i] > lastKey) {
+				lastKey = keywordPos[i];
+			}
+		}
+		
+		if (lastKey != INVALID_POSITION) {
+			String key = splitSpaces[lastKey] + " ";
+			deadline = parameter.split(key);
+	
+			timeAndDesc[0] = deadline[deadline.length - 1];
+			for (int i = 0; i < deadline.length - 1; i++) {
+				description.append(deadline[i]);
+				if (i < deadline.length - 2) {
+					description.append(key);
+				}
+			}
+			timeAndDesc[1] = description.toString();
+		} 
+		return timeAndDesc;
+	}
+
+	/**
+	 * This method extracts the part of input that contains
+	 * start and end time information from description
+	 * @param timeAndDesc
+	 * @param splitSpaces
+	 * @return String[2], first String contains the time, second 
+	 * String holds the remaining part of the input
+	 */
+	private static String[] extractTimed(String parameter) {
+		String[] timeAndDesc = new String[2];
+		timeAndDesc[0] = "";
+		timeAndDesc[1] = parameter;
+		String[] splitSpaces = parameter.split("\\s+");
+		StringBuilder time = new StringBuilder(parameter.length());
+		StringBuilder description = new StringBuilder(parameter.length());
+		
+		int fromPos = INVALID_POSITION;
+		int toPos[] = new int[timedKeyword.length];
+		int lastTo = INVALID_POSITION;
+		Arrays.fill(toPos, INVALID_POSITION);
+		
+		for (int i = 0; i < splitSpaces.length; i++) {
+			for (int j = 0; j < timedKeyword.length; j++) {
+				if (splitSpaces[i].equals(timedKeyword[j])) {
+					toPos[j] = i;
+				}
+			}
+		}
+	
+		for (int i = 0; i < timedKeyword.length; i++) {
+			if (toPos[i] > lastTo) {
+				lastTo = toPos[i];
+			}
+		}
+	
+		for (int i = 0; i < lastTo; i++) {
+			if (splitSpaces[i].equals("from")) {
+					fromPos = i;
+			}
+		}
+		
+		if (fromPos != INVALID_POSITION) {
+			timeAndDesc[1] = "";
+			for (int i = 0; i < fromPos; i++) {
+				description.append(splitSpaces[i] + " ");
+			}
+			
+			for (int i = fromPos; i < splitSpaces.length; i++) {
+				if (i != lastTo) {
+					time.append(splitSpaces[i] + " ");
+				} else {
+					time.append(timedKeyword[0] + " ");
+				}
+			}
+			timeAndDesc[0] = time.toString();
+			timeAndDesc[1] = description.toString();
+		} 
+		return timeAndDesc;
+	}
+
+	/**
+	 * This method extracts category and hashtag from the String
+	 * that contains the time, then appends this information to
+	 * the String that holds the rest of the input 
+	 * @param timeAndDesc
+	 * @return String[2], first String contains time information
+	 * without hashtag and category, second String holds the rest
+	 * of the input
+	 */
+	private static String[] extractCategoryAndHashtag(String[] timeAndDesc) {
+		StringBuilder time = new StringBuilder();
+		StringBuilder description = new StringBuilder(timeAndDesc[1].trim());
+		String[] hashAndAt = new String[0];
+		if (!timeAndDesc[0].equals("")) {
+			hashAndAt = timeAndDesc[0].split("\\s+");
+		}
+
+		for (int i = 0; i < hashAndAt.length; i++) {
+			if (!(hashAndAt[i].contains(Constants.CATEGORY)
+					|| hashAndAt[i].contains(Constants.CONTEXT))) {
+				time.append(hashAndAt[i] + " ");
+			} else {
+				description.append(" " + hashAndAt[i]);
+			}	
+		}
+		timeAndDesc[0] = time.toString();
+		timeAndDesc[1] = description.toString();
+		
+		return timeAndDesc;
+	}
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\logic\InputParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\LocalStorage.java
+	 */
+
+public class LocalStorage implements IStorage {
+	
+	private static final String DATE_FORMAT = "EEE MMM dd HH:mm:SS z yyyy";
+	private static final String XPATH_EXPRESSION_ID = "//task[@TaskId = '%1$s']";
+	private static final String XPATH_EXPRESSION_SPACE = "//text()[normalize-space(.) = '']";
+
+	private File local;
+	private DocumentBuilder docBuilder;
+	private Transformer trans;
+	private Document localStorage;
+	private static int idGenerator;
+
+	public LocalStorage() {
+		localStorageInit();
+	}
+
+	/**
+	 * Initialize all components of LocalStorage
+	 */
+	private void localStorageInit() {
+		setUpXmlWriter();
+		if (local.exists()) {
+			try {
+				setIdGenerator(getLatestId());
+			} catch (SAXException e) { //if file cannot be parsed
+				clearContent(local);
+				restartLocalStorage();
+			} catch (IOException e) {
+				StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+						"write to file failed"));
+			} catch (Exception exception) {
+                restartLocalStorage();
+			}
+		} else {
+			restartLocalStorage();
+		} 
+	}
+
+	/**
+	 * Clear the file and write current session's
+	 * task list to it.
+	 */
+	private void restartLocalStorage() {
+		addRoot();
+		checkSessionStorage();
+		writeToFile();
+		setIdGenerator(0);
+	}
+
+	/**
+	 * Get the current session's task list
+	 */
+	private void checkSessionStorage() {
+		if (StorageHandler.isSessionStorageInit() == false) {
+			return;
+		}
+		List<Task> sessionList = StorageHandler.getAllTasks();
+		if (sessionList == null || sessionList.size() == 0) {
+			return;
+		}
+		
+		for (int i = 0; i < sessionList.size(); i++) {
+			this.storeNewTask(sessionList.get(i));
+		}
+	}
+
+	/**
+	 * Empty the file
+	 * @param file
+	 */
+	private void clearContent(File file) {
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(file);
+			writer.print("");
+			writer.close();
+		} catch (FileNotFoundException e) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"file does not exist"));
+			return;
+		}
+		
+		
+	}
+
+	/**
+	 * This method sets up XML writer
+	 * @throws ParserConfigurationException
+	 * @throws TransformerConfigurationException
+	 * @throws TransformerFactoryConfigurationError
+	 */
+	private void setUpXmlWriter() {
+		try {
+			local = new File("local.xml");
+			docBuilder = DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder();
+			localStorage = docBuilder.newDocument();
+			trans = TransformerFactory.newInstance().newTransformer();
+			trans.setOutputProperty(OutputKeys.INDENT, "yes");
+		} catch (ParserConfigurationException p) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"error in setting up parser"));
+		} catch (TransformerConfigurationException t) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"error in setting up transformer"));
+		} catch (TransformerFactoryConfigurationError e) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"error in setting up transformer"));
+		} catch (Exception e) {
+            StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+                    "error in setting up"));
+		} 
+	}
+	
+	/** 
+	 * Test Stub Helper for JUnitStorage
+	 * This method will overwrite the local storage document to a test storage
+	 * When it is called, it will ensure the storage starts from fresh state
+	 */
+    public void setUpJUnitTestXmlWriter() {
+        try {
+            local = new File("localJUnitTest.xml");
+            local.delete();
+            local.createNewFile();
+            docBuilder = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder();
+            localStorage = docBuilder.newDocument();
+            trans = TransformerFactory.newInstance().newTransformer();
+            trans.setOutputProperty(OutputKeys.INDENT, "yes");
+            restartLocalStorageNoSession();
+        } catch (IOException ioException) {
+        } catch (ParserConfigurationException e) {
+        } catch (TransformerConfigurationException e) {
+        } catch (TransformerFactoryConfigurationError e) {
+        } catch (NullPointerException e) {
+        }
+    }
+    
+    /**
+     * This stub is created for setUpJUnitTestXmlWriter() method
+     * Normal restart local storage will try to copy all tasks in
+     * SessionStorage into LocalStorage.
+     * This stub is created to perform the same stuff without copying
+     * the SessionStorage into LocalStorage to ensure that we get an 
+     * empty JUnit Test XML Storage.
+     */
+    private void restartLocalStorageNoSession() {
+        addRoot();
+        writeToFile();
+        setIdGenerator(0);
+    }
+	
+
+	/**
+	 * returns latest ID stored as root attribute
+	 * 
+	 * @throws SAXException
+	 * @throws IOException
+	 */
+	private int getLatestId() throws SAXException, IOException, Exception {
+		int id;
+		localStorage = docBuilder.parse(local);
+		Node root = getRoot();
+		id = Integer.parseInt(root.getAttributes().getNamedItem("LatestId")
+				.getNodeValue());
+		return id;
+	}
+
+	private void setIdGenerator(int id) {
+		idGenerator = id;
+	}
+
+	/**
+	 * Add the first element in XML file (<Tasks>)
+	 */
+	private void addRoot() {
+		Element rootElement = localStorage.createElement("Tasks");
+		rootElement.setAttribute("LatestId", "1");
+		localStorage.appendChild(rootElement);
+	}
+
+	/**
+	 * Write from DOMSource to text file
+	 */
+	private void writeToFile() {
+		try {
+			localStorage.normalize();
+			DOMSource source = new DOMSource(localStorage);
+			StreamResult file = new StreamResult(local);
+			trans.transform(source, file);
+		} catch (NullPointerException e) {
+			return;
+		} catch (TransformerException t) {
+			return;
+		}
+	}
+
+	/**
+	 * This methods writes new task to XML file
+	 */
+	public synchronized boolean storeNewTask(Task task) {
+		Element root = getRoot();
+
+		if (root == null) {
+			return false;
+		}
+		root.setAttribute("LatestId", String.valueOf(idGenerator));
+		root.appendChild(generateTaskNode(localStorage, task));
+		writeToFile();
+		return true;
+	}
+
+	/**
+	 * @return root element
+	 */
+	private Element getRoot() {
+		try {
+			Element root = localStorage.getDocumentElement();
+			return root;
+		} catch (NullPointerException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * This method add a task to the XML file, one attribute at a time
+	 * 
+	 * @param doc represents the whole document
+	 * @param taskToAdd the Task to be added
+	 * @return the corresponding node 
+	 */
+	private static Node generateTaskNode(Document doc, Task taskToAdd) {
+	    if (doc == null || taskToAdd == null) {
+	        return null;
+	    }
+	    
+		Element node = doc.createElement("task");
+		node.setAttribute("TaskId", String.valueOf(taskToAdd.getTaskId()));
+		node.setAttribute("done", String.valueOf(taskToAdd.isDone()));
+
+		node.appendChild(getElement(doc, "description",
+				taskToAdd.getDescription()));
+
+		node.appendChild(getElement(doc, "googleId", taskToAdd.getGoogleId()));
+		
+		node.appendChild(getElement(doc, "googleETag", taskToAdd.getETag()));
+		
+		node.appendChild(getElement(doc, "isDeleted", taskToAdd.isDeleted()+""));
+		
+		node.appendChild(getElement(doc, "isModified", taskToAdd.isModified()+""));
+
+		List<String> contexts = taskToAdd.getHashtags();
+		if (contexts != null && !contexts.isEmpty()) {
+			for (String s : contexts) {
+				node.appendChild(getElement(doc, "contexts", s));
+			}
+		}
+
+		List<String> categories = taskToAdd.getCategories();
+		if (categories != null && !categories.isEmpty()) {
+			for (String s : categories) {
+				node.appendChild(getElement(doc, "categories", s));
+			}
+		}
+
+		if (taskToAdd instanceof TimedTask) {
+			TimedTask timedTask = (TimedTask) taskToAdd;
+			node.appendChild(getElement(doc, "type", "Timed Task"));
+			node.appendChild(getElement(doc, "start", timedTask.getStartTime()
+					.getTime().toString()));
+			node.appendChild(getElement(doc, "end", timedTask.getEndTime()
+					.getTime().toString()));
+		} else if (taskToAdd instanceof DeadlineTask) {
+			node.appendChild(getElement(doc, "deadline", taskToAdd.getDate()
+					.getTime().toString()));
+			node.appendChild(getElement(doc, "type", "Deadline Task"));
+		} else if (taskToAdd.getType().equalsIgnoreCase("floating")) {
+			node.appendChild(getElement(doc, "type", "Floating Task"));
+			if (taskToAdd.isDone()) {
+	            node.appendChild(getElement(doc, "doneDate", 
+	                    taskToAdd.getDate().getTime().toString()));
+			}
+		}
+
+		return node;
+	}
+
+	/**
+	 * This method writes an attribute of task between its enclosing tags
+	 * 
+	 * @param doc
+	 * @param tag
+	 * @param value
+	 * @return the corresponding node
+	 */
+	private static Node getElement(Document doc, String tag, String value) {
+		Element node = doc.createElement(tag);
+		node.appendChild(doc.createTextNode(value));
+		return node;
+	}
+
+	/**
+	 * This method deletes a task from XML file
+	 */
+	public synchronized Task removeTask(Task task) {
+		if (task == null) {
+		    return null;
+		}
+	    Node taskNode = getTaskNode(task.getTaskId());
+		Task taskToReturn = null;
+
+		if (taskNode == null) {
+			return null;
+		} else {
+			taskToReturn = retrieveTaskFromFile(taskNode);
+			taskNode.getParentNode().removeChild(taskNode);
+			removeWhiteSpace();
+			writeToFile();
+		}
+		return taskToReturn;
+	}
+
+	/**
+	 * This method deletes the whitespace left after deleting tasks
+	 */
+	private void removeWhiteSpace() {
+		XPathFactory xPathfactory = XPathFactory.newInstance();
+		XPath xpath = xPathfactory.newXPath();
+		try {
+			NodeList spaces = (NodeList) xpath.compile(XPATH_EXPRESSION_SPACE)
+					.evaluate(localStorage, XPathConstants.NODESET);
+			for (int i = 0; i < spaces.getLength(); i++) {
+				Node space = spaces.item(i);
+				space.getParentNode().removeChild(space);
+			}
+		} catch (XPathExpressionException e) {
+			return;
+		}
+
+	}
+
+	/**
+	 * This methods deletes a task in XML file and write its updated version
+	 * back.
+	 */
+	public synchronized boolean modifyTask(Task T) {
+	    boolean isModified = false;
+		Task toDelete = getTask(T.getTaskId());
+		Task removedTask = removeTask(toDelete);
+		
+		if (removedTask == null) {
+		    isModified = false;
+		} else {
+	        isModified = storeNewTask(T);
+		}
+		return isModified;
+	}
+
+	/**
+	 * This method takes in a number (taskId) and return the corresponding task
+	 * @param taskId the id of Task
+	 * @return a Task object or null if the Task cannot be found 
+	 */
+	public Task getTask(int taskId) {
+	    if (taskId < 0) {
+	        return null;
+	    }
+		Node taskNode = getTaskNode(taskId);
+		if (taskNode == null) {
+			return null;
+		} else {
+		    Task retrievedTask = retrieveTaskFromFile(taskNode);
+			return retrievedTask;
+		}
+
+	}
+
+	/**
+	 * This method takes in taskId and returns the corresponding node
+	 * @param taskId the Id of the Task
+	 * @return node that represents the Task
+	 */
+	private Node getTaskNode(int taskId) {
+	    if (taskId < 0) {
+	        return null;
+	    }
+		Node taskNode = null;
+		try {
+			localStorage = docBuilder.parse(local);
+			localStorage.getDocumentElement().normalize();
+
+			XPathFactory xPathfactory = XPathFactory.newInstance();
+			XPath xpath = xPathfactory.newXPath();
+			String expression = String.format(XPATH_EXPRESSION_ID,
+					String.valueOf(taskId));
+			taskNode = (Node) xpath.compile(expression).evaluate(localStorage,
+					XPathConstants.NODE);
+			if (taskNode == null) {
+				return null;
+			}
+		} catch (IOException e) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"get task node failed"));
+			return null;
+		} catch (XPathExpressionException x) {
+			return null;
+		} catch (SAXException s) {
+			restartLocalStorage();
+			return null;
+		} catch (Exception e) {
+		    return null;
+		}
+		
+		return taskNode;
+	}
+
+	/**
+	 * This method returns a list of tasks stored in XML file
+	 */
+	public synchronized List<Task> getAllTasks() {
+		List<Task> tasks = new ArrayList<Task>();
+		try {
+			localStorage = docBuilder.parse(local);
+			localStorage.getDocumentElement().normalize();
+
+			NodeList taskNodes = localStorage.getElementsByTagName("task");
+			for (int i = 0; i < taskNodes.getLength(); i++) {
+				tasks.add(retrieveTaskFromFile(taskNodes.item(i)));
+			}
+		} catch (IOException e) {
+			StorageHandler.logError(String.format(Constants.ERROR_LOCAL, 
+					"get task node failed"));
+			return null;
+		} catch (SAXException s) {
+			restartLocalStorage();
+			return null;
+		} catch (Exception e) {
+		    return null;
+		}
+		return tasks;
+	}
+
+	/**
+	 * This method takes in a node and return the corresponding task
+	 * @param node represents Task object
+	 * @return task Task object
+	 */
+	private Task retrieveTaskFromFile(Node node) {
+		Task task = null;
+		int taskId = -1;
+		if (node.getNodeType() == Node.ELEMENT_NODE) {
+			Element item = (Element) node;
+			try {
+				taskId = Integer.parseInt(item.getAttribute("TaskId"));
+			} catch (NumberFormatException e) {
+				return null;
+			} catch (Exception e) {
+			    return null;
+			}
+			
+			if (taskId < 0) {
+				return null;
+			}
+				
+			String typeTask = getValues("type", item).get(0);
+			String description = getValues("description", item).get(0);
+			String googleId = getValues("googleId", item).get(0);
+			String googleETag = getValues("googleETag", item).get(0);
+			String taskStatus = item.getAttribute("done");
+            String deleted = getValues("isDeleted", item).get(0);
+            String modified = getValues("isModified", item).get(0);
+                
+            boolean isDone = false;
+            boolean isDeleted = false;
+            boolean isModified = false;
+                
+            if (taskStatus != null) {
+                if (taskStatus.equals("true")) {
+                   isDone = true;
+                } else {
+                   isDone = false;
+                }
+            }
+                
+            if (deleted != null) {
+                if (deleted.equals("true")) {
+                    isDeleted = true;
+                } else {
+                    isDeleted = false;
+                }
+            }
+                
+            if (modified != null) {
+                 if (modified.equals("true")) {
+                    isModified = true;
+                 } else {
+                    isModified = false;
+                }
+            }
+                
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(
+						DATE_FORMAT);
+
+			if (typeTask.equalsIgnoreCase("Deadline Task")) {
+				Calendar dueDate = Calendar.getInstance();
+				Date deadline;
+				try {
+					deadline = dateFormatter.parse(getValues("deadline",item).get(0));
+				} catch (ParseException e) {
+					return null;
+				}
+				dueDate.setTime(deadline);
+				task = new DeadlineTask(taskId, description, dueDate);
+			} else if (typeTask.equalsIgnoreCase("Timed Task")) {
+				try {
+					Calendar startTime = Calendar.getInstance();
+					startTime.setTime(dateFormatter.parse(getValues("start",
+								item).get(0)));
+					Calendar endTime = Calendar.getInstance();
+					endTime.setTime(dateFormatter.parse(getValues("end", item)
+								.get(0)));
+					task = new TimedTask(taskId, description, startTime,
+								endTime);
+				} catch (ParseException e) {
+					return null;
+				}
+			} else {
+				task = new Task(taskId, description);
+				if (isDone) {
+					Calendar doneDate = Calendar.getInstance();
+					String storedDateString = getValues("doneDate",
+					            item).get(0);
+					if (storedDateString != null) {
+					   try { 
+					        Date storedDate = dateFormatter.parse(
+					                storedDateString);
+					        doneDate.setTime(storedDate);
+					   } catch (ParseException parseException) {
+					            //do nothing, just use today's date above.
+					            //support for older versions.
+					    }
+					}
+					task.setDate(doneDate);
+				}
+			}
+
+			task.setHashtags(getValues("contexts", item));
+			task.setCategories(getValues("categories", item));
+			task.setGoogleId(googleId);
+			task.setETag(googleETag);
+			task.setDeleted(isDeleted);
+			task.setModified(isModified);
+			task.setDone(isDone);
+
+		}
+		return task;
+	}
+
+	/**
+	 * This method helps reconstruct Task object by returning an ArrayList of
+	 * values in tags
+	 * @param tag String
+	 * @param item String
+	 * @return ArrayList<String> of values
+	 */
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\LocalStorage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\LocalStorage.java
+	 */
+
+	private static List<String> getValues(String tag, Element item) {
+		List<String> contents = new ArrayList<String>();
+		NodeList nodes = item.getElementsByTagName(tag);
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = (Node) nodes.item(i);
+			contents.add(node.getTextContent());
+		}
+		return contents;
+	}
+
+	public void addGoogleId(int taskId, String googleId) {
+		Node node = getTaskNode(taskId);
+		node.appendChild(getElement(localStorage, "googleId", googleId));
+		writeToFile();
+	}
+
+	public void close() {
+
+	}
+
+	public static int generateId() {
+		idGenerator++;
+		return idGenerator;
+	}
+}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\storage\LocalStorage.java
 
 
 
@@ -1177,7 +2162,6 @@ public class JUnitInputParserAtd {
 	InputParser parser = new InputParser();
 
 	@Test
-	// Partition: floating task with categories and contexts
 	public void testAddFloating() {
 		List<String> contexts = new ArrayList<String>();
 		List<String> categories = new ArrayList<String>();
@@ -1223,7 +2207,6 @@ public class JUnitInputParserAtd {
 	}
 
 	@Test
-	// Partition: deadline task, no categories/contexts, relative date
 	public void testAddDeadline() {
 		List<String> contexts = new ArrayList<String>();
 		List<String> categories = new ArrayList<String>();
@@ -1282,8 +2265,6 @@ public class JUnitInputParserAtd {
 	}
 
 	@Test
-	// Partition: timed task, no categories/contexts, absolute date mm/dd
-	// representation
 	public void testAddTimed() {
 		List<String> contexts = new ArrayList<String>();
 		List<String> categories = new ArrayList<String>();
@@ -1449,6 +2430,34 @@ public class JUnitInputParserAtd {
 		}
 
 	}
+
+	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitInputParserAtd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitInputParserAtd.java
+	 */
+
+	private void compareTime(Calendar result, Calendar expected) {
+		if (expected == null) {
+			assertNull(result);
+		} else {
+			assertEquals(result.get(Calendar.YEAR), expected.get(Calendar.YEAR));
+			assertEquals(result.get(Calendar.MONTH),
+					expected.get(Calendar.MONTH));
+			assertEquals(result.get(Calendar.DAY_OF_MONTH),
+					expected.get(Calendar.DAY_OF_MONTH));
+			assertEquals(result.get(Calendar.HOUR_OF_DAY),
+					expected.get(Calendar.HOUR_OF_DAY));
+			assertEquals(result.get(Calendar.MINUTE),
+					expected.get(Calendar.MINUTE));
+		}
+	}
+
+}
 
 	// End of segment: C:\Users\User\Dropbox\MYNUS\Year 2\Sem1\CS2103T\Assignment\Project\main\src\chirptask\testing\JUnitInputParserAtd.java
 
