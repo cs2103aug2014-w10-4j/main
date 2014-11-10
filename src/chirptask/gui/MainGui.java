@@ -1135,7 +1135,7 @@ public class MainGui extends Application implements NativeKeyListener {
         }
     }
 
-    // @author A0111889W-reused
+    //@author A0111889W-reused
     /*
      * Code re-use from https://gist.github.com/jewelsea/
      */
@@ -1175,7 +1175,7 @@ public class MainGui extends Application implements NativeKeyListener {
         });
     }
 
-    // @author A0111889W
+    //@author A0111889W
     /**
      * Handler for mouse clicks on hashtags/categories.
      * Sets filter to hashtag or category.
@@ -1267,7 +1267,7 @@ public class MainGui extends Application implements NativeKeyListener {
 
 }
 
-// @author A0111889W
+//@author A0111889W
 /*
  * JavaFx CSS files. Inserted here so that collate catches it.
  * 
