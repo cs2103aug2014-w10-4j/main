@@ -16,6 +16,11 @@ import chirptask.storage.TimedTask;
 
 //@author A0113022H
 
+/**
+ * This class takes in user input and generate appropriate 
+ * GroupAction that will be processed by Logic
+ *
+ */
 public class InputParser {
 	private static final int USER_INPUT_TO_ARRAYLIST = 1;
 	private static final int TASK_ID_DISPLAY = -1;
@@ -51,6 +56,14 @@ public class InputParser {
 		_actions = actions;
 	}
 
+	/**
+	 * This method gets the first word in user input
+	 * and tries to determine if that word is a command
+	 * It then calls the appropriate methods to generate 
+	 * GroupAction that will be processed by Logic
+	 * @param: void
+	 * @return: GroupAction
+	 */
 	private GroupAction processCommand() {
 		String commandType = getCommandTypeString();
 		String parameter = getParameter();
@@ -123,6 +136,13 @@ public class InputParser {
 		return processByTaskIndex(CommandType.DELETE, parameter);
 	}
 
+	/**
+	 * This method returns an Invalid GroupAction whose
+	 * InvalidCommandType is the same as the corresponding 
+	 * command type that originates this GroupAction.
+	 * @param: CommandType command
+	 * @return: GroupAction invalid
+	 */
 	private GroupAction processInvalid(CommandType command) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -134,7 +154,13 @@ public class InputParser {
 	
 		return actions;
 	}
-
+	
+	/**
+	 * This method returns a display GroupAction, which has a
+	 * task containing the display parameter in its description
+	 * @param parameter
+	 * @return GroupAction display
+	 */
 	private GroupAction processDisplay(String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -155,6 +181,14 @@ public class InputParser {
 		return actions;
 	}
 
+	/**
+	 * This method returns an Add GroupAction, provided the parameter
+	 * is valid (if the parameter is not, Invalid GroupAction will
+	 * be returned instead). 
+	 * @param command
+	 * @param parameter
+	 * @return GroupAction Add or Invalid 
+	 */
 	private GroupAction processAdd(String command, String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -182,6 +216,9 @@ public class InputParser {
 	}
 
 	/**
+	 * This method returns a new Task, DeadlineTask, TimedTask
+	 * or null depending on the command and parameter. The accepted
+	 * commands are "add", "addd" and "addt".
 	 * @param command
 	 * @param parameter
 	 * @return Task or null if invalid parameter
@@ -222,6 +259,8 @@ public class InputParser {
 	}
 
 	/**
+	 * This method creates a new FloatingTask which has the description
+	 * and taskIndex supplied by the caller.
 	 * @param description
 	 * @param taskIndex
 	 * @return FloatingTask
@@ -234,6 +273,9 @@ public class InputParser {
 	}
 
 	/**
+	 * This method creates a new TimedTask which has the description, 
+	 * taskIndex and parameter as supplied by the caller. The parameter
+	 * is included to parse the start time and end time for this Task.
 	 * @param parameter
 	 * @param description
 	 * @param taskIndex
@@ -264,6 +306,9 @@ public class InputParser {
 	}
 
 	/**
+	 * This methods creates a new DeadlineTask which has the description,
+	 * taskIndex and parameter as supplied by the caller. The parameter
+	 * is included to parse the deadline for this Task.
 	 * @param parameter
 	 * @param description
 	 * @param taskIndex
@@ -294,6 +339,13 @@ public class InputParser {
 		return toDo;
 	}
 
+	/**
+	 * This method returns an Edit GroupAction, provided the parameter
+	 * is valid (in the case it is not, an Invalid GroupAction will be 
+	 * returned instead). 
+	 * @param parameter
+	 * @return GroupAction Edit or Invalid
+	 */
 	private GroupAction processEdit(String parameter) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -336,6 +388,16 @@ public class InputParser {
 		return actions;
 	}
 
+	/**
+	 * This method creates a GroupAction with the command type
+	 * supplied by caller. There are a few commands that will make use
+	 * of this method, for example delete, done, undone - whose
+	 * main parameter is a string composes of number denoting the affected
+	 * task indexes.
+	 * @param command
+	 * @param parameter
+	 * @return GroupAction
+	 */
 	private GroupAction processByTaskIndex(CommandType command, String parameter) {
 		GroupAction actions = new GroupAction();
 		CommandType reverse;
@@ -395,6 +457,14 @@ public class InputParser {
 		return actions;
 	}
 
+	/**
+	 * This method creates a GroupAction with the command type supplied
+	 * by caller. There are a few commands that will make use of this 
+	 * method: logout, sync, clear, exit, login and undo; commands 
+	 * whose parameter is empty.
+	 * @param command
+	 * @return GroupAction
+	 */
 	private GroupAction processWithNoTask(CommandType command) {
 		GroupAction actions = new GroupAction();
 		Action action = new Action();
@@ -404,6 +474,16 @@ public class InputParser {
 		return actions;
 	}
 
+	/**
+	 * This method returns the edited task with the same type as the
+	 * old task. The edited task shares the same description with the old
+	 * one if only the date was presented in user's input. The edited task
+	 * shares the same date as the old one if no date was presented in
+	 * user's input. 
+	 * @param oldTask
+	 * @param editedTask
+	 * @return Task or null if user input is invalid
+	 */
 	private Task getEditedTask(Task oldTask, Task editedTask) {
 		String taskType = oldTask.getType(); // Assumes cannot change task type
 		
@@ -430,6 +510,8 @@ public class InputParser {
 	}
 
 	/**
+	 * This method returns the edited floating task with the same
+	 * id as the old task, but different description
 	 * @param oldTask
 	 * @param editedTask
 	 * @return
@@ -441,6 +523,8 @@ public class InputParser {
 	}
 
 	/**
+	 * This method sets all attributes (except for id, description
+	 * and time) of the edited task 
 	 * @param oldTask
 	 * @param editedTask
 	 * @param newTask
@@ -463,6 +547,13 @@ public class InputParser {
 		return newTask;
 	}
 
+	/**
+	 * This method returns the edited deadline task with the
+	 * same id as the old task
+	 * @param oldTask
+	 * @param editedTask
+	 * @return a new DeadlineTask, or null if parameter is invalid
+	 */
 	private DeadlineTask editDeadlineTask(Task oldTask, Task editedTask) {
 		DeadlineTask newTask = null;
 		Calendar dueDate = oldTask.getDate();
@@ -510,6 +601,13 @@ public class InputParser {
 		return newTask;
 	}
 	
+	/**
+	 * This method returns the edited timed task with the
+	 * same id as the old task
+	 * @param oldTask
+	 * @param editedTask
+	 * @return a new TimedTask, or null if parameter is invalid
+	 */
 	private TimedTask editTimedTask(Task oldTask, Task editedTask) {
 		TimedTask newTask = null;
 		
@@ -564,6 +662,12 @@ public class InputParser {
 		return newTask;
 	}
 	
+	/**
+	 * This method sets up a new task with the description,
+	 * hashtag and category parsed from parameter
+	 * @param parameter
+	 * @return Task
+	 */
 	public static Task getTaskFromString(String parameter) {
 		Task newTask = new Task();
 		newTask.setDescription(parameter);
@@ -594,6 +698,13 @@ public class InputParser {
 		return newTask;
 	}
 	
+	/**
+	 * This method returns a Task with attributes id, description, time,
+	 * categories, hashtags set.
+	 * @param command
+	 * @param parameter
+	 * @return Task or null if parameter is invalid
+	 */
 	public static Task getTaskFromString(String command, String parameter) {
 		if (parameter == null || parameter.equals("")) {
 			return null;
@@ -665,6 +776,12 @@ public class InputParser {
 		return isInRange;
 	}
 
+	/**
+	 * This method parses a string to a list of task indexes
+	 * @param parameter
+	 * @return List<Integer>
+	 * @throws NumberFormatException
+	 */
 	private List<Integer> getTaskIndexFromString(String parameter)
 			throws NumberFormatException {
 		List<Integer> taskIndex = new ArrayList<Integer>();
@@ -694,6 +811,14 @@ public class InputParser {
 		return taskIndex;
 	}
 
+	/**
+	 * This method extracts the part of the input that
+	 * contains date information from the description
+	 * @param parameter
+	 * @param type
+	 * @return String[2], first String contains the date, second
+	 * String contains the remaining part of the input 
+	 */
 	private static String[] getStringToParseDate(String parameter, String type) {
 		String[] timeAndDesc = new String[2];
 	
@@ -711,14 +836,18 @@ public class InputParser {
 			timeAndDesc[1] = parameter;
 		}
 	
-		timeAndDesc = extractCategoryAndContext(timeAndDesc);
+		timeAndDesc = extractCategoryAndHashtag(timeAndDesc);
 	
 		return timeAndDesc;
 	}
 
 	/**
+	 * This method extracts the part of input that contains
+	 * deadline information from description
 	 * @param timeAndDesc
 	 * @param splitSpaces
+	 * @return String[2], first String contains the deadline, second 
+	 * String holds the remaining part of the input
 	 */
 	private static String[] extractDeadline(String parameter) {
 		String[] timeAndDesc = new String[2];
@@ -764,8 +893,12 @@ public class InputParser {
 	}
 
 	/**
+	 * This method extracts the part of input that contains
+	 * start and end time information from description
 	 * @param timeAndDesc
 	 * @param splitSpaces
+	 * @return String[2], first String contains the time, second 
+	 * String holds the remaining part of the input
 	 */
 	private static String[] extractTimed(String parameter) {
 		String[] timeAndDesc = new String[2];
@@ -820,9 +953,15 @@ public class InputParser {
 	}
 
 	/**
+	 * This method extracts category and hashtag from the String
+	 * that contains the time, then appends this information to
+	 * the String that holds the rest of the input 
 	 * @param timeAndDesc
+	 * @return String[2], first String contains time information
+	 * without hashtag and category, second String holds the rest
+	 * of the input
 	 */
-	private static String[] extractCategoryAndContext(String[] timeAndDesc) {
+	private static String[] extractCategoryAndHashtag(String[] timeAndDesc) {
 		StringBuilder time = new StringBuilder();
 		StringBuilder description = new StringBuilder(timeAndDesc[1].trim());
 		String[] hashAndAt = new String[0];
