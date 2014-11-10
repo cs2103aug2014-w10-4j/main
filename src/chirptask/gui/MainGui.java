@@ -241,7 +241,7 @@ public class MainGui extends Application implements NativeKeyListener {
      */
     public boolean addNewTaskViewToDate(Calendar date, int taskId,
             String description, String time, boolean done) {
-        assert date != null && description != null && !description.isEmpty()
+        assert date != null && description != null 
                 && taskId > -1;
 
         // Checks for duplicate taskId
