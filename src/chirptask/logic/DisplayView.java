@@ -32,10 +32,9 @@ public class DisplayView {
      * This will take in a filtered list and update the taskview, sort to
      * date/time, store into List of tasks
      * 
-     * @param tasks
-     * @param _gui
-     * 
-     * */
+     * @param tasks The list of filtered tasks
+     * @param gui The MainGui object to manipulate
+     */
     public static void updateTaskView(List<Task> tasks, MainGui gui) {
 
         sortTask(tasks);
@@ -47,7 +46,7 @@ public class DisplayView {
     /**
      * Method will sort the task
      * 
-     * @param tasks
+     * @param tasks The list of tasks to sort
      */
     private static void sortTask(List<Task> tasks) {
         Collections.sort(tasks);
@@ -57,7 +56,7 @@ public class DisplayView {
      * This method will update the Context and category on the GUI
      * 
      * 
-     * @param gui
+     * @param gui The MainGui object to manipulate
      */
     private static void processUpdateHashtagAndCategoryView(MainGui gui) {
         updateCategoryView(gui);
@@ -69,9 +68,8 @@ public class DisplayView {
      * all tasks under a date.
      * 
      * 
-     * @param tasks
-     * @param gui
-     * @param map
+     * @param tasks The list of tasks to loop through
+     * @param gui The MainGui object to manipulate
      */
     private synchronized static void processUpdateTaskView(List<Task> tasks,
             MainGui gui) {
@@ -87,9 +85,9 @@ public class DisplayView {
     /**
      * Method will call GUI method to update the task under the respective date
      * 
-     * @param gui
-     * @param T
-     * @param dateToString
+     * @param gui The MainGui object to manipulate
+     * @param T The Task to update in GUI
+     * @param dateToString The date String to update in GUI
      */
     private static void updateTaskToDate(MainGui gui, Task T,
             String dateToString) {
@@ -100,8 +98,8 @@ public class DisplayView {
     /**
      * Method will call GUI method to create a date view
      * 
-     * @param gui
-     * @param T
+     * @param gui The MainGui object to manipulate
+     * @param T The Task to add the date to GUI
      */
     private static void updateTaskViewDate(MainGui gui, Task T) {
         gui.addNewTaskViewDate(T.getDate());
@@ -111,8 +109,8 @@ public class DisplayView {
     /**
      * Assuming there are only 3 type of task we need to handle
      * 
-     * @param task
-     * @return String
+     * @param task The task to process
+     * @return String The string to display on the MainGui
      */
     public static String convertTaskDateToDurationString(Task task) {
         assert task != null && task.getDate() != null;
@@ -139,7 +137,7 @@ public class DisplayView {
     /**
      * This method will be call during init to display all task
      * 
-     * @param gui
+     * @param gui The MainGui object to manipulate
      */
     public static void updateTaskView(MainGui gui) {
         List<Task> allTasks = FilterTasks.getFilteredList();
@@ -152,7 +150,7 @@ public class DisplayView {
     /**
      * This method will call gui to update the category view.
      * 
-     * @param gui
+     * @param gui The MainGui object to manipulate
      */
     public static void updateCategoryView(MainGui gui) {
         List<String> categories = FilterTasks.getCategoryList();
@@ -164,7 +162,7 @@ public class DisplayView {
     /**
      * This method will call gui to update the Hashtag view.
      * 
-     * @param gui
+     * @param gui The MainGui object to manipulate
      */
     public static void updateHashtagView(MainGui gui) {
         List<String> contexts = FilterTasks.getContextList();
@@ -176,8 +174,8 @@ public class DisplayView {
     /**
      * Show status to user with the respective message
      * 
-     * @param Message
-     * @param gui
+     * @param Message The status message to update
+     * @param gui The MainGui object to manipulate
      */
     public static void showStatusToUser(String Message, MainGui gui) {
         gui.setStatus(Message);
@@ -186,9 +184,9 @@ public class DisplayView {
     /**
      * Show status to user depending on the success
      * 
-     * @param Message
-     * @param gui
-     * @param success
+     * @param Message The status message to update
+     * @param gui The MainGui object to manipulate
+     * @param success The flag of whether it is successful or not
      */
     public static void showStatusToUser(String Message, MainGui gui,
             boolean success) {
@@ -202,9 +200,9 @@ public class DisplayView {
     /**
      * Show status to user depending on the execution of display command
      * 
-     * @param type
-     * @param gui
-     * @param filter
+     * @param type The StatusType to update on GUI
+     * @param gui The MainGui object to manipulate
+     * @param filter The filters applied
      */
     public static void showStatusToUser(Settings.StatusType type, MainGui gui,
             String filter) {
@@ -222,9 +220,9 @@ public class DisplayView {
      * input.
      * 
      * 
-     * @param type
-     * @param action
-     * @param gui
+     * @param type The StatusType to update on GUI
+     * @param action The Action that was being processed
+     * @param gui The MainGui object to manipulate
      * 
      * 
      */
@@ -241,9 +239,9 @@ public class DisplayView {
     /**
      * Method will display success message to user
      * 
-     * @param action
-     * @param gui
-     * @param command
+     * @param action The Action that was being processed
+     * @param gui The MainGui object to manipulate
+     * @param command The CommandType to process
      */
     private static void processSuccessGui(Action action, MainGui gui,
             CommandType command) {
@@ -297,9 +295,9 @@ public class DisplayView {
     /**
      * Method will display error message to user
      * 
-     * @param action
-     * @param gui
-     * @param command
+     * @param action The Action to process
+     * @param gui The MainGui object to manipulate
+     * @param command The CommandType to process
      */
     private static void processErrorGui(Action action, MainGui gui,
             CommandType command) {
@@ -348,8 +346,8 @@ public class DisplayView {
     /**
      * Return true if statustype is error, else return true
      * 
-     * @param type
-     * @return
+     * @param type The StatusType to compare
+     * @return True if error, false otherwise
      */
     private static boolean isStatusError(Settings.StatusType type) {
         return type == Settings.StatusType.ERROR;
@@ -360,10 +358,10 @@ public class DisplayView {
      * input.
      * 
      * 
-     * @param action
-     * @param gui
-     * @param logMessageInvalidCommand
-     * @param logMessageError
+     * @param action The Action to process
+     * @param gui The MainGui object to manipulate
+     * @param logMessageInvalidCommand The message to log
+     * @param logMessageError The message to log
      */
     private static void processGUIError(MainGui gui,
             String logMessageInvalidCommand, String logMessageError,
@@ -379,8 +377,8 @@ public class DisplayView {
     /**
      * Method will return true is is a error message, else false
      * 
-     * @param logMessageError
-     * @return
+     * @param logMessageError The message to log
+     * @return True if error, false otherwise
      */
     private static boolean isLogMessageError(String logMessageError) {
         return logMessageError == Constants.LOG_MESSAGE_ERROR;
@@ -389,9 +387,9 @@ public class DisplayView {
     /**
      * This method will show the failure or success of login to user.
      * 
-     * @param gui
-     * @param message
-     * @param result
+     * @param gui The MainGui object to manipulate
+     * @param message The message to display
+     * @param result The result to display
      */
     private static void processGuiLogin(MainGui gui, String message,
             Boolean isSuccess, String result) {
@@ -406,10 +404,10 @@ public class DisplayView {
      * This method will show the failure or success for simple
      * add/delete/done/undone/login/display
      * 
-     * @param action
-     * @param gui
-     * @param message
-     * @param result
+     * @param action The Action to process
+     * @param gui The MainGui object to manipulate
+     * @param message The message to display
+     * @param result The result to display
      */
     private static void processGUI(Action action, MainGui gui, String message,
             String result) {
@@ -484,9 +482,9 @@ public class DisplayView {
     /**
      * Show message and command type to user.
      * 
-     * @param message
-     * @param type
-     * @param _gui
+     * @param message The message to display
+     * @param type The CommandType to display
+     * @param _gui The MainGui object to manipulate
      */
     public static void showStatusToUser(StatusType message, CommandType type,
             MainGui _gui) {
@@ -497,9 +495,9 @@ public class DisplayView {
     /**
      * Method will call gui and show status to user
      * 
-     * @param message
-     * @param type
-     * @param _gui
+     * @param message The StatusType to process
+     * @param type The CommandType to process
+     * @param _gui The MainGui object to manipulate
      */
 
     private static void processGUI(StatusType message, CommandType type,
@@ -518,8 +516,8 @@ public class DisplayView {
     /**
      * Format the success message
      * 
-     * @param type
-     * @return
+     * @param type The CommandType to process
+     * @return The formatted success string
      */
     private static String formatStringSuccess(CommandType type) {
         return String.format(Constants.LOG_MESSAGE_SUCCESS_OR_FAILURE,
@@ -529,8 +527,8 @@ public class DisplayView {
     /**
      * Format the error message
      * 
-     * @param type
-     * @return
+     * @param type The CommandType to process
+     * @return The formatted error string
      */
     private static String formatStringError(CommandType type) {
         return String.format(Constants.LOG_MESSAGE_SUCCESS_OR_FAILURE,
