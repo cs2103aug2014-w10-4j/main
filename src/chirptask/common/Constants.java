@@ -58,6 +58,9 @@ public class Constants {
     public static final String TITLE_SYNCING = "Syncing";
     public static final String TITLE_SYNC_FAIL = "Sync failed";
 
+    public static final String DATE_FORMAT_HH_MM = "HH:mm";
+    public static final String DATE_FORMAT_DD_MM_YYYY = "dd/MM/YYYY";
+
     public static final String DEFAULT_STATUS = "Nothing is happening.";
 
     public static final String ERROR = "%1$s: Error %2$s";
